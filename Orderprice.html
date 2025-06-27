@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Prices</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #2e2e2e;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #1e1e2d;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 32px;
+            color: #84adff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+
+        th {
+            background-color: #444;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            font-weight: 600;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #2a2a3a;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #1e1e2d;
+        }
+
+        tbody tr:hover {
+            background-color: #3a3a4a;
+        }
+
+        .price-cell {
+            font-weight: bold;
+            color: #84adff;
+        }
+
+        @media (max-width: 768px) {
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        import { 
+            getFirestore, 
+            collection, 
+            query, 
+            orderBy,
+            onSnapshot
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfGg6Q_g1iko1JdhPKUPo8hErnWQdYobg",
+            authDomain: "mergstore-b0d96.firebaseapp.com",
+            projectId: "mergstore-b0d96",
+            storageBucket: "mergstore-b0d96.firebasestorage.app",
+            messagingSenderId: "827266056460",
+            appId: "1:827266056460:web:09d700371a8234c12b0929",
+            measurementId: "G-0ZFBXW37JL"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        let unsubscribeOrderPrices = null;
+        let latestPrices = {};
+
+        function setupOrderPricesListener() {
+            const q = query(collection(db, 'restockHistory'), orderBy('timestamp', 'desc'));
+            
+            unsubscribeOrderPrices = onSnapshot(q, (snapshot) => {
+                latestPrices = {};
+                
+                snapshot.forEach(doc => {
+                    const entry = doc.data();
+                    const { code, name, price } = entry;
+                    
+                    // Only keep the first (latest) entry for each product code
+                    if (!latestPrices[code]) {
+                        latestPrices[code] = { 
+                            name, 
+                            price,
+                            date: entry.date || 'N/A'
+                        };
+                    }
+                });
+                
+                displayOrderPrices();
+            });
+        }
+
+        function displayOrderPrices() {
+            const tableBody = document.querySelector('#orderPriceTable tbody');
+            tableBody.innerHTML = '';
+
+            if (Object.keys(latestPrices).length === 0) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `
+                    <td colspan="4" style="text-align: center; padding: 20px;">No order prices found</td>
+                `;
+                tableBody.appendChild(emptyRow);
+                return;
+            }
+
+            Object.entries(latestPrices).forEach(([code, item]) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${code}</td>
+                    <td>${item.name}</td>
+                    <td class="price-cell">ZMW ${item.price.toFixed(2)}</td>
+                    <td>${item.date}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initialize the page
+        window.onload = function() {
+            setupOrderPricesListener();
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Latest Order Prices</h2>
+        <table id="orderPriceTable">
+            <thead>
+                <tr>
+                    <th>Product Code</th>
+                    <th>Product Name</th>
+                    <th>Order Price</th>
+                    <th>Last Ordered</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be dynamically populated here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
