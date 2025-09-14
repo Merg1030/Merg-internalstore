@@ -208,22 +208,33 @@
 
         async function fetchProfitData() {
             try {
+                // Fetch sales data
                 const salesSnapshot = await getDocs(collection(db, 'sales'));
+                
+                // Fetch order prices from restockHistory
                 const restockSnapshot = await getDocs(collection(db, 'restockHistory'));
-
+                
+                // Create a map of product codes to their latest order prices
                 const orderPrices = {};
                 restockSnapshot.forEach(doc => {
-                    const { code, price } = doc.data();
-                    orderPrices[code] = price;
+                    const data = doc.data();
+                    if (data.code && data.price !== undefined) {
+                        // Use the latest price if multiple entries exist for same product
+                        orderPrices[data.code] = parseFloat(data.price);
+                    }
                 });
+
+                console.log("Order prices loaded:", orderPrices);
 
                 const profits = [];
                 salesSnapshot.forEach(doc => {
                     const sale = doc.data();
                     const { code, name, price, quantity, date, branchId } = sale;
-
-                    if (orderPrices[code] !== undefined) {
-                        const costPrice = orderPrices[code];
+                    
+                    // Get the order price for this product
+                    const costPrice = orderPrices[code];
+                    
+                    if (costPrice !== undefined) {
                         const profit = (price - costPrice) * quantity;
                         profits.push({
                             date: date || 'No date',
@@ -232,10 +243,12 @@
                             name,
                             orderPrice: costPrice,
                             quantity,
-                            totalProfit: profit,
-                            totalSales: price * quantity
+                            totalSales: price * quantity,
+                            totalProfit: profit
                         });
                         branches.add(branchId || 'Unknown Branch');
+                    } else {
+                        console.warn(`No order price found for product: ${code} - ${name}`);
                     }
                 });
 
@@ -245,6 +258,7 @@
                 setupFilters();
                 updateSummaryBanner(allProfitData);
             } catch (error) {
+                console.error("Error fetching profit data:", error);
                 document.querySelector('#profitTable tbody').innerHTML = 
                     `<tr><td colspan="8" class="no-data">Error loading data. Please try again.</td></tr>`;
             }
