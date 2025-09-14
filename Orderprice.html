@@ -5,88 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Order Prices</title>
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-    }
-
+    * {margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif;}
     body {
-        background-color: #2e2e2e;
-        color: #ffffff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
+        background-color: #2e2e2e; color: #ffffff;
+        display: flex; justify-content: center; align-items: center; height: 100vh;
     }
-
     .container {
-        width: 100%;
-        margin: 20px auto;
-        background-color: #1e1e2d;
-        color: #ffffff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        max-height: 90vh;
-        overflow-y: auto;
+        width: 100%; margin: 20px auto;
+        background-color: #1e1e2d; padding: 20px;
+        border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        max-height: 90vh; overflow-y: auto;
     }
-
-    h2 {
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 32px;
+    h2 {text-align: center; margin-bottom: 20px; font-size: 32px;}
+    #searchBar {width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: none;}
+    #editButton {
+        padding: 10px 15px; margin-bottom: 10px; border: none; border-radius: 5px;
+        background-color: #444; color: #fff; cursor: pointer;
     }
-
-    #searchBar {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 5px;
-        border: none;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
-
-    th, td {
-        padding: 10px;
-        text-align: left;
-        border-bottom: 1px solid #444;
-    }
-
-    th {
-        background-color: #444;
-        color: #fff;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
-
-    tbody tr:nth-child(even) {
-        background-color: #3e3e3e;
-    }
-
-    tbody tr:nth-child(odd) {
-        background-color: #2e2e2e;
-    }
-
-    tbody tr:hover {
-        background-color: #555;
-    }
-
-    td[contenteditable="true"] {
-        background-color: #2e2e4d;
-        outline: none;
-    }
+    #editButton:hover {background-color: #666;}
+    table {width: 100%; border-collapse: collapse; margin-top: 10px;}
+    th, td {padding: 10px; text-align: left; border-bottom: 1px solid #444;}
+    th {background-color: #444; color: #fff; position: sticky; top: 0; z-index: 100;}
+    tbody tr:nth-child(even) {background-color: #3e3e3e;}
+    tbody tr:nth-child(odd) {background-color: #2e2e2e;}
+    tbody tr:hover {background-color: #555;}
+    td.editable {background-color: #2e2e2e;} /* normal look */
+    td.editable[contenteditable="true"] {background-color: #2e2e4d; outline: none;}
 </style>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB-lm7Y3r1F6Vv8PKvY8glLabZDbJsHM1k",
@@ -101,34 +49,35 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    let itemsData = {}; // Store items for reference
+    let editMode = false; // Track if editing is enabled
+
     async function fetchOrderPrices() {
         try {
             const restockCollection = collection(db, 'restockHistory');
             const snapshot = await getDocs(restockCollection);
 
-            const items = {};
-            snapshot.forEach(doc => {
-                const entry = doc.data();
-                const { code, name, price } = entry;
-                if (!items[code] || items[code].price !== price) {
-                    items[code] = { name, price };
-                }
+            itemsData = {}; 
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const { code, name, price } = data;
+                if (!itemsData[code]) itemsData[code] = { id: docSnap.id, name, price };
             });
 
-            displayOrderPrices(items);
+            displayOrderPrices(itemsData);
         } catch (error) {
-            console.error('Error fetching data from Firestore:', error);
+            console.error('Error fetching data:', error);
         }
     }
 
     function displayOrderPrices(items) {
-        const tableBody = document.querySelector('#orderPriceTable tbody');
-        tableBody.innerHTML = '';
+        const tbody = document.querySelector('#orderPriceTable tbody');
+        tbody.innerHTML = '';
 
-        if (Object.keys(items).length === 0) {
-            const emptyRow = document.createElement('tr');
-            emptyRow.innerHTML = `<td colspan="3" style="text-align: center;">No items found</td>`;
-            tableBody.appendChild(emptyRow);
+        if (!Object.keys(items).length) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="3" style="text-align:center;">No items found</td>`;
+            tbody.appendChild(row);
             return;
         }
 
@@ -137,22 +86,59 @@
             row.innerHTML = `
                 <td>${code}</td>
                 <td>${item.name}</td>
-                <td contenteditable="true">${item.price.toFixed(2)}</td>
+                <td class="editable" data-code="${code}">${item.price.toFixed(2)}</td>
             `;
-            tableBody.appendChild(row);
+            tbody.appendChild(row);
+        });
+
+        // Add event listeners for saving edited prices
+        if (editMode) enableEditing();
+    }
+
+    function enableEditing() {
+        const editableCells = document.querySelectorAll('td.editable');
+        editableCells.forEach(cell => {
+            cell.setAttribute('contenteditable', 'true');
+
+            cell.addEventListener('blur', async () => {
+                const newPrice = parseFloat(cell.textContent);
+                const code = cell.getAttribute('data-code');
+
+                if (!isNaN(newPrice)) {
+                    try {
+                        const docId = itemsData[code].id;
+                        const docRef = doc(db, 'restockHistory', docId);
+                        await updateDoc(docRef, { price: newPrice });
+                        itemsData[code].price = newPrice;
+                        cell.textContent = newPrice.toFixed(2); // format nicely
+                        console.log(`Price for ${code} saved: ${newPrice}`);
+                    } catch (err) {
+                        console.error('Error saving price:', err);
+                    }
+                } else {
+                    cell.textContent = itemsData[code].price.toFixed(2); // revert if invalid
+                }
+            });
         });
     }
 
-    // Search functionality
     window.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.getElementById('searchBar');
+        const editButton = document.getElementById('editButton');
+
+        // Search filter
         searchInput.addEventListener('input', function() {
             const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#orderPriceTable tbody tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(filter) ? '' : 'none';
+            document.querySelectorAll('#orderPriceTable tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
             });
+        });
+
+        // Toggle edit mode
+        editButton.addEventListener('click', () => {
+            editMode = !editMode;
+            editButton.textContent = editMode ? 'Disable Editing' : 'Enable Editing';
+            displayOrderPrices(itemsData); // refresh table with editable cells if enabled
         });
 
         fetchOrderPrices();
@@ -163,6 +149,7 @@
 <div class="container">
     <h2>Order Prices</h2>
     <input type="text" id="searchBar" placeholder="Search products...">
+    <button id="editButton">Enable Editing</button>
     <table id="orderPriceTable">
         <thead>
             <tr>
@@ -171,9 +158,7 @@
                 <th>Order Price</th>
             </tr>
         </thead>
-        <tbody>
-            <!-- Data populated here -->
-        </tbody>
+        <tbody></tbody>
     </table>
 </div>
 </body>
