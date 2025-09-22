@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Account Cash & Float Manager</title>
+    <title>Cash Book Manager</title>
     <style>
         :root {
             --bg: #181A20;
@@ -16,7 +16,7 @@
             --input-bg: #20232E;
             --input-border: #333647;
             --success: #41B883;
-            --danger: #605d5d;
+            --danger: #FF5B5B;
             --warning: #FBC02D;
         }
         html, body {
@@ -177,10 +177,8 @@
         tr:hover td {
             background: #23263b;
         }
-        td[type="deposit"] { color: var(--success); }
-        td[type="withdraw"] { color: var(--danger); }
-        td[type="expense"] { color: var(--warning); }
-        td[type="payin"] { color: var(--primary); }
+        .cash-in { color: var(--success); }
+        .cash-out { color: var(--danger); }
         @media (max-width: 1200px) {
             th, td { font-size: 0.93em; padding: 10px 6px; }
         }
@@ -198,20 +196,20 @@
     </style>
 </head>
 <body>
-    <h1>Airtel Money</h1>
+    <h1>Cash Book Manager</h1>
 
     <div class="balances">
         <div class="balance-box">
-            <strong>Cash Balance:</strong> <span id="cash-balance"></span>
+            <strong>Opening Balance:</strong> <span id="opening-balance">K0.00</span>
         </div>
         <div class="balance-box">
-            <strong>Float Balance:</strong> <span id="float-balance"></span>
+            <strong>Total Cash In:</strong> <span id="total-cash-in">K0.00</span>
         </div>
         <div class="balance-box">
-            <strong>Total Money:</strong> <span id="total-balance"></span>
+            <strong>Total Cash Out:</strong> <span id="total-cash-out">K0.00</span>
         </div>
         <div class="balance-box">
-            <strong>Commission:</strong> <span id="commission-balance">K0.00</span>
+            <strong>Closing Balance:</strong> <span id="closing-balance">K0.00</span>
         </div>
     </div>
 
@@ -229,25 +227,14 @@
 
     <button class="toggle-form-btn" id="toggle-form-btn">Hide Form</button>
     <form id="transaction-form" autocomplete="off">
-        <input type="text" id="person-name" placeholder="Name" required>
+        <input type="date" id="transaction-date" required>
+        <input type="text" id="reference" placeholder="Reference" required>
+        <input type="text" id="description" placeholder="Description" required>
         <select id="type" required>
-            <option value="deposit">Deposit</option>
-            <option value="withdraw">Withdraw</option>
-            <option value="expense">Expense out</option>
-            <option value="payin">Pay In</option>
+            <option value="cash-in">Cash In</option>
+            <option value="cash-out">Cash Out</option>
         </select>
         <input type="number" id="amount" min="1" placeholder="Amount (K)" required>
-        <input type="text" id="transaction-number" placeholder="Transaction Number (10 digits, starts with 077 or 097)" required maxlength="10">
-        <select id="expense-source" class="hidden">
-            <option value="">Expense From</option>
-            <option value="cash">Cash</option>
-            <option value="float">Float</option>
-        </select>
-        <select id="payin-source" class="hidden">
-            <option value="">Pay In To</option>
-            <option value="cash">Cash</option>
-            <option value="float">Float</option>
-        </select>
         <button type="submit">Add Transaction</button>
     </form>
 
@@ -255,13 +242,11 @@
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Time</th>
-                <th>Transaction #</th>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Cash Balance</th>
-                <th>Float Balance</th>
+                <th>Reference</th>
+                <th>Description</th>
+                <th>Cash In</th>
+                <th>Cash Out</th>
+                <th>Balance</th>
             </tr>
         </thead>
         <tbody id="transactions-body">
@@ -296,31 +281,35 @@
         const db = getFirestore(app);
 
         // --- Local state fallback (for offline or before Firestore loads) ---
-        let cash = 500;
-        let float = 500;
-        let commission = 0;
+        let openingBalance = 0;
+        let totalCashIn = 0;
+        let totalCashOut = 0;
+        let closingBalance = 0;
         let transactions = [];
         let filters = { date: "", month: "" };
 
         // --- DOM Elements ---
-        const cashBalanceEl = document.getElementById('cash-balance');
-        const floatBalanceEl = document.getElementById('float-balance');
-        const totalBalanceEl = document.getElementById('total-balance');
-        const commissionBalanceEl = document.getElementById('commission-balance');
+        const openingBalanceEl = document.getElementById('opening-balance');
+        const totalCashInEl = document.getElementById('total-cash-in');
+        const totalCashOutEl = document.getElementById('total-cash-out');
+        const closingBalanceEl = document.getElementById('closing-balance');
         const transactionsBody = document.getElementById('transactions-body');
         const form = document.getElementById('transaction-form');
-        const expenseSource = document.getElementById('expense-source');
-        const payinSource = document.getElementById('payin-source');
         const typeSelect = document.getElementById('type');
         const toggleFormBtn = document.getElementById('toggle-form-btn');
-        const personNameInput = document.getElementById('person-name');
-        const transactionNumberInput = document.getElementById('transaction-number');
+        const transactionDateInput = document.getElementById('transaction-date');
+        const referenceInput = document.getElementById('reference');
+        const descriptionInput = document.getElementById('description');
         const filterDate = document.getElementById('filter-date');
         const filterMonth = document.getElementById('filter-month');
         const clearFiltersBtn = document.getElementById('clear-filters-btn');
 
+        // Set today's date as default for transaction date
+        const today = new Date();
+        transactionDateInput.value = today.toISOString().slice(0, 10);
+
         // --- FILTERS: Persist in localStorage ---
-        const FILTERS_KEY = 'cfm-filters-v1';
+        const FILTERS_KEY = 'cashbook-filters-v1';
 
         function loadFiltersFromStorage() {
             const stored = localStorage.getItem(FILTERS_KEY);
@@ -367,68 +356,57 @@
 
         function renderTransactionsWithBalances() {
             transactionsBody.innerHTML = "";
-            let runningCash = 0;
-            let runningFloat = 0;
-            let runningCommission = 0;
-            // Show in chronological order (oldest first)
-            const txs = transactions.slice().reverse();
-            for (const tx of txs) {
+            let runningBalance = openingBalance;
+            let filteredCashIn = 0;
+            let filteredCashOut = 0;
+            
+            // Sort transactions by date (oldest first)
+            const sortedTransactions = [...transactions].sort((a, b) => {
+                return new Date(a.date) - new Date(b.date);
+            });
+            
+            // Add opening balance row
+            const openingRow = document.createElement('tr');
+            openingRow.innerHTML = `
+                <td>${new Date().toISOString().slice(0,10)}</td>
+                <td>Opening Balance</td>
+                <td>Brought Forward</td>
+                <td></td>
+                <td></td>
+                <td>K${formatNumber(runningBalance)}</td>
+            `;
+            transactionsBody.appendChild(openingRow);
+            
+            // Process each transaction
+            for (const tx of sortedTransactions) {
                 if (transactionMatchesFilters(tx)) {
-                    let typeLabel = tx.type.charAt(0).toUpperCase() + tx.type.slice(1);
-                    let color = (tx.type === 'deposit') ? 'var(--success)' : (tx.type === 'withdraw' ? 'var(--danger)' : (tx.type === 'payin' ? 'var(--primary)' : 'var(--warning)'));
-                    if(tx.type === 'expense') {
-                        typeLabel += ` (${tx.expenseSource.charAt(0).toUpperCase()+tx.expenseSource.slice(1)})`;
-                    }
-                    if(tx.type === 'payin') {
-                        typeLabel = 'Pay In (Money In For Good) ('+(tx.payinSource.charAt(0).toUpperCase()+tx.payinSource.slice(1))+')';
-                    }
-                    // Transaction effect
                     const amount = Number(tx.amount) || 0;
-                    if (tx.type === 'withdraw') {
-                        runningCash -= amount;
-                        runningFloat += amount;
-                        runningCommission += amount * 0.01;
-                    } else if (tx.type === 'deposit') {
-                        runningCash += amount;
-                        runningFloat -= amount;
-                        runningCommission += amount * 0.005;
-                    } else if (tx.type === 'expense') {
-                        if (tx.expenseSource === 'cash') runningCash -= amount;
-                        else if (tx.expenseSource === 'float') runningFloat -= amount;
-                    } else if (tx.type === 'payin') {
-                        if (tx.payinSource === 'cash') runningCash += amount;
-                        else if (tx.payinSource === 'float') runningFloat += amount;
+                    
+                    if (tx.type === 'cash-in') {
+                        runningBalance += amount;
+                        filteredCashIn += amount;
+                    } else if (tx.type === 'cash-out') {
+                        runningBalance -= amount;
+                        filteredCashOut += amount;
                     }
+                    
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${tx.date}</td>
-                        <td>${tx.time}</td>
-                        <td>${tx.number}</td>
-                        <td>${tx.name}</td>
-                        <td style="color:${color}" type="${tx.type}">${typeLabel}</td>
-                        <td>K${formatNumber(amount)}</td>
-                        <td>K${formatNumber(runningCash)}</td>
-                        <td>K${formatNumber(runningFloat)}</td>
+                        <td>${tx.reference}</td>
+                        <td>${tx.description}</td>
+                        <td class="cash-in">${tx.type === 'cash-in' ? 'K' + formatNumber(amount) : ''}</td>
+                        <td class="cash-out">${tx.type === 'cash-out' ? 'K' + formatNumber(amount) : ''}</td>
+                        <td>K${formatNumber(runningBalance)}</td>
                     `;
                     transactionsBody.appendChild(tr);
-                } else {
-                    // Transaction not matching filter, but still updates running balances
-                    const amount = Number(tx.amount) || 0;
-                    if (tx.type === 'withdraw') {
-                        runningCash -= amount;
-                        runningFloat += amount;
-                    } else if (tx.type === 'deposit') {
-                        runningCash += amount;
-                        runningFloat -= amount;
-                    } else if (tx.type === 'expense') {
-                        if (tx.expenseSource === 'cash') runningCash -= amount;
-                        else if (tx.expenseSource === 'float') runningFloat -= amount;
-                    } else if (tx.type === 'payin') {
-                        if (tx.payinSource === 'cash') runningCash += amount;
-                        else if (tx.payinSource === 'float') runningFloat += amount;
-                    }
                 }
             }
+            
+            // Update summary with filtered values
+            totalCashInEl.textContent = `K${formatNumber(filteredCashIn)}`;
+            totalCashOutEl.textContent = `K${formatNumber(filteredCashOut)}`;
+            closingBalanceEl.textContent = `K${formatNumber(runningBalance)}`;
         }
 
         // ---- FIRESTORE DATA SYNC ----
@@ -436,7 +414,7 @@
         // Listen to Firestore for transactions
         function listenToTransactions() {
             const q = query(
-                collection(db, 'cashfloat_transactions'),
+                collection(db, 'cashbook_transactions'),
                 orderBy('timestamp', 'desc')
             );
             onSnapshot(q, (snapshot) => {
@@ -451,162 +429,68 @@
 
         // Compute balances from all transactions in memory
         function computeBalances() {
-            cash = 0;
-            float = 0;
-            commission = 0;
-            transactions.slice().forEach(tx => {
+            openingBalance = 0; // This would typically be set from a previous day's closing balance
+            totalCashIn = 0;
+            totalCashOut = 0;
+            
+            transactions.forEach(tx => {
                 const type = tx.type;
                 const amount = Number(tx.amount) || 0;
-                if (type === 'withdraw') {
-                    cash -= amount;
-                    float += amount;
-                    commission += amount * 0.01;
-                } else if (type === 'deposit') {
-                    cash += amount;
-                    float -= amount;
-                    commission += amount * 0.005;
-                } else if (type === 'expense') {
-                    if (tx.expenseSource === 'cash') cash -= amount;
-                    else if (tx.expenseSource === 'float') float -= amount;
-                } else if (type === 'payin') {
-                    if (tx.payinSource === 'cash') cash += amount;
-                    else if (tx.payinSource === 'float') float += amount;
+                
+                if (type === 'cash-in') {
+                    totalCashIn += amount;
+                } else if (type === 'cash-out') {
+                    totalCashOut += amount;
                 }
             });
+            
+            closingBalance = openingBalance + totalCashIn - totalCashOut;
             updateBalances();
         }
 
         function updateBalances() {
-            cashBalanceEl.textContent = `K${cash}`;
-            floatBalanceEl.textContent = `K${float}`;
-            totalBalanceEl.textContent = `K${cash + float}`;
-            commissionBalanceEl.textContent = `K${commission.toFixed(2)}`;
+            openingBalanceEl.textContent = `K${formatNumber(openingBalance)}`;
+            totalCashInEl.textContent = `K${formatNumber(totalCashIn)}`;
+            totalCashOutEl.textContent = `K${formatNumber(totalCashOut)}`;
+            closingBalanceEl.textContent = `K${formatNumber(closingBalance)}`;
         }
 
         // --- Form Logic ---
-
-        typeSelect.addEventListener('change', function() {
-            if(typeSelect.value === 'expense') {
-                expenseSource.classList.remove('hidden');
-                expenseSource.required = true;
-                payinSource.classList.add('hidden');
-                payinSource.required = false;
-                payinSource.value = '';
-            } else if (typeSelect.value === 'payin') {
-                payinSource.classList.remove('hidden');
-                payinSource.required = true;
-                expenseSource.classList.add('hidden');
-                expenseSource.required = false;
-                expenseSource.value = '';
-            } else {
-                expenseSource.classList.add('hidden');
-                expenseSource.required = false;
-                expenseSource.value = '';
-                payinSource.classList.add('hidden');
-                payinSource.required = false;
-                payinSource.value = '';
-            }
-        });
 
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             const type = typeSelect.value;
             const amountInput = document.getElementById('amount');
             const amount = parseInt(amountInput.value, 10);
-            const transactionNumber = transactionNumberInput.value.trim();
-            const expenseFrom = expenseSource.value;
-            const payinTo = payinSource.value;
-            const personName = personNameInput.value.trim();
+            const reference = referenceInput.value.trim();
+            const description = descriptionInput.value.trim();
+            const date = transactionDateInput.value;
 
-            // Transaction number: must be 10 digits starting with 077 or 097
-            const numberPattern = /^(077|097)\d{7}$/;
-            if (!numberPattern.test(transactionNumber)) {
-                alert("Transaction number must be 10 digits and start with 077 or 097.");
-                return;
-            }
-
-            if (!type || isNaN(amount) || amount <= 0 || !transactionNumber || !personName) {
+            if (!type || isNaN(amount) || amount <= 0 || !reference || !description || !date) {
                 alert("Please fill all fields with valid values.");
                 return;
             }
 
-            let thisCommission = 0;
-            // Calculate local balance for warning only
-            let tmpCash = cash, tmpFloat = float;
-            if (type === 'withdraw') {
-                if (tmpCash < amount) {
-                    alert("Insufficient cash balance!");
-                    return;
-                }
-                tmpCash -= amount;
-                tmpFloat += amount;
-                thisCommission = amount * 0.01;
-            } else if (type === 'deposit') {
-                if (tmpFloat < amount) {
-                    alert("Insufficient float balance!");
-                    return;
-                }
-                tmpCash += amount;
-                tmpFloat -= amount;
-                thisCommission = amount * 0.005;
-            } else if (type === 'expense') {
-                if (!expenseFrom) {
-                    alert("Please select where the money is going out from (Cash or Float).");
-                    return;
-                }
-                if (expenseFrom === 'cash') {
-                    if (tmpCash < amount) {
-                        alert("Insufficient cash balance!");
-                        return;
-                    }
-                    tmpCash -= amount;
-                } else if (expenseFrom === 'float') {
-                    if (tmpFloat < amount) {
-                        alert("Insufficient float balance!");
-                        return;
-                    }
-                    tmpFloat -= amount;
-                }
-            } else if (type === 'payin') {
-                if (!payinTo) {
-                    alert("Please select where the money is coming into (Cash or Float).");
-                    return;
-                }
-                if (payinTo === 'cash') {
-                    tmpCash += amount;
-                } else if (payinTo === 'float') {
-                    tmpFloat += amount;
-                }
-            }
-
-            const { date, time, month } = getDateTime();
             const tx = {
                 date,
-                month,
-                time,
-                number: transactionNumber,
-                name: personName,
+                reference,
+                description,
                 type,
                 amount,
-                expenseSource: expenseFrom,
-                payinSource: payinTo,
                 timestamp: serverTimestamp()
             };
+            
             try {
-                await addDoc(collection(db, 'cashfloat_transactions'), tx);
+                await addDoc(collection(db, 'cashbook_transactions'), tx);
             } catch (error) {
                 alert("Failed to save transaction: " + error.message);
                 return;
             }
 
             amountInput.value = '';
-            transactionNumberInput.value = '';
-            personNameInput.value = '';
-            typeSelect.value = '';
-            expenseSource.value = '';
-            expenseSource.classList.add('hidden');
-            payinSource.value = '';
-            payinSource.classList.add('hidden');
+            referenceInput.value = '';
+            descriptionInput.value = '';
+            typeSelect.value = 'cash-in';
         });
 
         // Hide/unhide form functionality
