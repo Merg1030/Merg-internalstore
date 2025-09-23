@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <title>Accounts Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
         window.initializeApp = initializeApp;
         window.getFirestore = getFirestore;
         window.collection = collection;
@@ -15,164 +16,532 @@
         window.query = query;
         window.where = where;
         window.onSnapshot = onSnapshot;
+        window.getDocs = getDocs;
     </script>
     <style>
-        body {
-            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
-            min-height: 100vh;
-            margin: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --success: #4cd964;
+            --warning: #ffcc00;
+            --danger: #ff5e5e;
+            --dark: #1a1d28;
+            --dark-light: #252a3a;
+            --text: #f0f0f0;
+            --text-light: #b0b0b0;
+            --card-bg: rgba(30, 33, 48, 0.8);
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            --gradient-light: linear-gradient(135deg, #4895ef 0%, #4361ee 100%);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --radius: 16px;
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1d28 0%, #252a3a 100%);
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
         .dashboard-container {
+            min-height: 100vh;
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            min-height: 100vh;
         }
-        .dashboard-card {
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
-            padding: 40px 32px 32px 32px;
-            width: 420px;
-            max-width: 98vw;
-        }
-        h1 {
+
+        .dashboard-header {
             text-align: center;
-            margin-bottom: 18px;
-            color: #0066cc;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .dashboard-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
             letter-spacing: 1px;
         }
-        form {
+
+        .dashboard-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .create-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            height: fit-content;
+        }
+
+        .create-card h2 {
             display: flex;
+            align-items: center;
             gap: 10px;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            font-size: 1.5rem;
         }
-        input[type="text"] {
-            flex: 1;
-            padding: 12px 16px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 1.05rem;
-            transition: border 0.2s;
-            outline: none;
-            background: #f8fbfe;
+
+        .create-card h2 i {
+            font-size: 1.8rem;
         }
-        input[type="text"]:focus {
-            border: 1.5px solid #0066cc;
+
+        .form-group {
+            margin-bottom: 20px;
         }
-        button {
-            padding: 12px 18px;
-            border: none;
-            background: linear-gradient(90deg, #0066cc 0%, #00c6ff 100%);
-            color: #fff;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,102,204,0.09);
-            transition: background 0.19s, transform 0.12s;
-            font-size: 1rem;
-        }
-        button:hover {
-            background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
-            transform: translateY(-2px) scale(1.04);
-        }
-        h2 {
-            margin-top: 10px;
-            color: #333;
-            font-size: 1.15rem;
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-light);
             font-weight: 500;
-            letter-spacing: 0.5px;
         }
-        .card-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 22px;
-            justify-content: center;
-            margin-top: 16px;
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(10, 12, 18, 0.6);
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
-        .account-card {
-            background: linear-gradient(135deg, #eaf7ff 0%, #f8fbfe 100%);
-            border-radius: 15px;
-            box-shadow: 0 4px 18px rgba(0,102,204,0.10);
-            min-width: 180px;
-            max-width: 220px;
-            padding: 22px 18px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
-            transition: box-shadow 0.18s, transform 0.16s, background 0.18s;
-            position: relative;
-            border: 1px solid #e3eaf3;
-        }
-        .account-card:hover {
-            box-shadow: 0 8px 32px rgba(0,102,204,0.14);
-            transform: scale(1.04) translateY(-2px);
-            background: linear-gradient(135deg, #e0f1fd 0%, #f8fbfe 100%);
-            border-color: #74ebd5;
-        }
-        .card-icon {
-            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;
+            width: 100%;
         }
-        .card-icon svg {
-            width: 26px;
-            height: 26px;
-            fill: #0066cc;
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
         }
+
+        .btn-primary:hover {
+            background: var(--gradient-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        .accounts-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .section-title i {
+            font-size: 1.8rem;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: rgba(10, 12, 18, 0.6);
+            border-radius: 12px;
+            padding: 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .card-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .account-card {
+            background: rgba(10, 12, 18, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .account-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+        }
+
+        .account-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(67, 97, 238, 0.3);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
         .card-info {
             flex: 1;
-            text-align: left;
         }
+
         .card-name {
-            font-size: 1.13rem;
-            color: #0066cc;
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 2px;
-            letter-spacing: 0.2px;
+            margin-bottom: 5px;
+            color: var(--text);
         }
-        .chevron {
-            margin-left: auto;
+
+        .card-date {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
-            color: #74ebd5;
+            justify-content: center;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .chevron svg {
-            width: 20px;
-            height: 20px;
-            fill: #74ebd5;
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
         }
+
         .no-accounts {
-            color: #888;
             text-align: center;
-            margin-top: 20px;
+            padding: 40px 20px;
+            color: var(--text-light);
+            grid-column: 1 / -1;
         }
-        @media (max-width: 600px) {
-            .dashboard-card { padding: 16px 6px; width: 98vw; }
-            .account-card { min-width: 98vw; max-width: 98vw; }
+
+        .no-accounts i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .recent-activity {
+            margin-top: 30px;
+            background: rgba(10, 12, 18, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .activity-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(67, 97, 238, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 0.95rem;
+            margin-bottom: 3px;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-title {
+                font-size: 2.2rem;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+            }
+            
+            .card-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-container {
+                padding: 20px 15px;
+            }
+            
+            .create-card, .accounts-section {
+                padding: 20px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+
+        /* Animation for new cards */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .account-card {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        /* Pulse animation for empty state */
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .no-accounts i {
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
-        <div class="dashboard-card">
-            <h1>Accounts Dashboard</h1>
-            <form id="accountForm">
-                <input type="text" id="name" placeholder="Enter Account Name" required>
-                <button type="submit">Create Account</button>
-            </form>
-            <h2>Accounts</h2>
-            <div class="card-list" id="cardList"></div>
-            <div class="no-accounts" id="noAccounts"></div>
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Accounts Dashboard</h1>
+            <p class="dashboard-subtitle">Manage your business accounts efficiently with real-time updates and analytics</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="create-card">
+                <h2><i class="fas fa-plus-circle"></i> Create New Account</h2>
+                <form id="accountForm">
+                    <div class="form-group">
+                        <label for="name">Account Name</label>
+                        <input type="text" id="name" class="form-control" placeholder="Enter account name" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Account
+                    </button>
+                </form>
+                
+                <div class="recent-activity">
+                    <div class="activity-title">
+                        <i class="fas fa-history"></i> Recent Activity
+                    </div>
+                    <div id="recentActivity">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-text">No recent activity</div>
+                                <div class="activity-time">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accounts-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-wallet"></i> Your Accounts
+                    </div>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search accounts...">
+                    </div>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalAccounts">0</div>
+                        <div class="stat-label">Total Accounts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="activeAccounts">0</div>
+                        <div class="stat-label">Active</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">Today</div>
+                        <div class="stat-label">Created</div>
+                    </div>
+                </div>
+                
+                <div class="card-list" id="cardList"></div>
+                <div class="no-accounts" id="noAccounts">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>No accounts created yet</h3>
+                    <p>Create your first account to get started</p>
+                </div>
+            </div>
         </div>
     </div>
+
     <script type="module">
         // Firestore config
         const firebaseConfig = {
@@ -184,6 +553,7 @@
             appId: "1:416692703333:web:d4b60292621435c748f68c",
             measurementId: "G-NJPQ7L3QWJ"
         };
+        
         const app = window.initializeApp(firebaseConfig);
         const db = window.getFirestore(app);
 
@@ -193,20 +563,85 @@
             window.location.href = 'dashboard.html';
         }
 
+        // Format date function
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Update recent activity
+        function updateRecentActivity(activity) {
+            const activityContainer = document.getElementById('recentActivity');
+            activityContainer.innerHTML = '';
+            
+            if (activity.length === 0) {
+                activityContainer.innerHTML = `
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-text">No recent activity</div>
+                            <div class="activity-time">Just now</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            activity.slice(0, 3).forEach(item => {
+                const activityItem = document.createElement('div');
+                activityItem.className = 'activity-item';
+                activityItem.innerHTML = `
+                    <div class="activity-icon">
+                        <i class="fas ${item.icon}"></i>
+                    </div>
+                    <div class="activity-details">
+                        <div class="activity-text">${item.text}</div>
+                        <div class="activity-time">${item.time}</div>
+                    </div>
+                `;
+                activityContainer.appendChild(activityItem);
+            });
+        }
+
+        // Recent activity data
+        let recentActivity = [];
+
+        function addActivity(text, icon = 'fa-plus-circle') {
+            const activity = {
+                text,
+                icon,
+                time: 'Just now'
+            };
+            recentActivity.unshift(activity);
+            if (recentActivity.length > 5) {
+                recentActivity = recentActivity.slice(0, 5);
+            }
+            updateRecentActivity(recentActivity);
+        }
+
         function renderAccountsRealtime() {
             const cardList = document.getElementById("cardList");
             const noAccounts = document.getElementById("noAccounts");
+            const totalAccountsElem = document.getElementById("totalAccounts");
+            const activeAccountsElem = document.getElementById("activeAccounts");
+            
             const q = window.query(
                 window.collection(db, "accounts"),
                 window.where("branchId", "==", branchId)
             );
+            
             window.onSnapshot(q, (snapshot) => {
                 cardList.innerHTML = "";
+                let accountCount = 0;
+                
                 if (snapshot.empty) {
-                    noAccounts.textContent = "No accounts created yet.";
+                    noAccounts.style.display = 'block';
                 } else {
-                    noAccounts.textContent = "";
+                    noAccounts.style.display = 'none';
                     snapshot.forEach(doc => {
+                        accountCount++;
                         const data = doc.data();
                         const card = document.createElement("div");
                         card.className = "account-card";
@@ -215,40 +650,92 @@
                         };
                         card.innerHTML = `
                             <div class="card-icon">
-                                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                <i class="fas fa-wallet"></i>
                             </div>
                             <div class="card-info">
                                 <div class="card-name">${data.name}</div>
+                                <div class="card-date">Created: ${formatDate(data.created)}</div>
                             </div>
-                            <div class="chevron">
-                                <svg viewBox="0 0 24 24"><path d="M9.29 6.71a1 1 0 0 1 1.42 0l5 5a1 1 0 0 1 0 1.42l-5 5a1 1 0 0 1-1.42-1.42L13.59 12 9.29 7.71a1 1 0 0 1 0-1.42z"></path></svg>
+                            <div class="card-actions">
+                                <div class="action-btn" onclick="event.stopPropagation(); editAccount('${doc.id}', '${data.name}')">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                                <div class="action-btn" onclick="event.stopPropagation(); viewAccount('${doc.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </div>
                             </div>
                         `;
                         cardList.appendChild(card);
                     });
                 }
+                
+                // Update stats
+                totalAccountsElem.textContent = accountCount;
+                activeAccountsElem.textContent = accountCount; // In a real app, you'd have an active status
             });
         }
+
+        // Search functionality
+        document.getElementById("searchInput").addEventListener("input", function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.account-card');
+            
+            cards.forEach(card => {
+                const accountName = card.querySelector('.card-name').textContent.toLowerCase();
+                if (accountName.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
 
         document.getElementById("accountForm").addEventListener("submit", async function(e) {
             e.preventDefault();
             const nameInput = document.getElementById("name");
             const name = nameInput.value.trim();
+            
             if (name) {
                 try {
                     await window.addDoc(window.collection(db, "accounts"), {
                         name,
                         branchId,
-                        created: new Date().toISOString()
+                        created: new Date().toISOString(),
+                        status: 'active'
                     });
+                    
+                    // Add to recent activity
+                    addActivity(`Created account: ${name}`, 'fa-plus-circle');
+                    
+                    nameInput.value = "";
                 } catch (err) {
                     alert("Error creating account: " + err.message);
                 }
-                nameInput.value = "";
             }
         });
 
+        // Placeholder functions for actions
+        window.editAccount = function(id, name) {
+            const newName = prompt("Edit account name:", name);
+            if (newName && newName.trim() !== "" && newName !== name) {
+                addActivity(`Renamed account to: ${newName}`, 'fa-edit');
+                // In a real app, you would update the document in Firestore here
+                alert(`Account would be renamed to: ${newName} (Firestore update not implemented in this example)`);
+            }
+        };
+
+        window.viewAccount = function(id) {
+            // In a real app, this would navigate to the account details page
+            alert(`Viewing account details for ID: ${id}`);
+        };
+
+        // Initialize the dashboard
         renderAccountsRealtime();
+        
+        // Add some sample recent activity
+        setTimeout(() => {
+            addActivity("Welcome to your Accounts Dashboard", 'fa-info-circle');
+        }, 1000);
     </script>
 </body>
 </html>
