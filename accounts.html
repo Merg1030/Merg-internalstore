@@ -20,16 +20,31 @@
         window.serverTimestamp = serverTimestamp;
     </script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            overflow-x: hidden;
+        }
+        
         body {
             background: linear-gradient(135deg, #ACB6E5 0%, #74ebd5 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Arial, sans-serif;
             width: 100vw;
+            max-width: 100vw;
+            display: flex;
+            justify-content: center;
         }
+        
         .account-detail-card {
             background: #fff;
-            padding: 12px 2vw;
+            padding: 10px 2vw;
             width: 100vw;
             min-height: 100vh;
             text-align: center;
@@ -38,145 +53,195 @@
             align-items: center;
             max-width: 100vw;
             box-sizing: border-box;
+            overflow: hidden;
         }
+        
         h1 {
             color: #0066cc;
-            margin-bottom: 8px;
-            font-size: 1.07rem;
+            margin-bottom: 6px;
+            font-size: 1.1rem;
             word-break: break-word;
+            width: 100%;
         }
+        
         .account-name {
-            font-size: 1.04rem;
+            font-size: 1rem;
             color: #222;
-            margin-bottom: 11px;
+            margin-bottom: 8px;
             font-weight: 700;
             word-break: break-word;
+            width: 100%;
         }
+        
         .back-btn-wrapper {
             position: relative;
             display: inline-block;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
+            width: auto;
         }
+        
         .back-btn {
             display: inline-block;
-            padding: 6px 13px;
+            padding: 6px 12px;
             background: linear-gradient(90deg, #0066cc 0%, #00c6ff 100%);
             color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: background 0.19s, transform 0.12s;
-            font-size: 0.78rem;
-            position: relative;
-            z-index: 1;
+            font-size: 0.8rem;
+            white-space: nowrap;
         }
+        
         .back-btn:hover {
             background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
             transform: scale(1.04);
         }
+        
         .quick-hide-menu {
             position: absolute;
             left: 100%;
             top: 0;
             margin-left: 5px;
             background: #f2f9ff;
-            box-shadow: 0 2px 12px #0002;
-            border-radius: 7px;
-            padding: 5px 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            padding: 4px 6px;
             display: none;
             flex-direction: column;
-            gap: 6px;
-            min-width: 75px;
-            z-index: 2;
+            gap: 4px;
+            min-width: 70px;
+            z-index: 100;
             align-items: flex-start;
             border: 1px solid #e0e7ef;
-            font-size: 0.76rem;
+            font-size: 0.75rem;
         }
-        .back-btn-wrapper:hover .quick-hide-menu,
-        .quick-hide-menu:focus-within {
+        
+        .back-btn-wrapper:hover .quick-hide-menu {
             display: flex;
         }
+        
         .quick-hide-btn {
             background: none;
             border: none;
             color: #0066cc;
             font-weight: 600;
             cursor: pointer;
-            padding: 4px 0;
+            padding: 3px 0;
             text-align: left;
             width: 100%;
-            border-radius: 5px;
+            border-radius: 3px;
             transition: background 0.15s, color 0.15s;
-            font-size: 0.77rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
         }
+        
         .quick-hide-btn:hover {
             background: #eaf7ff;
             color: #0099cc;
         }
+        
         .not-found {
             color: #888;
-            font-size: 0.75rem;
-            margin-top: 8px;
-        }
-        .filter-bar {
-            display: flex;
-            gap: 5px;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 8px;
-            margin-top: 2px;
-            font-size: 0.76rem;
-            flex-wrap: wrap;
+            font-size: 0.8rem;
+            margin-top: 6px;
             width: 100%;
         }
-        .filter-bar input[type="date"] {
-            padding: 2px 2px;
+        
+        .filter-bar {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 6px;
+            margin-top: 2px;
             font-size: 0.75rem;
-            border-radius: 4px;
+            flex-wrap: wrap;
+            width: 100%;
+            padding: 0 1vw;
+        }
+        
+        .filter-bar span {
+            white-space: nowrap;
+        }
+        
+        .filter-bar input[type="date"] {
+            padding: 3px;
+            font-size: 0.75rem;
+            border-radius: 3px;
             border: 1px solid #cfd8dc;
             background: #f8f9fa;
-            width: 88px;
-            min-width: 60px;
-            max-width: 120px;
+            width: 100px;
+            min-width: 80px;
+            max-width: 110px;
         }
+        
         .filter-bar button {
-            padding: 2px 7px;
-            border-radius: 4px;
+            padding: 3px 8px;
+            border-radius: 3px;
             border: none;
             background: linear-gradient(90deg, #0066cc 60%, #00c6ff 100%);
             color: #fff;
             font-weight: 600;
-            font-size: 0.76rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: background 0.13s;
+            white-space: nowrap;
         }
+        
         .filter-bar button:hover {
             background: linear-gradient(90deg, #0099cc 0%, #005bb5 100%);
         }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #0066cc;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+            transition: color 0.16s;
+            padding: 4px 8px;
+            white-space: nowrap;
+        }
+        
+        .toggle-btn:hover {
+            color: #0099cc;
+        }
+        
         .table-container {
-            width: 100vw;
-            max-width: 100vw;
-            margin-top: 5px;
+            width: 98vw;
+            max-width: 98vw;
+            margin-top: 4px;
             background: #fff;
             border-radius: 4px;
             overflow-x: auto;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
         }
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.76rem;
-            min-width: 480px;
+            font-size: 0.75rem;
+            min-width: 600px;
         }
+        
         th, td {
-            padding: 6px 2px;
+            padding: 5px 3px;
             border: none;
             text-align: left;
-            min-width: 70px;
+            min-width: 60px;
+            max-width: 120px;
             word-break: break-word;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+        
         th {
             background: #f2f9ff;
             color: #0066cc;
@@ -184,101 +249,208 @@
             font-size: 0.76rem;
             position: sticky;
             top: 0;
+            white-space: nowrap;
         }
+        
         tr {
             background: #f7fbff;
         }
+        
         tr:nth-child(even) {
             background: #fff;
         }
+        
         .table-footer {
             border-top: 2px solid #000;
             background: #f8f9fa;
-            padding: 5px 2px;
+            padding: 6px 3px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: 600;
             font-size: 0.76rem;
+            position: sticky;
+            left: 0;
         }
+        
         .running-balance {
             color: #0066cc;
         }
+        
         .form-container {
-            width: 100%;
-            margin: 7px 0;
-            padding: 7px 1px;
+            width: 98vw;
+            margin: 6px 0;
+            padding: 8px;
             background: #f8f9fa;
             border-radius: 4px;
             border-top: 2px solid #000;
+            display: none;
         }
+        
         .form-row {
             display: flex;
-            gap: 5px;
+            gap: 4px;
             justify-content: center;
             width: 100%;
             flex-wrap: wrap;
+            margin-bottom: 4px;
         }
+        
         .form-row input {
-            padding: 3px;
+            padding: 4px;
             border-radius: 3px;
             border: 1px solid #ccc;
-            font-size: 0.74rem;
+            font-size: 0.75rem;
             flex: 1;
-            min-width: 44px;
-            max-width: 70px;
+            min-width: 70px;
+            max-width: 100px;
         }
+        
         .form-row button {
-            padding: 5px 10px;
+            padding: 4px 8px;
             border: none;
             background: linear-gradient(90deg, #0066cc 0%, #00c6ff 100%);
             color: #fff;
             border-radius: 3px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.19s, transform 0.12s;
-            font-size: 0.73rem;
-            min-width: 53px;
+            transition: background 0.19s;
+            font-size: 0.75rem;
+            min-width: 60px;
+            white-space: nowrap;
         }
+        
         .form-row button:hover {
             background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
-            transform: scale(1.04);
         }
-        .toggle-btn {
-            background: none;
-            border: none;
-            color: #0066cc;
-            font-size: 0.75rem;
-            margin-bottom: 7px;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: underline;
-            transition: color 0.16s;
-            padding: 3px 7px;
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .account-detail-card {
+                padding: 8px 1vw;
+            }
+            
+            h1 {
+                font-size: 1rem;
+                margin-bottom: 4px;
+            }
+            
+            .account-name {
+                font-size: 0.9rem;
+                margin-bottom: 6px;
+            }
+            
+            .filter-bar {
+                gap: 3px;
+                font-size: 0.7rem;
+            }
+            
+            .filter-bar input[type="date"] {
+                width: 90px;
+                min-width: 70px;
+                max-width: 90px;
+                font-size: 0.7rem;
+            }
+            
+            table {
+                font-size: 0.7rem;
+                min-width: 500px;
+            }
+            
+            th, td {
+                padding: 4px 2px;
+                min-width: 50px;
+                max-width: 100px;
+                font-size: 0.7rem;
+            }
+            
+            th {
+                font-size: 0.71rem;
+            }
         }
-        .toggle-btn:hover {
-            color: #0099cc;
+        
+        @media (max-width: 480px) {
+            body {
+                font-size: 12px;
+            }
+            
+            .account-detail-card {
+                padding: 6px 0.5vw;
+            }
+            
+            h1 {
+                font-size: 0.9rem;
+            }
+            
+            .account-name {
+                font-size: 0.85rem;
+            }
+            
+            .back-btn {
+                font-size: 0.75rem;
+                padding: 5px 10px;
+            }
+            
+            .filter-bar {
+                font-size: 0.65rem;
+            }
+            
+            .filter-bar input[type="date"] {
+                width: 80px;
+                min-width: 60px;
+                max-width: 80px;
+                font-size: 0.65rem;
+            }
+            
+            .table-container {
+                width: 99vw;
+            }
+            
+            table {
+                min-width: 450px;
+                font-size: 0.65rem;
+            }
+            
+            th, td {
+                padding: 3px 1px;
+                font-size: 0.65rem;
+            }
+            
+            .form-container {
+                width: 99vw;
+            }
+            
+            .form-row input {
+                font-size: 0.7rem;
+                min-width: 60px;
+                max-width: 80px;
+            }
         }
-        @media (max-width: 700px) {
-            body { font-size: 11px; }
-            .account-detail-card { padding: 3px 0; max-width: 100vw; }
-            h1 { font-size: 0.95rem; margin-bottom: 5px; }
-            .account-name { font-size: 0.95rem; margin-bottom: 7px; }
-            .form-row { flex-direction: column; gap: 4px; align-items: stretch; }
-            .form-row input { max-width: 98vw; font-size: 0.71rem; padding: 3px; }
-            th, td { font-size: 0.71rem; padding: 5px 1px; min-width: 55px; }
-            th { font-size: 0.72rem; }
-            .table-footer { padding: 4px 1px; font-size: 0.72rem; }
-            .back-btn { padding: 5px 7px; font-size: 0.71rem; }
-            .quick-hide-menu { left: auto; right: 0; top: 110%; min-width: 60px; font-size: 0.67rem; }
+        
+        @media (max-width: 320px) {
+            .filter-bar {
+                flex-direction: column;
+                gap: 2px;
+            }
+            
+            .filter-bar input[type="date"] {
+                width: 95%;
+                max-width: 95%;
+            }
+            
+            table {
+                min-width: 400px;
+            }
         }
-        @media (max-width: 400px) {
-            body { font-size: 9px; }
-            th, td { font-size: 0.67rem; padding: 4px 1px; min-width: 45px; }
-            th { font-size: 0.69rem; }
-            .table-footer { font-size: 0.69rem; padding: 3px 1px; }
-            h1 { font-size: 0.75rem; }
-            .account-name { font-size: 0.74rem; }
+
+        /* Ensure no horizontal scroll on body */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        
+        body {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
@@ -294,7 +466,9 @@
         </div>
     </div>
     <div id="notFound" class="not-found"></div>
+    
     <button class="toggle-btn" id="toggleFormBtn">Add Transaction</button>
+    
     <div class="filter-bar">
         <span>From</span>
         <input type="date" id="filterStart">
@@ -303,7 +477,8 @@
         <button id="filterBtn">Go</button>
         <button id="clearFilterBtn" style="background:#fff;color:#0066cc;border:1px solid #cfd8dc;">Clear</button>
     </div>
-    <div class="form-container" id="formContainer" style="display:none;">
+    
+    <div class="form-container" id="formContainer">
         <form id="transactionForm">
             <div class="form-row">
                 <input type="date" id="date" required>
@@ -311,10 +486,11 @@
                 <input type="text" id="description" placeholder="Description" required>
                 <input type="number" id="cashIn" placeholder="Cash In" min="0" step="0.01">
                 <input type="number" id="cashOut" placeholder="Cash Out" min="0" step="0.01">
+                <button type="submit">Add</button>
             </div>
-            <button type="submit">Add</button>
         </form>
     </div>
+    
     <div class="table-container">
         <table id="transactionsTable">
             <thead>
@@ -335,6 +511,7 @@
         </div>
     </div>
 </div>
+
 <script type="module">
     const firebaseConfig = {
         apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
@@ -513,7 +690,6 @@
             alert("Error adding transaction: " + err.message);
         }
         document.getElementById("transactionForm").reset();
-        renderTransactionsRealtime();
     });
 
     document.getElementById('hideCashInBtn').addEventListener('click', function(e) {
