@@ -554,7 +554,12 @@
             const productSelect = document.getElementById('productCode');
             productSelect.innerHTML = '<option value="">Select Product</option>';
             
-            inventory.forEach(item => {
+            // Sort inventory alphabetically by product name
+            const sortedInventory = [...inventory].sort((a, b) => {
+                return a.name.localeCompare(b.name);
+            });
+            
+            sortedInventory.forEach(item => {
                 const option = document.createElement('option');
                 option.value = item.code;
                 option.textContent = `${item.name} (${item.code}) - ZMW ${item.price.toFixed(2)} - Stock: ${item.stock}`;
