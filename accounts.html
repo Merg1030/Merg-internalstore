@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+        window.initializeApp = initializeApp;
+        window.getFirestore = getFirestore;
+        window.doc = doc;
+        window.getDoc = getDoc;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.onSnapshot = onSnapshot;
+        window.query = query;
+        window.where = where;
+        window.serverTimestamp = serverTimestamp;
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #ACB6E5 0%, #74ebd5 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            align-items: stretch;
+            justify-content: stretch;
+        }
+        .account-detail-card {
+            background: #fff;
+            padding: 36px 32px;
+            border-radius: 0;
+            box-shadow: none;
+            width: 100vw;
+            min-height: 100vh;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #0066cc;
+            margin-bottom: 16px;
+        }
+        .account-name {
+            font-size: 1.6rem;
+            color: #222;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 24px;
+            padding: 10px 24px;
+            background: linear-gradient(90deg, #0066cc 0%, #00c6ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.19s, transform 0.12s;
+        }
+        .back-btn:hover {
+            background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
+            transform: scale(1.04);
+        }
+        .not-found {
+            color: #888;
+            font-size: 1rem;
+            margin-top: 18px;
+        }
+        table {
+            width: 100%;
+            margin-top: 24px;
+            border-collapse: collapse;
+            font-size: 1rem;
+            background: #fff;
+        }
+        th, td {
+            padding: 14px 8px;
+            border: none;
+            text-align: left;
+        }
+        th {
+            background: #f2f9ff;
+            color: #0066cc;
+            font-weight: 600;
+        }
+        tr {
+            background: #f7fbff;
+            margin-bottom: 4px;
+        }
+        tr:nth-child(even) {
+            background: #fff;
+        }
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            justify-content: center;
+            width: 100%;
+        }
+        .form-row input {
+            padding: 10px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            flex: 1;
+            min-width: 100px;
+            max-width: 160px;
+        }
+        .form-row button {
+            padding: 10px 18px;
+            border: none;
+            background: linear-gradient(90deg, #0066cc 0%, #00c6ff 100%);
+            color: #fff;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.19s, transform 0.12s;
+        }
+        .form-row button:hover {
+            background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
+            transform: scale(1.04);
+        }
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #0066cc;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+            transition: color 0.16s;
+        }
+        .toggle-btn:hover {
+            color: #0099cc;
+        }
+        @media (max-width: 700px) {
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+            .account-detail-card {
+                padding: 10px 0;
+            }
+            th, td {
+                font-size: 0.92rem;
+                padding: 10px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="account-detail-card" id="accountDetail">
+        <h1>Account Details</h1>
+        <div class="account-name" id="accountName"></div>
+        <a href="index.html" class="back-btn">Back to Dashboard</a>
+        <div id="notFound" class="not-found"></div>
+        <button class="toggle-btn" id="toggleFormBtn">Add Transaction</button>
+        <form id="transactionForm" class="form-row" style="display:none;">
+            <input type="date" id="date" required>
+            <input type="text" id="reference" placeholder="Reference" required>
+            <input type="text" id="description" placeholder="Description" required>
+            <input type="number" id="cashIn" placeholder="Cash In" min="0" step="0.01">
+            <input type="number" id="cashOut" placeholder="Cash Out" min="0" step="0.01">
+            <button type="submit">Add</button>
+        </form>
+        <table id="transactionsTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Reference</th>
+                    <th>Description</th>
+                    <th>Cash In</th>
+                    <th>Cash Out</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+    <script type="module">
+        // Firestore config
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+            authDomain: "trismartstores.firebaseapp.com",
+            projectId: "trismartstores",
+            storageBucket: "trismartstores.appspot.com",
+            messagingSenderId: "416692703333",
+            appId: "1:416692703333:web:d4b60292621435c748f68c",
+            measurementId: "G-NJPQ7L3QWJ"
+        };
+        const app = window.initializeApp(firebaseConfig);
+        const db = window.getFirestore(app);
+
+        const branchId = localStorage.getItem('branchId');
+        if (!branchId) {
+            alert('Please select a branch from the dashboard first.');
+            window.location.href = 'dashboard.html';
+        }
+
+        function getAccountIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        async function showAccountDetails() {
+            const accountId = getAccountIdFromUrl();
+            const accountNameDiv = document.getElementById("accountName");
+            const notFoundDiv = document.getElementById("notFound");
+            if (!accountId) {
+                accountNameDiv.textContent = "";
+                notFoundDiv.textContent = "No account ID provided.";
+                document.getElementById("transactionForm").style.display = "none";
+                document.getElementById("toggleFormBtn").style.display = "none";
+                return;
+            }
+            const ref = window.doc(db, "accounts", accountId);
+            const docSnap = await window.getDoc(ref);
+            if (docSnap.exists()) {
+                const account = docSnap.data();
+                accountNameDiv.textContent = account.name;
+                notFoundDiv.textContent = "";
+            } else {
+                accountNameDiv.textContent = "";
+                notFoundDiv.textContent = "Account not found!";
+                document.getElementById("transactionForm").style.display = "none";
+                document.getElementById("toggleFormBtn").style.display = "none";
+            }
+        }
+
+        function renderTransactionsRealtime() {
+            const accountId = getAccountIdFromUrl();
+            const tableBody = document.getElementById("tableBody");
+            let balance = 0;
+            const q = window.query(
+                window.collection(db, "accounts", accountId, "transactions"),
+                window.where("branchId", "==", branchId)
+            );
+            window.onSnapshot(q, (snapshot) => {
+                tableBody.innerHTML = "";
+                let transactions = [];
+                snapshot.forEach(doc => {
+                    transactions.push(doc.data());
+                });
+                // Sort by date ascending
+                transactions.sort((a, b) => (a.date > b.date ? 1 : -1));
+                balance = 0;
+                transactions.forEach(tx => {
+                    balance += (parseFloat(tx.cashIn || 0) - parseFloat(tx.cashOut || 0));
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${tx.date}</td>
+                        <td>${tx.reference}</td>
+                        <td>${tx.description}</td>
+                        <td>${tx.cashIn ? Number(tx.cashIn).toFixed(2) : ''}</td>
+                        <td>${tx.cashOut ? Number(tx.cashOut).toFixed(2) : ''}</td>
+                        <td>${balance.toFixed(2)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            });
+        }
+
+        document.getElementById("transactionForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const accountId = getAccountIdFromUrl();
+            const date = document.getElementById("date").value;
+            const reference = document.getElementById("reference").value.trim();
+            const description = document.getElementById("description").value.trim();
+            const cashIn = document.getElementById("cashIn").value ? parseFloat(document.getElementById("cashIn").value) : 0;
+            const cashOut = document.getElementById("cashOut").value ? parseFloat(document.getElementById("cashOut").value) : 0;
+            if (!date || !reference || !description) return;
+            try {
+                await window.addDoc(window.collection(db, "accounts", accountId, "transactions"), {
+                    date,
+                    reference,
+                    description,
+                    cashIn,
+                    cashOut,
+                    branchId,
+                    created: window.serverTimestamp()
+                });
+            } catch (err) {
+                alert("Error adding transaction: " + err.message);
+            }
+            document.getElementById("transactionForm").reset();
+        });
+
+        // Toggle form visibility
+        document.getElementById("toggleFormBtn").addEventListener("click", function() {
+            const form = document.getElementById("transactionForm");
+            if (form.style.display === "none") {
+                form.style.display = "flex";
+                this.textContent = "Hide Transaction Form";
+            } else {
+                form.style.display = "none";
+                this.textContent = "Add Transaction";
+            }
+        });
+
+        showAccountDetails();
+        renderTransactionsRealtime();
+    </script>
+</body>
+</html>
