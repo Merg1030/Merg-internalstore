@@ -22,8 +22,8 @@
             --border: #35377a;
             --text-light: #e0e0e0;
             --text-fade: #b0b0b0;
-            --radius: 12px;
-            --shadow: 0 8px 32px #0004;
+            --radius: 10px;
+            --shadow: 0 4px 16px #0004;
         }
 
         * {
@@ -38,6 +38,7 @@
             width: 100%;
             background: var(--bg-dark);
             color: var(--text-light);
+            font-size: 14px;
         }
 
         body {
@@ -63,36 +64,36 @@
 
         h2 {
             text-align: center;
-            margin: 10px 0;
-            padding: 20px 0 10px 0;
-            font-size: 2rem;
+            margin: 8px 0;
+            padding: 15px 0 8px 0;
+            font-size: 1.4rem;
             font-weight: 700;
             color: var(--accent);
             width: 100%;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
 
         .header-info {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             width: 100vw;
-            padding: 0 15px;
+            padding: 0 12px;
         }
 
         .header-info-container {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
             width: 100%;
             margin: 0 auto;
         }
 
         .total-sales {
-            padding: 12px 20px;
+            padding: 10px 16px;
             background-color: var(--bg-light);
             border-radius: var(--radius);
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             text-align: center;
             border: 1px solid var(--border);
@@ -105,11 +106,11 @@
             color: #fff;
             border: none;
             border-radius: var(--radius);
-            padding: 12px 20px;
+            padding: 10px 16px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            box-shadow: 0 2px 8px #f8961e30;
+            box-shadow: 0 2px 6px #f8961e30;
             transition: all 0.2s;
         }
         .btn-warning:hover {
@@ -119,19 +120,19 @@
 
         .main-controls {
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
             width: 100vw;
             box-sizing: border-box;
-            padding: 0 15px;
+            padding: 0 12px;
             margin: 0 auto;
         }
 
         .control-group {
             flex: 1;
             background-color: var(--bg-light);
-            padding: 20px;
+            padding: 16px;
             border-radius: var(--radius);
             display: flex;
             flex-direction: column;
@@ -140,20 +141,20 @@
         }
 
         .control-group h3 {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: var(--accent);
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
         }
 
         input, select {
-            padding: 12px 15px;
+            padding: 10px 12px;
             background-color: var(--bg-lighter);
             color: var(--text-light);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            margin-bottom: 15px;
-            font-size: 1rem;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
             transition: all 0.2s;
         }
 
@@ -166,19 +167,19 @@
         button {
             color: #fff;
             border: none;
-            padding: 12px 20px;
+            padding: 10px 16px;
             cursor: pointer;
             border-radius: var(--radius);
             transition: all 0.2s;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9rem;
             width: 100%;
-            margin-top: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
         .btn-primary {
             background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
-            box-shadow: 0 2px 8px #4361ee30;
+            box-shadow: 0 2px 6px #4361ee30;
         }
         .btn-primary:hover {
             background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
@@ -186,7 +187,7 @@
         }
         .btn-danger {
             background: linear-gradient(90deg, var(--danger) 0%, #f7258570 100%);
-            box-shadow: 0 2px 8px #f7258530;
+            box-shadow: 0 2px 6px #f7258530;
         }
         .btn-danger:hover {
             background: linear-gradient(90deg, #f7258570 0%, var(--danger) 100%);
@@ -200,7 +201,7 @@
             flex-direction: column;
             background-color: var(--bg-light);
             border-radius: var(--radius);
-            padding: 15px;
+            padding: 12px;
             width: 100vw;
             box-sizing: border-box;
             margin: 0 auto;
@@ -211,8 +212,8 @@
         .table-container {
             overflow-y: auto;
             flex-grow: 1;
-            max-height: 500px;
-            margin-top: 15px;
+            max-height: 400px;
+            margin-top: 12px;
             width: 100%;
             border-radius: var(--radius);
         }
@@ -220,13 +221,13 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.85rem;
         }
 
         th, td {
-            padding: 15px;
+            padding: 10px 8px;
             text-align: left;
             border-bottom: 1px solid var(--border);
-            font-size: 1rem;
         }
 
         th {
@@ -235,6 +236,7 @@
             top: 0;
             font-weight: 600;
             color: var(--accent);
+            font-size: 0.9rem;
         }
 
         tbody tr {
@@ -257,11 +259,11 @@
 
         .date-filter {
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 16px;
             align-items: center;
             width: 100vw;
-            padding: 0 15px;
+            padding: 0 12px;
             box-sizing: border-box;
             margin: 0 auto;
         }
@@ -269,18 +271,21 @@
         .date-filter input {
             margin-bottom: 0;
             flex: 1;
-            max-width: 300px;
+            max-width: 250px;
+            font-size: 0.9rem;
+            padding: 10px;
         }
 
         .date-filter button {
             width: auto;
-            padding: 12px 25px;
+            padding: 10px 20px;
             margin-top: 0;
+            font-size: 0.9rem;
         }
 
         .sale-form {
             display: none;
-            margin-top: 15px;
+            margin-top: 12px;
             animation: fadeIn 0.3s ease-out;
         }
 
@@ -290,16 +295,18 @@
 
         .action-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .action-buttons button {
-            width: 300px;
+            width: 100%;
+            font-size: 0.9rem;
+            padding: 10px;
         }
 
         input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             accent-color: var(--primary);
         }
 
@@ -315,21 +322,22 @@
             position: absolute;
             left: 50%;
             top: 50%;
-            width: 20px;
-            height: 20px;
-            margin: -10px 0 0 -10px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
         }
         
         .status-message {
-            padding: 10px;
-            margin: 10px 0;
+            padding: 8px;
+            margin: 8px 0;
             border-radius: var(--radius);
             text-align: center;
             font-weight: 600;
+            font-size: 0.85rem;
         }
         
         .status-success {
@@ -349,41 +357,153 @@
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
+            from { opacity: 0; transform: translateY(-8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Mobile-first responsive design */
         @media (max-width: 1200px) {
-            h2 { font-size: 1.8rem; }
-            table { min-width: 550px; }
+            h2 { font-size: 1.3rem; }
+            table { min-width: 500px; }
         }
+        
         @media (max-width: 900px) {
             .main-controls { padding: 0 10px; }
             .data-container { padding: 10px; }
-            table { min-width: 410px; }
-            h2 { font-size: 1.6rem; }
-            th, td { font-size: 0.97rem; padding: 12px; }
+            table { min-width: 400px; }
+            h2 { font-size: 1.2rem; }
+            th, td { font-size: 0.82rem; padding: 8px 6px; }
         }
+        
         @media (max-width: 700px) {
-            .container, .data-container, .main-controls, .date-filter { width: 100vw; }
-            table { min-width: 350px; }
-            .main-controls { flex-direction: column; gap: 15px; }
-            .control-group { min-width: 100%; }
-            th, td { padding: 10px; font-size: 0.92rem; }
-            .date-filter { flex-direction: column; gap: 10px; }
-            .date-filter input { max-width: 100%; }
-            .header-info-container { flex-direction: column; width: 100%; gap: 10px; }
-            .btn-warning { width: 100%; }
-            h2 { font-size: 1.4rem; }
-            .action-buttons { flex-direction: column; }
+            html, body { font-size: 13px; }
+            
+            .container, .data-container, .main-controls, .date-filter { 
+                width: 100vw; 
+                padding: 0 10px;
+            }
+            
+            table { 
+                min-width: 320px; 
+                font-size: 0.8rem;
+            }
+            
+            .main-controls { 
+                flex-direction: column; 
+                gap: 10px; 
+            }
+            
+            .control-group { 
+                min-width: 100%; 
+                padding: 12px;
+            }
+            
+            th, td { 
+                padding: 8px 4px; 
+                font-size: 0.78rem; 
+            }
+            
+            .date-filter { 
+                flex-direction: column; 
+                gap: 8px; 
+            }
+            
+            .date-filter input { 
+                max-width: 100%; 
+                font-size: 0.9rem;
+            }
+            
+            .header-info-container { 
+                flex-direction: column; 
+                width: 100%; 
+                gap: 8px; 
+            }
+            
+            .btn-warning { 
+                width: 100%; 
+                font-size: 0.9rem;
+            }
+            
+            h2 { 
+                font-size: 1.1rem; 
+                padding: 12px 0 6px 0;
+            }
+            
+            .action-buttons { 
+                flex-direction: column; 
+                gap: 6px;
+            }
+            
+            .total-sales {
+                font-size: 0.9rem;
+                padding: 8px 12px;
+            }
         }
+        
         @media (max-width: 500px) {
-            .container, .data-container, .main-controls, .date-filter { width: 100vw; padding: 0 10px; }
+            html, body { font-size: 12px; }
+            
+            .container, .data-container, .main-controls, .date-filter { 
+                width: 100vw; 
+                padding: 0 8px; 
+            }
+            
             .sale-form { padding: 0; }
-            table { min-width: 240px; }
-            th, td { padding: 8px; font-size: 0.85rem; }
-            h2 { font-size: 1.2rem; padding-top: 15px; }
-            button, input, select { padding: 10px 12px; }
+            
+            table { 
+                min-width: 280px; 
+                font-size: 0.75rem;
+            }
+            
+            th, td { 
+                padding: 6px 3px; 
+                font-size: 0.75rem; 
+            }
+            
+            h2 { 
+                font-size: 1rem; 
+                padding-top: 10px; 
+                margin: 5px 0;
+            }
+            
+            button, input, select { 
+                padding: 8px 10px; 
+                font-size: 0.85rem;
+            }
+            
+            .control-group {
+                padding: 10px;
+            }
+            
+            .table-container {
+                max-height: 350px;
+            }
+            
+            th {
+                font-size: 0.8rem;
+                padding: 8px 4px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            html, body { font-size: 11px; }
+            
+            table { 
+                min-width: 240px; 
+                font-size: 0.7rem;
+            }
+            
+            th, td { 
+                padding: 5px 2px; 
+                font-size: 0.7rem; 
+            }
+            
+            h2 { font-size: 0.9rem; }
+            
+            button, input, select { 
+                padding: 6px 8px; 
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
@@ -442,12 +562,12 @@
                 <table id="salesTable">
                     <thead>
                         <tr>
-                            <th width="40px">Select</th>
+                            <th width="35px">Select</th>
                             <th>Date</th>
-                            <th>Product Code</th>
+                            <th>Code</th>
                             <th>Product Name</th>
                             <th>Price</th>
-                            <th>Quantity</th>
+                            <th>Qty</th>
                             <th>Total</th>
                         </tr>
                     </thead>
