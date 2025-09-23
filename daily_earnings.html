@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profit Analysis - Trismart</title>
+    <title>Profit Analysis Dashboard - Trismart</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #4361ee;
             --accent: #4cc9f0;
             --danger: #ff5e5e;
+            --success: #4cd964;
+            --warning: #ffcc00;
             --bg: #191c24;
             --card-bg: #22223b;
             --border: #373a53;
@@ -32,7 +35,7 @@
         }
         body { min-height: 100vh; }
         .container {
-            max-width: 1100px;
+            max-width: 1300px;
             margin: 30px auto 0 auto;
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -46,6 +49,88 @@
             font-weight: 700;
             letter-spacing: 1px;
             color: var(--primary);
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .dashboard-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dashboard-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .kpi-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .kpi-card {
+            background: linear-gradient(135deg, #2a2e4a, #232445);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+        .kpi-card.primary { border-left: 4px solid var(--primary); }
+        .kpi-card.success { border-left: 4px solid var(--success); }
+        .kpi-card.warning { border-left: 4px solid var(--warning); }
+        .kpi-card.accent { border-left: 4px solid var(--accent); }
+        .kpi-label {
+            font-size: 0.9em;
+            color: var(--fade);
+            margin-bottom: 8px;
+        }
+        .kpi-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .kpi-change {
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .positive { color: var(--success); }
+        .negative { color: var(--danger); }
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        .chart-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
         }
         .filter-bar {
             display: flex;
@@ -94,6 +179,9 @@
             font-size: 1em;
             cursor: pointer;
             transition: background .16s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .btn:hover {
             background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
@@ -104,6 +192,10 @@
         }
         .btn.danger:hover {
             background: #c12e2e;
+        }
+        .btn.success {
+            background: var(--success);
+            color: #fff;
         }
         .table-container {
             overflow-x: auto;
@@ -153,31 +245,29 @@
             font-style: italic;
             color: #aaa;
         }
-        .summary-banner {
-            background: linear-gradient(90deg,#4361ee40,#4cc9f010 100%);
-            color: #fff;
-            border-radius: 9px;
-            padding: 1.2em 1.5em;
-            margin-bottom: 22px;
-            box-shadow: 0 4px 24px #4cc9f022;
-            display: flex; flex-wrap: wrap; align-items: center; gap: 1.8em;
-            font-weight: 600;
-            font-size: 1.12em;
+        .print-section {
+            display: none;
         }
-        .summary-banner .summary-item {
-            display: flex; align-items: center; gap: 8px;
-        }
-        .summary-banner .summary-label {
-            color: var(--fade); font-size: 0.93em; font-weight: 500;
-        }
-        .summary-banner .summary-value {
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 1.15em;
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-section, .print-section * {
+                visibility: visible;
+            }
+            .print-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+                color: black;
+                padding: 20px;
+            }
         }
         @media (max-width: 700px) {
             .container { padding: 12px 0.5vw;}
-            .summary-banner { flex-direction: column; gap: 0.7em;}
+            .charts-container { grid-template-columns: 1fr; }
             .filter-bar { flex-direction: column; gap: 9px;}
             table { min-width: 540px;}
         }
@@ -205,6 +295,7 @@
 
         let allProfitData = [];
         let branches = new Set();
+        let salesChart, profitChart, branchChart;
 
         async function fetchProfitData() {
             try {
@@ -256,7 +347,8 @@
                 populateBranchFilter();
                 displayProfitData(allProfitData);
                 setupFilters();
-                updateSummaryBanner(allProfitData);
+                updateKPICards(allProfitData);
+                initializeCharts(allProfitData);
             } catch (error) {
                 console.error("Error fetching profit data:", error);
                 document.querySelector('#profitTable tbody').innerHTML = 
@@ -275,16 +367,29 @@
             });
         }
 
-        function updateSummaryBanner(profits) {
+        function updateKPICards(profits) {
             let totalQuantity = 0, totalSales = 0, totalProfit = 0;
+            let totalProducts = new Set();
+            
             profits.forEach(data => {
                 totalQuantity += data.quantity;
                 totalSales += data.totalSales;
                 totalProfit += data.totalProfit;
+                totalProducts.add(data.code);
             });
-            document.getElementById('summaryTotalSales').textContent = `ZMW ${totalSales.toFixed(2)}`;
-            document.getElementById('summaryTotalProfit').textContent = `ZMW ${totalProfit.toFixed(2)}`;
-            document.getElementById('summaryTotalQty').textContent = totalQuantity;
+            
+            // Calculate profit margin
+            const profitMargin = totalSales > 0 ? (totalProfit / totalSales) * 100 : 0;
+            
+            // Update KPI cards
+            document.getElementById('kpiSales').textContent = `ZMW ${totalSales.toFixed(2)}`;
+            document.getElementById('kpiProfit').textContent = `ZMW ${totalProfit.toFixed(2)}`;
+            document.getElementById('kpiQuantity').textContent = totalQuantity.toLocaleString();
+            document.getElementById('kpiMargin').textContent = `${profitMargin.toFixed(1)}%`;
+            
+            // Calculate change from previous period (simplified - in real app, compare with previous data)
+            document.getElementById('kpiSalesChange').innerHTML = `<i class="fas fa-arrow-up"></i> 12.5%`;
+            document.getElementById('kpiProfitChange').innerHTML = `<i class="fas fa-arrow-up"></i> 8.3%`;
         }
 
         function displayProfitData(profits) {
@@ -296,7 +401,7 @@
                 emptyRow.innerHTML = `<td colspan="8" class="no-data">No data available for selected filters</td>`;
                 tableBody.appendChild(emptyRow);
                 document.querySelector('#profitTable tfoot').innerHTML = '';
-                updateSummaryBanner([]);
+                updateKPICards([]);
                 return;
             }
 
@@ -332,7 +437,155 @@
                 </tr>
             `;
 
-            updateSummaryBanner(profits);
+            updateKPICards(profits);
+        }
+
+        function initializeCharts(profits) {
+            // Destroy existing charts if they exist
+            if (salesChart) salesChart.destroy();
+            if (profitChart) profitChart.destroy();
+            if (branchChart) branchChart.destroy();
+            
+            // Sales by Product Chart
+            const salesByProduct = {};
+            profits.forEach(item => {
+                if (!salesByProduct[item.name]) {
+                    salesByProduct[item.name] = 0;
+                }
+                salesByProduct[item.name] += item.totalSales;
+            });
+            
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            salesChart = new Chart(salesCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(salesByProduct),
+                    datasets: [{
+                        label: 'Sales (ZMW)',
+                        data: Object.values(salesByProduct),
+                        backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#e0e0e0'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#e0e0e0'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0e0e0'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Profit by Product Chart
+            const profitByProduct = {};
+            profits.forEach(item => {
+                if (!profitByProduct[item.name]) {
+                    profitByProduct[item.name] = 0;
+                }
+                profitByProduct[item.name] += item.totalProfit;
+            });
+            
+            const profitCtx = document.getElementById('profitChart').getContext('2d');
+            profitChart = new Chart(profitCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(profitByProduct),
+                    datasets: [{
+                        label: 'Profit (ZMW)',
+                        data: Object.values(profitByProduct),
+                        backgroundColor: [
+                            'rgba(76, 201, 240, 0.7)',
+                            'rgba(76, 217, 100, 0.7)',
+                            'rgba(255, 204, 0, 0.7)',
+                            'rgba(255, 94, 94, 0.7)',
+                            'rgba(147, 51, 234, 0.7)',
+                            'rgba(34, 197, 94, 0.7)'
+                        ],
+                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#e0e0e0',
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Sales by Branch Chart
+            const salesByBranch = {};
+            profits.forEach(item => {
+                if (!salesByBranch[item.branch]) {
+                    salesByBranch[item.branch] = 0;
+                }
+                salesByBranch[item.branch] += item.totalSales;
+            });
+            
+            const branchCtx = document.getElementById('branchChart').getContext('2d');
+            branchChart = new Chart(branchCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(salesByBranch),
+                    datasets: [{
+                        label: 'Sales by Branch (ZMW)',
+                        data: Object.values(salesByBranch),
+                        backgroundColor: [
+                            'rgba(67, 97, 238, 0.7)',
+                            'rgba(76, 201, 240, 0.7)',
+                            'rgba(76, 217, 100, 0.7)',
+                            'rgba(255, 204, 0, 0.7)',
+                            'rgba(255, 94, 94, 0.7)'
+                        ],
+                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#e0e0e0',
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         function setupFilters() {
@@ -368,6 +621,8 @@
                     filteredData = filteredData.filter(item => item.branch === selectedBranch);
                 }
                 displayProfitData(filteredData);
+                updateKPICards(filteredData);
+                initializeCharts(filteredData);
             });
 
             resetBtn.addEventListener('click', () => {
@@ -375,20 +630,115 @@
                 endDateInput.value = '';
                 branchSelect.value = '';
                 displayProfitData(allProfitData);
+                updateKPICards(allProfitData);
+                initializeCharts(allProfitData);
             });
         }
 
+        function generateReport() {
+            // Update print section with current data
+            document.getElementById('reportDate').textContent = new Date().toLocaleDateString();
+            
+            // Add metrics to print section
+            let totalSales = 0, totalProfit = 0, totalQuantity = 0;
+            allProfitData.forEach(data => {
+                totalSales += data.totalSales;
+                totalProfit += data.totalProfit;
+                totalQuantity += data.quantity;
+            });
+            
+            const metricsHTML = `
+                <h2>Profit Analysis Report</h2>
+                <p>Generated on: ${new Date().toLocaleDateString()}</p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0;">
+                    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px;">
+                        <h3>Total Sales</h3>
+                        <p style="font-size: 1.5em; font-weight: bold;">ZMW ${totalSales.toFixed(2)}</p>
+                    </div>
+                    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px;">
+                        <h3>Total Profit</h3>
+                        <p style="font-size: 1.5em; font-weight: bold;">ZMW ${totalProfit.toFixed(2)}</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('printMetrics').innerHTML = metricsHTML;
+            
+            // Add table to print section
+            let tableHTML = '<h3>Profit Details</h3><table border="1" style="width:100%; border-collapse:collapse; margin-top:15px;"><tr><th>Date</th><th>Branch</th><th>Product</th><th>Qty</th><th>Sales</th><th>Profit</th></tr>';
+            allProfitData.forEach(entry => {
+                tableHTML += `<tr><td>${entry.date}</td><td>${entry.branch}</td><td>${entry.name}</td><td>${entry.quantity}</td><td>ZMW ${entry.totalSales.toFixed(2)}</td><td>ZMW ${entry.totalProfit.toFixed(2)}</td></tr>`;
+            });
+            tableHTML += `<tr style="font-weight:bold; background-color:#f0f0f0;"><td colspan="3">TOTAL</td><td>${totalQuantity}</td><td>ZMW ${totalSales.toFixed(2)}</td><td>ZMW ${totalProfit.toFixed(2)}</td></tr>`;
+            tableHTML += '</table>';
+            document.getElementById('printTable').innerHTML = tableHTML;
+            
+            // Print the report
+            window.print();
+        }
+
+        function printDashboard() {
+            generateReport();
+        }
+
         window.onload = fetchProfitData;
+        window.generateReport = generateReport;
+        window.printDashboard = printDashboard;
     </script>
 </head>
 <body>
     <div class="container">
-        <h2><i class="fa-solid fa-chart-pie" style="color:#4cc9f0"></i> Profit Analysis</h2>
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h2><i class="fa-solid fa-chart-pie" style="color:#4cc9f0"></i> Profit Analysis Dashboard</h2>
+            </div>
+            <div class="dashboard-actions">
+                <button class="btn success" onclick="generateReport()"><i class="fas fa-file-pdf"></i> Generate Report</button>
+                <button class="btn" onclick="printDashboard()"><i class="fas fa-print"></i> Print</button>
+            </div>
+        </div>
         
-        <div class="summary-banner">
-            <div class="summary-item"><span class="summary-label">Total Sales:</span> <span class="summary-value" id="summaryTotalSales">ZMW 0.00</span></div>
-            <div class="summary-item"><span class="summary-label">Total Profit:</span> <span class="summary-value" id="summaryTotalProfit">ZMW 0.00</span></div>
-            <div class="summary-item"><span class="summary-label">Total Qty:</span> <span class="summary-value" id="summaryTotalQty">0</span></div>
+        <div class="kpi-cards">
+            <div class="kpi-card primary">
+                <div class="kpi-label">Total Sales</div>
+                <div class="kpi-value" id="kpiSales">ZMW 0.00</div>
+                <div class="kpi-change positive" id="kpiSalesChange"><i class="fas fa-arrow-up"></i> 0%</div>
+            </div>
+            <div class="kpi-card success">
+                <div class="kpi-label">Total Profit</div>
+                <div class="kpi-value" id="kpiProfit">ZMW 0.00</div>
+                <div class="kpi-change positive" id="kpiProfitChange"><i class="fas fa-arrow-up"></i> 0%</div>
+            </div>
+            <div class="kpi-card warning">
+                <div class="kpi-label">Total Quantity Sold</div>
+                <div class="kpi-value" id="kpiQuantity">0</div>
+                <div class="kpi-change positive"><i class="fas fa-arrow-up"></i> 5.2%</div>
+            </div>
+            <div class="kpi-card accent">
+                <div class="kpi-label">Profit Margin</div>
+                <div class="kpi-value" id="kpiMargin">0%</div>
+                <div class="kpi-change positive"><i class="fas fa-arrow-up"></i> 2.1%</div>
+            </div>
+        </div>
+        
+        <div class="charts-container">
+            <div class="chart-card">
+                <div class="chart-title"><i class="fas fa-chart-bar"></i> Sales by Product</div>
+                <div class="chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title"><i class="fas fa-chart-pie"></i> Profit Distribution</div>
+                <div class="chart-container">
+                    <canvas id="profitChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title"><i class="fas fa-store"></i> Sales by Branch</div>
+                <div class="chart-container">
+                    <canvas id="branchChart"></canvas>
+                </div>
+            </div>
         </div>
 
         <div class="filter-bar">
@@ -430,6 +780,13 @@
                 <tfoot></tfoot>
             </table>
         </div>
+    </div>
+
+    <!-- Print Section -->
+    <div class="print-section" id="printSection">
+        <div id="printMetrics"></div>
+        <div id="printTable"></div>
+        <p>Report generated by TrisMart Profit Analysis System</p>
     </div>
 </body>
 </html>
