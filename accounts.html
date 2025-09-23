@@ -25,49 +25,50 @@
             background: linear-gradient(135deg, #ACB6E5 0%, #74ebd5 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Arial, sans-serif;
-            display: flex;
-            align-items: stretch;
-            justify-content: stretch;
-            font-size: 13px;
+            width: 100vw;
         }
         .account-detail-card {
             background: #fff;
-            padding: 20px 15px;
+            padding: 12px 2vw;
             width: 100vw;
             min-height: 100vh;
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
+            max-width: 100vw;
+            box-sizing: border-box;
         }
         h1 {
             color: #0066cc;
-            margin-bottom: 12px;
-            font-size: 1.3rem;
+            margin-bottom: 8px;
+            font-size: 1.07rem;
+            word-break: break-word;
         }
         .account-name {
-            font-size: 1.2rem;
+            font-size: 1.04rem;
             color: #222;
-            margin-bottom: 18px;
+            margin-bottom: 11px;
             font-weight: 700;
+            word-break: break-word;
         }
         .back-btn-wrapper {
             position: relative;
             display: inline-block;
-            margin-bottom: 18px;
+            margin-bottom: 12px;
         }
         .back-btn {
             display: inline-block;
-            padding: 8px 18px;
+            padding: 6px 13px;
             background: linear-gradient(90deg, #0066cc 0%, #00c6ff 100%);
             color: #fff;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: background 0.19s, transform 0.12s;
-            font-size: 0.9rem;
+            font-size: 0.78rem;
             position: relative;
             z-index: 1;
         }
@@ -79,21 +80,22 @@
             position: absolute;
             left: 100%;
             top: 0;
-            margin-left: 12px;
+            margin-left: 5px;
             background: #f2f9ff;
             box-shadow: 0 2px 12px #0002;
             border-radius: 7px;
-            padding: 8px 12px;
+            padding: 5px 8px;
             display: none;
             flex-direction: column;
-            gap: 8px;
-            min-width: 120px;
+            gap: 6px;
+            min-width: 75px;
             z-index: 2;
             align-items: flex-start;
             border: 1px solid #e0e7ef;
-            font-size: 0.95rem;
+            font-size: 0.76rem;
         }
-        .back-btn-wrapper:hover .quick-hide-menu {
+        .back-btn-wrapper:hover .quick-hide-menu,
+        .quick-hide-menu:focus-within {
             display: flex;
         }
         .quick-hide-btn {
@@ -107,6 +109,7 @@
             width: 100%;
             border-radius: 5px;
             transition: background 0.15s, color 0.15s;
+            font-size: 0.77rem;
         }
         .quick-hide-btn:hover {
             background: #eaf7ff;
@@ -114,32 +117,73 @@
         }
         .not-found {
             color: #888;
-            font-size: 0.9rem;
-            margin-top: 14px;
+            font-size: 0.75rem;
+            margin-top: 8px;
+        }
+        .filter-bar {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            margin-top: 2px;
+            font-size: 0.76rem;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .filter-bar input[type="date"] {
+            padding: 2px 2px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            border: 1px solid #cfd8dc;
+            background: #f8f9fa;
+            width: 88px;
+            min-width: 60px;
+            max-width: 120px;
+        }
+        .filter-bar button {
+            padding: 2px 7px;
+            border-radius: 4px;
+            border: none;
+            background: linear-gradient(90deg, #0066cc 60%, #00c6ff 100%);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.76rem;
+            cursor: pointer;
+            transition: background 0.13s;
+        }
+        .filter-bar button:hover {
+            background: linear-gradient(90deg, #0099cc 0%, #005bb5 100%);
         }
         .table-container {
-            width: 100%;
-            margin-top: 18px;
+            width: 100vw;
+            max-width: 100vw;
+            margin-top: 5px;
             background: #fff;
-            border-radius: 5px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
+            font-size: 0.76rem;
+            min-width: 480px;
         }
         th, td {
-            padding: 10px 6px;
+            padding: 6px 2px;
             border: none;
             text-align: left;
+            min-width: 70px;
+            word-break: break-word;
         }
         th {
             background: #f2f9ff;
             color: #0066cc;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.76rem;
+            position: sticky;
+            top: 0;
         }
         tr {
             background: #f7fbff;
@@ -150,51 +194,51 @@
         .table-footer {
             border-top: 2px solid #000;
             background: #f8f9fa;
-            padding: 12px 6px;
+            padding: 5px 2px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.76rem;
         }
         .running-balance {
             color: #0066cc;
         }
         .form-container {
             width: 100%;
-            margin: 15px 0;
-            padding: 15px;
+            margin: 7px 0;
+            padding: 7px 1px;
             background: #f8f9fa;
-            border-radius: 6px;
+            border-radius: 4px;
             border-top: 2px solid #000;
         }
         .form-row {
             display: flex;
-            gap: 10px;
+            gap: 5px;
             justify-content: center;
             width: 100%;
             flex-wrap: wrap;
         }
         .form-row input {
-            padding: 8px;
-            border-radius: 4px;
+            padding: 3px;
+            border-radius: 3px;
             border: 1px solid #ccc;
-            font-size: 0.85rem;
+            font-size: 0.74rem;
             flex: 1;
-            min-width: 80px;
-            max-width: 120px;
+            min-width: 44px;
+            max-width: 70px;
         }
         .form-row button {
-            padding: 8px 14px;
+            padding: 5px 10px;
             border: none;
             background: linear-gradient(90deg, #0066cc 0%, #00c6ff 100%);
             color: #fff;
-            border-radius: 4px;
+            border-radius: 3px;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.19s, transform 0.12s;
-            font-size: 0.85rem;
-            min-width: 80px;
+            font-size: 0.73rem;
+            min-width: 53px;
         }
         .form-row button:hover {
             background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
@@ -204,245 +248,312 @@
             background: none;
             border: none;
             color: #0066cc;
-            font-size: 0.95rem;
-            margin-bottom: 10px;
+            font-size: 0.75rem;
+            margin-bottom: 7px;
             cursor: pointer;
             font-weight: 600;
             text-decoration: underline;
             transition: color 0.16s;
-            padding: 5px 10px;
+            padding: 3px 7px;
         }
         .toggle-btn:hover {
             color: #0099cc;
         }
         @media (max-width: 700px) {
-            body { font-size: 12px; }
-            .account-detail-card { padding: 15px 10px; }
-            h1 { font-size: 1.1rem; margin-bottom: 8px; }
-            .account-name { font-size: 1rem; margin-bottom: 12px; }
-            .form-row { flex-direction: column; gap: 8px; align-items: stretch; }
-            .form-row input { max-width: 100%; font-size: 0.8rem; padding: 6px; }
-            th, td { font-size: 0.78rem; padding: 8px 4px; }
-            th { font-size: 0.82rem; }
-            .table-footer { padding: 8px 4px; font-size: 0.82rem; }
-            .back-btn { padding: 6px 14px; font-size: 0.85rem; }
-            .quick-hide-menu { left: auto; right: 0; top: 110%; min-width: 90px; }
+            body { font-size: 11px; }
+            .account-detail-card { padding: 3px 0; max-width: 100vw; }
+            h1 { font-size: 0.95rem; margin-bottom: 5px; }
+            .account-name { font-size: 0.95rem; margin-bottom: 7px; }
+            .form-row { flex-direction: column; gap: 4px; align-items: stretch; }
+            .form-row input { max-width: 98vw; font-size: 0.71rem; padding: 3px; }
+            th, td { font-size: 0.71rem; padding: 5px 1px; min-width: 55px; }
+            th { font-size: 0.72rem; }
+            .table-footer { padding: 4px 1px; font-size: 0.72rem; }
+            .back-btn { padding: 5px 7px; font-size: 0.71rem; }
+            .quick-hide-menu { left: auto; right: 0; top: 110%; min-width: 60px; font-size: 0.67rem; }
         }
         @media (max-width: 400px) {
-            body { font-size: 11px; }
-            th, td { font-size: 0.72rem; padding: 6px 3px; }
-            th { font-size: 0.76rem; }
-            .table-footer { font-size: 0.76rem; padding: 6px 3px; }
-            h1 { font-size: 1rem; }
-            .account-name { font-size: 0.9rem; }
+            body { font-size: 9px; }
+            th, td { font-size: 0.67rem; padding: 4px 1px; min-width: 45px; }
+            th { font-size: 0.69rem; }
+            .table-footer { font-size: 0.69rem; padding: 3px 1px; }
+            h1 { font-size: 0.75rem; }
+            .account-name { font-size: 0.74rem; }
         }
     </style>
 </head>
 <body>
-    <div class="account-detail-card" id="accountDetail">
-        <h1>Account Details</h1>
-        <div class="account-name" id="accountName"></div>
-        <div class="back-btn-wrapper" id="backBtnWrapper">
-            <a href="maindash.html" class="back-btn" id="backBtn">Back to Dashboard</a>
-            <div class="quick-hide-menu" id="quickHideMenu">
-                <button class="quick-hide-btn" id="hideCashInBtn">Hide Cash In</button>
-                <button class="quick-hide-btn" id="hideCashOutBtn">Hide Cash Out</button>
-            </div>
-        </div>
-        <div id="notFound" class="not-found"></div>
-        <button class="toggle-btn" id="toggleFormBtn">Add Transaction</button>
-        <div class="form-container" id="formContainer" style="display:none;">
-            <form id="transactionForm">
-                <div class="form-row">
-                    <input type="date" id="date" required>
-                    <input type="text" id="reference" placeholder="Reference" required>
-                    <input type="text" id="description" placeholder="Description" required>
-                    <input type="number" id="cashIn" placeholder="Cash In" min="0" step="0.01">
-                    <input type="number" id="cashOut" placeholder="Cash Out" min="0" step="0.01">
-                </div>
-                <button type="submit">Add</button>
-            </form>
-        </div>
-        <div class="table-container">
-            <table id="transactionsTable">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Reference</th>
-                        <th>Description</th>
-                        <th id="cashInHeader">Cash In</th>
-                        <th id="cashOutHeader">Cash Out</th>
-                        <th>Balance</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
-            <div class="table-footer">
-                <span class="running-balance-label">Running Balance</span>
-                <span class="running-balance" id="currentBalance">0.00</span>
-            </div>
+<div class="account-detail-card" id="accountDetail">
+    <h1>Account Details</h1>
+    <div class="account-name" id="accountName"></div>
+    <div class="back-btn-wrapper" id="backBtnWrapper">
+        <a href="maindash.html" class="back-btn" id="backBtn">Back to Dashboard</a>
+        <div class="quick-hide-menu" id="quickHideMenu">
+            <button class="quick-hide-btn" id="hideCashInBtn">Hide Cash In</button>
+            <button class="quick-hide-btn" id="hideCashOutBtn">Hide Cash Out</button>
         </div>
     </div>
-    <script type="module">
-        const firebaseConfig = {
-            apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
-            authDomain: "trismartstores.firebaseapp.com",
-            projectId: "trismartstores",
-            storageBucket: "trismartstores.appspot.com",
-            messagingSenderId: "416692703333",
-            appId: "1:416692703333:web:d4b60292621435c748f68c",
-            measurementId: "G-NJPQ7L3QWJ"
-        };
-        const app = window.initializeApp(firebaseConfig);
-        const db = window.getFirestore(app);
+    <div id="notFound" class="not-found"></div>
+    <button class="toggle-btn" id="toggleFormBtn">Add Transaction</button>
+    <div class="filter-bar">
+        <span>From</span>
+        <input type="date" id="filterStart">
+        <span>To</span>
+        <input type="date" id="filterEnd">
+        <button id="filterBtn">Go</button>
+        <button id="clearFilterBtn" style="background:#fff;color:#0066cc;border:1px solid #cfd8dc;">Clear</button>
+    </div>
+    <div class="form-container" id="formContainer" style="display:none;">
+        <form id="transactionForm">
+            <div class="form-row">
+                <input type="date" id="date" required>
+                <input type="text" id="reference" placeholder="Reference" required>
+                <input type="text" id="description" placeholder="Description" required>
+                <input type="number" id="cashIn" placeholder="Cash In" min="0" step="0.01">
+                <input type="number" id="cashOut" placeholder="Cash Out" min="0" step="0.01">
+            </div>
+            <button type="submit">Add</button>
+        </form>
+    </div>
+    <div class="table-container">
+        <table id="transactionsTable">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Reference</th>
+                <th>Description</th>
+                <th id="cashInHeader">Cash In</th>
+                <th id="cashOutHeader">Cash Out</th>
+                <th>Balance</th>
+            </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+        <div class="table-footer">
+            <span class="running-balance-label">Running Balance</span>
+            <span class="running-balance" id="currentBalance">0.00</span>
+        </div>
+    </div>
+</div>
+<script type="module">
+    const firebaseConfig = {
+        apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+        authDomain: "trismartstores.firebaseapp.com",
+        projectId: "trismartstores",
+        storageBucket: "trismartstores.appspot.com",
+        messagingSenderId: "416692703333",
+        appId: "1:416692703333:web:d4b60292621435c748f68c",
+        measurementId: "G-NJPQ7L3QWJ"
+    };
+    const app = window.initializeApp(firebaseConfig);
+    const db = window.getFirestore(app);
 
-        const branchId = localStorage.getItem('branchId');
-        if (!branchId) {
-            alert('Please select a branch from the dashboard first.');
-            window.location.href = 'dashboard.html';
+    const branchId = localStorage.getItem('branchId');
+    if (!branchId) {
+        alert('Please select a branch from the dashboard first.');
+        window.location.href = 'dashboard.html';
+    }
+
+    function getAccountIdFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('id');
+    }
+    const accountId = getAccountIdFromUrl();
+
+    // Persistent hide states (per account)
+    function getHideState() {
+        const state = localStorage.getItem("trismart-hide-state-" + accountId);
+        if (!state) return { hideCashIn: false, hideCashOut: false };
+        try {
+            return JSON.parse(state);
+        } catch {
+            return { hideCashIn: false, hideCashOut: false };
         }
+    }
+    function setHideState(hideCashIn, hideCashOut) {
+        localStorage.setItem(
+            "trismart-hide-state-" + accountId,
+            JSON.stringify({ hideCashIn, hideCashOut })
+        );
+    }
+    let { hideCashIn, hideCashOut } = getHideState();
 
-        // Hide state
-        let hideCashIn = false;
-        let hideCashOut = false;
-
-        function getAccountIdFromUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('id');
+    // Persistent filter state (per account)
+    function getFilterState() {
+        const state = localStorage.getItem("trismart-filter-state-" + accountId);
+        if (!state) return { filterStart: "", filterEnd: "" };
+        try {
+            return JSON.parse(state);
+        } catch {
+            return { filterStart: "", filterEnd: "" };
         }
+    }
+    function setFilterState(filterStart, filterEnd) {
+        localStorage.setItem(
+            "trismart-filter-state-" + accountId,
+            JSON.stringify({ filterStart, filterEnd })
+        );
+    }
+    let { filterStart, filterEnd } = getFilterState();
 
-        async function showAccountDetails() {
-            const accountId = getAccountIdFromUrl();
-            const accountNameDiv = document.getElementById("accountName");
-            const notFoundDiv = document.getElementById("notFound");
-            if (!accountId) {
-                accountNameDiv.textContent = "";
-                notFoundDiv.textContent = "No account ID provided.";
-                document.getElementById("formContainer").style.display = "none";
-                document.getElementById("toggleFormBtn").style.display = "none";
-                return;
-            }
-            const ref = window.doc(db, "accounts", accountId);
-            const docSnap = await window.getDoc(ref);
-            if (docSnap.exists()) {
-                const account = docSnap.data();
-                accountNameDiv.textContent = account.name;
-                notFoundDiv.textContent = "";
-                updateFormVisibility();
-                renderTransactionsRealtime();
-            } else {
-                accountNameDiv.textContent = "";
-                notFoundDiv.textContent = "Account not found!";
-                document.getElementById("formContainer").style.display = "none";
-                document.getElementById("toggleFormBtn").style.display = "none";
-            }
+    async function showAccountDetails() {
+        const accountNameDiv = document.getElementById("accountName");
+        const notFoundDiv = document.getElementById("notFound");
+        if (!accountId) {
+            accountNameDiv.textContent = "";
+            notFoundDiv.textContent = "No account ID provided.";
+            document.getElementById("formContainer").style.display = "none";
+            document.getElementById("toggleFormBtn").style.display = "none";
+            return;
         }
-
-        function updateFormVisibility() {
-            const cashInInput = document.getElementById("cashIn");
-            const cashOutInput = document.getElementById("cashOut");
-            cashInInput.style.display = hideCashIn ? "none" : "";
-            cashOutInput.style.display = hideCashOut ? "none" : "";
+        const ref = window.doc(db, "accounts", accountId);
+        const docSnap = await window.getDoc(ref);
+        if (docSnap.exists()) {
+            const account = docSnap.data();
+            accountNameDiv.textContent = account.name;
+            notFoundDiv.textContent = "";
+            updateFormVisibility();
+            renderTransactionsRealtime();
+        } else {
+            accountNameDiv.textContent = "";
+            notFoundDiv.textContent = "Account not found!";
+            document.getElementById("formContainer").style.display = "none";
+            document.getElementById("toggleFormBtn").style.display = "none";
         }
+    }
 
-        function renderTransactionsRealtime() {
-            const accountId = getAccountIdFromUrl();
-            const tableBody = document.getElementById("tableBody");
-            const currentBalanceSpan = document.getElementById("currentBalance");
-            let balance = 0;
-            const q = window.query(
-                window.collection(db, "accounts", accountId, "transactions"),
-                window.where("branchId", "==", branchId)
-            );
-            window.onSnapshot(q, (snapshot) => {
-                tableBody.innerHTML = "";
-                let transactions = [];
-                snapshot.forEach(doc => {
-                    transactions.push(doc.data());
-                });
-                transactions.sort((a, b) => (a.date > b.date ? 1 : -1));
-                balance = 0;
-                transactions.forEach(tx => {
-                    balance += (parseFloat(tx.cashIn || 0) - parseFloat(tx.cashOut || 0));
-                    let row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${tx.date}</td>
-                        <td>${tx.reference}</td>
-                        <td>${tx.description}</td>
-                        <td style="display:${hideCashIn ? 'none' : ''}">${hideCashIn ? '' : (tx.cashIn ? Number(tx.cashIn).toFixed(2) : '')}</td>
-                        <td style="display:${hideCashOut ? 'none' : ''}">${hideCashOut ? '' : (tx.cashOut ? Number(tx.cashOut).toFixed(2) : '')}</td>
-                        <td>${balance.toFixed(2)}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-                document.getElementById("cashInHeader").style.display = hideCashIn ? "none" : "";
-                document.getElementById("cashOutHeader").style.display = hideCashOut ? "none" : "";
-                currentBalanceSpan.textContent = balance.toFixed(2);
+    function updateFormVisibility() {
+        const cashInInput = document.getElementById("cashIn");
+        const cashOutInput = document.getElementById("cashOut");
+        cashInInput.style.display = hideCashIn ? "none" : "";
+        cashOutInput.style.display = hideCashOut ? "none" : "";
+        document.getElementById("hideCashInBtn").textContent = hideCashIn ? "Show Cash In" : "Hide Cash In";
+        document.getElementById("hideCashOutBtn").textContent = hideCashOut ? "Show Cash Out" : "Hide Cash Out";
+    }
+
+    // Render table and filter by date
+    function renderTransactionsRealtime() {
+        const tableBody = document.getElementById("tableBody");
+        const currentBalanceSpan = document.getElementById("currentBalance");
+        let balance = 0;
+        const q = window.query(
+            window.collection(db, "accounts", accountId, "transactions"),
+            window.where("branchId", "==", branchId)
+        );
+        window.onSnapshot(q, (snapshot) => {
+            tableBody.innerHTML = "";
+            let transactions = [];
+            snapshot.forEach(doc => {
+                transactions.push(doc.data());
             });
+            transactions.sort((a, b) => (a.date > b.date ? 1 : -1));
+
+            // Filter by date
+            let fs = filterStart, fe = filterEnd;
+            if (fs && fe) {
+                transactions = transactions.filter(t =>
+                    t.date >= fs && t.date <= fe
+                );
+            } else if (fs) {
+                transactions = transactions.filter(t => t.date >= fs);
+            } else if (fe) {
+                transactions = transactions.filter(t => t.date <= fe);
+            }
+
+            balance = 0;
+            transactions.forEach(tx => {
+                balance += (parseFloat(tx.cashIn || 0) - parseFloat(tx.cashOut || 0));
+                let row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${tx.date}</td>
+                    <td>${tx.reference}</td>
+                    <td>${tx.description}</td>
+                    <td style="display:${hideCashIn ? 'none' : ''}">${hideCashIn ? '' : (tx.cashIn ? Number(tx.cashIn).toFixed(2) : '')}</td>
+                    <td style="display:${hideCashOut ? 'none' : ''}">${hideCashOut ? '' : (tx.cashOut ? Number(tx.cashOut).toFixed(2) : '')}</td>
+                    <td>${balance.toFixed(2)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            document.getElementById("cashInHeader").style.display = hideCashIn ? "none" : "";
+            document.getElementById("cashOutHeader").style.display = hideCashOut ? "none" : "";
+            currentBalanceSpan.textContent = balance.toFixed(2);
+        });
+    }
+
+    document.getElementById("toggleFormBtn").addEventListener("click", function() {
+        const formContainer = document.getElementById("formContainer");
+        if (formContainer.style.display === "none") {
+            formContainer.style.display = "block";
+            this.textContent = "Hide Transaction Form";
+        } else {
+            formContainer.style.display = "none";
+            this.textContent = "Add Transaction";
         }
+    });
 
-        // Toggle form visibility
-        document.getElementById("toggleFormBtn").addEventListener("click", function() {
-            const formContainer = document.getElementById("formContainer");
-            if (formContainer.style.display === "none") {
-                formContainer.style.display = "block";
-                this.textContent = "Hide Transaction Form";
-            } else {
-                formContainer.style.display = "none";
-                this.textContent = "Add Transaction";
-            }
-        });
+    document.getElementById("transactionForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const date = document.getElementById("date").value;
+        const reference = document.getElementById("reference").value.trim();
+        const description = document.getElementById("description").value.trim();
+        const cashIn = hideCashIn ? 0 : (document.getElementById("cashIn").value ? parseFloat(document.getElementById("cashIn").value) : 0);
+        const cashOut = hideCashOut ? 0 : (document.getElementById("cashOut").value ? parseFloat(document.getElementById("cashOut").value) : 0);
+        if (!date || !reference || !description) return;
+        try {
+            await window.addDoc(window.collection(db, "accounts", accountId, "transactions"), {
+                date,
+                reference,
+                description,
+                cashIn,
+                cashOut,
+                branchId,
+                created: window.serverTimestamp()
+            });
+        } catch (err) {
+            alert("Error adding transaction: " + err.message);
+        }
+        document.getElementById("transactionForm").reset();
+        renderTransactionsRealtime();
+    });
 
-        document.getElementById("transactionForm").addEventListener("submit", async function(e) {
-            e.preventDefault();
-            const accountId = getAccountIdFromUrl();
-            const date = document.getElementById("date").value;
-            const reference = document.getElementById("reference").value.trim();
-            const description = document.getElementById("description").value.trim();
-            const cashIn = hideCashIn ? 0 : (document.getElementById("cashIn").value ? parseFloat(document.getElementById("cashIn").value) : 0);
-            const cashOut = hideCashOut ? 0 : (document.getElementById("cashOut").value ? parseFloat(document.getElementById("cashOut").value) : 0);
-            if (!date || !reference || !description) return;
-            try {
-                await window.addDoc(window.collection(db, "accounts", accountId, "transactions"), {
-                    date,
-                    reference,
-                    description,
-                    cashIn,
-                    cashOut,
-                    branchId,
-                    created: window.serverTimestamp()
-                });
-            } catch (err) {
-                alert("Error adding transaction: " + err.message);
-            }
-            document.getElementById("transactionForm").reset();
-            renderTransactionsRealtime();
-        });
+    document.getElementById('hideCashInBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        hideCashIn = !hideCashIn;
+        setHideState(hideCashIn, hideCashOut);
+        updateFormVisibility();
+        renderTransactionsRealtime();
+    });
+    document.getElementById('hideCashOutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        hideCashOut = !hideCashOut;
+        setHideState(hideCashIn, hideCashOut);
+        updateFormVisibility();
+        renderTransactionsRealtime();
+    });
 
-        // Hide/show logic for Cash In/Out
-        document.getElementById('hideCashInBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            hideCashIn = !hideCashIn;
-            this.textContent = hideCashIn ? "Show Cash In" : "Hide Cash In";
-            updateFormVisibility();
-            renderTransactionsRealtime();
-        });
-        document.getElementById('hideCashOutBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            hideCashOut = !hideCashOut;
-            this.textContent = hideCashOut ? "Show Cash Out" : "Hide Cash Out";
-            updateFormVisibility();
-            renderTransactionsRealtime();
-        });
+    // Date filter logic
+    document.getElementById('filterBtn').addEventListener('click', function() {
+        filterStart = document.getElementById('filterStart').value;
+        filterEnd = document.getElementById('filterEnd').value;
+        setFilterState(filterStart, filterEnd);
+        renderTransactionsRealtime();
+    });
 
-        // Initial load
+    document.getElementById('clearFilterBtn').addEventListener('click', function() {
+        filterStart = "";
+        filterEnd = "";
+        document.getElementById('filterStart').value = "";
+        document.getElementById('filterEnd').value = "";
+        setFilterState(filterStart, filterEnd);
+        renderTransactionsRealtime();
+    });
+
+    window.addEventListener("DOMContentLoaded", () => {
+        // Restore filter state from localstorage
+        document.getElementById('filterStart').value = filterStart;
+        document.getElementById('filterEnd').value = filterEnd;
         showAccountDetails();
-
-        // Back button click (navigate only if directly clicked, not when clicking quick-hide-menu)
-        document.getElementById('backBtn').addEventListener('click', function(e) {
-            // Always allow navigation (native behavior)
-            // No change needed, quick-hide-menu won't interfere
-        });
-    </script>
+    });
+</script>
 </body>
 </html>
