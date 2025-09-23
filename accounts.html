@@ -20,18 +20,25 @@
         window.serverTimestamp = serverTimestamp;
     </script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             background: linear-gradient(135deg, #ACB6E5 0%, #74ebd5 100%);
             min-height: 100vh;
-            margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
             display: flex;
             align-items: stretch;
             justify-content: stretch;
+            font-size: 13px;
         }
+        
         .account-detail-card {
             background: #fff;
-            padding: 36px 32px;
+            padding: 20px 15px;
             border-radius: 0;
             box-shadow: none;
             width: 100vw;
@@ -41,119 +48,235 @@
             flex-direction: column;
             align-items: center;
         }
+        
         h1 {
             color: #0066cc;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
         }
+        
         .account-name {
-            font-size: 1.6rem;
+            font-size: 1.2rem;
             color: #222;
-            margin-bottom: 24px;
+            margin-bottom: 18px;
             font-weight: 700;
         }
+        
         .back-btn {
             display: inline-block;
-            margin-bottom: 24px;
-            padding: 10px 24px;
+            margin-bottom: 18px;
+            padding: 8px 18px;
             background: linear-gradient(90deg, #0066cc 0%, #00c6ff 100%);
             color: #fff;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: background 0.19s, transform 0.12s;
+            font-size: 0.9rem;
         }
+        
         .back-btn:hover {
             background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
             transform: scale(1.04);
         }
+        
         .not-found {
             color: #888;
-            font-size: 1rem;
-            margin-top: 18px;
+            font-size: 0.9rem;
+            margin-top: 14px;
         }
+        
+        .table-container {
+            width: 100%;
+            margin-top: 18px;
+            background: #fff;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
         table {
             width: 100%;
-            margin-top: 24px;
             border-collapse: collapse;
-            font-size: 1rem;
-            background: #fff;
+            font-size: 0.85rem;
         }
+        
         th, td {
-            padding: 14px 8px;
+            padding: 10px 6px;
             border: none;
             text-align: left;
         }
+        
         th {
             background: #f2f9ff;
             color: #0066cc;
             font-weight: 600;
+            font-size: 0.9rem;
         }
+        
         tr {
             background: #f7fbff;
-            margin-bottom: 4px;
         }
+        
         tr:nth-child(even) {
             background: #fff;
         }
+        
+        .table-footer {
+            border-top: 2px solid #000;
+            background: #f8f9fa;
+            padding: 12px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .running-balance {
+            color: #0066cc;
+        }
+        
+        .form-container {
+            width: 100%;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-top: 2px solid #000;
+        }
+        
         .form-row {
             display: flex;
-            gap: 16px;
-            margin-top: 18px;
-            margin-bottom: 10px;
+            gap: 10px;
             justify-content: center;
             width: 100%;
+            flex-wrap: wrap;
         }
+        
         .form-row input {
-            padding: 10px 10px;
-            border-radius: 5px;
+            padding: 8px;
+            border-radius: 4px;
             border: 1px solid #ccc;
-            font-size: 1rem;
+            font-size: 0.85rem;
             flex: 1;
-            min-width: 100px;
-            max-width: 160px;
+            min-width: 80px;
+            max-width: 120px;
         }
+        
         .form-row button {
-            padding: 10px 18px;
+            padding: 8px 14px;
             border: none;
             background: linear-gradient(90deg, #0066cc 0%, #00c6ff 100%);
             color: #fff;
-            border-radius: 6px;
+            border-radius: 4px;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.19s, transform 0.12s;
+            font-size: 0.85rem;
+            min-width: 80px;
         }
+        
         .form-row button:hover {
             background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
             transform: scale(1.04);
         }
+        
         .toggle-btn {
             background: none;
             border: none;
             color: #0066cc;
-            font-size: 1.1rem;
-            margin-bottom: 12px;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
             cursor: pointer;
             font-weight: 600;
             text-decoration: underline;
             transition: color 0.16s;
+            padding: 5px 10px;
         }
+        
         .toggle-btn:hover {
             color: #0099cc;
         }
+
         @media (max-width: 700px) {
+            body {
+                font-size: 12px;
+            }
+            
+            .account-detail-card {
+                padding: 15px 10px;
+            }
+            
+            h1 {
+                font-size: 1.1rem;
+                margin-bottom: 8px;
+            }
+            
+            .account-name {
+                font-size: 1rem;
+                margin-bottom: 12px;
+            }
+            
             .form-row {
                 flex-direction: column;
-                gap: 10px;
+                gap: 8px;
                 align-items: stretch;
             }
-            .account-detail-card {
-                padding: 10px 0;
+            
+            .form-row input {
+                max-width: 100%;
+                font-size: 0.8rem;
+                padding: 6px;
             }
+            
             th, td {
-                font-size: 0.92rem;
-                padding: 10px 4px;
+                font-size: 0.78rem;
+                padding: 8px 4px;
+            }
+            
+            th {
+                font-size: 0.82rem;
+            }
+            
+            .table-footer {
+                padding: 8px 4px;
+                font-size: 0.82rem;
+            }
+            
+            .back-btn {
+                padding: 6px 14px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            body {
+                font-size: 11px;
+            }
+            
+            th, td {
+                font-size: 0.72rem;
+                padding: 6px 3px;
+            }
+            
+            th {
+                font-size: 0.76rem;
+            }
+            
+            .table-footer {
+                font-size: 0.76rem;
+                padding: 6px 3px;
+            }
+            
+            h1 {
+                font-size: 1rem;
+            }
+            
+            .account-name {
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -164,28 +287,39 @@
         <div class="account-name" id="accountName"></div>
         <a href="maindash.html" class="back-btn">Back to Dashboard</a>
         <div id="notFound" class="not-found"></div>
+        
         <button class="toggle-btn" id="toggleFormBtn">Add Transaction</button>
-        <form id="transactionForm" class="form-row" style="display:none;">
-            <input type="date" id="date" required>
-            <input type="text" id="reference" placeholder="Reference" required>
-            <input type="text" id="description" placeholder="Description" required>
-            <input type="number" id="cashIn" placeholder="Cash In" min="0" step="0.01">
-            <input type="number" id="cashOut" placeholder="Cash Out" min="0" step="0.01">
-            <button type="submit">Add</button>
-        </form>
-        <table id="transactionsTable">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Reference</th>
-                    <th>Description</th>
-                    <th>Cash In</th>
-                    <th>Cash Out</th>
-                    <th>Balance</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
+        
+        <div class="form-container" id="transactionForm" style="display:none;">
+            <div class="form-row">
+                <input type="date" id="date" required>
+                <input type="text" id="reference" placeholder="Reference" required>
+                <input type="text" id="description" placeholder="Description" required>
+                <input type="number" id="cashIn" placeholder="Cash In" min="0" step="0.01">
+                <input type="number" id="cashOut" placeholder="Cash Out" min="0" step="0.01">
+                <button type="submit">Add</button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="transactionsTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Reference</th>
+                        <th>Description</th>
+                        <th>Cash In</th>
+                        <th>Cash Out</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            <div class="table-footer">
+                <span class="running-balance-label">Running Balance</span>
+                <span class="running-balance" id="currentBalance">0.00</span>
+            </div>
+        </div>
     </div>
     <script type="module">
         // Firestore config
@@ -240,6 +374,7 @@
         function renderTransactionsRealtime() {
             const accountId = getAccountIdFromUrl();
             const tableBody = document.getElementById("tableBody");
+            const currentBalanceSpan = document.getElementById("currentBalance");
             let balance = 0;
             const q = window.query(
                 window.collection(db, "accounts", accountId, "transactions"),
@@ -267,6 +402,8 @@
                     `;
                     tableBody.appendChild(row);
                 });
+                // Update running balance
+                currentBalanceSpan.textContent = balance.toFixed(2);
             });
         }
 
@@ -299,7 +436,7 @@
         document.getElementById("toggleFormBtn").addEventListener("click", function() {
             const form = document.getElementById("transactionForm");
             if (form.style.display === "none") {
-                form.style.display = "flex";
+                form.style.display = "block";
                 this.textContent = "Hide Transaction Form";
             } else {
                 form.style.display = "none";
