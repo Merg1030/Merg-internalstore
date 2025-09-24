@@ -7,7 +7,7 @@
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query, where, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query, where, serverTimestamp, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
         window.initializeApp = initializeApp;
         window.getFirestore = getFirestore;
         window.doc = doc;
@@ -19,6 +19,7 @@
         window.where = where;
         window.serverTimestamp = serverTimestamp;
         window.getDocs = getDocs;
+        window.updateDoc = updateDoc;
     </script>
     <style>
         * { 
@@ -517,7 +518,6 @@
                     <select id="counterAccount" style="display:none;">
                         <option value="">Select Account</option>
                     </select>
-                    <input type="text" id="counterDescription" placeholder="Counter Description" style="display:none;">
                 </div>
             </div>
         </form>
@@ -677,14 +677,11 @@
     document.getElementById('transactionType').addEventListener('change', function() {
         const transactionType = this.value;
         const counterAccount = document.getElementById('counterAccount');
-        const counterDescription = document.getElementById('counterDescription');
         
         if (transactionType === 'single') {
             counterAccount.style.display = 'none';
-            counterDescription.style.display = 'none';
         } else {
             counterAccount.style.display = '';
-            counterDescription.style.display = '';
         }
     });
 
@@ -766,7 +763,6 @@
         const cashOut = hideCashOut ? 0 : (document.getElementById("cashOut").value ? parseFloat(document.getElementById("cashOut").value) : 0);
         const transactionType = document.getElementById("transactionType").value;
         const counterAccountId = document.getElementById("counterAccount").value;
-        const counterDescription = document.getElementById("counterDescription").value.trim() || description;
 
         if (!date || !reference || !description) return;
 
@@ -790,8 +786,8 @@
                 // Create counter transaction in the other account
                 let counterTransaction = {
                     date,
-                    reference: reference + ' (Counter)',
-                    description: counterDescription,
+                    reference: reference, // Same reference, no "(Counter)"
+                    description: description, // Same description
                     branchId,
                     created: window.serverTimestamp(),
                     linkedAccountId: accountId,
@@ -804,13 +800,13 @@
                     counterTransaction.cashIn = cashOut; // What we cash out here goes into the other account
                     counterTransaction.cashOut = cashIn; // What we cash in here comes from the other account
                 } else if (transactionType === 'expense') {
-                    // Expense: Current account cashes out, counter account (expense) doesn't get cash in
-                    counterTransaction.cashOut = 0;
+                    // Expense: Current account cashes out, counter account (expense) records the expense
+                    counterTransaction.cashOut = cashOut; // Expense amount
                     counterTransaction.cashIn = 0;
                 } else if (transactionType === 'income') {
-                    // Income: Current account cashes in, counter account (income) doesn't get cash out
+                    // Income: Current account cashes in, counter account (income) records the income
+                    counterTransaction.cashIn = cashIn; // Income amount
                     counterTransaction.cashOut = 0;
-                    counterTransaction.cashIn = 0;
                 }
 
                 // Add both transactions
@@ -839,7 +835,6 @@
         }
         document.getElementById("transactionForm").reset();
         document.getElementById('counterAccount').style.display = 'none';
-        document.getElementById('counterDescription').style.display = 'none';
         document.getElementById('transactionType').value = 'single';
     });
 
