@@ -296,35 +296,41 @@
         let branches = new Set();
         let salesChart, profitChart, branchChart;
 
+        // Function to find the order price that was active at the time of sale
+        function findOrderPriceAtTime(saleDate, productCode, restockHistory) {
+            // Filter restock entries for this product, sorted by date (newest first)
+            const productRestocks = restockHistory
+                .filter(entry => entry.code === productCode && entry.date <= saleDate)
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Return the most recent order price before the sale date
+            if (productRestocks.length > 0) {
+                return parseFloat(productRestocks[0].price);
+            }
+            
+            return null; // No order price found for this product before the sale date
+        }
+
         async function fetchProfitData() {
             try {
                 // Fetch sales data
                 const salesSnapshot = await getDocs(collection(db, 'sales'));
                 
-                // Fetch order prices from restockHistory
+                // Fetch ALL restock history to track price changes over time
                 const restockSnapshot = await getDocs(collection(db, 'restockHistory'));
-                
-                // Create a map of product codes to their latest order prices
-                const orderPrices = {};
-                restockSnapshot.forEach(doc => {
-                    const data = doc.data();
-                    if (data.code && data.price !== undefined) {
-                        // Use the latest price if multiple entries exist for same product
-                        orderPrices[data.code] = parseFloat(data.price);
-                    }
-                });
+                const restockHistory = restockSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                console.log("Order prices loaded:", orderPrices);
+                console.log("Restock history loaded:", restockHistory);
 
                 const profits = [];
                 salesSnapshot.forEach(doc => {
                     const sale = doc.data();
                     const { code, name, price, quantity, date, branchId } = sale;
                     
-                    // Get the order price for this product
-                    const costPrice = orderPrices[code];
+                    // Find the order price that was active AT THE TIME OF THIS SALE
+                    const costPrice = findOrderPriceAtTime(date, code, restockHistory);
                     
-                    if (costPrice !== undefined) {
+                    if (costPrice !== null) {
                         const profit = (price - costPrice) * quantity;
                         profits.push({
                             date: date || 'No date',
@@ -338,7 +344,7 @@
                         });
                         branches.add(branchId || 'Unknown Branch');
                     } else {
-                        console.warn(`No order price found for product: ${code} - ${name}`);
+                        console.warn(`No order price found for product at time of sale: ${code} - ${name} on ${date}`);
                     }
                 });
 
@@ -594,6 +600,69 @@
             const branchSelect = document.getElementById('branchSelect');
             const resetBtn = document.getElementById('resetBtn');
 
+            // Add period filter options
+            const periodSelect = document.getElementById('periodSelect');
+            periodSelect.innerHTML = `
+                <option value="custom">Custom Date Range</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="thisWeek">This Week</option>
+                <option value="lastWeek">Last Week</option>
+                <option value="thisMonth">This Month</option>
+                <option value="lastMonth">Last Month</option>
+                <option value="thisYear">This Year</option>
+                <option value="lastYear">Last Year</option>
+            `;
+
+            periodSelect.addEventListener('change', function() {
+                const today = new Date();
+                let startDate, endDate;
+
+                switch(this.value) {
+                    case 'today':
+                        startDate = endDate = today;
+                        break;
+                    case 'yesterday':
+                        startDate = endDate = new Date(today);
+                        startDate.setDate(today.getDate() - 1);
+                        break;
+                    case 'thisWeek':
+                        startDate = new Date(today);
+                        startDate.setDate(today.getDate() - today.getDay());
+                        endDate = new Date(today);
+                        endDate.setDate(today.getDate() + (6 - today.getDay()));
+                        break;
+                    case 'lastWeek':
+                        startDate = new Date(today);
+                        startDate.setDate(today.getDate() - today.getDay() - 7);
+                        endDate = new Date(today);
+                        endDate.setDate(today.getDate() - today.getDay() - 1);
+                        break;
+                    case 'thisMonth':
+                        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                        break;
+                    case 'lastMonth':
+                        startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                        endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                        break;
+                    case 'thisYear':
+                        startDate = new Date(today.getFullYear(), 0, 1);
+                        endDate = new Date(today.getFullYear(), 11, 31);
+                        break;
+                    case 'lastYear':
+                        startDate = new Date(today.getFullYear() - 1, 0, 1);
+                        endDate = new Date(today.getFullYear() - 1, 11, 31);
+                        break;
+                    default:
+                        return;
+                }
+
+                startDateInput.valueAsDate = startDate;
+                endDateInput.valueAsDate = endDate;
+                applyFilters();
+            });
+
             // Default: last 30 days
             const endDate = new Date();
             const startDate = new Date();
@@ -601,37 +670,40 @@
             startDateInput.valueAsDate = startDate;
             endDateInput.valueAsDate = endDate;
 
-            filterBtn.addEventListener('click', () => {
-                const startDate = startDateInput.value;
-                const endDate = endDateInput.value;
-                const selectedBranch = branchSelect.value;
-
-                let filteredData = allProfitData;
-                if (startDate && endDate) {
-                    const filterStart = new Date(startDate);
-                    const filterEnd = new Date(endDate);
-                    filterEnd.setDate(filterEnd.getDate() + 1);
-                    filteredData = filteredData.filter(item => {
-                        const itemDate = new Date(item.date);
-                        return itemDate >= filterStart && itemDate < filterEnd;
-                    });
-                }
-                if (selectedBranch) {
-                    filteredData = filteredData.filter(item => item.branch === selectedBranch);
-                }
-                displayProfitData(filteredData);
-                updateKPICards(filteredData);
-                initializeCharts(filteredData);
-            });
+            filterBtn.addEventListener('click', applyFilters);
 
             resetBtn.addEventListener('click', () => {
                 startDateInput.value = '';
                 endDateInput.value = '';
                 branchSelect.value = '';
+                periodSelect.value = 'custom';
                 displayProfitData(allProfitData);
                 updateKPICards(allProfitData);
                 initializeCharts(allProfitData);
             });
+        }
+
+        function applyFilters() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const selectedBranch = document.getElementById('branchSelect').value;
+
+            let filteredData = allProfitData;
+            if (startDate && endDate) {
+                const filterStart = new Date(startDate);
+                const filterEnd = new Date(endDate);
+                filterEnd.setDate(filterEnd.getDate() + 1);
+                filteredData = filteredData.filter(item => {
+                    const itemDate = new Date(item.date);
+                    return itemDate >= filterStart && itemDate < filterEnd;
+                });
+            }
+            if (selectedBranch) {
+                filteredData = filteredData.filter(item => item.branch === selectedBranch);
+            }
+            displayProfitData(filteredData);
+            updateKPICards(filteredData);
+            initializeCharts(filteredData);
         }
 
         function generateReport() {
@@ -682,6 +754,7 @@
         window.onload = fetchProfitData;
         window.generateReport = generateReport;
         window.printDashboard = printDashboard;
+        window.applyFilters = applyFilters;
     </script>
 </head>
 <body>
@@ -742,6 +815,20 @@
 
         <div class="filter-bar">
             <div class="filter-group">
+                <label for="periodSelect"><i class="fa-regular fa-calendar"></i> Time Period</label>
+                <select id="periodSelect">
+                    <option value="custom">Custom Date Range</option>
+                    <option value="today">Today</option>
+                    <option value="yesterday">Yesterday</option>
+                    <option value="thisWeek">This Week</option>
+                    <option value="lastWeek">Last Week</option>
+                    <option value="thisMonth">This Month</option>
+                    <option value="lastMonth">Last Month</option>
+                    <option value="thisYear">This Year</option>
+                    <option value="lastYear">Last Year</option>
+                </select>
+            </div>
+            <div class="filter-group">
                 <label for="startDate"><i class="fa-regular fa-calendar"></i> From Date</label>
                 <input type="date" id="startDate">
             </div>
@@ -789,4 +876,3 @@
     </div>
 </body>
 </html>
-
