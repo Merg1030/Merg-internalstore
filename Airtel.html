@@ -101,7 +101,7 @@
       flex-wrap: wrap;
     }
 
-    .top-form input, .top-form select {
+    .top-form input {
       flex: 1;
       padding: 14px 16px;
       border-radius: 10px;
@@ -335,13 +335,123 @@
       fill: #74ebd5;
     }
 
+    /* Settings Modal Styles */
+    .settings-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .settings-content {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 30px;
+      text-align: center;
+      min-width: 400px;
+      max-width: 90%;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .settings-content h3 {
+      color: #74ebd5;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+
+    .settings-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .setting-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .setting-option:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .setting-label {
+      font-size: 1.1rem;
+      color: #fff;
+    }
+
+    .setting-status {
+      font-size: 0.9rem;
+      color: #74ebd5;
+    }
+
+    .settings-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .settings-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .settings-save {
+      background: linear-gradient(90deg, #00c6ff, #0066cc);
+      color: #fff;
+    }
+
+    .settings-cancel {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .settings-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .gear-icon {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 18px;
+      height: 18px;
+      fill: #74ebd5;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .account-card:hover .gear-icon {
+      opacity: 1;
+    }
+
     @media (max-width: 700px) {
       .main { padding: 18px 2% 0 2%; }
       .top-bar { flex-direction: column; gap: 10px; }
       .card-list { grid-template-columns: 1fr; }
       .top-form { flex-direction: column; gap: 10px; }
       .top-form button { width: 100%; }
-      .password-content { min-width: 280px; padding: 20px; }
+      .password-content, .settings-content { min-width: 280px; padding: 20px; }
     }
   </style>
 </head>
@@ -356,11 +466,6 @@
     </div>
     <form id="accountForm" class="top-form" style="display:none;">
       <input type="text" id="name" placeholder="Enter Account Name" required>
-      <select id="protectionType">
-        <option value="none">No Password</option>
-        <option value="password">Password Protected</option>
-      </select>
-      <input type="password" id="accountPassword" placeholder="Set Password (if protected)" style="display:none;">
       <button type="submit">Create Account</button>
     </form>
     <div class="card-list" id="cardList"></div>
@@ -378,6 +483,32 @@
         <button class="password-btn password-cancel" onclick="closePasswordModal()">Cancel</button>
       </div>
       <div id="passwordError" class="password-error">Incorrect password!</div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="settings-modal">
+    <div class="settings-content">
+      <h3>Account Settings</h3>
+      <p id="settingsAccountName" style="color: #fff; margin-bottom: 20px;">Account Name</p>
+      <div class="settings-options">
+        <div class="setting-option" onclick="togglePasswordProtection()">
+          <span class="setting-label">Password Protection</span>
+          <span class="setting-status" id="protectionStatus">Off</span>
+        </div>
+        <div id="passwordSettings" style="display: none;">
+          <input type="password" id="newPassword" class="password-input" placeholder="Set new password">
+          <input type="password" id="confirmPassword" class="password-input" placeholder="Confirm password">
+        </div>
+        <div class="setting-option" onclick="removePasswordProtection()" id="removePasswordOption" style="display: none;">
+          <span class="setting-label">Remove Password</span>
+          <span class="setting-status">Click to remove</span>
+        </div>
+      </div>
+      <div class="settings-buttons">
+        <button class="settings-btn settings-save" onclick="saveSettings()">Save Changes</button>
+        <button class="settings-btn settings-cancel" onclick="closeSettingsModal()">Cancel</button>
+      </div>
     </div>
   </div>
 
@@ -405,29 +536,19 @@
 
     // Global variables for password protection
     let currentProtectedAccount = null;
+    let currentSettingsAccount = null;
     let passwordAttempts = {};
+    let passwordProtectionEnabled = false;
 
     // Hide/unhide add account form
     const toggleAddBtn = document.getElementById("toggleAddBtn");
     const accountForm = document.getElementById("accountForm");
-    const protectionType = document.getElementById("protectionType");
-    const accountPassword = document.getElementById("accountPassword");
     let formVisible = false;
 
     toggleAddBtn.addEventListener("click", () => {
       formVisible = !formVisible;
       accountForm.style.display = formVisible ? "flex" : "none";
       toggleAddBtn.textContent = formVisible ? "Hide Add Account" : "+ Add Account";
-    });
-
-    // Show/hide password field based on protection type
-    protectionType.addEventListener("change", function() {
-      accountPassword.style.display = this.value === "password" ? "block" : "none";
-      if (this.value === "password") {
-        accountPassword.required = true;
-      } else {
-        accountPassword.required = false;
-      }
     });
 
     function renderAccountsRealtime() {
@@ -447,8 +568,11 @@
             const data = doc.data();
             const card = document.createElement("div");
             card.className = "account-card";
-            card.onclick = () => {
-              handleAccountClick(doc.id, data);
+            card.onclick = (e) => {
+              // Don't trigger if clicking on gear icon
+              if (!e.target.closest('.gear-icon')) {
+                handleAccountClick(doc.id, data);
+              }
             };
             
             const lockIcon = data.protected ? `
@@ -458,6 +582,9 @@
             ` : '';
 
             card.innerHTML = `
+              <svg class="gear-icon" viewBox="0 0 24 24" onclick="openSettingsModal('${doc.id}', ${JSON.stringify(data).replace(/'/g, "&#39;")})">
+                <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5zm0-11a7.5 7.5 0 0 0-7.5 7.5c0 1.45.41 2.8 1.12 3.95L3.5 19.5l4.05-1.12A7.5 7.5 0 0 0 12 19.5a7.5 7.5 0 0 0 7.5-7.5A7.5 7.5 0 0 0 12 4.5z"/>
+              </svg>
               ${lockIcon}
               <div class="card-icon">
                 <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 
@@ -495,6 +622,90 @@
         // Direct access for unprotected accounts
         window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
       }
+    }
+
+    function openSettingsModal(accountId, accountData) {
+      currentSettingsAccount = { id: accountId, data: accountData };
+      document.getElementById('settingsAccountName').textContent = accountData.name;
+      
+      // Set current protection status
+      passwordProtectionEnabled = accountData.protected || false;
+      document.getElementById('protectionStatus').textContent = passwordProtectionEnabled ? 'On' : 'Off';
+      
+      // Show/hide password fields based on current status
+      document.getElementById('passwordSettings').style.display = passwordProtectionEnabled ? 'block' : 'none';
+      document.getElementById('removePasswordOption').style.display = passwordProtectionEnabled ? 'flex' : 'none';
+      
+      document.getElementById('settingsModal').style.display = 'flex';
+    }
+
+    function togglePasswordProtection() {
+      passwordProtectionEnabled = !passwordProtectionEnabled;
+      document.getElementById('protectionStatus').textContent = passwordProtectionEnabled ? 'On' : 'Off';
+      document.getElementById('passwordSettings').style.display = passwordProtectionEnabled ? 'block' : 'none';
+      document.getElementById('removePasswordOption').style.display = passwordProtectionEnabled ? 'flex' : 'none';
+      
+      // Clear password fields when turning off
+      if (!passwordProtectionEnabled) {
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+      }
+    }
+
+    function removePasswordProtection() {
+      if (confirm('Are you sure you want to remove password protection from this account?')) {
+        passwordProtectionEnabled = false;
+        document.getElementById('protectionStatus').textContent = 'Off';
+        document.getElementById('passwordSettings').style.display = 'none';
+        document.getElementById('removePasswordOption').style.display = 'none';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+      }
+    }
+
+    async function saveSettings() {
+      if (!currentSettingsAccount) return;
+
+      try {
+        if (passwordProtectionEnabled) {
+          const newPassword = document.getElementById('newPassword').value;
+          const confirmPassword = document.getElementById('confirmPassword').value;
+          
+          if (!newPassword) {
+            alert('Please enter a password');
+            return;
+          }
+          
+          if (newPassword !== confirmPassword) {
+            alert('Passwords do not match!');
+            return;
+          }
+          
+          // Update account with password protection
+          await window.updateDoc(window.doc(db, "accounts", currentSettingsAccount.id), {
+            protected: true,
+            password: newPassword
+          });
+          alert('Password protection enabled successfully!');
+        } else {
+          // Remove password protection
+          await window.updateDoc(window.doc(db, "accounts", currentSettingsAccount.id), {
+            protected: false,
+            password: null
+          });
+          alert('Password protection removed successfully!');
+        }
+        
+        closeSettingsModal();
+      } catch (error) {
+        alert('Error updating account: ' + error.message);
+      }
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').style.display = 'none';
+      currentSettingsAccount = null;
+      passwordProtectionEnabled = false;
     }
 
     function submitPassword() {
@@ -545,22 +756,15 @@
       e.preventDefault();
       const nameInput = document.getElementById("name");
       const name = nameInput.value.trim();
-      const protection = protectionType.value;
-      const password = accountPassword.value.trim();
 
       if (name) {
-        if (protection === "password" && !password) {
-          alert("Please set a password for protected accounts.");
-          return;
-        }
-
         try {
           const accountData = {
             name,
             branchId,
             created: new Date().toISOString(),
-            protected: protection === "password",
-            password: protection === "password" ? password : null
+            protected: false,
+            password: null
           };
 
           await window.addDoc(window.collection(db, "accounts"), accountData);
@@ -568,9 +772,6 @@
           alert("Error creating account: " + err.message);
         }
         nameInput.value = "";
-        accountPassword.value = "";
-        protectionType.value = "none";
-        accountPassword.style.display = "none";
         formVisible = false;
         accountForm.style.display = "none";
         toggleAddBtn.textContent = "+ Add Account";
@@ -578,6 +779,16 @@
     });
 
     renderAccountsRealtime();
+
+    // Make functions global
+    window.openSettingsModal = openSettingsModal;
+    window.togglePasswordProtection = togglePasswordProtection;
+    window.removePasswordProtection = removePasswordProtection;
+    window.saveSettings = saveSettings;
+    window.closeSettingsModal = closeSettingsModal;
+    window.submitPassword = submitPassword;
+    window.closePasswordModal = closePasswordModal;
+    window.handleAccountClick = handleAccountClick;
   </script>
 </body>
 </html>
