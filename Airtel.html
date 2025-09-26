@@ -7,7 +7,7 @@
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
     window.initializeApp = initializeApp;
     window.getFirestore = getFirestore;
     window.collection = collection;
@@ -15,6 +15,8 @@
     window.query = query;
     window.where = where;
     window.onSnapshot = onSnapshot;
+    window.updateDoc = updateDoc;
+    window.doc = doc;
   </script>
   <style>
     * {
@@ -96,9 +98,10 @@
       margin-bottom: 28px;
       margin-top: 0;
       transition: max-height 0.25s, opacity 0.25s;
+      flex-wrap: wrap;
     }
 
-    .top-form input {
+    .top-form input, .top-form select {
       flex: 1;
       padding: 14px 16px;
       border-radius: 10px;
@@ -107,6 +110,7 @@
       font-size: 1rem;
       background: rgba(255, 255, 255, 0.85);
       color: #003366;
+      min-width: 150px;
     }
 
     .top-form button {
@@ -156,6 +160,7 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.22);
       transition: transform 0.25s, box-shadow 0.25s, border 0.25s;
       min-width: 220px;
+      position: relative;
     }
 
     .account-card:hover {
@@ -197,6 +202,12 @@
       letter-spacing: 0.2px;
     }
 
+    .card-protection {
+      font-size: 0.85rem;
+      color: #74ebd5;
+      margin-top: 4px;
+    }
+
     .chevron svg {
       width: 22px;
       height: 22px;
@@ -228,12 +239,109 @@
       width: 100%;
     }
 
+    /* Password Modal Styles */
+    .password-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .password-content {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 30px;
+      text-align: center;
+      min-width: 350px;
+      max-width: 90%;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .password-content h3 {
+      color: #74ebd5;
+      margin-bottom: 10px;
+      font-size: 1.5rem;
+    }
+
+    .password-content p {
+      color: #fff;
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+    }
+
+    .password-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      color: #003366;
+      margin-bottom: 15px;
+    }
+
+    .password-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .password-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .password-submit {
+      background: linear-gradient(90deg, #00c6ff, #0066cc);
+      color: #fff;
+    }
+
+    .password-cancel {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .password-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .password-error {
+      color: #ff6b6b;
+      margin-top: 10px;
+      display: none;
+      font-weight: 600;
+    }
+
+    .lock-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      fill: #74ebd5;
+    }
+
     @media (max-width: 700px) {
       .main { padding: 18px 2% 0 2%; }
       .top-bar { flex-direction: column; gap: 10px; }
       .card-list { grid-template-columns: 1fr; }
       .top-form { flex-direction: column; gap: 10px; }
       .top-form button { width: 100%; }
+      .password-content { min-width: 280px; padding: 20px; }
     }
   </style>
 </head>
@@ -248,11 +356,31 @@
     </div>
     <form id="accountForm" class="top-form" style="display:none;">
       <input type="text" id="name" placeholder="Enter Account Name" required>
+      <select id="protectionType">
+        <option value="none">No Password</option>
+        <option value="password">Password Protected</option>
+      </select>
+      <input type="password" id="accountPassword" placeholder="Set Password (if protected)" style="display:none;">
       <button type="submit">Create Account</button>
     </form>
     <div class="card-list" id="cardList"></div>
     <div class="no-accounts" id="noAccounts"></div>
   </div>
+
+  <!-- Password Modal -->
+  <div id="passwordModal" class="password-modal">
+    <div class="password-content">
+      <h3>Password Required</h3>
+      <p id="protectedAccountName">Account Name</p>
+      <input type="password" id="passwordInput" class="password-input" placeholder="Enter password">
+      <div class="password-buttons">
+        <button class="password-btn password-submit" onclick="submitPassword()">Submit</button>
+        <button class="password-btn password-cancel" onclick="closePasswordModal()">Cancel</button>
+      </div>
+      <div id="passwordError" class="password-error">Incorrect password!</div>
+    </div>
+  </div>
+
   <footer>
     &copy; 2025 Trismart Stores – Book of Accounts
   </footer>
@@ -275,14 +403,31 @@
       window.location.href = 'dashboard.html';
     }
 
+    // Global variables for password protection
+    let currentProtectedAccount = null;
+    let passwordAttempts = {};
+
     // Hide/unhide add account form
     const toggleAddBtn = document.getElementById("toggleAddBtn");
     const accountForm = document.getElementById("accountForm");
+    const protectionType = document.getElementById("protectionType");
+    const accountPassword = document.getElementById("accountPassword");
     let formVisible = false;
+
     toggleAddBtn.addEventListener("click", () => {
       formVisible = !formVisible;
       accountForm.style.display = formVisible ? "flex" : "none";
       toggleAddBtn.textContent = formVisible ? "Hide Add Account" : "+ Add Account";
+    });
+
+    // Show/hide password field based on protection type
+    protectionType.addEventListener("change", function() {
+      accountPassword.style.display = this.value === "password" ? "block" : "none";
+      if (this.value === "password") {
+        accountPassword.required = true;
+      } else {
+        accountPassword.required = false;
+      }
     });
 
     function renderAccountsRealtime() {
@@ -303,9 +448,17 @@
             const card = document.createElement("div");
             card.className = "account-card";
             card.onclick = () => {
-              window.location.href = `accounts.html?id=${encodeURIComponent(doc.id)}`;
+              handleAccountClick(doc.id, data);
             };
+            
+            const lockIcon = data.protected ? `
+              <svg class="lock-icon" viewBox="0 0 24 24">
+                <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM8.9 6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2H8.9V6z"/>
+              </svg>
+            ` : '';
+
             card.innerHTML = `
+              ${lockIcon}
               <div class="card-icon">
                 <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 
                   4-4s-1.79-4-4-4-4 1.79-4 
@@ -314,6 +467,7 @@
               </div>
               <div class="card-info">
                 <div class="card-name">${data.name}</div>
+                <div class="card-protection">${data.protected ? '🔒 Password Protected' : '🔓 Open Access'}</div>
               </div>
               <div class="chevron">
                 <svg viewBox="0 0 24 24"><path d="M9.29 6.71a1 1 0 0 
@@ -328,21 +482,95 @@
       });
     }
 
+    function handleAccountClick(accountId, accountData) {
+      if (accountData.protected) {
+        // Show password modal for protected accounts
+        currentProtectedAccount = { id: accountId, data: accountData };
+        document.getElementById('protectedAccountName').textContent = accountData.name;
+        document.getElementById('passwordInput').value = '';
+        document.getElementById('passwordError').style.display = 'none';
+        document.getElementById('passwordModal').style.display = 'flex';
+        document.getElementById('passwordInput').focus();
+      } else {
+        // Direct access for unprotected accounts
+        window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
+      }
+    }
+
+    function submitPassword() {
+      const passwordInput = document.getElementById('passwordInput');
+      const passwordError = document.getElementById('passwordError');
+      const enteredPassword = passwordInput.value.trim();
+
+      if (!currentProtectedAccount) return;
+
+      // Initialize attempts counter for this account
+      if (!passwordAttempts[currentProtectedAccount.id]) {
+        passwordAttempts[currentProtectedAccount.id] = 0;
+      }
+
+      if (enteredPassword === currentProtectedAccount.data.password) {
+        // Password correct - redirect to account
+        window.location.href = `accounts.html?id=${encodeURIComponent(currentProtectedAccount.id)}`;
+      } else {
+        // Password incorrect
+        passwordAttempts[currentProtectedAccount.id]++;
+        passwordError.style.display = 'block';
+        passwordInput.value = '';
+        passwordInput.focus();
+
+        // Lock after 3 failed attempts (optional security feature)
+        if (passwordAttempts[currentProtectedAccount.id] >= 3) {
+          passwordError.textContent = 'Too many failed attempts. Please try again later.';
+          setTimeout(() => {
+            closePasswordModal();
+          }, 2000);
+        }
+      }
+    }
+
+    function closePasswordModal() {
+      document.getElementById('passwordModal').style.display = 'none';
+      currentProtectedAccount = null;
+    }
+
+    // Allow Enter key to submit password
+    document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        submitPassword();
+      }
+    });
+
     accountForm.addEventListener("submit", async function(e) {
       e.preventDefault();
       const nameInput = document.getElementById("name");
       const name = nameInput.value.trim();
+      const protection = protectionType.value;
+      const password = accountPassword.value.trim();
+
       if (name) {
+        if (protection === "password" && !password) {
+          alert("Please set a password for protected accounts.");
+          return;
+        }
+
         try {
-          await window.addDoc(window.collection(db, "accounts"), {
+          const accountData = {
             name,
             branchId,
-            created: new Date().toISOString()
-          });
+            created: new Date().toISOString(),
+            protected: protection === "password",
+            password: protection === "password" ? password : null
+          };
+
+          await window.addDoc(window.collection(db, "accounts"), accountData);
         } catch (err) {
           alert("Error creating account: " + err.message);
         }
         nameInput.value = "";
+        accountPassword.value = "";
+        protectionType.value = "none";
+        accountPassword.style.display = "none";
         formVisible = false;
         accountForm.style.display = "none";
         toggleAddBtn.textContent = "+ Add Account";
