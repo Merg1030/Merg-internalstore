@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         :root {
             --primary: #2c5aa0;
@@ -13,6 +16,7 @@
             --accent: #d32f2f;
             --accent-light: #f44336;
             --success: #4caf50;
+            --success-light: #66bb6a;
             --bg: #ffffff;
             --bg-light: #f5f5f5;
             --card-bg: #ffffff;
@@ -53,7 +57,7 @@
             background: var(--card-bg);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            width: 380px;
+            width: 420px;
             max-width: 95vw;
             padding: 36px 30px 26px;
             text-align: center;
@@ -264,6 +268,77 @@
             margin-right: 8px;
         }
         
+        /* Create Rep Section */
+        .create-rep-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+        
+        .create-rep-section h3 {
+            color: var(--text);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .create-rep-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-row .input-group {
+            flex: 1;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: var(--success-light);
+        }
+        
+        .reps-list {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+        }
+        
+        .rep-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .rep-item:last-child {
+            border-bottom: none;
+        }
+        
+        .rep-info {
+            text-align: left;
+        }
+        
+        .rep-name {
+            font-weight: 600;
+        }
+        
+        .rep-username {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        
         @keyframes fadeIn {
             from { opacity:0; transform: translateY(35px) scale(0.97);}
             to   { opacity:1; transform: none;}
@@ -293,6 +368,10 @@
             .trismart-logo {
                 width: 60px;
                 height: 60px;
+            }
+            
+            .form-row {
+                flex-direction: column;
             }
         }
     </style>
@@ -330,14 +409,56 @@
             <button type="submit" id="submit-btn">Sign In</button>
         </form>
         <div id="error-message"></div>
+        
+        <!-- Create Sales Rep Section (Visible only for Chris in Merchant mode) -->
+        <div class="create-rep-section" id="create-rep-section">
+            <h3>Manage Sales Representatives</h3>
+            <form id="create-rep-form" class="create-rep-form">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="rep-name">Full Name</label>
+                        <input type="text" id="rep-name" class="form-control" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="rep-username">Username</label>
+                        <input type="text" id="rep-username" class="form-control" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="rep-password">Password</label>
+                    <input type="password" id="rep-password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn-success">
+                    <i class="fas fa-user-plus"></i> Create Sales Rep Account
+                </button>
+            </form>
+            
+            <div class="reps-list" id="reps-list">
+                <!-- Sales reps will be listed here -->
+            </div>
+        </div>
     </div>
 
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "your-api-key",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "your-app-id"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // Predefined users - Only Chris can access merchant
         const users = [
-            { username: 'Fridah', password: 'Fridah10', type: 'user' },
-            { username: 'Doro', password: 'Dorothy.', type: 'user' },
-            { username: 'Chris', password: 'chishela10', type: 'merchant' } // Only Chris can access merchant
+            { username: 'Fridah', password: 'Fridah10', type: 'user', name: 'Fridah' },
+            { username: 'Doro', password: 'Dorothy.', type: 'user', name: 'Doro' },
+            { username: 'Chris', password: 'chishela10', type: 'merchant', name: 'Chris' }
         ];
 
         // DOM elements
@@ -350,8 +471,66 @@
         const merchantBtn = document.getElementById('merchant-btn');
         const merchantInfo = document.getElementById('merchant-info');
         const submitBtn = document.getElementById('submit-btn');
+        const createRepSection = document.getElementById('create-rep-section');
+        const createRepForm = document.getElementById('create-rep-form');
+        const repsList = document.getElementById('reps-list');
         
         let isMerchantLogin = false;
+        let salesReps = [];
+
+        // Load sales reps from Firestore
+        function loadSalesReps() {
+            // For demo purposes, we'll use mock data
+            // In a real app, you would use the Firestore code below
+            
+            // Mock sales reps data
+            salesReps = [
+                { username: 'john_doe', password: 'john123', type: 'sales_rep', name: 'John Doe' },
+                { username: 'jane_smith', password: 'jane123', type: 'sales_rep', name: 'Jane Smith' }
+            ];
+            
+            renderSalesReps();
+            
+            /* 
+            // Real Firestore code (commented out for demo)
+            db.collection("salesReps").onSnapshot((snapshot) => {
+                salesReps = [];
+                snapshot.forEach((doc) => {
+                    salesReps.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                renderSalesReps();
+            });
+            */
+        }
+
+        // Render sales reps in the UI
+        function renderSalesReps() {
+            repsList.innerHTML = '';
+            
+            if (salesReps.length === 0) {
+                repsList.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 20px;">No sales representatives yet</p>';
+                return;
+            }
+            
+            salesReps.forEach(rep => {
+                const repEl = document.createElement('div');
+                repEl.className = 'rep-item';
+                repEl.innerHTML = `
+                    <div class="rep-info">
+                        <div class="rep-name">${rep.name}</div>
+                        <div class="rep-username">Username: ${rep.username}</div>
+                    </div>
+                    <button class="btn-danger" onclick="deleteSalesRep('${rep.username}')" style="padding: 5px 10px; background: var(--accent); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                repsList.appendChild(repEl);
+            });
+        }
 
         // Toggle password visibility
         passwordToggle.addEventListener('click', function() {
@@ -366,6 +545,7 @@
             userBtn.classList.add('active');
             merchantBtn.classList.remove('active');
             merchantInfo.style.display = 'none';
+            createRepSection.style.display = 'none';
             submitBtn.textContent = 'Sign In';
             usernameInput.focus();
         });
@@ -375,8 +555,15 @@
             merchantBtn.classList.add('active');
             userBtn.classList.remove('active');
             merchantInfo.style.display = 'block';
+            
+            // Show create rep section only if Chris is logged in (for demo)
+            // In a real app, you'd check after login
+            createRepSection.style.display = 'block';
             submitBtn.textContent = 'Access Merchant Dashboard';
             usernameInput.focus();
+            
+            // Load sales reps when merchant mode is activated
+            loadSalesReps();
         });
 
         // Handle login form submission
@@ -385,8 +572,11 @@
             const username = usernameInput.value.trim();
             const password = passwordInput.value;
             
+            // Combine predefined users and sales reps
+            const allUsers = [...users, ...salesReps];
+            
             // Find user
-            const user = users.find(user => 
+            const user = allUsers.find(user => 
                 user.username.toLowerCase() === username.toLowerCase() && 
                 user.password === password
             );
@@ -398,20 +588,110 @@
                         // Redirect to merchant dashboard
                         localStorage.setItem('userName', user.username);
                         localStorage.setItem('userType', 'merchant');
+                        localStorage.setItem('userFullName', user.name);
                         window.location.href = 'merchant.html';
                     } else {
                         showError('Only Chris can access the merchant dashboard');
                     }
                 } else {
-                    // Regular user login
+                    // Regular user or sales rep login
                     localStorage.setItem('userName', user.username);
-                    localStorage.setItem('userType', 'user');
-                    window.location.href = 'Dashboard.html';
+                    localStorage.setItem('userType', user.type);
+                    localStorage.setItem('userFullName', user.name);
+                    
+                    // Redirect based on user type
+                    if (user.type === 'sales_rep') {
+                        window.location.href = 'sales-rep.html';
+                    } else {
+                        window.location.href = 'Dashboard.html';
+                    }
                 }
             } else {
                 showError('Invalid username or password');
             }
         });
+
+        // Handle create sales rep form submission
+        createRepForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const repName = document.getElementById('rep-name').value.trim();
+            const repUsername = document.getElementById('rep-username').value.trim();
+            const repPassword = document.getElementById('rep-password').value;
+            
+            // Check if username already exists
+            const allUsers = [...users, ...salesReps];
+            if (allUsers.some(user => user.username.toLowerCase() === repUsername.toLowerCase())) {
+                showError('Username already exists');
+                return;
+            }
+            
+            // For demo, add to the salesReps array
+            // In a real app, you would use the Firestore code below
+            
+            const newRep = {
+                username: repUsername,
+                password: repPassword,
+                type: 'sales_rep',
+                name: repName
+            };
+            
+            salesReps.push(newRep);
+            renderSalesReps();
+            createRepForm.reset();
+            
+            // Show success message
+            alert('Sales representative account created successfully!');
+            
+            /* 
+            // Real Firestore code (commented out for demo)
+            db.collection("salesReps").add({
+                username: repUsername,
+                password: repPassword,
+                type: 'sales_rep',
+                name: repName,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                createRepForm.reset();
+                alert('Sales representative account created successfully!');
+            })
+            .catch((error) => {
+                console.error("Error creating sales rep: ", error);
+                alert('Error creating sales rep account. Please try again.');
+            });
+            */
+        });
+
+        // Delete sales rep
+        function deleteSalesRep(username) {
+            if (confirm('Are you sure you want to delete this sales representative?')) {
+                // For demo, remove from the array
+                // In a real app, you would use the Firestore code below
+                
+                const repIndex = salesReps.findIndex(rep => rep.username === username);
+                if (repIndex !== -1) {
+                    salesReps.splice(repIndex, 1);
+                    renderSalesReps();
+                    alert('Sales representative deleted successfully!');
+                }
+                
+                /* 
+                // Real Firestore code (commented out for demo)
+                db.collection("salesReps").where("username", "==", username).get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        doc.ref.delete();
+                    });
+                    alert('Sales representative deleted successfully!');
+                })
+                .catch((error) => {
+                    console.error("Error deleting sales rep: ", error);
+                    alert('Error deleting sales rep. Please try again.');
+                });
+                */
+            }
+        }
 
         // Show error message
         function showError(message) {
