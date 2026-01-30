@@ -286,13 +286,13 @@
             background: #f8f9fa;
         }
         
-        /* Red for Debit */
+        /* Red for Debit (decreases balance) */
         .debit {
             color: #c62828;
             font-weight: 600;
         }
         
-        /* Green for Credit */
+        /* Green for Credit (increases balance) */
         .credit {
             color: #2e7d32;
             font-weight: 600;
@@ -301,6 +301,14 @@
         .balance {
             font-weight: 600;
             color: #333;
+        }
+        
+        .positive-balance {
+            color: #2e7d32;
+        }
+        
+        .negative-balance {
+            color: #c62828;
         }
         
         .actions-cell {
@@ -383,6 +391,14 @@
         .running-balance {
             color: #1976d2;
             font-size: 16px;
+        }
+        
+        .positive-balance-footer {
+            color: #2e7d32;
+        }
+        
+        .negative-balance-footer {
+            color: #c62828;
         }
         
         /* Modal Styles */
@@ -556,8 +572,8 @@
                     <input type="date" id="date" required>
                     <input type="text" id="reference" placeholder="Reference" required>
                     <input type="text" id="description" placeholder="Description" required>
-                    <input type="number" id="debit" placeholder="Debit" min="0" step="0.01">
-                    <input type="number" id="credit" placeholder="Credit" min="0" step="0.01">
+                    <input type="number" id="debit" placeholder="Debit (Reduces Balance)" min="0" step="0.01">
+                    <input type="number" id="credit" placeholder="Credit (Increases Balance)" min="0" step="0.01">
                     <button type="submit">Add Transaction</button>
                 </div>
             </form>
@@ -703,16 +719,20 @@
 
             balance = 0;
             filteredTransactions.forEach(tx => {
-                // Note: cashOut = Debit, cashIn = Credit
+                // Get values from database
+                // In database: cashOut = Debit (negative), cashIn = Credit (positive)
                 const debit = parseFloat(tx.cashOut || 0);
                 const credit = parseFloat(tx.cashIn || 0);
                 
-                // For balance calculation: Debit increases balance, Credit decreases balance
-                // In accounting: Balance = Previous Balance + Debit - Credit
-                balance += (debit - credit);
+                // CORRECT ACCOUNTING LOGIC:
+                // Credit (+) increases balance, Debit (-) decreases balance
+                balance = balance + credit - debit;
                 
                 let row = document.createElement("tr");
                 row.dataset.transactionId = tx.id;
+                
+                // Determine balance color
+                const balanceClass = balance >= 0 ? 'positive-balance' : 'negative-balance';
                 
                 row.innerHTML = `
                     <td>${tx.date}</td>
@@ -720,7 +740,7 @@
                     <td>${tx.description}</td>
                     <td class="${debit > 0 ? 'debit' : ''}">${debit > 0 ? Number(debit).toFixed(2) : ''}</td>
                     <td class="${credit > 0 ? 'credit' : ''}">${credit > 0 ? Number(credit).toFixed(2) : ''}</td>
-                    <td class="balance">${balance.toFixed(2)}</td>
+                    <td class="balance ${balanceClass}">${balance.toFixed(2)}</td>
                     <td class="actions-cell">
                         <button class="action-dots" data-transaction-id="${tx.id}" onclick="showTransactionMenu(event, '${tx.id}')">⋮</button>
                         <div class="transaction-menu" id="menu-${tx.id}">
@@ -732,7 +752,9 @@
                 tableBody.appendChild(row);
             });
             
+            // Update running balance with color
             currentBalanceSpan.textContent = balance.toFixed(2);
+            currentBalanceSpan.className = 'running-balance ' + (balance >= 0 ? 'positive-balance-footer' : 'negative-balance-footer');
             
             // Show message if no transactions
             if (filteredTransactions.length === 0) {
@@ -782,7 +804,7 @@
             document.getElementById('reference').value = transaction.reference;
             document.getElementById('description').value = transaction.description;
             
-            // Map cashOut to debit and cashIn to credit
+            // Map database fields to form fields
             document.getElementById('debit').value = transaction.cashOut || '';
             document.getElementById('credit').value = transaction.cashIn || '';
             
@@ -880,14 +902,20 @@
             return;
         }
 
+        // Validate that both debit and credit are not entered at the same time
+        if (debit > 0 && credit > 0) {
+            alert('Please enter either Debit OR Credit, not both at the same time.');
+            return;
+        }
+
         try {
-            // Map debit to cashOut and credit to cashIn for database
+            // Map to database fields with correct accounting logic
             const transaction = {
                 date,
                 reference,
                 description,
-                cashOut: debit,  // Debit = cashOut
-                cashIn: credit,  // Credit = cashIn
+                cashOut: debit,    // Debit reduces balance (stored as cashOut)
+                cashIn: credit,    // Credit increases balance (stored as cashIn)
                 branchId,
                 updated: window.serverTimestamp()
             };
