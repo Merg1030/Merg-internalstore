@@ -197,53 +197,97 @@
       margin-bottom: 20px;
     }
     
-    .card-actions {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-      justify-content: center;
-      margin-top: 10px;
-    }
-    
-    .action-btn {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      font-weight: 500;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-      min-width: 80px;
-    }
-    
     .open-btn {
       background: #1976d2;
       color: white;
-      flex: 2;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+      width: 100%;
+      max-width: 200px;
     }
     
     .open-btn:hover {
       background: #1565c0;
     }
     
-    .edit-btn {
+    /* Card Actions Menu */
+    .card-actions {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 10;
+    }
+    
+    .action-menu-btn {
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      font-size: 24px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    
+    .action-menu-btn:hover {
       background: #f0f0f0;
       color: #333;
-      flex: 1;
     }
     
-    .edit-btn:hover {
-      background: #e0e0e0;
+    .action-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: none;
+      flex-direction: column;
+      min-width: 150px;
+      z-index: 1000;
+      overflow: hidden;
     }
     
-    .delete-btn {
-      background: #f0f0f0;
+    .action-menu.show {
+      display: flex;
+    }
+    
+    .action-menu-item {
+      padding: 12px 16px;
+      background: none;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+      color: #333;
+      transition: background 0.2s;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .action-menu-item:last-child {
+      border-bottom: none;
+    }
+    
+    .action-menu-item:hover {
+      background: #f8f9fa;
+    }
+    
+    .action-menu-item.edit {
+      color: #1976d2;
+    }
+    
+    .action-menu-item.delete {
       color: #e53935;
-      flex: 1;
-    }
-    
-    .delete-btn:hover {
-      background: #ffebee;
     }
     
     /* Empty State */
@@ -280,7 +324,7 @@
       background: rgba(0, 0, 0, 0.5);
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 2000;
     }
     
     .modal.active {
@@ -374,15 +418,6 @@
       
       .card {
         padding: 25px;
-      }
-      
-      .card-actions {
-        flex-direction: column;
-        gap: 8px;
-      }
-      
-      .action-btn {
-        width: 100%;
       }
       
       .header h1 {
@@ -513,19 +548,13 @@
     let selectedAccountName = null;
     let isEditMode = false;
 
-    // Toggle add/edit account form
+    // Toggle add account form
     toggleAddBtn.addEventListener("click", () => {
-      if (isEditMode) {
-        // If we're in edit mode, cancel it
-        cancelEdit();
-      } else {
-        // Toggle regular add form
-        formVisible = !formVisible;
-        accountForm.classList.toggle('active', formVisible);
-        toggleAddBtn.textContent = formVisible ? "Cancel" : "+ Add Account";
-        document.getElementById("submitAccountBtn").textContent = "Create Account";
-        document.getElementById("accountNameInput").value = "";
-      }
+      formVisible = !formVisible;
+      accountForm.classList.toggle('active', formVisible);
+      toggleAddBtn.textContent = formVisible ? "Cancel" : "+ Add Account";
+      document.getElementById("submitAccountBtn").textContent = "Create Account";
+      document.getElementById("accountNameInput").value = "";
     });
 
     // Render accounts
@@ -565,46 +594,61 @@
               <div class="icon">${initials}</div>
               <h2>${data.name}</h2>
               <p>View transactions and account details</p>
+              <button class="open-btn">Open Account</button>
+              
               <div class="card-actions">
-                <button class="action-btn open-btn" data-account-id="${doc.id}">Open</button>
-                <button class="action-btn edit-btn" data-account-id="${doc.id}">Edit</button>
-                <button class="action-btn delete-btn" data-account-id="${doc.id}">Delete</button>
+                <button class="action-menu-btn" data-account-id="${doc.id}">⋮</button>
+                <div class="action-menu" id="menu-${doc.id}">
+                  <button class="action-menu-item edit" onclick="openEditModal('${doc.id}')">
+                    ✏️ Edit Account
+                  </button>
+                  <button class="action-menu-item delete" onclick="openDeleteModal('${doc.id}')">
+                    🗑️ Delete Account
+                  </button>
+                </div>
               </div>
             `;
             
             cardList.appendChild(card);
           });
           
-          // Add event listeners to buttons
+          // Add event listeners to open buttons
           document.querySelectorAll('.open-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
               e.stopPropagation();
-              const accountId = btn.dataset.accountId;
+              const card = btn.closest('.card');
+              const accountId = card.dataset.accountId;
               window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
             });
           });
           
-          document.querySelectorAll('.edit-btn').forEach(btn => {
+          // Add event listeners to 3-dots menu buttons
+          document.querySelectorAll('.action-menu-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
               e.stopPropagation();
               const accountId = btn.dataset.accountId;
-              openEditModal(accountId);
-            });
-          });
-          
-          document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const accountId = btn.dataset.accountId;
-              openDeleteModal(accountId);
+              
+              // Hide all other menus
+              document.querySelectorAll('.action-menu').forEach(menu => {
+                menu.classList.remove('show');
+              });
+              
+              // Show this menu
+              const menu = document.getElementById(`menu-${accountId}`);
+              if (menu) {
+                const rect = btn.getBoundingClientRect();
+                menu.style.top = (rect.bottom - rect.top) + 'px';
+                menu.style.right = '0px';
+                menu.classList.add('show');
+              }
             });
           });
           
           // Make card clickable for opening account
           document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', (e) => {
-              // Only trigger if not clicking on buttons
-              if (!e.target.closest('.action-btn')) {
+              // Only trigger if not clicking on buttons or menus
+              if (!e.target.closest('.open-btn') && !e.target.closest('.action-menu-btn') && !e.target.closest('.action-menu')) {
                 const accountId = card.dataset.accountId;
                 window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
               }
@@ -614,29 +658,27 @@
       });
     }
 
-    // Open edit modal
-    function openEditModal(accountId) {
+    // Global functions for account actions
+    window.openEditModal = function(accountId) {
       const account = accounts.find(acc => acc.id === accountId);
       if (account) {
         selectedAccountId = accountId;
         selectedAccountName = account.name;
-        isEditMode = true;
         
         // Populate edit form
         document.getElementById("editAccountName").value = account.name;
         
-        // Hide add form if visible
-        accountForm.classList.remove('active');
-        formVisible = false;
-        toggleAddBtn.textContent = "+ Add Account";
+        // Hide any open menu
+        document.querySelectorAll('.action-menu').forEach(menu => {
+          menu.classList.remove('show');
+        });
         
         // Show edit modal
         document.getElementById("editModal").classList.add('active');
       }
-    }
+    };
 
-    // Open delete modal
-    function openDeleteModal(accountId) {
+    window.openDeleteModal = function(accountId) {
       const account = accounts.find(acc => acc.id === accountId);
       if (account) {
         selectedAccountId = accountId;
@@ -646,20 +688,24 @@
         document.getElementById("deleteAccountText").textContent = 
           `Are you sure you want to delete the account "${account.name}"? This action cannot be undone.`;
         
+        // Hide any open menu
+        document.querySelectorAll('.action-menu').forEach(menu => {
+          menu.classList.remove('show');
+        });
+        
         // Show delete modal
         document.getElementById("deleteModal").classList.add('active');
       }
-    }
+    };
 
-    // Cancel edit
-    function cancelEdit() {
-      isEditMode = false;
-      selectedAccountId = null;
-      selectedAccountName = null;
-      document.getElementById("editModal").classList.remove('active');
-    }
+    // Close menus when clicking outside
+    document.addEventListener('click', function() {
+      document.querySelectorAll('.action-menu').forEach(menu => {
+        menu.classList.remove('show');
+      });
+    });
 
-    // Handle form submission (Add or Edit)
+    // Handle form submission (Add)
     document.getElementById("accountForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       const nameInput = document.getElementById("accountNameInput");
@@ -708,7 +754,9 @@
         });
 
         // Close modal and reset state
-        cancelEdit();
+        document.getElementById("editModal").classList.remove('active');
+        selectedAccountId = null;
+        selectedAccountName = null;
         
       } catch (err) {
         alert("Error updating account: " + err.message);
@@ -722,9 +770,6 @@
       try {
         // Delete the account
         await window.deleteDoc(window.doc(db, "accounts", selectedAccountId));
-        
-        // Note: In a real app, you might want to delete all transactions in this account too
-        // For now, we're just deleting the account itself
         
         // Close modal and reset state
         document.getElementById("deleteModal").classList.remove('active');
@@ -745,7 +790,9 @@
 
     // Cancel edit
     document.getElementById("cancelEditBtn").addEventListener("click", function() {
-      cancelEdit();
+      document.getElementById("editModal").classList.remove('active');
+      selectedAccountId = null;
+      selectedAccountName = null;
     });
 
     // Initialize
