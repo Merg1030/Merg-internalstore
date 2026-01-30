@@ -7,7 +7,7 @@
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query, where, serverTimestamp, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
         window.initializeApp = initializeApp;
         window.getFirestore = getFirestore;
         window.doc = doc;
@@ -18,8 +18,6 @@
         window.query = query;
         window.where = where;
         window.serverTimestamp = serverTimestamp;
-        window.getDocs = getDocs;
-        window.updateDoc = updateDoc;
     </script>
     <style>
         * { 
@@ -75,13 +73,6 @@
             width: 100%;
         }
         
-        .back-btn-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 8px;
-            width: auto;
-        }
-        
         .back-btn {
             display: inline-block;
             padding: 6px 12px;
@@ -95,54 +86,12 @@
             transition: background 0.19s, transform 0.12s;
             font-size: 0.8rem;
             white-space: nowrap;
+            margin-bottom: 8px;
         }
         
         .back-btn:hover {
             background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
             transform: scale(1.04);
-        }
-        
-        .quick-hide-menu {
-            position: absolute;
-            left: 100%;
-            top: 0;
-            margin-left: 5px;
-            background: #f2f9ff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-radius: 5px;
-            padding: 4px 6px;
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 70px;
-            z-index: 100;
-            align-items: flex-start;
-            border: 1px solid #e0e7ef;
-            font-size: 0.75rem;
-        }
-        
-        .back-btn-wrapper:hover .quick-hide-menu {
-            display: flex;
-        }
-        
-        .quick-hide-btn {
-            background: none;
-            border: none;
-            color: #0066cc;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 3px 0;
-            text-align: left;
-            width: 100%;
-            border-radius: 3px;
-            transition: background 0.15s, color 0.15s;
-            font-size: 0.75rem;
-            white-space: nowrap;
-        }
-        
-        .quick-hide-btn:hover {
-            background: #eaf7ff;
-            color: #0099cc;
         }
         
         .not-found {
@@ -298,7 +247,7 @@
             margin-bottom: 4px;
         }
         
-        .form-row input, .form-row select {
+        .form-row input {
             padding: 4px;
             border-radius: 3px;
             border: 1px solid #ccc;
@@ -324,21 +273,6 @@
         
         .form-row button:hover {
             background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
-        }
-
-        .double-entry-section {
-            background: #e8f4ff;
-            padding: 6px;
-            border-radius: 4px;
-            margin: 4px 0;
-            border-left: 3px solid #0066cc;
-        }
-
-        .double-entry-label {
-            font-weight: 600;
-            color: #0066cc;
-            font-size: 0.75rem;
-            margin-bottom: 3px;
         }
 
         /* Responsive adjustments */
@@ -437,7 +371,7 @@
                 width: 99vw;
             }
             
-            .form-row input, .form-row select {
+            .form-row input {
                 font-size: 0.7rem;
                 min-width: 60px;
                 max-width: 80px;
@@ -475,13 +409,7 @@
 <div class="account-detail-card" id="accountDetail">
     <h1>Account Details</h1>
     <div class="account-name" id="accountName"></div>
-    <div class="back-btn-wrapper" id="backBtnWrapper">
-        <a href="maindash.html" class="back-btn" id="backBtn">Back to Dashboard</a>
-        <div class="quick-hide-menu" id="quickHideMenu">
-            <button class="quick-hide-btn" id="hideCashInBtn">Hide Cash In</button>
-            <button class="quick-hide-btn" id="hideCashOutBtn">Hide Cash Out</button>
-        </div>
-    </div>
+    <a href="maindash.html" class="back-btn" id="backBtn">Back to Dashboard</a>
     <div id="notFound" class="not-found"></div>
     
     <button class="toggle-btn" id="toggleFormBtn">Add Transaction</button>
@@ -505,19 +433,6 @@
                 <input type="number" id="cashOut" placeholder="Cash Out" min="0" step="0.01">
                 <button type="submit">Add</button>
             </div>
-            
-            <div class="double-entry-section">
-                <div class="double-entry-label">Double Entry (Optional)</div>
-                <div class="form-row">
-                    <select id="transactionType">
-                        <option value="single">Single Entry</option>
-                        <option value="transfer">Transfer Between Accounts</option>
-                    </select>
-                    <select id="counterAccount" style="display:none;">
-                        <option value="">Select Account</option>
-                    </select>
-                </div>
-            </div>
         </form>
     </div>
     
@@ -528,10 +443,9 @@
                 <th>Date</th>
                 <th>Reference</th>
                 <th>Description</th>
-                <th id="cashInHeader">Cash In</th>
-                <th id="cashOutHeader">Cash Out</th>
+                <th>Cash In</th>
+                <th>Cash Out</th>
                 <th>Balance</th>
-                <th>Linked Account</th>
             </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -568,24 +482,6 @@
     }
     const accountId = getAccountIdFromUrl();
 
-    // Persistent hide states (per account)
-    function getHideState() {
-        const state = localStorage.getItem("trismart-hide-state-" + accountId);
-        if (!state) return { hideCashIn: false, hideCashOut: false };
-        try {
-            return JSON.parse(state);
-        } catch {
-            return { hideCashIn: false, hideCashOut: false };
-        }
-    }
-    function setHideState(hideCashIn, hideCashOut) {
-        localStorage.setItem(
-            "trismart-hide-state-" + accountId,
-            JSON.stringify({ hideCashIn, hideCashOut })
-        );
-    }
-    let { hideCashIn, hideCashOut } = getHideState();
-
     // Persistent filter state (per account)
     function getFilterState() {
         const state = localStorage.getItem("trismart-filter-state-" + accountId);
@@ -604,37 +500,6 @@
     }
     let { filterStart, filterEnd } = getFilterState();
 
-    let allAccounts = [];
-
-    // Load all accounts for the dropdown
-    async function loadAllAccounts() {
-        try {
-            const q = window.query(
-                window.collection(db, "accounts"),
-                window.where("branchId", "==", branchId)
-            );
-            const snapshot = await window.getDocs(q);
-            allAccounts = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            
-            // Populate counter account dropdown
-            const counterAccountSelect = document.getElementById('counterAccount');
-            counterAccountSelect.innerHTML = '<option value="">Select Account</option>';
-            allAccounts.forEach(account => {
-                if (account.id !== accountId) { // Exclude current account
-                    const option = document.createElement('option');
-                    option.value = account.id;
-                    option.textContent = account.name;
-                    counterAccountSelect.appendChild(option);
-                }
-            });
-        } catch (error) {
-            console.error("Error loading accounts:", error);
-        }
-    }
-
     async function showAccountDetails() {
         const accountNameDiv = document.getElementById("accountName");
         const notFoundDiv = document.getElementById("notFound");
@@ -651,8 +516,6 @@
             const account = docSnap.data();
             accountNameDiv.textContent = account.name;
             notFoundDiv.textContent = "";
-            updateFormVisibility();
-            loadAllAccounts();
             renderTransactionsRealtime();
         } else {
             accountNameDiv.textContent = "";
@@ -661,27 +524,6 @@
             document.getElementById("toggleFormBtn").style.display = "none";
         }
     }
-
-    function updateFormVisibility() {
-        const cashInInput = document.getElementById("cashIn");
-        const cashOutInput = document.getElementById("cashOut");
-        cashInInput.style.display = hideCashIn ? "none" : "";
-        cashOutInput.style.display = hideCashOut ? "none" : "";
-        document.getElementById("hideCashInBtn").textContent = hideCashIn ? "Show Cash In" : "Hide Cash In";
-        document.getElementById("hideCashOutBtn").textContent = hideCashOut ? "Show Cash Out" : "Hide Cash Out";
-    }
-
-    // Handle transaction type changes
-    document.getElementById('transactionType').addEventListener('change', function() {
-        const transactionType = this.value;
-        const counterAccount = document.getElementById('counterAccount');
-        
-        if (transactionType === 'single') {
-            counterAccount.style.display = 'none';
-        } else {
-            counterAccount.style.display = '';
-        }
-    });
 
     // Render table and filter by date
     function renderTransactionsRealtime() {
@@ -717,26 +559,16 @@
                 balance += (parseFloat(tx.cashIn || 0) - parseFloat(tx.cashOut || 0));
                 let row = document.createElement("tr");
                 
-                // Find linked account name
-                let linkedAccountName = '';
-                if (tx.linkedAccountId) {
-                    const linkedAccount = allAccounts.find(acc => acc.id === tx.linkedAccountId);
-                    linkedAccountName = linkedAccount ? linkedAccount.name : tx.linkedAccountId;
-                }
-                
                 row.innerHTML = `
                     <td>${tx.date}</td>
                     <td>${tx.reference}</td>
                     <td>${tx.description}</td>
-                    <td style="display:${hideCashIn ? 'none' : ''}">${hideCashIn ? '' : (tx.cashIn ? Number(tx.cashIn).toFixed(2) : '')}</td>
-                    <td style="display:${hideCashOut ? 'none' : ''}">${hideCashOut ? '' : (tx.cashOut ? Number(tx.cashOut).toFixed(2) : '')}</td>
+                    <td>${tx.cashIn ? Number(tx.cashIn).toFixed(2) : ''}</td>
+                    <td>${tx.cashOut ? Number(tx.cashOut).toFixed(2) : ''}</td>
                     <td>${balance.toFixed(2)}</td>
-                    <td>${linkedAccountName}</td>
                 `;
                 tableBody.appendChild(row);
             });
-            document.getElementById("cashInHeader").style.display = hideCashIn ? "none" : "";
-            document.getElementById("cashOutHeader").style.display = hideCashOut ? "none" : "";
             currentBalanceSpan.textContent = balance.toFixed(2);
         });
     }
@@ -757,16 +589,14 @@
         const date = document.getElementById("date").value;
         const reference = document.getElementById("reference").value.trim();
         const description = document.getElementById("description").value.trim();
-        const cashIn = hideCashIn ? 0 : (document.getElementById("cashIn").value ? parseFloat(document.getElementById("cashIn").value) : 0);
-        const cashOut = hideCashOut ? 0 : (document.getElementById("cashOut").value ? parseFloat(document.getElementById("cashOut").value) : 0);
-        const transactionType = document.getElementById("transactionType").value;
-        const counterAccountId = document.getElementById("counterAccount").value;
+        const cashIn = document.getElementById("cashIn").value ? parseFloat(document.getElementById("cashIn").value) : 0;
+        const cashOut = document.getElementById("cashOut").value ? parseFloat(document.getElementById("cashOut").value) : 0;
 
         if (!date || !reference || !description) return;
 
         try {
-            // Create main transaction
-            const mainTransaction = {
+            // Create transaction
+            const transaction = {
                 date,
                 reference,
                 description,
@@ -776,79 +606,12 @@
                 created: window.serverTimestamp()
             };
 
-            // Add double entry logic if applicable
-            if (transactionType !== 'single' && counterAccountId) {
-                mainTransaction.linkedAccountId = counterAccountId;
-                mainTransaction.transactionType = transactionType;
-
-                // Create counter transaction in the other account
-                let counterTransaction = {
-                    date,
-                    reference: reference, // Same reference, no "(Counter)"
-                    description: description, // Same description
-                    branchId,
-                    created: window.serverTimestamp(),
-                    linkedAccountId: accountId,
-                    transactionType: transactionType
-                };
-
-                // Determine cash in/out for counter account based on transaction type
-                if (transactionType === 'transfer') {
-                    // Transfer: Reverse the cash flow for counter account
-                    counterTransaction.cashIn = cashOut; // What we cash out here goes into the other account
-                    counterTransaction.cashOut = cashIn; // What we cash in here comes from the other account
-                } else if (transactionType === 'expense') {
-                    // Expense: Current account cashes out, counter account (expense) records the expense
-                    counterTransaction.cashOut = cashOut; // Expense amount
-                    counterTransaction.cashIn = 0;
-                } else if (transactionType === 'income') {
-                    // Income: Current account cashes in, counter account (income) records the income
-                    counterTransaction.cashIn = cashIn; // Income amount
-                    counterTransaction.cashOut = 0;
-                }
-
-                // Add both transactions
-                const [mainTxRef, counterTxRef] = await Promise.all([
-                    window.addDoc(window.collection(db, "accounts", accountId, "transactions"), mainTransaction),
-                    window.addDoc(window.collection(db, "accounts", counterAccountId, "transactions"), counterTransaction)
-                ]);
-
-                // Update both transactions with each other's IDs
-                await Promise.all([
-                    window.updateDoc(window.doc(db, "accounts", accountId, "transactions", mainTxRef.id), {
-                        linkedTransactionId: counterTxRef.id
-                    }),
-                    window.updateDoc(window.doc(db, "accounts", counterAccountId, "transactions", counterTxRef.id), {
-                        linkedTransactionId: mainTxRef.id
-                    })
-                ]);
-
-            } else {
-                // Single entry transaction
-                await window.addDoc(window.collection(db, "accounts", accountId, "transactions"), mainTransaction);
-            }
+            await window.addDoc(window.collection(db, "accounts", accountId, "transactions"), transaction);
 
         } catch (err) {
             alert("Error adding transaction: " + err.message);
         }
         document.getElementById("transactionForm").reset();
-        document.getElementById('counterAccount').style.display = 'none';
-        document.getElementById('transactionType').value = 'single';
-    });
-
-    document.getElementById('hideCashInBtn').addEventListener('click', function(e) {
-        e.preventDefault();
-        hideCashIn = !hideCashIn;
-        setHideState(hideCashIn, hideCashOut);
-        updateFormVisibility();
-        renderTransactionsRealtime();
-    });
-    document.getElementById('hideCashOutBtn').addEventListener('click', function(e) {
-        e.preventDefault();
-        hideCashOut = !hideCashOut;
-        setHideState(hideCashIn, hideCashOut);
-        updateFormVisibility();
-        renderTransactionsRealtime();
     });
 
     // Date filter logic
@@ -877,4 +640,3 @@
 </script>
 </body>
 </html>
-
