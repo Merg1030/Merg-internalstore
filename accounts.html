@@ -666,7 +666,7 @@
         const ref = window.doc(db, "accounts", accountId);
         const docSnap = await window.getDoc(ref);
         if (docSnap.exists()) {
-            const account = doc.data();
+            const account = docSnap.data();  // FIXED: Changed from account.data() to docSnap.data()
             accountNameDiv.textContent = account.name;
             renderTransactionsRealtime();
         } else {
@@ -690,6 +690,8 @@
             snapshot.forEach(doc => {
                 transactions.push({ id: doc.id, ...doc.data() });
             });
+            
+            console.log("Transactions loaded:", transactions.length); // Debug log
             
             // Sort by date
             transactions.sort((a, b) => (a.date > b.date ? 1 : -1));
@@ -736,6 +738,20 @@
             });
             
             currentBalanceSpan.textContent = balance.toFixed(2);
+            
+            // Show message if no transactions
+            if (filteredTransactions.length === 0) {
+                const emptyRow = document.createElement("tr");
+                emptyRow.innerHTML = `
+                    <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                        No transactions found. Click "Add Transaction" to create your first entry.
+                    </td>
+                `;
+                tableBody.appendChild(emptyRow);
+            }
+        }, (error) => {
+            console.error("Error loading transactions:", error);
+            alert("Error loading transactions: " + error.message);
         });
     }
 
@@ -790,7 +806,8 @@
         }
         
         // Hide the menu
-        document.getElementById(`menu-${transactionId}`).classList.remove('show');
+        const menu = document.getElementById(`menu-${transactionId}`);
+        if (menu) menu.classList.remove('show');
     };
 
     window.deleteTransaction = function(transactionId) {
@@ -798,7 +815,8 @@
         document.getElementById('deleteModal').classList.add('active');
         
         // Hide the menu
-        document.getElementById(`menu-${transactionId}`).classList.remove('show');
+        const menu = document.getElementById(`menu-${transactionId}`);
+        if (menu) menu.classList.remove('show');
     };
 
     // Close menus when clicking outside
@@ -806,7 +824,8 @@
         document.querySelectorAll('.transaction-menu').forEach(menu => {
             menu.classList.remove('show');
         });
-        document.getElementById('globalActionMenu').classList.remove('show');
+        const globalMenu = document.getElementById('globalActionMenu');
+        if (globalMenu) globalMenu.classList.remove('show');
     });
 
     // Toggle form visibility
@@ -827,18 +846,25 @@
     });
 
     // Toggle global action menu
-    document.getElementById("globalActionMenuBtn").addEventListener("click", function(e) {
-        e.stopPropagation();
-        const globalMenu = document.getElementById('globalActionMenu');
-        globalMenu.classList.toggle('show');
-    });
+    const globalActionMenuBtn = document.getElementById("globalActionMenuBtn");
+    if (globalActionMenuBtn) {
+        globalActionMenuBtn.addEventListener("click", function(e) {
+            e.stopPropagation();
+            const globalMenu = document.getElementById('globalActionMenu');
+            globalMenu.classList.toggle('show');
+        });
+    }
 
     // Toggle filter visibility
-    document.getElementById("toggleFilterBtn").addEventListener("click", function() {
-        const filterBar = document.getElementById("filterBar");
-        filterBar.classList.toggle('active');
-        document.getElementById('globalActionMenu').classList.remove('show');
-    });
+    const toggleFilterBtn = document.getElementById("toggleFilterBtn");
+    if (toggleFilterBtn) {
+        toggleFilterBtn.addEventListener("click", function() {
+            const filterBar = document.getElementById("filterBar");
+            filterBar.classList.toggle('active');
+            const globalMenu = document.getElementById('globalActionMenu');
+            if (globalMenu) globalMenu.classList.remove('show');
+        });
+    }
 
     // Handle form submission
     document.getElementById("transactionForm").addEventListener("submit", async function(e) {
@@ -871,10 +897,12 @@
             if (isUpdate && transactionId) {
                 // Update existing transaction
                 await window.updateDoc(window.doc(db, "accounts", accountId, "transactions", transactionId), transaction);
+                console.log("Transaction updated:", transactionId);
             } else {
                 // Add new transaction
                 transaction.created = window.serverTimestamp();
-                await window.addDoc(window.collection(db, "accounts", accountId, "transactions"), transaction);
+                const docRef = await window.addDoc(window.collection(db, "accounts", accountId, "transactions"), transaction);
+                console.log("Transaction added with ID:", docRef.id);
             }
 
             // Reset form
@@ -889,6 +917,7 @@
             delete submitBtn.dataset.transactionId;
 
         } catch (err) {
+            console.error("Error saving transaction:", err);
             alert("Error: " + err.message);
         }
     });
@@ -898,9 +927,11 @@
         if (selectedTransactionId) {
             try {
                 await window.deleteDoc(window.doc(db, "accounts", accountId, "transactions", selectedTransactionId));
+                console.log("Transaction deleted:", selectedTransactionId);
                 document.getElementById('deleteModal').classList.remove('active');
                 selectedTransactionId = null;
             } catch (err) {
+                console.error("Error deleting transaction:", err);
                 alert("Error deleting transaction: " + err.message);
             }
         }
@@ -930,8 +961,12 @@
 
     window.addEventListener("DOMContentLoaded", () => {
         // Restore filter state from localstorage
-        document.getElementById('filterStart').value = filterStart;
-        document.getElementById('filterEnd').value = filterEnd;
+        if (document.getElementById('filterStart')) {
+            document.getElementById('filterStart').value = filterStart;
+        }
+        if (document.getElementById('filterEnd')) {
+            document.getElementById('filterEnd').value = filterEnd;
+        }
         showAccountDetails();
     });
 </script>
