@@ -7,7 +7,7 @@
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot, deleteDoc, doc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
     window.initializeApp = initializeApp;
     window.getFirestore = getFirestore;
     window.collection = collection;
@@ -18,6 +18,7 @@
     window.deleteDoc = deleteDoc;
     window.doc = doc;
     window.updateDoc = updateDoc;
+    window.writeBatch = writeBatch;
   </script>
   <style>
     * {
@@ -267,6 +268,10 @@
       background: linear-gradient(135deg, #607D8B, #455A64);
     }
     
+    .general .icon {
+      background: linear-gradient(135deg, #9E9E9E, #757575);
+    }
+    
     .card h2 {
       font-size: 22px;
       margin-bottom: 10px;
@@ -333,7 +338,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       display: none;
       flex-direction: column;
-      min-width: 150px;
+      min-width: 180px;
       z-index: 1000;
       overflow: hidden;
     }
@@ -367,6 +372,10 @@
     
     .action-menu-item.edit {
       color: #1976d2;
+    }
+    
+    .action-menu-item.transfer {
+      color: #FF9800;
     }
     
     .action-menu-item.delete {
@@ -482,6 +491,28 @@
       background: #1565c0;
     }
     
+    .modal-btn.transfer {
+      background: #FF9800;
+      color: white;
+    }
+    
+    .modal-btn.transfer:hover {
+      background: #F57C00;
+    }
+    
+    /* Transfer Accounts Modal */
+    .transfer-info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    
+    .transfer-info p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    
     /* Footer */
     .footer {
       text-align: center;
@@ -562,6 +593,7 @@
       <div class="ledger-info">
         <h2 id="currentLedgerName">Select a Ledger</h2>
         <p id="currentLedgerDescription">Choose or create a ledger to manage accounts</p>
+        <p id="accountCount" style="color: #666; font-size: 14px; margin-top: 5px;"></p>
       </div>
       <div class="action-buttons">
         <button class="action-btn" id="addAccountBtn">+ Add Account</button>
@@ -574,11 +606,12 @@
       <div class="form-row">
         <input type="text" id="ledgerName" placeholder="Ledger Name (e.g., Personal, Business)" required>
         <select id="ledgerColor">
+          <option value="general">General (Gray)</option>
           <option value="personal">Personal (Blue)</option>
           <option value="work">Work (Green)</option>
           <option value="business">Business (Orange)</option>
           <option value="family">Family (Purple)</option>
-          <option value="other">Other (Gray)</option>
+          <option value="other">Other (Teal)</option>
         </select>
         <button type="submit" id="submitLedgerBtn">Create Ledger</button>
       </div>
@@ -617,10 +650,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3>Delete Ledger</h3>
-        <p id="deleteLedgerText">Are you sure you want to delete this ledger? This action cannot be undone.</p>
-        <p style="color: #e53935; font-weight: 500; margin-top: 10px;">
-          ⚠️ Warning: All accounts in this ledger will also be deleted!
-        </p>
+        <p id="deleteLedgerText">Are you sure you want to delete this ledger?</p>
+        <div class="transfer-info">
+          <p><strong>⚠️ Important:</strong> You cannot delete a ledger that contains accounts.</p>
+          <p>Please transfer all accounts to another ledger first, or delete the accounts.</p>
+        </div>
       </div>
       <div class="modal-actions">
         <button class="modal-btn cancel" id="cancelDeleteLedgerBtn">Cancel</button>
@@ -675,16 +709,68 @@
       </div>
       <div class="form-row" style="margin: 20px 0;">
         <select id="editLedgerColor">
+          <option value="general">General (Gray)</option>
           <option value="personal">Personal (Blue)</option>
           <option value="work">Work (Green)</option>
           <option value="business">Business (Orange)</option>
           <option value="family">Family (Purple)</option>
-          <option value="other">Other (Gray)</option>
+          <option value="other">Other (Teal)</option>
         </select>
       </div>
       <div class="modal-actions">
         <button class="modal-btn cancel" id="cancelEditLedgerBtn">Cancel</button>
         <button class="modal-btn save" id="saveEditLedgerBtn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transfer Account Modal -->
+  <div class="modal" id="transferAccountModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Transfer Account</h3>
+        <p>Move account to a different ledger</p>
+      </div>
+      <div class="transfer-info">
+        <p><strong>Account:</strong> <span id="transferAccountName"></span></p>
+        <p><strong>Current Ledger:</strong> <span id="transferCurrentLedger"></span></p>
+      </div>
+      <div class="form-row" style="margin: 20px 0;">
+        <select id="transferTargetLedger">
+          <option value="">Select target ledger...</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="cancelTransferAccountBtn">Cancel</button>
+        <button class="modal-btn transfer" id="confirmTransferAccountBtn">Transfer Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Transfer Modal -->
+  <div class="modal" id="bulkTransferModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Transfer All Accounts</h3>
+        <p>Move all accounts from one ledger to another</p>
+      </div>
+      <div class="form-row" style="margin: 20px 0;">
+        <select id="bulkTransferSource">
+          <option value="">Select source ledger...</option>
+        </select>
+      </div>
+      <div class="form-row" style="margin: 20px 0;">
+        <select id="bulkTransferTarget">
+          <option value="">Select target ledger...</option>
+        </select>
+      </div>
+      <div class="transfer-info">
+        <p><strong>Note:</strong> This will move all accounts from the source ledger to the target ledger.</p>
+        <p>The source ledger will be empty after this operation.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="cancelBulkTransferBtn">Cancel</button>
+        <button class="modal-btn transfer" id="confirmBulkTransferBtn">Transfer All Accounts</button>
       </div>
     </div>
   </div>
@@ -715,13 +801,87 @@
     let selectedAccountId = null;
     let selectedLedgerForEdit = null;
     let selectedAccountForEdit = null;
+    let accountToTransfer = null;
 
     // Initialize
     initializeApp();
 
     async function initializeApp() {
+      await ensureGeneralLedgerExists();
       await loadLedgers();
       setupEventListeners();
+    }
+
+    async function ensureGeneralLedgerExists() {
+      // Check if General Ledger exists, if not create it
+      const ledgersQuery = window.query(
+        window.collection(db, "ledgers"),
+        window.where("branchId", "==", branchId),
+        window.where("name", "==", "General Ledger")
+      );
+      
+      const snapshot = await window.getDocs(ledgersQuery);
+      
+      if (snapshot.empty) {
+        // Create General Ledger
+        const generalLedgerData = {
+          name: "General Ledger",
+          color: "general",
+          branchId,
+          created: new Date().toISOString(),
+          isDefault: true
+        };
+        
+        await window.addDoc(window.collection(db, "ledgers"), generalLedgerData);
+        console.log("Created General Ledger");
+        
+        // Move all existing accounts to General Ledger
+        await moveAllAccountsToGeneralLedger();
+      }
+    }
+
+    async function moveAllAccountsToGeneralLedger() {
+      try {
+        // Get the General Ledger
+        const generalLedgerQuery = window.query(
+          window.collection(db, "ledgers"),
+          window.where("branchId", "==", branchId),
+          window.where("name", "==", "General Ledger")
+        );
+        
+        const generalLedgerSnapshot = await window.getDocs(generalLedgerQuery);
+        
+        if (!generalLedgerSnapshot.empty) {
+          const generalLedgerDoc = generalLedgerSnapshot.docs[0];
+          const generalLedgerId = generalLedgerDoc.id;
+          
+          // Get all accounts in this branch
+          const accountsQuery = window.query(
+            window.collection(db, "accounts"),
+            window.where("branchId", "==", branchId)
+          );
+          
+          const accountsSnapshot = await window.getDocs(accountsQuery);
+          
+          if (!accountsSnapshot.empty) {
+            const batch = window.writeBatch(db);
+            
+            accountsSnapshot.docs.forEach(doc => {
+              // Update each account to belong to General Ledger
+              const accountRef = window.doc(db, "accounts", doc.id);
+              batch.update(accountRef, {
+                ledgerId: generalLedgerId,
+                updated: new Date().toISOString()
+              });
+            });
+            
+            await batch.commit();
+            console.log(`Moved ${accountsSnapshot.size} accounts to General Ledger`);
+          }
+        }
+      } catch (error) {
+        console.error("Error moving accounts to General Ledger:", error);
+      }
     }
 
     async function loadLedgers() {
@@ -736,9 +896,16 @@
           ledgers.push({ id: doc.id, ...doc.data() });
         });
         
+        // Sort ledgers: General first, then alphabetical
+        ledgers.sort((a, b) => {
+          if (a.name === "General Ledger") return -1;
+          if (b.name === "General Ledger") return 1;
+          return a.name.localeCompare(b.name);
+        });
+        
         renderLedgerTabs();
         
-        // If no ledgers, show empty state
+        // If no ledgers (shouldn't happen since we create General Ledger)
         if (ledgers.length === 0) {
           document.getElementById('noLedgers').style.display = 'block';
           document.getElementById('ledgerManager').style.display = 'none';
@@ -746,9 +913,14 @@
           document.getElementById('noLedgers').style.display = 'none';
           document.getElementById('ledgerManager').style.display = 'flex';
           
-          // Select first ledger by default
-          if (!selectedLedgerId && ledgers.length > 0) {
-            selectLedger(ledgers[0].id);
+          // Select General Ledger by default
+          if (!selectedLedgerId) {
+            const generalLedger = ledgers.find(l => l.name === "General Ledger");
+            if (generalLedger) {
+              selectLedger(generalLedger.id);
+            } else if (ledgers.length > 0) {
+              selectLedger(ledgers[0].id);
+            }
           }
         }
       });
@@ -807,20 +979,25 @@
       window.onSnapshot(q, (snapshot) => {
         const cardList = document.getElementById('cardList');
         const noAccounts = document.getElementById('noAccounts');
+        const accountCount = document.getElementById('accountCount');
         accounts = [];
         
         cardList.innerHTML = '';
         
         if (snapshot.empty) {
           noAccounts.style.display = 'block';
+          accountCount.textContent = '0 accounts';
         } else {
           noAccounts.style.display = 'none';
+          accountCount.textContent = `${snapshot.size} account${snapshot.size !== 1 ? 's' : ''}`;
+          
           snapshot.forEach(doc => {
             const data = doc.data();
             const account = { id: doc.id, ...data };
             accounts.push(account);
             
-            const card = createAccountCard(account, ledgers.find(l => l.id === ledgerId));
+            const ledger = ledgers.find(l => l.id === ledgerId);
+            const card = createAccountCard(account, ledger);
             cardList.appendChild(card);
           });
         }
@@ -829,7 +1006,7 @@
 
     function createAccountCard(account, ledger) {
       const card = document.createElement('div');
-      card.className = `card ${ledger?.color || 'personal'}`;
+      card.className = `card ${ledger?.color || 'general'}`;
       card.dataset.accountId = account.id;
       
       // Generate initials for icon
@@ -843,7 +1020,7 @@
       card.innerHTML = `
         <div class="icon">${initials}</div>
         <h2>${account.name}</h2>
-        <p>Ledger: ${ledger?.name || 'Unknown'}</p>
+        <p>Ledger: ${ledger?.name || 'General Ledger'}</p>
         <button class="open-btn">Open Account</button>
         
         <div class="card-actions">
@@ -851,6 +1028,9 @@
           <div class="action-menu" id="menu-account-${account.id}">
             <button class="action-menu-item edit" onclick="openEditAccountModal('${account.id}')">
               ✏️ Edit Account
+            </button>
+            <button class="action-menu-item transfer" onclick="openTransferAccountModal('${account.id}')">
+              🔄 Transfer to Another Ledger
             </button>
             <button class="action-menu-item delete" onclick="openDeleteAccountModal('${account.id}')">
               🗑️ Delete Account
@@ -949,6 +1129,37 @@
       }
     };
 
+    window.openTransferAccountModal = function(accountId) {
+      const account = accounts.find(acc => acc.id === accountId);
+      if (account) {
+        accountToTransfer = accountId;
+        const currentLedger = ledgers.find(l => l.id === account.ledgerId);
+        
+        document.getElementById('transferAccountName').textContent = account.name;
+        document.getElementById('transferCurrentLedger').textContent = currentLedger?.name || 'General Ledger';
+        
+        // Populate target ledger dropdown
+        const targetSelect = document.getElementById('transferTargetLedger');
+        targetSelect.innerHTML = '<option value="">Select target ledger...</option>';
+        
+        ledgers.forEach(ledger => {
+          if (ledger.id !== account.ledgerId) { // Don't include current ledger
+            const option = document.createElement('option');
+            option.value = ledger.id;
+            option.textContent = ledger.name;
+            targetSelect.appendChild(option);
+          }
+        });
+        
+        // Hide any open menu
+        document.querySelectorAll('.action-menu').forEach(menu => {
+          menu.classList.remove('show');
+        });
+        
+        document.getElementById('transferAccountModal').classList.add('active');
+      }
+    };
+
     // Global functions for ledger actions
     window.openEditLedgerModal = function(ledgerId) {
       const ledger = ledgers.find(l => l.id === ledgerId);
@@ -965,10 +1176,92 @@
       if (ledger) {
         selectedLedgerForEdit = ledgerId;
         document.getElementById('deleteLedgerText').textContent = 
-          `Are you sure you want to delete the ledger "${ledger.name}"? This action cannot be undone.`;
+          `Are you sure you want to delete the ledger "${ledger.name}"?`;
         document.getElementById('deleteLedgerModal').classList.add('active');
       }
     };
+
+    function openBulkTransferModal() {
+      const sourceSelect = document.getElementById('bulkTransferSource');
+      const targetSelect = document.getElementById('bulkTransferTarget');
+      
+      sourceSelect.innerHTML = '<option value="">Select source ledger...</option>';
+      targetSelect.innerHTML = '<option value="">Select target ledger...</option>';
+      
+      ledgers.forEach(ledger => {
+        const sourceOption = document.createElement('option');
+        sourceOption.value = ledger.id;
+        sourceOption.textContent = ledger.name;
+        sourceSelect.appendChild(sourceOption);
+        
+        const targetOption = document.createElement('option');
+        targetOption.value = ledger.id;
+        targetOption.textContent = ledger.name;
+        targetSelect.appendChild(targetOption.cloneNode(true));
+      });
+      
+      document.getElementById('bulkTransferModal').classList.add('active');
+    }
+
+    async function transferAccount(accountId, targetLedgerId) {
+      try {
+        await window.updateDoc(window.doc(db, "accounts", accountId), {
+          ledgerId: targetLedgerId,
+          updated: new Date().toISOString()
+        });
+        
+        return true;
+      } catch (error) {
+        console.error("Error transferring account:", error);
+        return false;
+      }
+    }
+
+    async function bulkTransferAccounts(sourceLedgerId, targetLedgerId) {
+      if (sourceLedgerId === targetLedgerId) {
+        alert("Source and target ledgers cannot be the same.");
+        return false;
+      }
+      
+      try {
+        // Get all accounts in source ledger
+        const accountsQuery = window.query(
+          window.collection(db, "accounts"),
+          window.where("branchId", "==", branchId),
+          window.where("ledgerId", "==", sourceLedgerId)
+        );
+        
+        const accountsSnapshot = await window.getDocs(accountsQuery);
+        
+        if (accountsSnapshot.empty) {
+          alert("Source ledger is already empty.");
+          return false;
+        }
+        
+        // Update all accounts in batch
+        const batch = window.writeBatch(db);
+        
+        accountsSnapshot.docs.forEach(doc => {
+          const accountRef = window.doc(db, "accounts", doc.id);
+          batch.update(accountRef, {
+            ledgerId: targetLedgerId,
+            updated: new Date().toISOString()
+          });
+        });
+        
+        await batch.commit();
+        
+        // If we're currently viewing the source ledger, switch to target ledger
+        if (selectedLedgerId === sourceLedgerId) {
+          selectLedger(targetLedgerId);
+        }
+        
+        return true;
+      } catch (error) {
+        console.error("Error in bulk transfer:", error);
+        return false;
+      }
+    }
 
     function setupEventListeners() {
       // Create first ledger button
@@ -977,11 +1270,8 @@
       // Add account button
       document.getElementById('addAccountBtn').addEventListener('click', showAccountForm);
       
-      // Manage ledgers button
-      document.getElementById('manageLedgersBtn').addEventListener('click', () => {
-        // You can expand this to show a ledger management panel
-        alert('Ledger management features coming soon!');
-      });
+      // Manage ledgers button - now opens bulk transfer
+      document.getElementById('manageLedgersBtn').addEventListener('click', openBulkTransferModal);
       
       // Ledger form submission
       document.getElementById('ledgerForm').addEventListener('submit', async (e) => {
@@ -1047,7 +1337,7 @@
         }
       });
       
-      // Modal buttons
+      // Account modal buttons
       document.getElementById('cancelDeleteAccountBtn').addEventListener('click', () => {
         document.getElementById('deleteAccountModal').classList.remove('active');
         selectedAccountForEdit = null;
@@ -1093,6 +1383,74 @@
         }
       });
       
+      // Transfer modal buttons
+      document.getElementById('cancelTransferAccountBtn').addEventListener('click', () => {
+        document.getElementById('transferAccountModal').classList.remove('active');
+        accountToTransfer = null;
+      });
+      
+      document.getElementById('confirmTransferAccountBtn').addEventListener('click', async () => {
+        const targetLedgerId = document.getElementById('transferTargetLedger').value;
+        
+        if (!targetLedgerId) {
+          alert('Please select a target ledger');
+          return;
+        }
+        
+        if (!accountToTransfer) return;
+        
+        const success = await transferAccount(accountToTransfer, targetLedgerId);
+        
+        if (success) {
+          alert('Account transferred successfully!');
+          document.getElementById('transferAccountModal').classList.remove('active');
+          accountToTransfer = null;
+        } else {
+          alert('Error transferring account');
+        }
+      });
+      
+      // Bulk transfer modal buttons
+      document.getElementById('cancelBulkTransferBtn').addEventListener('click', () => {
+        document.getElementById('bulkTransferModal').classList.remove('active');
+      });
+      
+      document.getElementById('confirmBulkTransferBtn').addEventListener('click', async () => {
+        const sourceLedgerId = document.getElementById('bulkTransferSource').value;
+        const targetLedgerId = document.getElementById('bulkTransferTarget').value;
+        
+        if (!sourceLedgerId || !targetLedgerId) {
+          alert('Please select both source and target ledgers');
+          return;
+        }
+        
+        if (sourceLedgerId === targetLedgerId) {
+          alert('Source and target ledgers cannot be the same');
+          return;
+        }
+        
+        const sourceLedger = ledgers.find(l => l.id === sourceLedgerId);
+        const targetLedger = ledgers.find(l => l.id === targetLedgerId);
+        
+        if (!sourceLedger || !targetLedger) {
+          alert('Invalid ledger selection');
+          return;
+        }
+        
+        if (!confirm(`Are you sure you want to move ALL accounts from "${sourceLedger.name}" to "${targetLedger.name}"?`)) {
+          return;
+        }
+        
+        const success = await bulkTransferAccounts(sourceLedgerId, targetLedgerId);
+        
+        if (success) {
+          alert('All accounts transferred successfully!');
+          document.getElementById('bulkTransferModal').classList.remove('active');
+        } else {
+          alert('Error transferring accounts');
+        }
+      });
+      
       // Ledger modal buttons
       document.getElementById('cancelDeleteLedgerBtn').addEventListener('click', () => {
         document.getElementById('deleteLedgerModal').classList.remove('active');
@@ -1102,12 +1460,34 @@
       document.getElementById('confirmDeleteLedgerBtn').addEventListener('click', async () => {
         if (!selectedLedgerForEdit) return;
         
+        // Check if ledger has accounts
+        const ledger = ledgers.find(l => l.id === selectedLedgerForEdit);
+        if (ledger?.name === "General Ledger") {
+          alert("Cannot delete the General Ledger. It is required for the system.");
+          document.getElementById('deleteLedgerModal').classList.remove('active');
+          selectedLedgerForEdit = null;
+          return;
+        }
+        
         try {
+          // Check if ledger has accounts
+          const accountsQuery = window.query(
+            window.collection(db, "accounts"),
+            window.where("branchId", "==", branchId),
+            window.where("ledgerId", "==", selectedLedgerForEdit)
+          );
+          
+          const accountsSnapshot = await window.getDocs(accountsQuery);
+          
+          if (!accountsSnapshot.empty) {
+            alert(`Cannot delete ledger because it contains ${accountsSnapshot.size} account(s).\n\nPlease transfer all accounts to another ledger first.`);
+            document.getElementById('deleteLedgerModal').classList.remove('active');
+            selectedLedgerForEdit = null;
+            return;
+          }
+          
           // Delete the ledger
           await window.deleteDoc(window.doc(db, "ledgers", selectedLedgerForEdit));
-          
-          // Note: In production, you might want to delete all accounts in this ledger too
-          // or move them to another ledger
           
           document.getElementById('deleteLedgerModal').classList.remove('active');
           selectedLedgerForEdit = null;
@@ -1136,6 +1516,12 @@
         }
         
         if (!selectedLedgerForEdit) return;
+        
+        const ledger = ledgers.find(l => l.id === selectedLedgerForEdit);
+        if (ledger?.name === "General Ledger" && newName !== "General Ledger") {
+          alert("Cannot rename the General Ledger. It must remain as 'General Ledger'.");
+          return;
+        }
         
         try {
           await window.updateDoc(window.doc(db, "ledgers", selectedLedgerForEdit), {
