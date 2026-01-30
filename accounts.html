@@ -54,7 +54,7 @@
         /* Top Control Bar */
         .top-control-bar {
             background: #f8f9fa;
-            padding: 12px 20px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -104,33 +104,13 @@
             color: #333;
         }
         
-        /* Page Header */
-        .page-header {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-            flex-shrink: 0;
-        }
-        
-        .page-header h1 {
-            font-size: 28px;
-            color: #1976d2;
-            margin-bottom: 8px;
-        }
-        
-        .account-name {
-            font-size: 18px;
-            color: #666;
-            font-weight: 500;
-        }
-        
         /* Filter Bar */
         .filter-bar {
             display: none;
             gap: 10px;
             justify-content: center;
             align-items: center;
-            margin: 15px 20px;
+            margin: 10px 20px 0 20px;
             padding: 15px;
             background: #f8f9fa;
             border-radius: 8px;
@@ -186,7 +166,7 @@
         
         /* Form Container */
         .form-container {
-            margin: 0 20px 20px 20px;
+            margin: 10px 20px 15px 20px;
             padding: 20px;
             background: #f8f9fa;
             border-radius: 8px;
@@ -247,6 +227,18 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+            padding-top: 5px;
+        }
+        
+        /* Account Name Display */
+        .account-name-display {
+            padding: 10px 20px 5px 20px;
+            font-size: 18px;
+            color: #1976d2;
+            font-weight: 600;
+            border-bottom: 1px solid #e0e0e0;
+            background: #fff;
+            flex-shrink: 0;
         }
         
         /* Table Container */
@@ -294,16 +286,21 @@
             background: #f8f9fa;
         }
         
-        /* Green for Cash In (Credit) */
-        .cash-in {
+        /* Red for Debit */
+        .debit {
+            color: #c62828;
+            font-weight: 600;
+        }
+        
+        /* Green for Credit */
+        .credit {
             color: #2e7d32;
             font-weight: 600;
         }
         
-        /* Red for Cash Out (Debit) */
-        .cash-out {
-            color: #c62828;
+        .balance {
             font-weight: 600;
+            color: #333;
         }
         
         .actions-cell {
@@ -500,26 +497,23 @@
                 padding: 10px 15px;
             }
             
-            .page-header {
-                padding: 15px;
-            }
-            
-            .page-header h1 {
-                font-size: 24px;
-            }
-            
             .table-container {
                 margin: 0 10px 10px 10px;
             }
             
             .form-container {
-                margin: 0 10px 10px 10px;
+                margin: 10px 10px 10px 10px;
                 padding: 15px;
             }
             
             .filter-bar {
-                margin: 10px;
+                margin: 10px 10px 0 10px;
                 padding: 10px;
+            }
+            
+            .account-name-display {
+                padding: 10px 15px 5px 15px;
+                font-size: 16px;
             }
         }
     </style>
@@ -540,14 +534,11 @@
         </div>
     </div>
     
-    <!-- Page Header -->
-    <div class="page-header">
-        <h1>Book of Accounts</h1>
-        <div class="account-name" id="accountName"></div>
-    </div>
-    
     <!-- Scrollable Content Area -->
     <div class="content-area">
+        <!-- Account Name Display -->
+        <div class="account-name-display" id="accountName"></div>
+        
         <!-- Filter Bar -->
         <div class="filter-bar" id="filterBar">
             <span>From</span>
@@ -565,8 +556,8 @@
                     <input type="date" id="date" required>
                     <input type="text" id="reference" placeholder="Reference" required>
                     <input type="text" id="description" placeholder="Description" required>
-                    <input type="number" id="cashIn" placeholder="Cash In (Credit)" min="0" step="0.01">
-                    <input type="number" id="cashOut" placeholder="Cash Out (Debit)" min="0" step="0.01">
+                    <input type="number" id="debit" placeholder="Debit" min="0" step="0.01">
+                    <input type="number" id="credit" placeholder="Credit" min="0" step="0.01">
                     <button type="submit">Add Transaction</button>
                 </div>
             </form>
@@ -580,8 +571,8 @@
                     <th>Date</th>
                     <th>Reference</th>
                     <th>Description</th>
-                    <th>Cash In (Credit)</th>
-                    <th>Cash Out (Debit)</th>
+                    <th>Debit</th>
+                    <th>Credit</th>
                     <th>Balance</th>
                     <th class="actions-cell">Actions</th>
                 </tr>
@@ -666,7 +657,7 @@
         const ref = window.doc(db, "accounts", accountId);
         const docSnap = await window.getDoc(ref);
         if (docSnap.exists()) {
-            const account = docSnap.data();  // FIXED: Changed from account.data() to docSnap.data()
+            const account = docSnap.data();
             accountNameDiv.textContent = account.name;
             renderTransactionsRealtime();
         } else {
@@ -691,7 +682,7 @@
                 transactions.push({ id: doc.id, ...doc.data() });
             });
             
-            console.log("Transactions loaded:", transactions.length); // Debug log
+            console.log("Transactions loaded:", transactions.length);
             
             // Sort by date
             transactions.sort((a, b) => (a.date > b.date ? 1 : -1));
@@ -712,9 +703,13 @@
 
             balance = 0;
             filteredTransactions.forEach(tx => {
-                const cashIn = parseFloat(tx.cashIn || 0);
-                const cashOut = parseFloat(tx.cashOut || 0);
-                balance += (cashIn - cashOut);
+                // Note: cashOut = Debit, cashIn = Credit
+                const debit = parseFloat(tx.cashOut || 0);
+                const credit = parseFloat(tx.cashIn || 0);
+                
+                // For balance calculation: Debit increases balance, Credit decreases balance
+                // In accounting: Balance = Previous Balance + Debit - Credit
+                balance += (debit - credit);
                 
                 let row = document.createElement("tr");
                 row.dataset.transactionId = tx.id;
@@ -723,9 +718,9 @@
                     <td>${tx.date}</td>
                     <td>${tx.reference}</td>
                     <td>${tx.description}</td>
-                    <td class="${cashIn > 0 ? 'cash-in' : ''}">${cashIn > 0 ? Number(cashIn).toFixed(2) : ''}</td>
-                    <td class="${cashOut > 0 ? 'cash-out' : ''}">${cashOut > 0 ? Number(cashOut).toFixed(2) : ''}</td>
-                    <td>${balance.toFixed(2)}</td>
+                    <td class="${debit > 0 ? 'debit' : ''}">${debit > 0 ? Number(debit).toFixed(2) : ''}</td>
+                    <td class="${credit > 0 ? 'credit' : ''}">${credit > 0 ? Number(credit).toFixed(2) : ''}</td>
+                    <td class="balance">${balance.toFixed(2)}</td>
                     <td class="actions-cell">
                         <button class="action-dots" data-transaction-id="${tx.id}" onclick="showTransactionMenu(event, '${tx.id}')">⋮</button>
                         <div class="transaction-menu" id="menu-${tx.id}">
@@ -786,8 +781,10 @@
             document.getElementById('date').value = transaction.date;
             document.getElementById('reference').value = transaction.reference;
             document.getElementById('description').value = transaction.description;
-            document.getElementById('cashIn').value = transaction.cashIn || '';
-            document.getElementById('cashOut').value = transaction.cashOut || '';
+            
+            // Map cashOut to debit and cashIn to credit
+            document.getElementById('debit').value = transaction.cashOut || '';
+            document.getElementById('credit').value = transaction.cashIn || '';
             
             // Show form
             const formContainer = document.getElementById("formContainer");
@@ -872,8 +869,8 @@
         const date = document.getElementById("date").value;
         const reference = document.getElementById("reference").value.trim();
         const description = document.getElementById("description").value.trim();
-        const cashIn = document.getElementById("cashIn").value ? parseFloat(document.getElementById("cashIn").value) : 0;
-        const cashOut = document.getElementById("cashOut").value ? parseFloat(document.getElementById("cashOut").value) : 0;
+        const debit = document.getElementById("debit").value ? parseFloat(document.getElementById("debit").value) : 0;
+        const credit = document.getElementById("credit").value ? parseFloat(document.getElementById("credit").value) : 0;
         const submitBtn = this.querySelector('button[type="submit"]');
         const isUpdate = submitBtn.dataset.mode === 'update';
         const transactionId = submitBtn.dataset.transactionId;
@@ -884,12 +881,13 @@
         }
 
         try {
+            // Map debit to cashOut and credit to cashIn for database
             const transaction = {
                 date,
                 reference,
                 description,
-                cashIn,
-                cashOut,
+                cashOut: debit,  // Debit = cashOut
+                cashIn: credit,  // Credit = cashIn
                 branchId,
                 updated: window.serverTimestamp()
             };
