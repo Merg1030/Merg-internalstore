@@ -67,12 +67,6 @@
       padding: 0 20px;
     }
     
-    .top-bar-right {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-    }
-    
     .add-btn {
       background: #1976d2;
       color: white;
@@ -89,24 +83,6 @@
       background: #1565c0;
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(25, 118, 210, 0.2);
-    }
-    
-    .category-btn {
-      background: #4caf50;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    .category-btn:hover {
-      background: #43a047;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
     }
     
     /* Category Filter */
@@ -620,11 +596,6 @@
         padding: 0 10px;
       }
       
-      .top-bar-right {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      
       .form-row {
         flex-direction: column;
       }
@@ -662,10 +633,7 @@
     
     <div class="top-bar">
       <h2>Accounts</h2>
-      <div class="top-bar-right">
-        <button class="category-btn" id="manageCategoriesBtn">📊 Manage Categories</button>
-        <button class="add-btn" id="toggleAddBtn">+ Add Account</button>
-      </div>
+      <button class="add-btn" id="toggleAddBtn">+ Add Account</button>
     </div>
     
     <div class="category-filter" id="categoryFilter">
@@ -747,7 +715,7 @@
       </div>
       
       <div class="bulk-instructions">
-        <strong>One-time setup:</strong> Select accounts below and choose a category. All future accounts will have category selection during creation.
+        <strong>Bulk Category Update:</strong> Select accounts below and choose a category to update them all at once.
       </div>
       
       <div class="category-options" id="bulkCategoryOptions">
@@ -809,14 +777,37 @@
     // State variables
     const toggleAddBtn = document.getElementById("toggleAddBtn");
     const accountForm = document.getElementById("accountForm");
-    const manageCategoriesBtn = document.getElementById("manageCategoriesBtn");
     let formVisible = false;
     let accounts = [];
     let selectedAccountId = null;
     let selectedAccountName = null;
     let isEditMode = false;
-    let selectedCategory = 'all';
+    
+    // Get initial selected category from localStorage or default to 'all'
+    let selectedCategory = localStorage.getItem('accountCategoryFilter') || 'all';
     let selectedAccountsForBulk = new Set();
+
+    // Initialize category filter from localStorage
+    function initializeCategoryFilter() {
+      // Remove active class from all buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Find and activate the saved filter button
+      const activeBtn = document.querySelector(`.filter-btn[data-category="${selectedCategory}"]`);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+      } else {
+        // Fallback to 'all' if saved category doesn't exist
+        const allBtn = document.querySelector('.filter-btn[data-category="all"]');
+        if (allBtn) {
+          allBtn.classList.add('active');
+          selectedCategory = 'all';
+          localStorage.setItem('accountCategoryFilter', 'all');
+        }
+      }
+    }
 
     // Toggle add account form
     toggleAddBtn.addEventListener("click", () => {
@@ -828,15 +819,20 @@
       document.getElementById("accountCategoryInput").value = "general";
     });
 
-    // Category filter
+    // Category filter - with persistent storage
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', function() {
+        // Update selected category
+        selectedCategory = this.dataset.category;
+        
+        // Save to localStorage
+        localStorage.setItem('accountCategoryFilter', selectedCategory);
+        
         // Update active state
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
         
-        // Update selected category and filter accounts
-        selectedCategory = this.dataset.category;
+        // Filter accounts
         filterAccountsByCategory();
       });
     });
@@ -861,6 +857,9 @@
         noAccounts.innerHTML = `
           <h3>No ${selectedCategory} Accounts</h3>
           <p>No accounts found in the ${selectedCategory} category</p>
+          <button class="add-btn" style="margin-top: 20px;" onclick="document.querySelector('.filter-btn[data-category=\"all\"]').click()">
+            Show All Accounts
+          </button>
         `;
       } else if (accounts.length === 0) {
         noAccounts.style.display = 'block';
@@ -961,7 +960,7 @@
           // Add event listeners
           setupEventListeners();
           
-          // Apply category filter
+          // Apply saved category filter
           filterAccountsByCategory();
         }
       });
@@ -1064,6 +1063,11 @@
       // Populate account list
       const accountList = document.getElementById("bulkAccountList");
       accountList.innerHTML = '';
+      
+      // Select all accounts by default when opening from menu
+      if (selectedAccountsForBulk.size === 0 || selectedAccountsForBulk.size === 1) {
+        selectedAccountsForBulk = new Set(accounts.map(acc => acc.id));
+      }
       
       accounts.forEach(account => {
         const div = document.createElement("div");
@@ -1264,13 +1268,6 @@
       selectedAccountsForBulk = new Set();
     });
 
-    // Manage categories button
-    manageCategoriesBtn.addEventListener("click", function() {
-      // Select all accounts by default
-      selectedAccountsForBulk = new Set(accounts.map(acc => acc.id));
-      openCategoryModal();
-    });
-
     // Close menus when clicking outside
     document.addEventListener('click', function() {
       document.querySelectorAll('.action-menu').forEach(menu => {
@@ -1279,6 +1276,7 @@
     });
 
     // Initialize
+    initializeCategoryFilter();
     renderAccountsRealtime();
   </script>
 </body>
