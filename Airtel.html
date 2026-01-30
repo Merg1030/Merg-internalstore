@@ -7,7 +7,7 @@
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot, deleteDoc, doc, updateDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
     window.initializeApp = initializeApp;
     window.getFirestore = getFirestore;
     window.collection = collection;
@@ -18,6 +18,8 @@
     window.deleteDoc = deleteDoc;
     window.doc = doc;
     window.updateDoc = updateDoc;
+    window.getDocs = getDocs;
+    window.writeBatch = writeBatch;
   </script>
   <style>
     * {
@@ -65,6 +67,12 @@
       padding: 0 20px;
     }
     
+    .top-bar-right {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    
     .add-btn {
       background: #1976d2;
       color: white;
@@ -81,6 +89,80 @@
       background: #1565c0;
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(25, 118, 210, 0.2);
+    }
+    
+    .category-btn {
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .category-btn:hover {
+      background: #43a047;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
+    }
+    
+    /* Category Filter */
+    .category-filter {
+      display: flex;
+      gap: 10px;
+      margin: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 2px solid #ddd;
+      background: white;
+      color: #666;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .filter-btn:hover {
+      border-color: #1976d2;
+      color: #1976d2;
+    }
+    
+    .filter-btn.active {
+      background: #1976d2;
+      color: white;
+      border-color: #1976d2;
+    }
+    
+    .category-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .category-business {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    
+    .category-personal {
+      background: #f3e5f5;
+      color: #7b1fa2;
+    }
+    
+    .category-general {
+      background: #e8f5e9;
+      color: #2e7d32;
     }
     
     /* Form */
@@ -106,7 +188,7 @@
       align-items: center;
     }
     
-    .form-row input {
+    .form-row input, .form-row select {
       flex: 1;
       padding: 14px 16px;
       border-radius: 8px;
@@ -115,9 +197,10 @@
       font-size: 15px;
       color: #333;
       transition: border-color 0.3s;
+      background: white;
     }
     
-    .form-row input:focus {
+    .form-row input:focus, .form-row select:focus {
       border-color: #1976d2;
       box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
     }
@@ -290,6 +373,10 @@
       color: #e53935;
     }
     
+    .action-menu-item.category {
+      color: #4caf50;
+    }
+    
     /* Empty State */
     .empty-state {
       background: white;
@@ -399,6 +486,108 @@
       background: #1565c0;
     }
     
+    .modal-btn.apply {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .modal-btn.apply:hover {
+      background: #43a047;
+    }
+    
+    .category-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .category-option {
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .category-option:hover {
+      border-color: #1976d2;
+      background: #f8f9fa;
+    }
+    
+    .category-option.selected {
+      border-color: #1976d2;
+      background: #e3f2fd;
+    }
+    
+    .category-option.business {
+      border-left: 4px solid #1565c0;
+    }
+    
+    .category-option.personal {
+      border-left: 4px solid #7b1fa2;
+    }
+    
+    .category-option.general {
+      border-left: 4px solid #2e7d32;
+    }
+    
+    .category-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge-business {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    
+    .badge-personal {
+      background: #f3e5f5;
+      color: #7b1fa2;
+    }
+    
+    .badge-general {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    /* Bulk Category Modal */
+    .bulk-instructions {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-size: 14px;
+      color: #1565c0;
+    }
+    
+    .account-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin: 15px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    
+    .account-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .account-item:last-child {
+      border-bottom: none;
+    }
+    
     /* Footer */
     .footer {
       text-align: center;
@@ -431,6 +620,11 @@
         padding: 0 10px;
       }
       
+      .top-bar-right {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
       .form-row {
         flex-direction: column;
       }
@@ -446,6 +640,10 @@
       .modal-content {
         padding: 20px;
       }
+      
+      .category-filter {
+        margin: 10px;
+      }
     }
     
     @media (max-width: 480px) {
@@ -459,17 +657,32 @@
   <div class="container">
     <div class="header">
       <h1>Trismart Book of Accounts</h1>
-      <p>Manage all your financial accounts</p>
+      <p>Manage all your financial accounts by category</p>
     </div>
     
     <div class="top-bar">
       <h2>Accounts</h2>
-      <button class="add-btn" id="toggleAddBtn">+ Add Account</button>
+      <div class="top-bar-right">
+        <button class="category-btn" id="manageCategoriesBtn">📊 Manage Categories</button>
+        <button class="add-btn" id="toggleAddBtn">+ Add Account</button>
+      </div>
+    </div>
+    
+    <div class="category-filter" id="categoryFilter">
+      <button class="filter-btn active" data-category="all">All Accounts</button>
+      <button class="filter-btn" data-category="business">Business</button>
+      <button class="filter-btn" data-category="personal">Personal</button>
+      <button class="filter-btn" data-category="general">General</button>
     </div>
     
     <form id="accountForm" class="account-form">
       <div class="form-row">
         <input type="text" id="accountNameInput" placeholder="Enter Account Name" required>
+        <select id="accountCategoryInput">
+          <option value="general">General</option>
+          <option value="business">Business</option>
+          <option value="personal">Personal</option>
+        </select>
         <button type="submit" id="submitAccountBtn">Create Account</button>
       </div>
     </form>
@@ -508,14 +721,68 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3>Edit Account</h3>
-        <p>Update the account name</p>
+        <p>Update the account details</p>
       </div>
       <div class="form-row" style="margin: 20px 0;">
         <input type="text" id="editAccountName" placeholder="Enter new account name" required>
+        <select id="editAccountCategory">
+          <option value="general">General</option>
+          <option value="business">Business</option>
+          <option value="personal">Personal</option>
+        </select>
       </div>
       <div class="modal-actions">
         <button class="modal-btn cancel" id="cancelEditBtn">Cancel</button>
         <button class="modal-btn save" id="saveEditBtn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Management Modal -->
+  <div class="modal" id="categoryModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📊 Manage Account Categories</h3>
+        <p>Select a category to apply to multiple accounts at once</p>
+      </div>
+      
+      <div class="bulk-instructions">
+        <strong>One-time setup:</strong> Select accounts below and choose a category. All future accounts will have category selection during creation.
+      </div>
+      
+      <div class="category-options" id="bulkCategoryOptions">
+        <div class="category-option business" data-category="business">
+          <div>
+            <strong>Business</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">For business-related accounts</p>
+          </div>
+          <span class="category-badge badge-business">Business</span>
+        </div>
+        
+        <div class="category-option personal" data-category="personal">
+          <div>
+            <strong>Personal</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">For personal accounts</p>
+          </div>
+          <span class="category-badge badge-personal">Personal</span>
+        </div>
+        
+        <div class="category-option general" data-category="general">
+          <div>
+            <strong>General</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 5px;">For general purpose accounts</p>
+          </div>
+          <span class="category-badge badge-general">General</span>
+        </div>
+      </div>
+      
+      <div class="account-list" id="bulkAccountList">
+        <!-- Accounts will be populated here -->
+      </div>
+      
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="cancelCategoryBtn">Cancel</button>
+        <button class="modal-btn apply" id="applyCategoryBtn">Apply to Selected</button>
       </div>
     </div>
   </div>
@@ -542,11 +809,14 @@
     // State variables
     const toggleAddBtn = document.getElementById("toggleAddBtn");
     const accountForm = document.getElementById("accountForm");
+    const manageCategoriesBtn = document.getElementById("manageCategoriesBtn");
     let formVisible = false;
     let accounts = [];
     let selectedAccountId = null;
     let selectedAccountName = null;
     let isEditMode = false;
+    let selectedCategory = 'all';
+    let selectedAccountsForBulk = new Set();
 
     // Toggle add account form
     toggleAddBtn.addEventListener("click", () => {
@@ -555,7 +825,73 @@
       toggleAddBtn.textContent = formVisible ? "Cancel" : "+ Add Account";
       document.getElementById("submitAccountBtn").textContent = "Create Account";
       document.getElementById("accountNameInput").value = "";
+      document.getElementById("accountCategoryInput").value = "general";
     });
+
+    // Category filter
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Update active state
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Update selected category and filter accounts
+        selectedCategory = this.dataset.category;
+        filterAccountsByCategory();
+      });
+    });
+
+    // Filter accounts by category
+    function filterAccountsByCategory() {
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        const category = card.dataset.category;
+        if (selectedCategory === 'all' || category === selectedCategory) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      // Show/hide empty state
+      const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
+      const noAccounts = document.getElementById("noAccounts");
+      if (visibleCards.length === 0 && accounts.length > 0) {
+        noAccounts.style.display = 'block';
+        noAccounts.innerHTML = `
+          <h3>No ${selectedCategory} Accounts</h3>
+          <p>No accounts found in the ${selectedCategory} category</p>
+        `;
+      } else if (accounts.length === 0) {
+        noAccounts.style.display = 'block';
+        noAccounts.innerHTML = `
+          <h3>No Accounts Yet</h3>
+          <p>Click "Add Account" to create your first account</p>
+        `;
+      } else {
+        noAccounts.style.display = 'none';
+      }
+    }
+
+    // Get category display name
+    function getCategoryDisplayName(category) {
+      switch(category) {
+        case 'business': return 'Business';
+        case 'personal': return 'Personal';
+        case 'general': return 'General';
+        default: return 'General';
+      }
+    }
+
+    // Get category class
+    function getCategoryClass(category) {
+      switch(category) {
+        case 'business': return 'category-business';
+        case 'personal': return 'category-personal';
+        case 'general': return 'category-general';
+        default: return 'category-general';
+      }
+    }
 
     // Render accounts
     function renderAccountsRealtime() {
@@ -581,6 +917,7 @@
             const card = document.createElement("div");
             card.className = "card";
             card.dataset.accountId = doc.id;
+            card.dataset.category = data.category || 'general';
             
             // Generate initials for icon
             const initials = data.name
@@ -590,9 +927,15 @@
               .toUpperCase()
               .substring(0, 2);
             
+            // Category tag
+            const category = data.category || 'general';
+            const categoryDisplay = getCategoryDisplayName(category);
+            const categoryClass = getCategoryClass(category);
+            
             card.innerHTML = `
               <div class="icon">${initials}</div>
               <h2>${data.name}</h2>
+              <div class="category-tag ${categoryClass}">${categoryDisplay}</div>
               <p>View transactions and account details</p>
               <button class="open-btn">Open Account</button>
               
@@ -601,6 +944,9 @@
                 <div class="action-menu" id="menu-${doc.id}">
                   <button class="action-menu-item edit" onclick="openEditModal('${doc.id}')">
                     ✏️ Edit Account
+                  </button>
+                  <button class="action-menu-item category" onclick="openBulkModalWithAccount('${doc.id}')">
+                    📊 Change Category
                   </button>
                   <button class="action-menu-item delete" onclick="openDeleteModal('${doc.id}')">
                     🗑️ Delete Account
@@ -612,49 +958,58 @@
             cardList.appendChild(card);
           });
           
-          // Add event listeners to open buttons
-          document.querySelectorAll('.open-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const card = btn.closest('.card');
-              const accountId = card.dataset.accountId;
-              window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
-            });
-          });
+          // Add event listeners
+          setupEventListeners();
           
-          // Add event listeners to 3-dots menu buttons
-          document.querySelectorAll('.action-menu-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const accountId = btn.dataset.accountId;
-              
-              // Hide all other menus
-              document.querySelectorAll('.action-menu').forEach(menu => {
-                menu.classList.remove('show');
-              });
-              
-              // Show this menu
-              const menu = document.getElementById(`menu-${accountId}`);
-              if (menu) {
-                const rect = btn.getBoundingClientRect();
-                menu.style.top = (rect.bottom - rect.top) + 'px';
-                menu.style.right = '0px';
-                menu.classList.add('show');
-              }
-            });
-          });
-          
-          // Make card clickable for opening account
-          document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', (e) => {
-              // Only trigger if not clicking on buttons or menus
-              if (!e.target.closest('.open-btn') && !e.target.closest('.action-menu-btn') && !e.target.closest('.action-menu')) {
-                const accountId = card.dataset.accountId;
-                window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
-              }
-            });
-          });
+          // Apply category filter
+          filterAccountsByCategory();
         }
+      });
+    }
+
+    // Setup event listeners for cards
+    function setupEventListeners() {
+      // Add event listeners to open buttons
+      document.querySelectorAll('.open-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const card = btn.closest('.card');
+          const accountId = card.dataset.accountId;
+          window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
+        });
+      });
+      
+      // Add event listeners to 3-dots menu buttons
+      document.querySelectorAll('.action-menu-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const accountId = btn.dataset.accountId;
+          
+          // Hide all other menus
+          document.querySelectorAll('.action-menu').forEach(menu => {
+            menu.classList.remove('show');
+          });
+          
+          // Show this menu
+          const menu = document.getElementById(`menu-${accountId}`);
+          if (menu) {
+            const rect = btn.getBoundingClientRect();
+            menu.style.top = (rect.bottom - rect.top) + 'px';
+            menu.style.right = '0px';
+            menu.classList.add('show');
+          }
+        });
+      });
+      
+      // Make card clickable for opening account
+      document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          // Only trigger if not clicking on buttons or menus
+          if (!e.target.closest('.open-btn') && !e.target.closest('.action-menu-btn') && !e.target.closest('.action-menu')) {
+            const accountId = card.dataset.accountId;
+            window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
+          }
+        });
       });
     }
 
@@ -667,6 +1022,7 @@
         
         // Populate edit form
         document.getElementById("editAccountName").value = account.name;
+        document.getElementById("editAccountCategory").value = account.category || 'general';
         
         // Hide any open menu
         document.querySelectorAll('.action-menu').forEach(menu => {
@@ -698,10 +1054,69 @@
       }
     };
 
-    // Close menus when clicking outside
-    document.addEventListener('click', function() {
-      document.querySelectorAll('.action-menu').forEach(menu => {
-        menu.classList.remove('show');
+    window.openBulkModalWithAccount = function(accountId) {
+      selectedAccountsForBulk = new Set([accountId]);
+      openCategoryModal();
+    };
+
+    // Open category management modal
+    function openCategoryModal() {
+      // Populate account list
+      const accountList = document.getElementById("bulkAccountList");
+      accountList.innerHTML = '';
+      
+      accounts.forEach(account => {
+        const div = document.createElement("div");
+        div.className = "account-item";
+        
+        const isSelected = selectedAccountsForBulk.has(account.id);
+        const category = account.category || 'general';
+        const categoryClass = getCategoryClass(category);
+        
+        div.innerHTML = `
+          <div>
+            <strong>${account.name}</strong>
+            <div style="font-size: 12px; color: #666; margin-top: 5px;">
+              Current: <span class="${categoryClass}" style="padding: 2px 8px;">${getCategoryDisplayName(category)}</span>
+            </div>
+          </div>
+          <div>
+            <input type="checkbox" ${isSelected ? 'checked' : ''} data-account-id="${account.id}" 
+                   style="transform: scale(1.3); cursor: pointer;">
+          </div>
+        `;
+        
+        accountList.appendChild(div);
+      });
+      
+      // Add checkbox event listeners
+      accountList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          const accountId = this.dataset.accountId;
+          if (this.checked) {
+            selectedAccountsForBulk.add(accountId);
+          } else {
+            selectedAccountsForBulk.delete(accountId);
+          }
+        });
+      });
+      
+      // Reset category selection
+      document.querySelectorAll('.category-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      
+      // Show modal
+      document.getElementById("categoryModal").classList.add('active');
+    }
+
+    // Category option selection
+    document.querySelectorAll('.category-option').forEach(option => {
+      option.addEventListener('click', function() {
+        document.querySelectorAll('.category-option').forEach(opt => {
+          opt.classList.remove('selected');
+        });
+        this.classList.add('selected');
       });
     });
 
@@ -709,7 +1124,9 @@
     document.getElementById("accountForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       const nameInput = document.getElementById("accountNameInput");
+      const categorySelect = document.getElementById("accountCategoryInput");
       const name = nameInput.value.trim();
+      const category = categorySelect.value;
 
       if (!name) {
         alert("Please enter an account name");
@@ -719,6 +1136,7 @@
       try {
         const accountData = {
           name,
+          category,
           branchId,
           created: new Date().toISOString()
         };
@@ -727,6 +1145,7 @@
         
         // Reset form
         nameInput.value = "";
+        categorySelect.value = "general";
         formVisible = false;
         accountForm.classList.remove('active');
         toggleAddBtn.textContent = "+ Add Account";
@@ -739,6 +1158,7 @@
     // Handle edit save
     document.getElementById("saveEditBtn").addEventListener("click", async function() {
       const newName = document.getElementById("editAccountName").value.trim();
+      const newCategory = document.getElementById("editAccountCategory").value;
       
       if (!newName) {
         alert("Please enter an account name");
@@ -750,6 +1170,7 @@
       try {
         await window.updateDoc(window.doc(db, "accounts", selectedAccountId), {
           name: newName,
+          category: newCategory,
           updated: new Date().toISOString()
         });
 
@@ -781,6 +1202,48 @@
       }
     });
 
+    // Apply category to selected accounts
+    document.getElementById("applyCategoryBtn").addEventListener("click", async function() {
+      const selectedOption = document.querySelector('.category-option.selected');
+      if (!selectedOption) {
+        alert("Please select a category first");
+        return;
+      }
+
+      const newCategory = selectedOption.dataset.category;
+      if (!newCategory) return;
+
+      if (selectedAccountsForBulk.size === 0) {
+        alert("Please select at least one account");
+        return;
+      }
+
+      try {
+        const batch = window.writeBatch(db);
+        let count = 0;
+
+        for (const accountId of selectedAccountsForBulk) {
+          const accountRef = window.doc(db, "accounts", accountId);
+          batch.update(accountRef, {
+            category: newCategory,
+            updated: new Date().toISOString()
+          });
+          count++;
+        }
+
+        await batch.commit();
+        
+        alert(`✓ Successfully updated category for ${count} account(s)`);
+        
+        // Close modal and reset
+        document.getElementById("categoryModal").classList.remove('active');
+        selectedAccountsForBulk = new Set();
+        
+      } catch (err) {
+        alert("Error updating categories: " + err.message);
+      }
+    });
+
     // Cancel delete
     document.getElementById("cancelDeleteBtn").addEventListener("click", function() {
       document.getElementById("deleteModal").classList.remove('active');
@@ -793,6 +1256,26 @@
       document.getElementById("editModal").classList.remove('active');
       selectedAccountId = null;
       selectedAccountName = null;
+    });
+
+    // Cancel category modal
+    document.getElementById("cancelCategoryBtn").addEventListener("click", function() {
+      document.getElementById("categoryModal").classList.remove('active');
+      selectedAccountsForBulk = new Set();
+    });
+
+    // Manage categories button
+    manageCategoriesBtn.addEventListener("click", function() {
+      // Select all accounts by default
+      selectedAccountsForBulk = new Set(accounts.map(acc => acc.id));
+      openCategoryModal();
+    });
+
+    // Close menus when clicking outside
+    document.addEventListener('click', function() {
+      document.querySelectorAll('.action-menu').forEach(menu => {
+        menu.classList.remove('show');
+      });
     });
 
     // Initialize
