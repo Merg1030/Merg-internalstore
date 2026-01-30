@@ -7,7 +7,7 @@
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query, where, serverTimestamp, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
         window.initializeApp = initializeApp;
         window.getFirestore = getFirestore;
         window.doc = doc;
@@ -18,6 +18,8 @@
         window.query = query;
         window.where = where;
         window.serverTimestamp = serverTimestamp;
+        window.deleteDoc = deleteDoc;
+        window.updateDoc = updateDoc;
     </script>
     <style>
         * { 
@@ -33,9 +35,9 @@
         }
         
         body {
-            background: linear-gradient(135deg, #ACB6E5 0%, #74ebd5 100%);
+            background: #f5f7fa;
             min-height: 100vh;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             width: 100vw;
             max-width: 100vw;
             display: flex;
@@ -44,385 +46,510 @@
         
         .account-detail-card {
             background: #fff;
-            padding: 10px 2vw;
+            padding: 0;
             width: 100vw;
             min-height: 100vh;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             max-width: 100vw;
             box-sizing: border-box;
             overflow: hidden;
         }
         
-        h1 {
-            color: #0066cc;
-            margin-bottom: 6px;
-            font-size: 1.1rem;
-            word-break: break-word;
-            width: 100%;
+        /* Top Control Bar */
+        .top-control-bar {
+            background: #f8f9fa;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .control-btn {
+            padding: 8px 16px;
+            background: #e9ecef;
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .control-btn:hover {
+            background: #dee2e6;
+            transform: translateY(-1px);
+        }
+        
+        .action-menu-btn {
+            padding: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .action-menu-btn:hover {
+            background: #e9ecef;
+            color: #333;
+        }
+        
+        .action-menu {
+            position: absolute;
+            top: 100%;
+            right: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+            flex-direction: column;
+            min-width: 150px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .action-menu.show {
+            display: flex;
+        }
+        
+        .action-menu-item {
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .action-menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .action-menu-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .action-menu-item.delete {
+            color: #dc3545;
+        }
+        
+        /* Page Header */
+        .page-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .page-header h1 {
+            font-size: 28px;
+            color: #1976d2;
+            margin-bottom: 8px;
         }
         
         .account-name {
-            font-size: 1rem;
-            color: #222;
-            margin-bottom: 8px;
-            font-weight: 700;
-            word-break: break-word;
-            width: 100%;
+            font-size: 18px;
+            color: #666;
+            font-weight: 500;
         }
         
-        .back-btn {
-            display: inline-block;
-            padding: 6px 12px;
-            background: linear-gradient(90deg, #0066cc 0%, #00c6ff 100%);
-            color: #fff;
+        /* Filter Bar */
+        .filter-toggle-btn {
+            background: none;
             border: none;
-            border-radius: 4px;
-            font-weight: 600;
+            color: #666;
+            font-size: 14px;
             cursor: pointer;
-            text-decoration: none;
-            transition: background 0.19s, transform 0.12s;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 0;
+            margin: 0 20px;
         }
         
-        .back-btn:hover {
-            background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
-            transform: scale(1.04);
-        }
-        
-        .not-found {
-            color: #888;
-            font-size: 0.8rem;
-            margin-top: 6px;
-            width: 100%;
+        .filter-toggle-btn:hover {
+            color: #1976d2;
         }
         
         .filter-bar {
-            display: flex;
-            gap: 4px;
+            display: none;
+            gap: 10px;
             justify-content: center;
             align-items: center;
-            margin-bottom: 6px;
-            margin-top: 2px;
-            font-size: 0.75rem;
-            flex-wrap: wrap;
-            width: 100%;
-            padding: 0 1vw;
+            margin: 15px 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .filter-bar.active {
+            display: flex;
         }
         
         .filter-bar span {
+            color: #666;
+            font-size: 14px;
             white-space: nowrap;
         }
         
         .filter-bar input[type="date"] {
-            padding: 3px;
-            font-size: 0.75rem;
-            border-radius: 3px;
-            border: 1px solid #cfd8dc;
-            background: #f8f9fa;
-            width: 100px;
-            min-width: 80px;
-            max-width: 110px;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #333;
+            min-width: 120px;
         }
         
         .filter-bar button {
-            padding: 3px 8px;
-            border-radius: 3px;
+            padding: 8px 16px;
+            border-radius: 6px;
             border: none;
-            background: linear-gradient(90deg, #0066cc 60%, #00c6ff 100%);
-            color: #fff;
-            font-weight: 600;
-            font-size: 0.75rem;
+            background: #e9ecef;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
             cursor: pointer;
-            transition: background 0.13s;
+            transition: all 0.2s;
             white-space: nowrap;
         }
         
         .filter-bar button:hover {
-            background: linear-gradient(90deg, #0099cc 0%, #005bb5 100%);
+            background: #dee2e6;
         }
         
-        .toggle-btn {
-            background: none;
+        .filter-bar button.primary {
+            background: #1976d2;
+            color: white;
+        }
+        
+        .filter-bar button.primary:hover {
+            background: #1565c0;
+        }
+        
+        /* Form Container */
+        .form-container {
+            margin: 0 20px 20px 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: none;
+        }
+        
+        .form-container.active {
+            display: block;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        
+        .form-row input {
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            flex: 1;
+            min-width: 120px;
+            background: white;
+            color: #333;
+        }
+        
+        .form-row input:focus {
+            outline: none;
+            border-color: #1976d2;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+        
+        .form-row button {
+            padding: 10px 20px;
             border: none;
-            color: #0066cc;
-            font-size: 0.8rem;
-            margin-bottom: 6px;
-            cursor: pointer;
+            background: #1976d2;
+            color: white;
+            border-radius: 6px;
             font-weight: 600;
-            text-decoration: underline;
-            transition: color 0.16s;
-            padding: 4px 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
             white-space: nowrap;
         }
         
-        .toggle-btn:hover {
-            color: #0099cc;
+        .form-row button:hover {
+            background: #1565c0;
         }
         
+        /* Table Container */
         .table-container {
-            width: 98vw;
-            max-width: 98vw;
-            margin-top: 4px;
+            margin: 0 20px 20px 20px;
             background: #fff;
-            border-radius: 4px;
+            border-radius: 8px;
             overflow-x: auto;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             border: 1px solid #e0e0e0;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.75rem;
-            min-width: 600px;
+            font-size: 14px;
+            min-width: 700px;
         }
         
         th, td {
-            padding: 5px 3px;
+            padding: 12px 15px;
             border: none;
             text-align: left;
-            min-width: 60px;
-            max-width: 120px;
             word-break: break-word;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         
         th {
-            background: #f2f9ff;
-            color: #0066cc;
+            background: #f8f9fa;
+            color: #333;
             font-weight: 600;
-            font-size: 0.76rem;
+            font-size: 14px;
             position: sticky;
             top: 0;
             white-space: nowrap;
+            border-bottom: 2px solid #e0e0e0;
         }
         
         tr {
-            background: #f7fbff;
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
         }
         
-        tr:nth-child(even) {
-            background: #fff;
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .actions-cell {
+            text-align: center;
+            width: 50px;
+        }
+        
+        .action-dots {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .action-dots:hover {
+            background: #e9ecef;
+            color: #333;
         }
         
         .table-footer {
-            border-top: 2px solid #000;
+            border-top: 2px solid #e0e0e0;
             background: #f8f9fa;
-            padding: 6px 3px;
+            padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: 600;
-            font-size: 0.76rem;
-            position: sticky;
-            left: 0;
+            font-size: 15px;
         }
         
         .running-balance {
-            color: #0066cc;
+            color: #1976d2;
+            font-size: 16px;
         }
         
-        .form-container {
-            width: 98vw;
-            margin: 6px 0;
-            padding: 8px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            border-top: 2px solid #000;
+        /* Modal Styles */
+        .modal {
             display: none;
-        }
-        
-        .form-row {
-            display: flex;
-            gap: 4px;
-            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            flex-wrap: wrap;
-            margin-bottom: 4px;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
         }
         
-        .form-row input {
-            padding: 4px;
-            border-radius: 3px;
-            border: 1px solid #ccc;
-            font-size: 0.75rem;
-            flex: 1;
-            min-width: 70px;
-            max-width: 100px;
+        .modal.active {
+            display: flex;
         }
         
-        .form-row button {
-            padding: 4px 8px;
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            min-width: 400px;
+            max-width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 6px;
             border: none;
-            background: linear-gradient(90deg, #0066cc 0%, #00c6ff 100%);
-            color: #fff;
-            border-radius: 3px;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            transition: background 0.19s;
-            font-size: 0.75rem;
-            min-width: 60px;
-            white-space: nowrap;
+            transition: all 0.2s;
+            font-size: 14px;
         }
         
-        .form-row button:hover {
-            background: linear-gradient(90deg, #005bb5 0%, #0099cc 100%);
+        .modal-btn.cancel {
+            background: #e9ecef;
+            color: #333;
         }
-
+        
+        .modal-btn.cancel:hover {
+            background: #dee2e6;
+        }
+        
+        .modal-btn.delete {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .modal-btn.delete:hover {
+            background: #c82333;
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 768px) {
-            .account-detail-card {
-                padding: 8px 1vw;
+            .form-row {
+                flex-direction: column;
             }
             
-            h1 {
-                font-size: 1rem;
-                margin-bottom: 4px;
-            }
-            
-            .account-name {
-                font-size: 0.9rem;
-                margin-bottom: 6px;
+            .form-row input {
+                width: 100%;
+                min-width: 100%;
             }
             
             .filter-bar {
-                gap: 3px;
-                font-size: 0.7rem;
-            }
-            
-            .filter-bar input[type="date"] {
-                width: 90px;
-                min-width: 70px;
-                max-width: 90px;
-                font-size: 0.7rem;
+                flex-wrap: wrap;
             }
             
             table {
-                font-size: 0.7rem;
-                min-width: 500px;
+                font-size: 13px;
+                min-width: 600px;
             }
             
             th, td {
-                padding: 4px 2px;
-                min-width: 50px;
-                max-width: 100px;
-                font-size: 0.7rem;
+                padding: 10px 12px;
             }
             
-            th {
-                font-size: 0.71rem;
+            .modal-content {
+                min-width: 300px;
+                padding: 20px;
             }
         }
         
         @media (max-width: 480px) {
-            body {
-                font-size: 12px;
+            .top-control-bar {
+                padding: 10px 15px;
+                flex-wrap: wrap;
+                gap: 10px;
             }
             
-            .account-detail-card {
-                padding: 6px 0.5vw;
+            .control-buttons {
+                width: 100%;
+                justify-content: space-between;
             }
             
-            h1 {
-                font-size: 0.9rem;
+            .page-header {
+                padding: 15px;
             }
             
-            .account-name {
-                font-size: 0.85rem;
-            }
-            
-            .back-btn {
-                font-size: 0.75rem;
-                padding: 5px 10px;
-            }
-            
-            .filter-bar {
-                font-size: 0.65rem;
-            }
-            
-            .filter-bar input[type="date"] {
-                width: 80px;
-                min-width: 60px;
-                max-width: 80px;
-                font-size: 0.65rem;
+            .page-header h1 {
+                font-size: 24px;
             }
             
             .table-container {
-                width: 99vw;
-            }
-            
-            table {
-                min-width: 450px;
-                font-size: 0.65rem;
-            }
-            
-            th, td {
-                padding: 3px 1px;
-                font-size: 0.65rem;
+                margin: 0 10px 10px 10px;
             }
             
             .form-container {
-                width: 99vw;
+                margin: 0 10px 10px 10px;
+                padding: 15px;
             }
-            
-            .form-row input {
-                font-size: 0.7rem;
-                min-width: 60px;
-                max-width: 80px;
-            }
-        }
-        
-        @media (max-width: 320px) {
-            .filter-bar {
-                flex-direction: column;
-                gap: 2px;
-            }
-            
-            .filter-bar input[type="date"] {
-                width: 95%;
-                max-width: 95%;
-            }
-            
-            table {
-                min-width: 400px;
-            }
-        }
-
-        /* Ensure no horizontal scroll on body */
-        body::-webkit-scrollbar {
-            display: none;
-        }
-        
-        body {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
         }
     </style>
 </head>
 <body>
 <div class="account-detail-card" id="accountDetail">
-    <h1>Account Details</h1>
-    <div class="account-name" id="accountName"></div>
-    <a href="maindash.html" class="back-btn" id="backBtn">Back to Dashboard</a>
-    <div id="notFound" class="not-found"></div>
+    <!-- Top Control Bar -->
+    <div class="top-control-bar">
+        <div class="control-buttons">
+            <a href="maindash.html" class="control-btn">← Back</a>
+            <button class="control-btn" id="toggleFormBtn">Add Transaction</button>
+            <div style="position: relative;">
+                <button class="action-menu-btn" id="actionMenuBtn">⋮</button>
+                <div class="action-menu" id="actionMenu">
+                    <button class="action-menu-item" id="toggleFilterBtn">Show/Hide Filters</button>
+                    <button class="action-menu-item" id="editTransactionBtn" disabled>Edit Transaction</button>
+                    <button class="action-menu-item delete" id="deleteTransactionBtn" disabled>Delete Transaction</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <button class="toggle-btn" id="toggleFormBtn">Add Transaction</button>
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Book of Accounts</h1>
+        <div class="account-name" id="accountName"></div>
+    </div>
     
-    <div class="filter-bar">
+    <!-- Filter Bar -->
+    <div class="filter-bar" id="filterBar">
         <span>From</span>
         <input type="date" id="filterStart">
         <span>To</span>
         <input type="date" id="filterEnd">
-        <button id="filterBtn">Go</button>
-        <button id="clearFilterBtn" style="background:#fff;color:#0066cc;border:1px solid #cfd8dc;">Clear</button>
+        <button class="primary" id="filterBtn">Apply Filter</button>
+        <button id="clearFilterBtn">Clear</button>
     </div>
     
+    <!-- Form Container -->
     <div class="form-container" id="formContainer">
         <form id="transactionForm">
             <div class="form-row">
@@ -431,11 +558,12 @@
                 <input type="text" id="description" placeholder="Description" required>
                 <input type="number" id="cashIn" placeholder="Cash In" min="0" step="0.01">
                 <input type="number" id="cashOut" placeholder="Cash Out" min="0" step="0.01">
-                <button type="submit">Add</button>
+                <button type="submit">Add Transaction</button>
             </div>
         </form>
     </div>
     
+    <!-- Table Container -->
     <div class="table-container">
         <table id="transactionsTable">
             <thead>
@@ -446,6 +574,7 @@
                 <th>Cash In</th>
                 <th>Cash Out</th>
                 <th>Balance</th>
+                <th class="actions-cell">Actions</th>
             </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -453,6 +582,20 @@
         <div class="table-footer">
             <span class="running-balance-label">Running Balance</span>
             <span class="running-balance" id="currentBalance">0.00</span>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Delete Transaction</h3>
+                <p>Are you sure you want to delete this transaction? This action cannot be undone.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="cancelDeleteBtn">Cancel</button>
+                <button class="modal-btn delete" id="confirmDeleteBtn">Delete</button>
+            </div>
         </div>
     </div>
 </div>
@@ -482,7 +625,11 @@
     }
     const accountId = getAccountIdFromUrl();
 
-    // Persistent filter state (per account)
+    // Global variables
+    let { filterStart, filterEnd } = getFilterState();
+    let selectedTransactionId = null;
+    let transactions = [];
+
     function getFilterState() {
         const state = localStorage.getItem("trismart-filter-state-" + accountId);
         if (!state) return { filterStart: "", filterEnd: "" };
@@ -492,22 +639,18 @@
             return { filterStart: "", filterEnd: "" };
         }
     }
+    
     function setFilterState(filterStart, filterEnd) {
         localStorage.setItem(
             "trismart-filter-state-" + accountId,
             JSON.stringify({ filterStart, filterEnd })
         );
     }
-    let { filterStart, filterEnd } = getFilterState();
 
     async function showAccountDetails() {
         const accountNameDiv = document.getElementById("accountName");
-        const notFoundDiv = document.getElementById("notFound");
         if (!accountId) {
-            accountNameDiv.textContent = "";
-            notFoundDiv.textContent = "No account ID provided.";
-            document.getElementById("formContainer").style.display = "none";
-            document.getElementById("toggleFormBtn").style.display = "none";
+            accountNameDiv.textContent = "No account selected";
             return;
         }
         const ref = window.doc(db, "accounts", accountId);
@@ -515,49 +658,51 @@
         if (docSnap.exists()) {
             const account = docSnap.data();
             accountNameDiv.textContent = account.name;
-            notFoundDiv.textContent = "";
             renderTransactionsRealtime();
         } else {
-            accountNameDiv.textContent = "";
-            notFoundDiv.textContent = "Account not found!";
-            document.getElementById("formContainer").style.display = "none";
-            document.getElementById("toggleFormBtn").style.display = "none";
+            accountNameDiv.textContent = "Account not found!";
         }
     }
 
-    // Render table and filter by date
     function renderTransactionsRealtime() {
         const tableBody = document.getElementById("tableBody");
         const currentBalanceSpan = document.getElementById("currentBalance");
         let balance = 0;
+        
         const q = window.query(
             window.collection(db, "accounts", accountId, "transactions"),
             window.where("branchId", "==", branchId)
         );
+        
         window.onSnapshot(q, (snapshot) => {
             tableBody.innerHTML = "";
-            let transactions = [];
+            transactions = [];
             snapshot.forEach(doc => {
                 transactions.push({ id: doc.id, ...doc.data() });
             });
+            
+            // Sort by date
             transactions.sort((a, b) => (a.date > b.date ? 1 : -1));
 
             // Filter by date
+            let filteredTransactions = [...transactions];
             let fs = filterStart, fe = filterEnd;
+            
             if (fs && fe) {
-                transactions = transactions.filter(t =>
+                filteredTransactions = filteredTransactions.filter(t =>
                     t.date >= fs && t.date <= fe
                 );
             } else if (fs) {
-                transactions = transactions.filter(t => t.date >= fs);
+                filteredTransactions = filteredTransactions.filter(t => t.date >= fs);
             } else if (fe) {
-                transactions = transactions.filter(t => t.date <= fe);
+                filteredTransactions = filteredTransactions.filter(t => t.date <= fe);
             }
 
             balance = 0;
-            transactions.forEach(tx => {
+            filteredTransactions.forEach(tx => {
                 balance += (parseFloat(tx.cashIn || 0) - parseFloat(tx.cashOut || 0));
                 let row = document.createElement("tr");
+                row.dataset.transactionId = tx.id;
                 
                 row.innerHTML = `
                     <td>${tx.date}</td>
@@ -566,24 +711,108 @@
                     <td>${tx.cashIn ? Number(tx.cashIn).toFixed(2) : ''}</td>
                     <td>${tx.cashOut ? Number(tx.cashOut).toFixed(2) : ''}</td>
                     <td>${balance.toFixed(2)}</td>
+                    <td class="actions-cell">
+                        <button class="action-dots" data-transaction-id="${tx.id}">⋮</button>
+                    </td>
                 `;
                 tableBody.appendChild(row);
             });
+            
             currentBalanceSpan.textContent = balance.toFixed(2);
+            
+            // Add event listeners to action dots
+            document.querySelectorAll('.action-dots').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const transactionId = this.dataset.transactionId;
+                    selectTransaction(transactionId);
+                    
+                    // Position the action menu
+                    const rect = this.getBoundingClientRect();
+                    const actionMenu = document.getElementById('actionMenu');
+                    actionMenu.style.top = (rect.bottom + 5) + 'px';
+                    actionMenu.style.right = (window.innerWidth - rect.right + 20) + 'px';
+                    
+                    actionMenu.classList.add('show');
+                });
+            });
         });
     }
 
+    function selectTransaction(transactionId) {
+        selectedTransactionId = transactionId;
+        const editBtn = document.getElementById('editTransactionBtn');
+        const deleteBtn = document.getElementById('deleteTransactionBtn');
+        
+        editBtn.disabled = false;
+        deleteBtn.disabled = false;
+    }
+
+    // Toggle form visibility
     document.getElementById("toggleFormBtn").addEventListener("click", function() {
         const formContainer = document.getElementById("formContainer");
-        if (formContainer.style.display === "none") {
-            formContainer.style.display = "block";
-            this.textContent = "Hide Transaction Form";
-        } else {
-            formContainer.style.display = "none";
-            this.textContent = "Add Transaction";
+        formContainer.classList.toggle('active');
+        this.textContent = formContainer.classList.contains('active') ? 'Hide Form' : 'Add Transaction';
+    });
+
+    // Toggle filter visibility
+    document.getElementById("toggleFilterBtn").addEventListener("click", function() {
+        const filterBar = document.getElementById("filterBar");
+        filterBar.classList.toggle('active');
+        
+        // Update action menu button text
+        const actionMenuBtn = document.getElementById('actionMenuBtn');
+        actionMenuBtn.textContent = filterBar.classList.contains('active') ? '✕' : '⋮';
+    });
+
+    // Handle action menu button
+    document.getElementById("actionMenuBtn").addEventListener("click", function(e) {
+        e.stopPropagation();
+        const actionMenu = document.getElementById('actionMenu');
+        actionMenu.classList.toggle('show');
+    });
+
+    // Close action menu when clicking outside
+    document.addEventListener('click', function() {
+        document.getElementById('actionMenu').classList.remove('show');
+    });
+
+    // Handle edit transaction
+    document.getElementById("editTransactionBtn").addEventListener("click", function() {
+        if (selectedTransactionId) {
+            // Find the transaction
+            const transaction = transactions.find(t => t.id === selectedTransactionId);
+            if (transaction) {
+                // Populate form with transaction data
+                document.getElementById('date').value = transaction.date;
+                document.getElementById('reference').value = transaction.reference;
+                document.getElementById('description').value = transaction.description;
+                document.getElementById('cashIn').value = transaction.cashIn || '';
+                document.getElementById('cashOut').value = transaction.cashOut || '';
+                
+                // Show form
+                const formContainer = document.getElementById("formContainer");
+                formContainer.classList.add('active');
+                document.getElementById("toggleFormBtn").textContent = 'Hide Form';
+                
+                // Change form to update mode
+                const form = document.getElementById('transactionForm');
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.textContent = 'Update Transaction';
+                submitBtn.dataset.mode = 'update';
+                submitBtn.dataset.transactionId = selectedTransactionId;
+            }
         }
     });
 
+    // Handle delete transaction
+    document.getElementById("deleteTransactionBtn").addEventListener("click", function() {
+        if (selectedTransactionId) {
+            document.getElementById('deleteModal').classList.add('active');
+        }
+    });
+
+    // Handle form submission
     document.getElementById("transactionForm").addEventListener("submit", async function(e) {
         e.preventDefault();
         const date = document.getElementById("date").value;
@@ -591,11 +820,13 @@
         const description = document.getElementById("description").value.trim();
         const cashIn = document.getElementById("cashIn").value ? parseFloat(document.getElementById("cashIn").value) : 0;
         const cashOut = document.getElementById("cashOut").value ? parseFloat(document.getElementById("cashOut").value) : 0;
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const isUpdate = submitBtn.dataset.mode === 'update';
+        const transactionId = submitBtn.dataset.transactionId;
 
         if (!date || !reference || !description) return;
 
         try {
-            // Create transaction
             const transaction = {
                 date,
                 reference,
@@ -603,15 +834,54 @@
                 cashIn,
                 cashOut,
                 branchId,
-                created: window.serverTimestamp()
+                updated: window.serverTimestamp()
             };
 
-            await window.addDoc(window.collection(db, "accounts", accountId, "transactions"), transaction);
+            if (isUpdate && transactionId) {
+                // Update existing transaction
+                await window.updateDoc(window.doc(db, "accounts", accountId, "transactions", transactionId), transaction);
+            } else {
+                // Add new transaction
+                transaction.created = window.serverTimestamp();
+                await window.addDoc(window.collection(db, "accounts", accountId, "transactions"), transaction);
+            }
+
+            // Reset form
+            this.reset();
+            const formContainer = document.getElementById("formContainer");
+            formContainer.classList.remove('active');
+            document.getElementById("toggleFormBtn").textContent = 'Add Transaction';
+            
+            // Reset submit button
+            submitBtn.textContent = 'Add Transaction';
+            delete submitBtn.dataset.mode;
+            delete submitBtn.dataset.transactionId;
 
         } catch (err) {
-            alert("Error adding transaction: " + err.message);
+            alert("Error: " + err.message);
         }
-        document.getElementById("transactionForm").reset();
+    });
+
+    // Handle delete confirmation
+    document.getElementById("confirmDeleteBtn").addEventListener("click", async function() {
+        if (selectedTransactionId) {
+            try {
+                await window.deleteDoc(window.doc(db, "accounts", accountId, "transactions", selectedTransactionId));
+                document.getElementById('deleteModal').classList.remove('active');
+                selectedTransactionId = null;
+                
+                // Disable edit/delete buttons
+                document.getElementById('editTransactionBtn').disabled = true;
+                document.getElementById('deleteTransactionBtn').disabled = true;
+            } catch (err) {
+                alert("Error deleting transaction: " + err.message);
+            }
+        }
+    });
+
+    // Cancel delete
+    document.getElementById("cancelDeleteBtn").addEventListener("click", function() {
+        document.getElementById('deleteModal').classList.remove('active');
     });
 
     // Date filter logic
