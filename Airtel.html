@@ -7,7 +7,7 @@
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
     window.initializeApp = initializeApp;
     window.getFirestore = getFirestore;
     window.collection = collection;
@@ -15,6 +15,9 @@
     window.query = query;
     window.where = where;
     window.onSnapshot = onSnapshot;
+    window.deleteDoc = deleteDoc;
+    window.doc = doc;
+    window.updateDoc = updateDoc;
   </script>
   <style>
     * {
@@ -158,6 +161,7 @@
       flex-direction: column;
       align-items: center;
       cursor: pointer;
+      position: relative;
     }
     
     .card:hover {
@@ -193,23 +197,53 @@
       margin-bottom: 20px;
     }
     
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    
+    .action-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 80px;
+    }
+    
     .open-btn {
       background: #1976d2;
       color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: background 0.3s;
-      margin-top: 10px;
-      width: 100%;
-      max-width: 200px;
+      flex: 2;
     }
     
     .open-btn:hover {
       background: #1565c0;
+    }
+    
+    .edit-btn {
+      background: #f0f0f0;
+      color: #333;
+      flex: 1;
+    }
+    
+    .edit-btn:hover {
+      background: #e0e0e0;
+    }
+    
+    .delete-btn {
+      background: #f0f0f0;
+      color: #e53935;
+      flex: 1;
+    }
+    
+    .delete-btn:hover {
+      background: #ffebee;
     }
     
     /* Empty State */
@@ -235,6 +269,92 @@
       margin-bottom: 20px;
     }
     
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .modal-header {
+      margin-bottom: 20px;
+    }
+    
+    .modal-header h3 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .modal-header p {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 25px;
+    }
+    
+    .modal-btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+    
+    .modal-btn.cancel {
+      background: #f0f0f0;
+      color: #333;
+    }
+    
+    .modal-btn.cancel:hover {
+      background: #e0e0e0;
+    }
+    
+    .modal-btn.delete {
+      background: #e53935;
+      color: white;
+    }
+    
+    .modal-btn.delete:hover {
+      background: #c62828;
+    }
+    
+    .modal-btn.save {
+      background: #1976d2;
+      color: white;
+    }
+    
+    .modal-btn.save:hover {
+      background: #1565c0;
+    }
+    
     /* Footer */
     .footer {
       text-align: center;
@@ -254,6 +374,15 @@
       
       .card {
         padding: 25px;
+      }
+      
+      .card-actions {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .action-btn {
+        width: 100%;
       }
       
       .header h1 {
@@ -278,6 +407,16 @@
       .account-form {
         margin: 0 10px 20px 10px;
       }
+      
+      .modal-content {
+        padding: 20px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -295,8 +434,8 @@
     
     <form id="accountForm" class="account-form">
       <div class="form-row">
-        <input type="text" id="name" placeholder="Enter Account Name" required>
-        <button type="submit">Create Account</button>
+        <input type="text" id="accountNameInput" placeholder="Enter Account Name" required>
+        <button type="submit" id="submitAccountBtn">Create Account</button>
       </div>
     </form>
     
@@ -309,6 +448,40 @@
     
     <div class="footer">
       Trismart Stores – Book of Accounts
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Delete Account</h3>
+        <p id="deleteAccountText">Are you sure you want to delete this account? This action cannot be undone.</p>
+        <p style="color: #e53935; font-weight: 500; margin-top: 10px;">
+          ⚠️ Warning: All transactions in this account will also be deleted!
+        </p>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="cancelDeleteBtn">Cancel</button>
+        <button class="modal-btn delete" id="confirmDeleteBtn">Delete Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Account Modal -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Account</h3>
+        <p>Update the account name</p>
+      </div>
+      <div class="form-row" style="margin: 20px 0;">
+        <input type="text" id="editAccountName" placeholder="Enter new account name" required>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="cancelEditBtn">Cancel</button>
+        <button class="modal-btn save" id="saveEditBtn">Save Changes</button>
+      </div>
     </div>
   </div>
 
@@ -331,15 +504,28 @@
       window.location.href = 'dashboard.html';
     }
 
-    // Toggle add account form
+    // State variables
     const toggleAddBtn = document.getElementById("toggleAddBtn");
     const accountForm = document.getElementById("accountForm");
     let formVisible = false;
+    let accounts = [];
+    let selectedAccountId = null;
+    let selectedAccountName = null;
+    let isEditMode = false;
 
+    // Toggle add/edit account form
     toggleAddBtn.addEventListener("click", () => {
-      formVisible = !formVisible;
-      accountForm.classList.toggle('active', formVisible);
-      toggleAddBtn.textContent = formVisible ? "Cancel" : "+ Add Account";
+      if (isEditMode) {
+        // If we're in edit mode, cancel it
+        cancelEdit();
+      } else {
+        // Toggle regular add form
+        formVisible = !formVisible;
+        accountForm.classList.toggle('active', formVisible);
+        toggleAddBtn.textContent = formVisible ? "Cancel" : "+ Add Account";
+        document.getElementById("submitAccountBtn").textContent = "Create Account";
+        document.getElementById("accountNameInput").value = "";
+      }
     });
 
     // Render accounts
@@ -352,12 +538,17 @@
       );
       window.onSnapshot(q, (snapshot) => {
         cardList.innerHTML = "";
+        accounts = [];
+        
         if (snapshot.empty) {
           noAccounts.style.display = "block";
         } else {
           noAccounts.style.display = "none";
           snapshot.forEach(doc => {
             const data = doc.data();
+            const account = { id: doc.id, ...data };
+            accounts.push(account);
+            
             const card = document.createElement("div");
             card.className = "card";
             card.dataset.accountId = doc.id;
@@ -374,53 +565,187 @@
               <div class="icon">${initials}</div>
               <h2>${data.name}</h2>
               <p>View transactions and account details</p>
-              <button class="open-btn">Open Account</button>
+              <div class="card-actions">
+                <button class="action-btn open-btn" data-account-id="${doc.id}">Open</button>
+                <button class="action-btn edit-btn" data-account-id="${doc.id}">Edit</button>
+                <button class="action-btn delete-btn" data-account-id="${doc.id}">Delete</button>
+              </div>
             `;
             
-            // Add click handler for the button
-            const button = card.querySelector('.open-btn');
-            button.addEventListener('click', (e) => {
-              e.preventDefault();
+            cardList.appendChild(card);
+          });
+          
+          // Add event listeners to buttons
+          document.querySelectorAll('.open-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
               e.stopPropagation();
-              window.location.href = `accounts.html?id=${encodeURIComponent(doc.id)}`;
+              const accountId = btn.dataset.accountId;
+              window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
             });
-            
-            // Also make entire card clickable
+          });
+          
+          document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const accountId = btn.dataset.accountId;
+              openEditModal(accountId);
+            });
+          });
+          
+          document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const accountId = btn.dataset.accountId;
+              openDeleteModal(accountId);
+            });
+          });
+          
+          // Make card clickable for opening account
+          document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', (e) => {
-              if (!e.target.closest('.open-btn')) {
-                window.location.href = `accounts.html?id=${encodeURIComponent(doc.id)}`;
+              // Only trigger if not clicking on buttons
+              if (!e.target.closest('.action-btn')) {
+                const accountId = card.dataset.accountId;
+                window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
               }
             });
-            
-            cardList.appendChild(card);
           });
         }
       });
     }
 
-    // Handle form submission
-    accountForm.addEventListener("submit", async function(e) {
+    // Open edit modal
+    function openEditModal(accountId) {
+      const account = accounts.find(acc => acc.id === accountId);
+      if (account) {
+        selectedAccountId = accountId;
+        selectedAccountName = account.name;
+        isEditMode = true;
+        
+        // Populate edit form
+        document.getElementById("editAccountName").value = account.name;
+        
+        // Hide add form if visible
+        accountForm.classList.remove('active');
+        formVisible = false;
+        toggleAddBtn.textContent = "+ Add Account";
+        
+        // Show edit modal
+        document.getElementById("editModal").classList.add('active');
+      }
+    }
+
+    // Open delete modal
+    function openDeleteModal(accountId) {
+      const account = accounts.find(acc => acc.id === accountId);
+      if (account) {
+        selectedAccountId = accountId;
+        selectedAccountName = account.name;
+        
+        // Update delete message
+        document.getElementById("deleteAccountText").textContent = 
+          `Are you sure you want to delete the account "${account.name}"? This action cannot be undone.`;
+        
+        // Show delete modal
+        document.getElementById("deleteModal").classList.add('active');
+      }
+    }
+
+    // Cancel edit
+    function cancelEdit() {
+      isEditMode = false;
+      selectedAccountId = null;
+      selectedAccountName = null;
+      document.getElementById("editModal").classList.remove('active');
+    }
+
+    // Handle form submission (Add or Edit)
+    document.getElementById("accountForm").addEventListener("submit", async function(e) {
       e.preventDefault();
-      const nameInput = document.getElementById("name");
+      const nameInput = document.getElementById("accountNameInput");
       const name = nameInput.value.trim();
 
-      if (name) {
-        try {
-          const accountData = {
-            name,
-            branchId,
-            created: new Date().toISOString()
-          };
-
-          await window.addDoc(window.collection(db, "accounts"), accountData);
-          nameInput.value = "";
-          formVisible = false;
-          accountForm.classList.remove('active');
-          toggleAddBtn.textContent = "+ Add Account";
-        } catch (err) {
-          alert("Error creating account: " + err.message);
-        }
+      if (!name) {
+        alert("Please enter an account name");
+        return;
       }
+
+      try {
+        const accountData = {
+          name,
+          branchId,
+          created: new Date().toISOString()
+        };
+
+        await window.addDoc(window.collection(db, "accounts"), accountData);
+        
+        // Reset form
+        nameInput.value = "";
+        formVisible = false;
+        accountForm.classList.remove('active');
+        toggleAddBtn.textContent = "+ Add Account";
+        
+      } catch (err) {
+        alert("Error creating account: " + err.message);
+      }
+    });
+
+    // Handle edit save
+    document.getElementById("saveEditBtn").addEventListener("click", async function() {
+      const newName = document.getElementById("editAccountName").value.trim();
+      
+      if (!newName) {
+        alert("Please enter an account name");
+        return;
+      }
+
+      if (!selectedAccountId) return;
+
+      try {
+        await window.updateDoc(window.doc(db, "accounts", selectedAccountId), {
+          name: newName,
+          updated: new Date().toISOString()
+        });
+
+        // Close modal and reset state
+        cancelEdit();
+        
+      } catch (err) {
+        alert("Error updating account: " + err.message);
+      }
+    });
+
+    // Handle delete confirmation
+    document.getElementById("confirmDeleteBtn").addEventListener("click", async function() {
+      if (!selectedAccountId) return;
+
+      try {
+        // Delete the account
+        await window.deleteDoc(window.doc(db, "accounts", selectedAccountId));
+        
+        // Note: In a real app, you might want to delete all transactions in this account too
+        // For now, we're just deleting the account itself
+        
+        // Close modal and reset state
+        document.getElementById("deleteModal").classList.remove('active');
+        selectedAccountId = null;
+        selectedAccountName = null;
+        
+      } catch (err) {
+        alert("Error deleting account: " + err.message);
+      }
+    });
+
+    // Cancel delete
+    document.getElementById("cancelDeleteBtn").addEventListener("click", function() {
+      document.getElementById("deleteModal").classList.remove('active');
+      selectedAccountId = null;
+      selectedAccountName = null;
+    });
+
+    // Cancel edit
+    document.getElementById("cancelEditBtn").addEventListener("click", function() {
+      cancelEdit();
     });
 
     // Initialize
