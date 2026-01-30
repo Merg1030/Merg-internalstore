@@ -56,35 +56,97 @@
       font-size: 16px;
     }
     
-    /* Top Bar */
-    .top-bar {
+    /* Navigation Tabs */
+    .nav-tabs {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      gap: 10px;
       margin-bottom: 30px;
       padding: 0 20px;
+      flex-wrap: wrap;
     }
     
-    .add-btn {
-      background: #1976d2;
-      color: white;
+    .tab-btn {
+      background: #e9ecef;
+      color: #333;
       border: none;
       padding: 12px 24px;
       border-radius: 8px;
-      font-weight: 600;
+      font-weight: 500;
       font-size: 15px;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s;
+      white-space: nowrap;
     }
     
-    .add-btn:hover {
+    .tab-btn:hover {
+      background: #dee2e6;
+    }
+    
+    .tab-btn.active {
+      background: #1976d2;
+      color: white;
+    }
+    
+    /* Ledger Management */
+    .ledger-manager {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 0 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .ledger-info {
+      flex: 1;
+    }
+    
+    .ledger-info h2 {
+      font-size: 24px;
+      color: #1976d2;
+      margin-bottom: 5px;
+    }
+    
+    .ledger-info p {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .action-btn {
+      background: #1976d2;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    
+    .action-btn:hover {
       background: #1565c0;
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(25, 118, 210, 0.2);
+    }
+    
+    .action-btn.secondary {
+      background: #6c757d;
+    }
+    
+    .action-btn.secondary:hover {
+      background: #5a6268;
     }
     
     /* Form */
-    .account-form {
+    .ledger-form, .account-form {
       background: white;
       border-radius: 12px;
       padding: 25px;
@@ -95,7 +157,7 @@
       transition: all 0.3s ease;
     }
     
-    .account-form.active {
+    .ledger-form.active, .account-form.active {
       display: block;
       border-color: #1976d2;
     }
@@ -104,9 +166,10 @@
       display: flex;
       gap: 15px;
       align-items: center;
+      margin-bottom: 15px;
     }
     
-    .form-row input {
+    .form-row input, .form-row select {
       flex: 1;
       padding: 14px 16px;
       border-radius: 8px;
@@ -115,9 +178,10 @@
       font-size: 15px;
       color: #333;
       transition: border-color 0.3s;
+      background: white;
     }
     
-    .form-row input:focus {
+    .form-row input:focus, .form-row select:focus {
       border-color: #1976d2;
       box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
     }
@@ -181,7 +245,26 @@
       color: white;
       margin-bottom: 20px;
       font-weight: bold;
+    }
+    
+    .personal .icon {
       background: linear-gradient(135deg, #1976d2, #1565c0);
+    }
+    
+    .work .icon {
+      background: linear-gradient(135deg, #4CAF50, #388E3C);
+    }
+    
+    .business .icon {
+      background: linear-gradient(135deg, #FF9800, #F57C00);
+    }
+    
+    .family .icon {
+      background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+    }
+    
+    .other .icon {
+      background: linear-gradient(135deg, #607D8B, #455A64);
     }
     
     .card h2 {
@@ -424,11 +507,14 @@
         font-size: 28px;
       }
       
-      .top-bar {
+      .nav-tabs, .ledger-manager {
+        padding: 0 10px;
+      }
+      
+      .ledger-manager {
         flex-direction: column;
         align-items: stretch;
         gap: 15px;
-        padding: 0 10px;
       }
       
       .form-row {
@@ -439,7 +525,7 @@
         width: 100%;
       }
       
-      .account-form {
+      .ledger-form, .account-form {
         margin: 0 10px 20px 10px;
       }
       
@@ -452,6 +538,10 @@
       .grid {
         grid-template-columns: 1fr;
       }
+      
+      .nav-tabs {
+        justify-content: center;
+      }
     }
   </style>
 </head>
@@ -459,14 +549,42 @@
   <div class="container">
     <div class="header">
       <h1>Trismart Book of Accounts</h1>
-      <p>Manage all your financial accounts</p>
+      <p>Organize accounts into different ledger books</p>
     </div>
     
-    <div class="top-bar">
-      <h2>Accounts</h2>
-      <button class="add-btn" id="toggleAddBtn">+ Add Account</button>
+    <!-- Ledger Tabs -->
+    <div class="nav-tabs" id="ledgerTabs">
+      <!-- Ledger tabs will be dynamically added here -->
     </div>
     
+    <!-- Ledger Management -->
+    <div class="ledger-manager" id="ledgerManager" style="display: none;">
+      <div class="ledger-info">
+        <h2 id="currentLedgerName">Select a Ledger</h2>
+        <p id="currentLedgerDescription">Choose or create a ledger to manage accounts</p>
+      </div>
+      <div class="action-buttons">
+        <button class="action-btn" id="addAccountBtn">+ Add Account</button>
+        <button class="action-btn secondary" id="manageLedgersBtn">Manage Ledgers</button>
+      </div>
+    </div>
+    
+    <!-- Create Ledger Form -->
+    <form id="ledgerForm" class="ledger-form">
+      <div class="form-row">
+        <input type="text" id="ledgerName" placeholder="Ledger Name (e.g., Personal, Business)" required>
+        <select id="ledgerColor">
+          <option value="personal">Personal (Blue)</option>
+          <option value="work">Work (Green)</option>
+          <option value="business">Business (Orange)</option>
+          <option value="family">Family (Purple)</option>
+          <option value="other">Other (Gray)</option>
+        </select>
+        <button type="submit" id="submitLedgerBtn">Create Ledger</button>
+      </div>
+    </form>
+    
+    <!-- Create Account Form -->
     <form id="accountForm" class="account-form">
       <div class="form-row">
         <input type="text" id="accountNameInput" placeholder="Enter Account Name" required>
@@ -474,11 +592,19 @@
       </div>
     </form>
     
+    <!-- Accounts Grid -->
     <div class="grid" id="cardList"></div>
     
+    <!-- Empty States -->
+    <div id="noLedgers" class="empty-state">
+      <h3>No Ledgers Created</h3>
+      <p>Create your first ledger to start organizing accounts</p>
+      <button class="action-btn" id="createFirstLedgerBtn" style="margin-top: 20px;">Create First Ledger</button>
+    </div>
+    
     <div id="noAccounts" class="empty-state" style="display: none;">
-      <h3>No Accounts Yet</h3>
-      <p>Click "Add Account" to create your first account</p>
+      <h3>No Accounts in This Ledger</h3>
+      <p>Click "Add Account" to create your first account in this ledger</p>
     </div>
     
     <div class="footer">
@@ -486,8 +612,25 @@
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
-  <div class="modal" id="deleteModal">
+  <!-- Delete Confirmation Modal (Ledger) -->
+  <div class="modal" id="deleteLedgerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Delete Ledger</h3>
+        <p id="deleteLedgerText">Are you sure you want to delete this ledger? This action cannot be undone.</p>
+        <p style="color: #e53935; font-weight: 500; margin-top: 10px;">
+          ⚠️ Warning: All accounts in this ledger will also be deleted!
+        </p>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="cancelDeleteLedgerBtn">Cancel</button>
+        <button class="modal-btn delete" id="confirmDeleteLedgerBtn">Delete Ledger</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal (Account) -->
+  <div class="modal" id="deleteAccountModal">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Delete Account</h3>
@@ -497,14 +640,14 @@
         </p>
       </div>
       <div class="modal-actions">
-        <button class="modal-btn cancel" id="cancelDeleteBtn">Cancel</button>
-        <button class="modal-btn delete" id="confirmDeleteBtn">Delete Account</button>
+        <button class="modal-btn cancel" id="cancelDeleteAccountBtn">Cancel</button>
+        <button class="modal-btn delete" id="confirmDeleteAccountBtn">Delete Account</button>
       </div>
     </div>
   </div>
 
   <!-- Edit Account Modal -->
-  <div class="modal" id="editModal">
+  <div class="modal" id="editAccountModal">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Edit Account</h3>
@@ -514,8 +657,34 @@
         <input type="text" id="editAccountName" placeholder="Enter new account name" required>
       </div>
       <div class="modal-actions">
-        <button class="modal-btn cancel" id="cancelEditBtn">Cancel</button>
-        <button class="modal-btn save" id="saveEditBtn">Save Changes</button>
+        <button class="modal-btn cancel" id="cancelEditAccountBtn">Cancel</button>
+        <button class="modal-btn save" id="saveEditAccountBtn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Ledger Modal -->
+  <div class="modal" id="editLedgerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Ledger</h3>
+        <p>Update ledger details</p>
+      </div>
+      <div class="form-row" style="margin: 20px 0;">
+        <input type="text" id="editLedgerName" placeholder="Enter new ledger name" required>
+      </div>
+      <div class="form-row" style="margin: 20px 0;">
+        <select id="editLedgerColor">
+          <option value="personal">Personal (Blue)</option>
+          <option value="work">Work (Green)</option>
+          <option value="business">Business (Orange)</option>
+          <option value="family">Family (Purple)</option>
+          <option value="other">Other (Gray)</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="cancelEditLedgerBtn">Cancel</button>
+        <button class="modal-btn save" id="saveEditLedgerBtn">Save Changes</button>
       </div>
     </div>
   </div>
@@ -540,152 +709,235 @@
     }
 
     // State variables
-    const toggleAddBtn = document.getElementById("toggleAddBtn");
-    const accountForm = document.getElementById("accountForm");
-    let formVisible = false;
+    let ledgers = [];
     let accounts = [];
+    let selectedLedgerId = null;
     let selectedAccountId = null;
-    let selectedAccountName = null;
-    let isEditMode = false;
+    let selectedLedgerForEdit = null;
+    let selectedAccountForEdit = null;
 
-    // Toggle add account form
-    toggleAddBtn.addEventListener("click", () => {
-      formVisible = !formVisible;
-      accountForm.classList.toggle('active', formVisible);
-      toggleAddBtn.textContent = formVisible ? "Cancel" : "+ Add Account";
-      document.getElementById("submitAccountBtn").textContent = "Create Account";
-      document.getElementById("accountNameInput").value = "";
-    });
+    // Initialize
+    initializeApp();
 
-    // Render accounts
-    function renderAccountsRealtime() {
-      const cardList = document.getElementById("cardList");
-      const noAccounts = document.getElementById("noAccounts");
+    async function initializeApp() {
+      await loadLedgers();
+      setupEventListeners();
+    }
+
+    async function loadLedgers() {
       const q = window.query(
-        window.collection(db, "accounts"),
+        window.collection(db, "ledgers"),
         window.where("branchId", "==", branchId)
       );
+      
       window.onSnapshot(q, (snapshot) => {
-        cardList.innerHTML = "";
+        ledgers = [];
+        snapshot.forEach(doc => {
+          ledgers.push({ id: doc.id, ...doc.data() });
+        });
+        
+        renderLedgerTabs();
+        
+        // If no ledgers, show empty state
+        if (ledgers.length === 0) {
+          document.getElementById('noLedgers').style.display = 'block';
+          document.getElementById('ledgerManager').style.display = 'none';
+        } else {
+          document.getElementById('noLedgers').style.display = 'none';
+          document.getElementById('ledgerManager').style.display = 'flex';
+          
+          // Select first ledger by default
+          if (!selectedLedgerId && ledgers.length > 0) {
+            selectLedger(ledgers[0].id);
+          }
+        }
+      });
+    }
+
+    function renderLedgerTabs() {
+      const ledgerTabs = document.getElementById('ledgerTabs');
+      ledgerTabs.innerHTML = '';
+      
+      ledgers.forEach(ledger => {
+        const tab = document.createElement('button');
+        tab.className = `tab-btn ${selectedLedgerId === ledger.id ? 'active' : ''}`;
+        tab.textContent = ledger.name;
+        tab.dataset.ledgerId = ledger.id;
+        tab.addEventListener('click', () => selectLedger(ledger.id));
+        ledgerTabs.appendChild(tab);
+      });
+      
+      // Add "Create Ledger" tab
+      const createTab = document.createElement('button');
+      createTab.className = 'tab-btn';
+      createTab.textContent = '+ Create Ledger';
+      createTab.addEventListener('click', () => showLedgerForm());
+      ledgerTabs.appendChild(createTab);
+    }
+
+    async function selectLedger(ledgerId) {
+      selectedLedgerId = ledgerId;
+      const ledger = ledgers.find(l => l.id === ledgerId);
+      
+      if (ledger) {
+        // Update UI
+        document.getElementById('currentLedgerName').textContent = ledger.name;
+        document.getElementById('currentLedgerDescription').textContent = `Manage accounts in ${ledger.name} ledger`;
+        
+        // Update active tab
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.dataset.ledgerId === ledgerId) {
+            btn.classList.add('active');
+          }
+        });
+        
+        // Load accounts for this ledger
+        await loadAccounts(ledgerId);
+      }
+    }
+
+    async function loadAccounts(ledgerId) {
+      const q = window.query(
+        window.collection(db, "accounts"),
+        window.where("branchId", "==", branchId),
+        window.where("ledgerId", "==", ledgerId)
+      );
+      
+      window.onSnapshot(q, (snapshot) => {
+        const cardList = document.getElementById('cardList');
+        const noAccounts = document.getElementById('noAccounts');
         accounts = [];
         
+        cardList.innerHTML = '';
+        
         if (snapshot.empty) {
-          noAccounts.style.display = "block";
+          noAccounts.style.display = 'block';
         } else {
-          noAccounts.style.display = "none";
+          noAccounts.style.display = 'none';
           snapshot.forEach(doc => {
             const data = doc.data();
             const account = { id: doc.id, ...data };
             accounts.push(account);
             
-            const card = document.createElement("div");
-            card.className = "card";
-            card.dataset.accountId = doc.id;
-            
-            // Generate initials for icon
-            const initials = data.name
-              .split(' ')
-              .map(word => word[0])
-              .join('')
-              .toUpperCase()
-              .substring(0, 2);
-            
-            card.innerHTML = `
-              <div class="icon">${initials}</div>
-              <h2>${data.name}</h2>
-              <p>View transactions and account details</p>
-              <button class="open-btn">Open Account</button>
-              
-              <div class="card-actions">
-                <button class="action-menu-btn" data-account-id="${doc.id}">⋮</button>
-                <div class="action-menu" id="menu-${doc.id}">
-                  <button class="action-menu-item edit" onclick="openEditModal('${doc.id}')">
-                    ✏️ Edit Account
-                  </button>
-                  <button class="action-menu-item delete" onclick="openDeleteModal('${doc.id}')">
-                    🗑️ Delete Account
-                  </button>
-                </div>
-              </div>
-            `;
-            
+            const card = createAccountCard(account, ledgers.find(l => l.id === ledgerId));
             cardList.appendChild(card);
-          });
-          
-          // Add event listeners to open buttons
-          document.querySelectorAll('.open-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const card = btn.closest('.card');
-              const accountId = card.dataset.accountId;
-              window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
-            });
-          });
-          
-          // Add event listeners to 3-dots menu buttons
-          document.querySelectorAll('.action-menu-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const accountId = btn.dataset.accountId;
-              
-              // Hide all other menus
-              document.querySelectorAll('.action-menu').forEach(menu => {
-                menu.classList.remove('show');
-              });
-              
-              // Show this menu
-              const menu = document.getElementById(`menu-${accountId}`);
-              if (menu) {
-                const rect = btn.getBoundingClientRect();
-                menu.style.top = (rect.bottom - rect.top) + 'px';
-                menu.style.right = '0px';
-                menu.classList.add('show');
-              }
-            });
-          });
-          
-          // Make card clickable for opening account
-          document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', (e) => {
-              // Only trigger if not clicking on buttons or menus
-              if (!e.target.closest('.open-btn') && !e.target.closest('.action-menu-btn') && !e.target.closest('.action-menu')) {
-                const accountId = card.dataset.accountId;
-                window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
-              }
-            });
           });
         }
       });
     }
 
+    function createAccountCard(account, ledger) {
+      const card = document.createElement('div');
+      card.className = `card ${ledger?.color || 'personal'}`;
+      card.dataset.accountId = account.id;
+      
+      // Generate initials for icon
+      const initials = account.name
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2);
+      
+      card.innerHTML = `
+        <div class="icon">${initials}</div>
+        <h2>${account.name}</h2>
+        <p>Ledger: ${ledger?.name || 'Unknown'}</p>
+        <button class="open-btn">Open Account</button>
+        
+        <div class="card-actions">
+          <button class="action-menu-btn" data-account-id="${account.id}">⋮</button>
+          <div class="action-menu" id="menu-account-${account.id}">
+            <button class="action-menu-item edit" onclick="openEditAccountModal('${account.id}')">
+              ✏️ Edit Account
+            </button>
+            <button class="action-menu-item delete" onclick="openDeleteAccountModal('${account.id}')">
+              🗑️ Delete Account
+            </button>
+          </div>
+        </div>
+      `;
+      
+      // Add event listeners
+      const openBtn = card.querySelector('.open-btn');
+      openBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.location.href = `accounts.html?id=${encodeURIComponent(account.id)}`;
+      });
+      
+      const menuBtn = card.querySelector('.action-menu-btn');
+      menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const accountId = menuBtn.dataset.accountId;
+        
+        // Hide all other menus
+        document.querySelectorAll('.action-menu').forEach(menu => {
+          menu.classList.remove('show');
+        });
+        
+        // Show this menu
+        const menu = document.getElementById(`menu-account-${accountId}`);
+        if (menu) {
+          const rect = menuBtn.getBoundingClientRect();
+          menu.style.top = (rect.bottom - rect.top) + 'px';
+          menu.style.right = '0px';
+          menu.classList.add('show');
+        }
+      });
+      
+      card.addEventListener('click', (e) => {
+        if (!e.target.closest('.open-btn') && !e.target.closest('.action-menu-btn') && !e.target.closest('.action-menu')) {
+          window.location.href = `accounts.html?id=${encodeURIComponent(account.id)}`;
+        }
+      });
+      
+      return card;
+    }
+
+    function showLedgerForm() {
+      document.getElementById('ledgerForm').classList.add('active');
+      document.getElementById('accountForm').classList.remove('active');
+    }
+
+    function hideLedgerForm() {
+      document.getElementById('ledgerForm').classList.remove('active');
+    }
+
+    function showAccountForm() {
+      if (!selectedLedgerId) {
+        alert('Please select a ledger first.');
+        return;
+      }
+      document.getElementById('accountForm').classList.add('active');
+      document.getElementById('ledgerForm').classList.remove('active');
+    }
+
+    function hideAccountForm() {
+      document.getElementById('accountForm').classList.remove('active');
+    }
+
     // Global functions for account actions
-    window.openEditModal = function(accountId) {
+    window.openEditAccountModal = function(accountId) {
       const account = accounts.find(acc => acc.id === accountId);
       if (account) {
-        selectedAccountId = accountId;
-        selectedAccountName = account.name;
-        
-        // Populate edit form
-        document.getElementById("editAccountName").value = account.name;
+        selectedAccountForEdit = accountId;
+        document.getElementById('editAccountName').value = account.name;
         
         // Hide any open menu
         document.querySelectorAll('.action-menu').forEach(menu => {
           menu.classList.remove('show');
         });
         
-        // Show edit modal
-        document.getElementById("editModal").classList.add('active');
+        document.getElementById('editAccountModal').classList.add('active');
       }
     };
 
-    window.openDeleteModal = function(accountId) {
+    window.openDeleteAccountModal = function(accountId) {
       const account = accounts.find(acc => acc.id === accountId);
       if (account) {
-        selectedAccountId = accountId;
-        selectedAccountName = account.name;
-        
-        // Update delete message
-        document.getElementById("deleteAccountText").textContent = 
+        selectedAccountForEdit = accountId;
+        document.getElementById('deleteAccountText').textContent = 
           `Are you sure you want to delete the account "${account.name}"? This action cannot be undone.`;
         
         // Hide any open menu
@@ -693,110 +945,219 @@
           menu.classList.remove('show');
         });
         
-        // Show delete modal
-        document.getElementById("deleteModal").classList.add('active');
+        document.getElementById('deleteAccountModal').classList.add('active');
       }
     };
 
-    // Close menus when clicking outside
-    document.addEventListener('click', function() {
-      document.querySelectorAll('.action-menu').forEach(menu => {
-        menu.classList.remove('show');
-      });
-    });
-
-    // Handle form submission (Add)
-    document.getElementById("accountForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const nameInput = document.getElementById("accountNameInput");
-      const name = nameInput.value.trim();
-
-      if (!name) {
-        alert("Please enter an account name");
-        return;
+    // Global functions for ledger actions
+    window.openEditLedgerModal = function(ledgerId) {
+      const ledger = ledgers.find(l => l.id === ledgerId);
+      if (ledger) {
+        selectedLedgerForEdit = ledgerId;
+        document.getElementById('editLedgerName').value = ledger.name;
+        document.getElementById('editLedgerColor').value = ledger.color;
+        document.getElementById('editLedgerModal').classList.add('active');
       }
+    };
 
-      try {
-        const accountData = {
-          name,
-          branchId,
-          created: new Date().toISOString()
-        };
-
-        await window.addDoc(window.collection(db, "accounts"), accountData);
-        
-        // Reset form
-        nameInput.value = "";
-        formVisible = false;
-        accountForm.classList.remove('active');
-        toggleAddBtn.textContent = "+ Add Account";
-        
-      } catch (err) {
-        alert("Error creating account: " + err.message);
+    window.openDeleteLedgerModal = function(ledgerId) {
+      const ledger = ledgers.find(l => l.id === ledgerId);
+      if (ledger) {
+        selectedLedgerForEdit = ledgerId;
+        document.getElementById('deleteLedgerText').textContent = 
+          `Are you sure you want to delete the ledger "${ledger.name}"? This action cannot be undone.`;
+        document.getElementById('deleteLedgerModal').classList.add('active');
       }
-    });
+    };
 
-    // Handle edit save
-    document.getElementById("saveEditBtn").addEventListener("click", async function() {
-      const newName = document.getElementById("editAccountName").value.trim();
+    function setupEventListeners() {
+      // Create first ledger button
+      document.getElementById('createFirstLedgerBtn').addEventListener('click', showLedgerForm);
       
-      if (!newName) {
-        alert("Please enter an account name");
-        return;
-      }
-
-      if (!selectedAccountId) return;
-
-      try {
-        await window.updateDoc(window.doc(db, "accounts", selectedAccountId), {
-          name: newName,
-          updated: new Date().toISOString()
+      // Add account button
+      document.getElementById('addAccountBtn').addEventListener('click', showAccountForm);
+      
+      // Manage ledgers button
+      document.getElementById('manageLedgersBtn').addEventListener('click', () => {
+        // You can expand this to show a ledger management panel
+        alert('Ledger management features coming soon!');
+      });
+      
+      // Ledger form submission
+      document.getElementById('ledgerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('ledgerName').value.trim();
+        const color = document.getElementById('ledgerColor').value;
+        
+        if (!name) {
+          alert('Please enter a ledger name');
+          return;
+        }
+        
+        try {
+          const ledgerData = {
+            name,
+            color,
+            branchId,
+            created: new Date().toISOString()
+          };
+          
+          await window.addDoc(window.collection(db, "ledgers"), ledgerData);
+          
+          // Reset form
+          document.getElementById('ledgerName').value = '';
+          hideLedgerForm();
+          
+        } catch (err) {
+          alert('Error creating ledger: ' + err.message);
+        }
+      });
+      
+      // Account form submission
+      document.getElementById('accountForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('accountNameInput').value.trim();
+        
+        if (!name) {
+          alert('Please enter an account name');
+          return;
+        }
+        
+        if (!selectedLedgerId) {
+          alert('Please select a ledger first');
+          return;
+        }
+        
+        try {
+          const accountData = {
+            name,
+            branchId,
+            ledgerId: selectedLedgerId,
+            created: new Date().toISOString()
+          };
+          
+          await window.addDoc(window.collection(db, "accounts"), accountData);
+          
+          // Reset form
+          document.getElementById('accountNameInput').value = '';
+          hideAccountForm();
+          
+        } catch (err) {
+          alert('Error creating account: ' + err.message);
+        }
+      });
+      
+      // Modal buttons
+      document.getElementById('cancelDeleteAccountBtn').addEventListener('click', () => {
+        document.getElementById('deleteAccountModal').classList.remove('active');
+        selectedAccountForEdit = null;
+      });
+      
+      document.getElementById('confirmDeleteAccountBtn').addEventListener('click', async () => {
+        if (!selectedAccountForEdit) return;
+        
+        try {
+          await window.deleteDoc(window.doc(db, "accounts", selectedAccountForEdit));
+          document.getElementById('deleteAccountModal').classList.remove('active');
+          selectedAccountForEdit = null;
+        } catch (err) {
+          alert('Error deleting account: ' + err.message);
+        }
+      });
+      
+      document.getElementById('cancelEditAccountBtn').addEventListener('click', () => {
+        document.getElementById('editAccountModal').classList.remove('active');
+        selectedAccountForEdit = null;
+      });
+      
+      document.getElementById('saveEditAccountBtn').addEventListener('click', async () => {
+        const newName = document.getElementById('editAccountName').value.trim();
+        
+        if (!newName) {
+          alert('Please enter an account name');
+          return;
+        }
+        
+        if (!selectedAccountForEdit) return;
+        
+        try {
+          await window.updateDoc(window.doc(db, "accounts", selectedAccountForEdit), {
+            name: newName,
+            updated: new Date().toISOString()
+          });
+          
+          document.getElementById('editAccountModal').classList.remove('active');
+          selectedAccountForEdit = null;
+        } catch (err) {
+          alert('Error updating account: ' + err.message);
+        }
+      });
+      
+      // Ledger modal buttons
+      document.getElementById('cancelDeleteLedgerBtn').addEventListener('click', () => {
+        document.getElementById('deleteLedgerModal').classList.remove('active');
+        selectedLedgerForEdit = null;
+      });
+      
+      document.getElementById('confirmDeleteLedgerBtn').addEventListener('click', async () => {
+        if (!selectedLedgerForEdit) return;
+        
+        try {
+          // Delete the ledger
+          await window.deleteDoc(window.doc(db, "ledgers", selectedLedgerForEdit));
+          
+          // Note: In production, you might want to delete all accounts in this ledger too
+          // or move them to another ledger
+          
+          document.getElementById('deleteLedgerModal').classList.remove('active');
+          selectedLedgerForEdit = null;
+          
+          // If we deleted the currently selected ledger, select another one
+          if (selectedLedgerId === selectedLedgerForEdit && ledgers.length > 0) {
+            selectLedger(ledgers[0].id);
+          }
+        } catch (err) {
+          alert('Error deleting ledger: ' + err.message);
+        }
+      });
+      
+      document.getElementById('cancelEditLedgerBtn').addEventListener('click', () => {
+        document.getElementById('editLedgerModal').classList.remove('active');
+        selectedLedgerForEdit = null;
+      });
+      
+      document.getElementById('saveEditLedgerBtn').addEventListener('click', async () => {
+        const newName = document.getElementById('editLedgerName').value.trim();
+        const newColor = document.getElementById('editLedgerColor').value;
+        
+        if (!newName) {
+          alert('Please enter a ledger name');
+          return;
+        }
+        
+        if (!selectedLedgerForEdit) return;
+        
+        try {
+          await window.updateDoc(window.doc(db, "ledgers", selectedLedgerForEdit), {
+            name: newName,
+            color: newColor,
+            updated: new Date().toISOString()
+          });
+          
+          document.getElementById('editLedgerModal').classList.remove('active');
+          selectedLedgerForEdit = null;
+        } catch (err) {
+          alert('Error updating ledger: ' + err.message);
+        }
+      });
+      
+      // Close menus when clicking outside
+      document.addEventListener('click', function() {
+        document.querySelectorAll('.action-menu').forEach(menu => {
+          menu.classList.remove('show');
         });
-
-        // Close modal and reset state
-        document.getElementById("editModal").classList.remove('active');
-        selectedAccountId = null;
-        selectedAccountName = null;
-        
-      } catch (err) {
-        alert("Error updating account: " + err.message);
-      }
-    });
-
-    // Handle delete confirmation
-    document.getElementById("confirmDeleteBtn").addEventListener("click", async function() {
-      if (!selectedAccountId) return;
-
-      try {
-        // Delete the account
-        await window.deleteDoc(window.doc(db, "accounts", selectedAccountId));
-        
-        // Close modal and reset state
-        document.getElementById("deleteModal").classList.remove('active');
-        selectedAccountId = null;
-        selectedAccountName = null;
-        
-      } catch (err) {
-        alert("Error deleting account: " + err.message);
-      }
-    });
-
-    // Cancel delete
-    document.getElementById("cancelDeleteBtn").addEventListener("click", function() {
-      document.getElementById("deleteModal").classList.remove('active');
-      selectedAccountId = null;
-      selectedAccountName = null;
-    });
-
-    // Cancel edit
-    document.getElementById("cancelEditBtn").addEventListener("click", function() {
-      document.getElementById("editModal").classList.remove('active');
-      selectedAccountId = null;
-      selectedAccountName = null;
-    });
-
-    // Initialize
-    renderAccountsRealtime();
+      });
+    }
   </script>
 </body>
 </html>
