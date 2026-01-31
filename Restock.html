@@ -17,6 +17,13 @@
             color: #333333;
             min-height: 100vh;
             padding: 20px;
+            transition: filter 0.3s;
+        }
+
+        body.blurred {
+            filter: blur(5px);
+            pointer-events: none;
+            user-select: none;
         }
 
         .container {
@@ -26,6 +33,7 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
+            transition: filter 0.3s;
         }
 
         h1 {
@@ -54,12 +62,38 @@
             font-size: 16px;
         }
 
+        .form-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .toggle-btn.active {
+            background-color: #0066cc;
+        }
+
         .form-section {
             background-color: #f5f5f5;
             padding: 20px;
             border-radius: 5px;
             margin-bottom: 20px;
             border: 1px solid #ddd;
+            display: block;
+        }
+
+        .form-section.hidden {
+            display: none;
         }
 
         .input-grid {
@@ -285,6 +319,118 @@
             margin-top: 10px;
         }
 
+        .view-items-btn {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .view-items-btn:hover {
+            background-color: #138496;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0066cc;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-grv-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .modal-grv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .modal-info-item {
+            margin-bottom: 5px;
+        }
+
+        .modal-info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .modal-info-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .modal-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .modal-items-table th {
+            background-color: #0066cc;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .modal-items-table td {
+            padding: 8px;
+            font-size: 12px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -303,6 +449,11 @@
                 padding: 12px 20px;
                 font-size: 14px;
             }
+            
+            .modal-content {
+                padding: 20px;
+                width: 95%;
+            }
         }
     </style>
 </head>
@@ -315,16 +466,23 @@
             Currently Adding to: GRV-01
         </div>
         
-        <div class="form-section">
+        <div class="form-toggle">
+            <button class="toggle-btn active" onclick="toggleForm('show')">Show Form</button>
+            <button class="toggle-btn" onclick="toggleForm('hide')">Hide Form</button>
+        </div>
+        
+        <div class="form-section" id="formSection">
             <h2 style="color: #000000; margin-bottom: 15px; font-size: 18px;">Add New Item</h2>
             <div class="input-grid">
                 <div class="input-group">
-                    <label for="itemCode">Item Code</label>
-                    <input type="text" id="itemCode" placeholder="Enter item code" maxlength="20">
+                    <label for="itemName">Item Name</label>
+                    <select id="itemName" onchange="autoFillItemCode()">
+                        <option value="">Select item</option>
+                    </select>
                 </div>
                 <div class="input-group">
-                    <label for="itemName">Item Name</label>
-                    <input type="text" id="itemName" placeholder="Enter item name">
+                    <label for="itemCode">Item Code</label>
+                    <input type="text" id="itemCode" placeholder="Code auto-fills" readonly>
                 </div>
                 <div class="input-group">
                     <label for="quantity">Quantity</label>
@@ -408,12 +566,82 @@
                             <th>Items</th>
                             <th>Total Quantity</th>
                             <th>Total Value</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="grvHistoryBody">
                         <!-- GRV history will be added here -->
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for viewing GRV items -->
+    <div class="modal-overlay" id="grvModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">GRV Details</div>
+                <button class="close-modal" onclick="closeModal()">×</button>
+            </div>
+            
+            <div class="modal-grv-info">
+                <div class="modal-grv-grid">
+                    <div class="modal-info-item">
+                        <div class="modal-info-label">GRV Number</div>
+                        <div class="modal-info-value" id="modalGRVNumber">-</div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-label">Date</div>
+                        <div class="modal-info-value" id="modalDate">-</div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-label">Time</div>
+                        <div class="modal-info-value" id="modalTime">-</div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-label">Total Items</div>
+                        <div class="modal-info-value" id="modalTotalItems">0</div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-label">Total Quantity</div>
+                        <div class="modal-info-value" id="modalTotalQuantity">0</div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-label">Total Value</div>
+                        <div class="modal-info-value" id="modalTotalValue">0.00</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 style="margin-bottom: 10px; color: #000000;">Items in this GRV</h4>
+            <div style="overflow-x: auto;">
+                <table class="modal-items-table">
+                    <thead>
+                        <tr>
+                            <th>Item Code</th>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total Price</th>
+                            <th>Supplier</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalItemsBody">
+                        <!-- Items will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="closeModal()" style="
+                    background-color: #6c757d;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 3px;
+                    cursor: pointer;
+                ">Close</button>
             </div>
         </div>
     </div>
@@ -446,6 +674,7 @@
         let currentGRV = 1;
         let processedGRVs = [];
         let inventory = [];
+        let inventoryItems = [];
 
         // Get next GRV number from database
         async function getNextGRVNumber() {
@@ -456,7 +685,6 @@
                 if (grvCounterSnap.exists()) {
                     currentGRV = grvCounterSnap.data().nextGRV;
                 } else {
-                    // Initialize with 1 if doesn't exist
                     await setDoc(grvCounterRef, { nextGRV: 1 });
                     currentGRV = 1;
                 }
@@ -468,7 +696,7 @@
             }
         }
 
-        // Fetch inventory for autocomplete
+        // Fetch inventory for dropdown
         async function fetchInventory() {
             try {
                 const q = query(collection(db, 'inventory'), where('branchId', '==', branchId));
@@ -477,10 +705,63 @@
                     id: doc.id, 
                     code: doc.data().code,
                     name: doc.data().name,
-                    stock: doc.data().stock
+                    stock: doc.data().stock || 0
                 }));
+                
+                // Sort inventory by name
+                inventory.sort((a, b) => a.name.localeCompare(b.name));
+                
+                // Populate dropdown
+                populateItemDropdown();
             } catch (error) {
                 console.error('Error fetching inventory:', error);
+            }
+        }
+
+        // Populate item name dropdown
+        function populateItemDropdown() {
+            const itemNameSelect = document.getElementById('itemName');
+            itemNameSelect.innerHTML = '<option value="">Select item</option>';
+            
+            inventory.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.name;
+                option.textContent = item.name;
+                option.setAttribute('data-code', item.code);
+                itemNameSelect.appendChild(option);
+            });
+        }
+
+        // Auto-fill item code when name is selected
+        function autoFillItemCode() {
+            const itemNameSelect = document.getElementById('itemName');
+            const selectedOption = itemNameSelect.options[itemNameSelect.selectedIndex];
+            const itemCode = selectedOption.getAttribute('data-code');
+            
+            if (itemCode) {
+                document.getElementById('itemCode').value = itemCode;
+                
+                // Auto-focus on quantity
+                document.getElementById('quantity').focus();
+                document.getElementById('quantity').select();
+            } else {
+                document.getElementById('itemCode').value = '';
+            }
+        }
+
+        // Toggle form visibility
+        function toggleForm(action) {
+            const formSection = document.getElementById('formSection');
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+            
+            if (action === 'hide') {
+                formSection.classList.add('hidden');
+                toggleButtons[0].classList.remove('active');
+                toggleButtons[1].classList.add('active');
+            } else {
+                formSection.classList.remove('hidden');
+                toggleButtons[0].classList.add('active');
+                toggleButtons[1].classList.remove('active');
             }
         }
 
@@ -515,13 +796,13 @@
 
         // Add item to the list
         function addItem() {
-            const itemCode = document.getElementById('itemCode').value.trim();
             const itemName = document.getElementById('itemName').value.trim();
+            const itemCode = document.getElementById('itemCode').value.trim();
             const quantity = parseInt(document.getElementById('quantity').value);
             const unitPrice = parseFloat(document.getElementById('unitPrice').value);
             const supplier = document.getElementById('supplier').value.trim();
             
-            if (!itemCode || !itemName || !quantity || quantity < 1 || !unitPrice || unitPrice < 0 || !supplier) {
+            if (!itemName || !itemCode || !quantity || quantity < 1 || !unitPrice || unitPrice < 0 || !supplier) {
                 showMessage('Please fill in all fields with valid values', 'error');
                 return;
             }
@@ -544,14 +825,16 @@
             updateSummary();
             saveLocalData();
             
-            document.getElementById('itemCode').value = '';
-            document.getElementById('itemName').value = '';
+            // Reset form but keep item name selected
             document.getElementById('quantity').value = '1';
             document.getElementById('unitPrice').value = '0.00';
             document.getElementById('supplier').value = '';
             
             showMessage(`Item "${itemName}" added successfully`, 'success');
-            document.getElementById('itemCode').focus();
+            
+            // Focus on quantity for next entry
+            document.getElementById('quantity').focus();
+            document.getElementById('quantity').select();
         }
 
         // Update the table with items
@@ -635,12 +918,16 @@
                 return;
             }
             
+            if (!confirm(`Process ${currentGRVItems.length} items as GRV-${currentGRV.toString().padStart(2, '0')}?`)) {
+                return;
+            }
+            
             try {
                 // Create GRV object
                 const grv = {
                     grvNumber: `GRV-${currentGRV.toString().padStart(2, '0')}`,
                     date: new Date().toISOString().split('T')[0],
-                    time: new Date().toLocaleTimeString(),
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                     items: currentGRVItems,
                     totalItems: currentGRVItems.length,
                     totalQuantity: currentGRVItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -656,15 +943,12 @@
                 
                 // Update inventory stock for each item
                 for (const item of currentGRVItems) {
-                    // Find the item in inventory
                     const inventoryItem = inventory.find(inv => inv.code === item.code);
                     if (inventoryItem) {
-                        // Update stock in inventory
                         const itemRef = doc(db, 'inventory', inventoryItem.id);
                         const newStock = (inventoryItem.stock || 0) + item.quantity;
                         await updateDoc(itemRef, { stock: newStock });
                         
-                        // Add to restockHistory
                         const restockEntry = {
                             date: grv.date,
                             code: item.code,
@@ -697,14 +981,14 @@
                 currentGRV++;
                 
                 // Update display and save
-                await getNextGRVNumber(); // Get updated GRV number from DB
+                await getNextGRVNumber();
                 updateTable();
                 updateSummary();
                 updateGRVHistory();
                 saveLocalData();
                 
                 showMessage(
-                    `GRV-${(currentGRV-1).toString().padStart(2, '0')} processed successfully. ${grv.totalItems} items, ${grv.totalQuantity} units, Total: ${grv.totalValue.toFixed(2)}. Next items will go to GRV-${currentGRV.toString().padStart(2, '0')}`,
+                    `GRV-${(currentGRV-1).toString().padStart(2, '0')} processed successfully. ${grv.totalItems} items, ${grv.totalQuantity} units, Total: ${grv.totalValue.toFixed(2)}`,
                     'success'
                 );
                 
@@ -722,7 +1006,7 @@
             if (processedGRVs.length === 0) {
                 historyBody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 15px; color: #666666;">
+                        <td colspan="7" style="text-align: center; padding: 15px; color: #666666;">
                             No GRV files processed yet.
                         </td>
                     </tr>
@@ -742,9 +1026,58 @@
                     <td>${grv.totalItems}</td>
                     <td>${grv.totalQuantity}</td>
                     <td>${grv.totalValue.toFixed(2)}</td>
+                    <td>
+                        <button class="view-items-btn" onclick="viewGRVDetails('${grv.grvNumber}')">View Items</button>
+                    </td>
                 `;
                 historyBody.appendChild(row);
             });
+        }
+
+        // View GRV details in modal
+        function viewGRVDetails(grvNumber) {
+            const grv = processedGRVs.find(g => g.grvNumber === grvNumber);
+            
+            if (!grv) {
+                showMessage('GRV details not found', 'error');
+                return;
+            }
+            
+            // Update modal content
+            document.getElementById('modalTitle').textContent = `GRV Details - ${grv.grvNumber}`;
+            document.getElementById('modalGRVNumber').textContent = grv.grvNumber;
+            document.getElementById('modalDate').textContent = grv.date;
+            document.getElementById('modalTime').textContent = grv.time;
+            document.getElementById('modalTotalItems').textContent = grv.totalItems;
+            document.getElementById('modalTotalQuantity').textContent = grv.totalQuantity;
+            document.getElementById('modalTotalValue').textContent = grv.totalValue.toFixed(2);
+            
+            // Update items table
+            const modalItemsBody = document.getElementById('modalItemsBody');
+            modalItemsBody.innerHTML = '';
+            
+            grv.items.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.code}</td>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${parseFloat(item.unitPrice).toFixed(2)}</td>
+                    <td>${item.totalPrice}</td>
+                    <td>${item.supplier}</td>
+                `;
+                modalItemsBody.appendChild(row);
+            });
+            
+            // Show modal and blur background
+            document.getElementById('grvModal').classList.add('active');
+            document.body.classList.add('blurred');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('grvModal').classList.remove('active');
+            document.body.classList.remove('blurred');
         }
 
         // Show message
@@ -772,30 +1105,25 @@
             }
         }
 
-        // Auto-fill item name when code is entered
-        document.getElementById('itemCode').addEventListener('blur', function() {
-            const code = this.value.trim();
-            if (code && inventory.length > 0) {
-                const item = inventory.find(inv => inv.code === code);
-                if (item) {
-                    document.getElementById('itemName').value = item.name;
-                }
-            }
-        });
-
         // Initialize
         window.onload = async function() {
             await getNextGRVNumber();
             await fetchInventory();
             loadLocalData();
             await fetchExistingGRVs();
-            document.getElementById('itemCode').focus();
+            
+            // Auto-focus on item name dropdown
+            document.getElementById('itemName').focus();
         };
 
         // Make functions available globally
         window.addItem = addItem;
         window.deleteItem = deleteItem;
         window.processGRV = processGRV;
+        window.toggleForm = toggleForm;
+        window.autoFillItemCode = autoFillItemCode;
+        window.viewGRVDetails = viewGRVDetails;
+        window.closeModal = closeModal;
     </script>
 </body>
 </html>
