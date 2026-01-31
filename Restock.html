@@ -17,13 +17,6 @@
             color: #333333;
             min-height: 100vh;
             padding: 20px;
-            transition: filter 0.3s;
-        }
-
-        body.blurred {
-            filter: blur(5px);
-            pointer-events: none;
-            user-select: none;
         }
 
         .container {
@@ -33,7 +26,6 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            transition: filter 0.3s;
         }
 
         h1 {
@@ -51,49 +43,53 @@
             font-size: 14px;
         }
 
-        .current-grv {
+        .control-panel {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .control-btn {
             background-color: #0066cc;
             color: white;
-            padding: 10px 15px;
-            border-radius: 3px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .form-toggle {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 15px;
-            gap: 10px;
-        }
-
-        .toggle-btn {
-            background-color: #6c757d;
-            color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 10px 20px;
             border-radius: 3px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: bold;
+            margin: 0 5px;
         }
 
-        .toggle-btn.active {
-            background-color: #0066cc;
+        .control-btn.process {
+            background-color: #28a745;
+        }
+
+        .control-btn.view {
+            background-color: #17a2b8;
+        }
+
+        .control-btn.hide {
+            background-color: #6c757d;
+        }
+
+        .hidden-section {
+            display: none;
+        }
+
+        .visible-section {
+            display: block;
         }
 
         .form-section {
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
             padding: 20px;
             border-radius: 5px;
             margin-bottom: 20px;
             border: 1px solid #ddd;
-            display: block;
-        }
-
-        .form-section.hidden {
-            display: none;
         }
 
         .input-grid {
@@ -144,6 +140,17 @@
 
         .add-item-btn:hover {
             background-color: #218838;
+        }
+
+        .current-grv {
+            background-color: #0066cc;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 3px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
         }
 
         .items-table-container {
@@ -227,44 +234,6 @@
             background-color: #c82333;
         }
 
-        .grv-summary {
-            background-color: #e9ecef;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-
-        .grv-summary h3 {
-            color: #000000;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-        }
-
-        .summary-item {
-            background-color: white;
-            padding: 12px;
-            border-radius: 3px;
-            border-left: 4px solid #0066cc;
-        }
-
-        .summary-label {
-            font-size: 12px;
-            color: #666666;
-            margin-bottom: 3px;
-        }
-
-        .summary-value {
-            font-size: 16px;
-            font-weight: bold;
-            color: #000000;
-        }
-
         .status-badge {
             display: inline-block;
             padding: 3px 8px;
@@ -303,22 +272,6 @@
             border: 1px solid #f5c6cb;
         }
 
-        .grv-history-section {
-            margin-top: 30px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .grv-history-section h3 {
-            margin-bottom: 15px;
-            color: #000000;
-        }
-
-        .history-table {
-            margin-top: 10px;
-        }
-
         .view-items-btn {
             background-color: #17a2b8;
             color: white;
@@ -353,26 +306,25 @@
 
         .modal-content {
             background-color: white;
-            padding: 30px;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 5px;
             max-width: 800px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 2px solid #0066cc;
         }
 
         .modal-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #000000;
         }
@@ -380,44 +332,15 @@
         .close-modal {
             background: none;
             border: none;
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
             color: #666;
-        }
-
-        .modal-grv-info {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        .modal-grv-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .modal-info-item {
-            margin-bottom: 5px;
-        }
-
-        .modal-info-label {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 2px;
-        }
-
-        .modal-info-value {
-            font-size: 14px;
-            font-weight: bold;
-            color: #000;
         }
 
         .modal-items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .modal-items-table th {
@@ -429,6 +352,7 @@
         .modal-items-table td {
             padding: 8px;
             font-size: 12px;
+            border-bottom: 1px solid #eee;
         }
 
         @media (max-width: 768px) {
@@ -445,13 +369,14 @@
                 font-size: 12px;
             }
             
-            .process-btn {
-                padding: 12px 20px;
-                font-size: 14px;
+            .control-btn {
+                padding: 8px 15px;
+                font-size: 12px;
+                margin: 5px;
             }
             
             .modal-content {
-                padding: 20px;
+                padding: 15px;
                 width: 95%;
             }
         }
@@ -460,119 +385,104 @@
 <body>
     <div class="container">
         <h1>GRV PROCESSING SYSTEM</h1>
-        <p class="subtitle">Add items and process as GRV files</p>
+        <p class="subtitle">Manage Goods Received Vouchers</p>
         
-        <div class="current-grv" id="currentGRV">
-            Currently Adding to: GRV-01
+        <div class="control-panel">
+            <button class="control-btn" onclick="showProcessSection()">Process New GRV</button>
+            <button class="control-btn view" onclick="showGRVHistory()">View GRV History</button>
+            <button class="control-btn hide" onclick="hideAllSections()" style="display: none;" id="hideBtn">Hide All</button>
         </div>
         
-        <div class="form-toggle">
-            <button class="toggle-btn active" onclick="toggleForm('show')">Show Form</button>
-            <button class="toggle-btn" onclick="toggleForm('hide')">Hide Form</button>
-        </div>
-        
-        <div class="form-section" id="formSection">
-            <h2 style="color: #000000; margin-bottom: 15px; font-size: 18px;">Add New Item</h2>
-            <div class="input-grid">
-                <div class="input-group">
-                    <label for="itemName">Item Name</label>
-                    <select id="itemName" onchange="autoFillItemCode()">
-                        <option value="">Select item</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="itemCode">Item Code</label>
-                    <input type="text" id="itemCode" placeholder="Code auto-fills" readonly>
-                </div>
-                <div class="input-group">
-                    <label for="quantity">Quantity</label>
-                    <input type="number" id="quantity" placeholder="Enter quantity" min="1" value="1">
-                </div>
-                <div class="input-group">
-                    <label for="unitPrice">Unit Price</label>
-                    <input type="number" id="unitPrice" placeholder="Enter price" min="0" step="0.01" value="0.00">
-                </div>
-                <div class="input-group">
-                    <label for="supplier">Supplier</label>
-                    <input type="text" id="supplier" placeholder="Enter supplier name">
-                </div>
+        <!-- Process GRV Section (Hidden by default) -->
+        <div id="processSection" class="hidden-section">
+            <div class="current-grv" id="currentGRV">
+                Currently Adding to: GRV-01
             </div>
-            <button class="add-item-btn" onclick="addItem()">Add Item to List</button>
-        </div>
-        
-        <div class="message" id="message"></div>
-        
-        <div class="items-table-container">
-            <h2 style="color: #000000; margin-bottom: 10px; padding-left: 10px; font-size: 18px;">Items to Process</h2>
-            <table id="itemsTable">
-                <thead>
-                    <tr>
-                        <th>Item Code</th>
-                        <th>Item Name</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Total Price</th>
-                        <th>Supplier</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="itemsTableBody">
-                    <!-- Items will be added here dynamically -->
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="grv-summary">
-            <h3>GRV Summary</h3>
-            <div class="summary-grid">
-                <div class="summary-item">
-                    <div class="summary-label">Total Items</div>
-                    <div class="summary-value" id="totalItems">0</div>
+            
+            <div class="form-section">
+                <h2 style="color: #000000; margin-bottom: 15px; font-size: 18px;">Add New Item</h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="itemName">Item Name</label>
+                        <select id="itemName" onchange="autoFillItemCode()">
+                            <option value="">Select item</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="itemCode">Item Code</label>
+                        <input type="text" id="itemCode" placeholder="Code auto-fills" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" id="quantity" placeholder="Enter quantity" min="1" value="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="unitPrice">Unit Price</label>
+                        <input type="number" id="unitPrice" placeholder="Enter price" min="0" step="0.01" value="0.00">
+                    </div>
+                    <div class="input-group">
+                        <label for="supplier">Supplier</label>
+                        <input type="text" id="supplier" placeholder="Enter supplier name">
+                    </div>
                 </div>
-                <div class="summary-item">
-                    <div class="summary-label">Total Quantity</div>
-                    <div class="summary-value" id="totalQuantity">0</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-label">Total Value</div>
-                    <div class="summary-value" id="totalValue">0.00</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-label">Current GRV</div>
-                    <div class="summary-value" id="currentGRVNumber">GRV-01</div>
-                </div>
+                <button class="add-item-btn" onclick="addItem()">Add Item to List</button>
             </div>
-        </div>
-        
-        <div class="process-section">
-            <button class="process-btn" onclick="processGRV()">
-                PROCESS GRV (Create GRV File)
-            </button>
-            <p style="color: #ffffff; margin-top: 10px; font-size: 13px;">
-                Click to process all items above as a single GRV file
-            </p>
-        </div>
-        
-        <div class="grv-history-section">
-            <h3>Processed GRV Files</h3>
-            <div class="history-table">
-                <table style="width: 100%;">
+            
+            <div class="message" id="message"></div>
+            
+            <div class="items-table-container">
+                <h2 style="color: #000000; margin-bottom: 10px; padding-left: 10px; font-size: 18px;">Items to Process</h2>
+                <table id="itemsTable">
                     <thead>
                         <tr>
-                            <th>GRV Number</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Items</th>
-                            <th>Total Quantity</th>
-                            <th>Total Value</th>
+                            <th>Item Code</th>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total Price</th>
+                            <th>Supplier</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="grvHistoryBody">
-                        <!-- GRV history will be added here -->
+                    <tbody id="itemsTableBody">
+                        <!-- Items will be added here dynamically -->
                     </tbody>
                 </table>
+            </div>
+            
+            <div class="process-section">
+                <button class="process-btn" onclick="processGRV()">
+                    PROCESS GRV (Create GRV File)
+                </button>
+                <p style="color: #ffffff; margin-top: 10px; font-size: 13px;">
+                    Click to process all items above as a single GRV file
+                </p>
+            </div>
+        </div>
+        
+        <!-- GRV History Section (Hidden by default) -->
+        <div id="historySection" class="hidden-section">
+            <div style="margin: 20px 0;">
+                <h2 style="color: #000000; margin-bottom: 15px; font-size: 18px;">Processed GRV Files</h2>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>GRV Number</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Items</th>
+                                <th>Total Quantity</th>
+                                <th>Total Value</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grvHistoryBody">
+                            <!-- GRV history will be added here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -581,40 +491,27 @@
     <div class="modal-overlay" id="grvModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="modalTitle">GRV Details</div>
+                <div class="modal-title" id="modalTitle">GRV Items</div>
                 <button class="close-modal" onclick="closeModal()">×</button>
             </div>
             
-            <div class="modal-grv-info">
-                <div class="modal-grv-grid">
-                    <div class="modal-info-item">
-                        <div class="modal-info-label">GRV Number</div>
-                        <div class="modal-info-value" id="modalGRVNumber">-</div>
+            <div style="margin-bottom: 15px;">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 12px; color: #666;">GRV Number</div>
+                        <div style="font-size: 14px; font-weight: bold;" id="modalGRVNumber">-</div>
                     </div>
-                    <div class="modal-info-item">
-                        <div class="modal-info-label">Date</div>
-                        <div class="modal-info-value" id="modalDate">-</div>
+                    <div>
+                        <div style="font-size: 12px; color: #666;">Date</div>
+                        <div style="font-size: 14px; font-weight: bold;" id="modalDate">-</div>
                     </div>
-                    <div class="modal-info-item">
-                        <div class="modal-info-label">Time</div>
-                        <div class="modal-info-value" id="modalTime">-</div>
-                    </div>
-                    <div class="modal-info-item">
-                        <div class="modal-info-label">Total Items</div>
-                        <div class="modal-info-value" id="modalTotalItems">0</div>
-                    </div>
-                    <div class="modal-info-item">
-                        <div class="modal-info-label">Total Quantity</div>
-                        <div class="modal-info-value" id="modalTotalQuantity">0</div>
-                    </div>
-                    <div class="modal-info-item">
-                        <div class="modal-info-label">Total Value</div>
-                        <div class="modal-info-value" id="modalTotalValue">0.00</div>
+                    <div>
+                        <div style="font-size: 12px; color: #666;">Time</div>
+                        <div style="font-size: 14px; font-weight: bold;" id="modalTime">-</div>
                     </div>
                 </div>
             </div>
             
-            <h4 style="margin-bottom: 10px; color: #000000;">Items in this GRV</h4>
             <div style="overflow-x: auto;">
                 <table class="modal-items-table">
                     <thead>
@@ -638,7 +535,7 @@
                     background-color: #6c757d;
                     color: white;
                     border: none;
-                    padding: 10px 20px;
+                    padding: 8px 20px;
                     border-radius: 3px;
                     cursor: pointer;
                 ">Close</button>
@@ -652,7 +549,7 @@
 
         const firebaseConfig = {
             apiKey: "AIzaSyB-lm7Y3r1F6Vv8PKvY8glLabZDbJsHM1k",
-            authDomain: "trismartstores.firebaseapp.com",
+            authDomain: "trismartstores.firebasestorage.app",
             projectId: "trismartstores",
             storageBucket: "trismartstores.firebasestorage.app",
             messagingSenderId: "416692703333",
@@ -674,7 +571,6 @@
         let currentGRV = 1;
         let processedGRVs = [];
         let inventory = [];
-        let inventoryItems = [];
 
         // Get next GRV number from database
         async function getNextGRVNumber() {
@@ -708,10 +604,7 @@
                     stock: doc.data().stock || 0
                 }));
                 
-                // Sort inventory by name
                 inventory.sort((a, b) => a.name.localeCompare(b.name));
-                
-                // Populate dropdown
                 populateItemDropdown();
             } catch (error) {
                 console.error('Error fetching inventory:', error);
@@ -740,8 +633,6 @@
             
             if (itemCode) {
                 document.getElementById('itemCode').value = itemCode;
-                
-                // Auto-focus on quantity
                 document.getElementById('quantity').focus();
                 document.getElementById('quantity').select();
             } else {
@@ -749,20 +640,34 @@
             }
         }
 
-        // Toggle form visibility
-        function toggleForm(action) {
-            const formSection = document.getElementById('formSection');
-            const toggleButtons = document.querySelectorAll('.toggle-btn');
+        // Show process section
+        function showProcessSection() {
+            hideAllSections();
+            document.getElementById('processSection').classList.remove('hidden-section');
+            document.getElementById('processSection').classList.add('visible-section');
+            document.getElementById('hideBtn').style.display = 'inline-block';
             
-            if (action === 'hide') {
-                formSection.classList.add('hidden');
-                toggleButtons[0].classList.remove('active');
-                toggleButtons[1].classList.add('active');
-            } else {
-                formSection.classList.remove('hidden');
-                toggleButtons[0].classList.add('active');
-                toggleButtons[1].classList.remove('active');
-            }
+            // Auto-focus on item name dropdown
+            setTimeout(() => {
+                document.getElementById('itemName').focus();
+            }, 100);
+        }
+
+        // Show GRV history section
+        function showGRVHistory() {
+            hideAllSections();
+            document.getElementById('historySection').classList.remove('hidden-section');
+            document.getElementById('historySection').classList.add('visible-section');
+            document.getElementById('hideBtn').style.display = 'inline-block';
+        }
+
+        // Hide all sections
+        function hideAllSections() {
+            document.getElementById('processSection').classList.remove('visible-section');
+            document.getElementById('processSection').classList.add('hidden-section');
+            document.getElementById('historySection').classList.remove('visible-section');
+            document.getElementById('historySection').classList.add('hidden-section');
+            document.getElementById('hideBtn').style.display = 'none';
         }
 
         // Load items from localStorage
@@ -771,7 +676,6 @@
             if (savedItems) {
                 items = JSON.parse(savedItems);
                 updateTable();
-                updateSummary();
             }
             
             const savedProcessed = localStorage.getItem('processedGRVs');
@@ -791,7 +695,6 @@
         function updateGRVDisplay() {
             const grvNumber = currentGRV.toString().padStart(2, '0');
             document.getElementById('currentGRV').textContent = `Currently Adding to: GRV-${grvNumber}`;
-            document.getElementById('currentGRVNumber').textContent = `GRV-${grvNumber}`;
         }
 
         // Add item to the list
@@ -822,17 +725,13 @@
             
             items.push(newItem);
             updateTable();
-            updateSummary();
             saveLocalData();
             
-            // Reset form but keep item name selected
             document.getElementById('quantity').value = '1';
             document.getElementById('unitPrice').value = '0.00';
             document.getElementById('supplier').value = '';
             
             showMessage(`Item "${itemName}" added successfully`, 'success');
-            
-            // Focus on quantity for next entry
             document.getElementById('quantity').focus();
             document.getElementById('quantity').select();
         }
@@ -883,26 +782,9 @@
             if (confirm('Are you sure you want to delete this item?')) {
                 items = items.filter(item => item.id !== id);
                 updateTable();
-                updateSummary();
                 saveLocalData();
                 showMessage('Item deleted successfully', 'success');
             }
-        }
-
-        // Update summary statistics
-        function updateSummary() {
-            const currentGRVItems = items.filter(item => 
-                item.grvNumber === `GRV-${currentGRV.toString().padStart(2, '0')}` && 
-                item.branchId === branchId
-            );
-            
-            const totalItems = currentGRVItems.length;
-            const totalQuantity = currentGRVItems.reduce((sum, item) => sum + item.quantity, 0);
-            const totalValue = currentGRVItems.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0);
-            
-            document.getElementById('totalItems').textContent = totalItems;
-            document.getElementById('totalQuantity').textContent = totalQuantity;
-            document.getElementById('totalValue').textContent = totalValue.toFixed(2);
         }
 
         // Process GRV and save to database
@@ -923,11 +805,10 @@
             }
             
             try {
-                // Create GRV object
                 const grv = {
                     grvNumber: `GRV-${currentGRV.toString().padStart(2, '0')}`,
                     date: new Date().toISOString().split('T')[0],
-                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
                     items: currentGRVItems,
                     totalItems: currentGRVItems.length,
                     totalQuantity: currentGRVItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -937,11 +818,10 @@
                     createdAt: new Date().toISOString()
                 };
                 
-                // Save to GRV collection in Firebase
-                const grvRef = await addDoc(collection(db, 'grvRecords'), grv);
-                console.log('GRV saved to database with ID:', grvRef.id);
+                // Save to GRV collection
+                await addDoc(collection(db, 'grvRecords'), grv);
                 
-                // Update inventory stock for each item
+                // Update inventory stock
                 for (const item of currentGRVItems) {
                     const inventoryItem = inventory.find(inv => inv.code === item.code);
                     if (inventoryItem) {
@@ -963,32 +843,27 @@
                     }
                 }
                 
-                // Update GRV counter for next GRV
+                // Update GRV counter
                 const grvCounterRef = doc(db, 'grvCounter', branchId);
                 await setDoc(grvCounterRef, { nextGRV: currentGRV + 1 }, { merge: true });
                 
-                // Mark items as processed locally
+                // Mark items as processed
                 items.forEach(item => {
                     if (item.grvNumber === `GRV-${currentGRV.toString().padStart(2, '0')}`) {
                         item.status = 'processed';
                     }
                 });
                 
-                // Add to processed GRVs history
                 processedGRVs.push(grv);
-                
-                // Update for next GRV
                 currentGRV++;
                 
-                // Update display and save
                 await getNextGRVNumber();
                 updateTable();
-                updateSummary();
                 updateGRVHistory();
                 saveLocalData();
                 
                 showMessage(
-                    `GRV-${(currentGRV-1).toString().padStart(2, '0')} processed successfully. ${grv.totalItems} items, ${grv.totalQuantity} units, Total: ${grv.totalValue.toFixed(2)}`,
+                    `GRV-${(currentGRV-1).toString().padStart(2, '0')} processed successfully`,
                     'success'
                 );
                 
@@ -1014,7 +889,6 @@
                 return;
             }
             
-            // Show latest first
             const sortedHistory = [...processedGRVs].reverse();
             
             sortedHistory.forEach(grv => {
@@ -1043,16 +917,11 @@
                 return;
             }
             
-            // Update modal content
-            document.getElementById('modalTitle').textContent = `GRV Details - ${grv.grvNumber}`;
+            document.getElementById('modalTitle').textContent = `GRV Items - ${grv.grvNumber}`;
             document.getElementById('modalGRVNumber').textContent = grv.grvNumber;
             document.getElementById('modalDate').textContent = grv.date;
             document.getElementById('modalTime').textContent = grv.time;
-            document.getElementById('modalTotalItems').textContent = grv.totalItems;
-            document.getElementById('modalTotalQuantity').textContent = grv.totalQuantity;
-            document.getElementById('modalTotalValue').textContent = grv.totalValue.toFixed(2);
             
-            // Update items table
             const modalItemsBody = document.getElementById('modalItemsBody');
             modalItemsBody.innerHTML = '';
             
@@ -1069,15 +938,12 @@
                 modalItemsBody.appendChild(row);
             });
             
-            // Show modal and blur background
             document.getElementById('grvModal').classList.add('active');
-            document.body.classList.add('blurred');
         }
 
         // Close modal
         function closeModal() {
             document.getElementById('grvModal').classList.remove('active');
-            document.body.classList.remove('blurred');
         }
 
         // Show message
@@ -1089,10 +955,10 @@
             
             setTimeout(() => {
                 messageDiv.style.display = 'none';
-            }, 5000);
+            }, 3000);
         }
 
-        // Fetch existing GRV records from database
+        // Fetch existing GRV records
         async function fetchExistingGRVs() {
             try {
                 const q = query(collection(db, 'grvRecords'), where('branchId', '==', branchId));
@@ -1111,16 +977,15 @@
             await fetchInventory();
             loadLocalData();
             await fetchExistingGRVs();
-            
-            // Auto-focus on item name dropdown
-            document.getElementById('itemName').focus();
         };
 
         // Make functions available globally
         window.addItem = addItem;
         window.deleteItem = deleteItem;
         window.processGRV = processGRV;
-        window.toggleForm = toggleForm;
+        window.showProcessSection = showProcessSection;
+        window.showGRVHistory = showGRVHistory;
+        window.hideAllSections = hideAllSections;
         window.autoFillItemCode = autoFillItemCode;
         window.viewGRVDetails = viewGRVDetails;
         window.closeModal = closeModal;
