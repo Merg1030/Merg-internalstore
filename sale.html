@@ -13,17 +13,17 @@
             --danger-hover: #e5177b;
             --warning: #f8961e;
             --warning-hover: #e68a00;
-            --success: #4cc9f0;
-            --success-hover: #3ab7de;
-            --bg-dark: #141726;
-            --bg-medium: #1a1d35;
-            --bg-light: #232447;
-            --bg-lighter: #2d2f5a;
-            --border: #35377a;
-            --text-light: #e0e0e0;
-            --text-fade: #b0b0b0;
-            --radius: 10px;
-            --shadow: 0 4px 16px #0004;
+            --success: #2ecc71;
+            --success-hover: #27ae60;
+            --bg-dark: #ffffff;
+            --bg-medium: #f8f9fa;
+            --bg-light: #ffffff;
+            --bg-lighter: #f1f3f5;
+            --border: #dee2e6;
+            --text-light: #212529;
+            --text-fade: #6c757d;
+            --radius: 8px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         * {
@@ -43,14 +43,11 @@
 
         body {
             min-height: 100vh;
-            min-width: 100vw;
-            width: 100vw;
-            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: stretch;
             padding: 0;
-            background: linear-gradient(135deg, #4361ee10 0%, #4cc9f005 100%), var(--bg-dark);
+            background: var(--bg-dark);
         }
 
         .container {
@@ -60,6 +57,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            width: 100vw;
         }
 
         h2 {
@@ -67,17 +65,18 @@
             margin: 8px 0;
             padding: 15px 0 8px 0;
             font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--accent);
+            font-weight: 600;
+            color: var(--primary);
             width: 100%;
             letter-spacing: 0.3px;
+            background: linear-gradient(90deg, transparent 0%, #f1f3f5 50%, transparent 100%);
         }
 
         .header-info {
             display: flex;
             justify-content: flex-end;
             margin-bottom: 12px;
-            width: 100vw;
+            width: 100%;
             padding: 0 12px;
         }
 
@@ -91,7 +90,7 @@
 
         .total-sales {
             padding: 10px 16px;
-            background-color: var(--bg-light);
+            background-color: var(--bg-lighter);
             border-radius: var(--radius);
             font-size: 0.95rem;
             font-weight: 600;
@@ -110,7 +109,7 @@
             font-weight: 600;
             font-size: 0.9rem;
             cursor: pointer;
-            box-shadow: 0 2px 6px #f8961e30;
+            box-shadow: var(--shadow);
             transition: all 0.2s;
         }
         .btn-warning:hover {
@@ -123,7 +122,7 @@
             gap: 12px;
             margin-bottom: 16px;
             flex-wrap: wrap;
-            width: 100vw;
+            width: 100%;
             box-sizing: border-box;
             padding: 0 12px;
             margin: 0 auto;
@@ -131,7 +130,7 @@
 
         .control-group {
             flex: 1;
-            background-color: var(--bg-light);
+            background-color: white;
             padding: 16px;
             border-radius: var(--radius);
             display: flex;
@@ -142,14 +141,14 @@
 
         .control-group h3 {
             margin-bottom: 12px;
-            color: var(--accent);
+            color: var(--primary);
             font-size: 1rem;
             font-weight: 600;
         }
 
         input, select {
             padding: 10px 12px;
-            background-color: var(--bg-lighter);
+            background-color: white;
             color: var(--text-light);
             border: 1px solid var(--border);
             border-radius: var(--radius);
@@ -161,7 +160,7 @@
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 2px #4361ee40;
+            box-shadow: 0 0 0 2px #4361ee20;
         }
 
         button {
@@ -175,11 +174,10 @@
             font-size: 0.9rem;
             width: 100%;
             margin-top: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
         }
         .btn-primary {
             background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
-            box-shadow: 0 2px 6px #4361ee30;
         }
         .btn-primary:hover {
             background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
@@ -187,7 +185,6 @@
         }
         .btn-danger {
             background: linear-gradient(90deg, var(--danger) 0%, #f7258570 100%);
-            box-shadow: 0 2px 6px #f7258530;
         }
         .btn-danger:hover {
             background: linear-gradient(90deg, #f7258570 0%, var(--danger) 100%);
@@ -199,10 +196,10 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            background-color: var(--bg-light);
+            background-color: white;
             border-radius: var(--radius);
             padding: 12px;
-            width: 100vw;
+            width: 100%;
             box-sizing: border-box;
             margin: 0 auto;
             border: 1px solid var(--border);
@@ -235,12 +232,12 @@
             position: sticky;
             top: 0;
             font-weight: 600;
-            color: var(--accent);
+            color: var(--primary);
             font-size: 0.9rem;
         }
 
         tbody tr {
-            background-color: var(--bg-light);
+            background-color: white;
             transition: all 0.2s;
         }
 
@@ -249,8 +246,7 @@
         }
 
         tbody tr:hover {
-            background-color: var(--primary);
-            color: white;
+            background-color: #e3f2fd;
         }
 
         .product-select option:disabled {
@@ -262,7 +258,7 @@
             gap: 12px;
             margin-bottom: 16px;
             align-items: center;
-            width: 100vw;
+            width: 100%;
             padding: 0 12px;
             box-sizing: border-box;
             margin: 0 auto;
@@ -310,6 +306,58 @@
             accent-color: var(--primary);
         }
 
+        /* Cart items table styles */
+        .cart-container {
+            margin-top: 16px;
+            margin-bottom: 16px;
+            background: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .cart-table th {
+            background-color: var(--bg-lighter);
+            color: var(--primary);
+            font-weight: 600;
+            padding: 10px 8px;
+        }
+
+        .cart-table td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 8px;
+            padding: 10px;
+            background-color: var(--bg-lighter);
+            border-top: 1px solid var(--border);
+        }
+
+        .cart-actions button {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        .cart-total {
+            text-align: right;
+            padding: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--primary);
+            background-color: var(--bg-lighter);
+            border-top: 1px solid var(--border);
+        }
+
         /* New styles for loading state and status messages */
         .btn-loading {
             position: relative;
@@ -341,7 +389,7 @@
         }
         
         .status-success {
-            background-color: rgba(76, 201, 240, 0.2);
+            background-color: rgba(46, 204, 113, 0.2);
             color: var(--success);
             border: 1px solid var(--success);
         }
@@ -350,6 +398,19 @@
             background-color: rgba(247, 37, 133, 0.2);
             color: var(--danger);
             border: 1px solid var(--danger);
+        }
+        
+        .small-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            width: auto;
+            min-width: auto;
+            margin: 0;
+            background: var(--danger);
+        }
+        
+        .small-btn:hover {
+            background: var(--danger-hover);
         }
         
         @keyframes spin {
@@ -364,13 +425,11 @@
         /* Mobile-first responsive design */
         @media (max-width: 1200px) {
             h2 { font-size: 1.3rem; }
-            table { min-width: 500px; }
         }
         
         @media (max-width: 900px) {
             .main-controls { padding: 0 10px; }
             .data-container { padding: 10px; }
-            table { min-width: 400px; }
             h2 { font-size: 1.2rem; }
             th, td { font-size: 0.82rem; padding: 8px 6px; }
         }
@@ -379,13 +438,8 @@
             html, body { font-size: 13px; }
             
             .container, .data-container, .main-controls, .date-filter { 
-                width: 100vw; 
+                width: 100%; 
                 padding: 0 10px;
-            }
-            
-            table { 
-                min-width: 320px; 
-                font-size: 0.8rem;
             }
             
             .main-controls { 
@@ -444,16 +498,11 @@
             html, body { font-size: 12px; }
             
             .container, .data-container, .main-controls, .date-filter { 
-                width: 100vw; 
+                width: 100%; 
                 padding: 0 8px; 
             }
             
             .sale-form { padding: 0; }
-            
-            table { 
-                min-width: 280px; 
-                font-size: 0.75rem;
-            }
             
             th, td { 
                 padding: 6px 3px; 
@@ -487,11 +536,6 @@
         
         @media (max-width: 400px) {
             html, body { font-size: 11px; }
-            
-            table { 
-                min-width: 240px; 
-                font-size: 0.7rem;
-            }
             
             th, td { 
                 padding: 5px 2px; 
@@ -530,24 +574,52 @@
         <div class="main-controls">
             <div class="control-group">
                 <button id="toggleFormBtn" class="btn-primary" onclick="toggleSaleForm()">
-                    Record Sale
+                    Add Item to Cart
                 </button>
                 
                 <div id="saleForm" class="sale-form">
-                    <input type="date" id="saleDate" required>
                     <select id="productCode" class="product-select" required>
                         <option value="">Select Product</option>
                     </select>
-                    <input type="number" id="quantity" placeholder="Quantity" required min="1">
+                    <input type="number" id="quantity" placeholder="Quantity" required min="1" value="1">
                     <div class="action-buttons">
-                        <button id="submitSaleBtn" class="btn-primary" onclick="makeSale()">
-                            Submit Sale
+                        <button id="addToCartBtn" class="btn-primary" onclick="addToCart()">
+                            Add to Cart
                         </button>
                         <button class="btn-danger" onclick="toggleSaleForm()">
                             Cancel
                         </button>
                     </div>
                     <div id="saleStatus" class="status-message" style="display: none;"></div>
+                </div>
+                
+                <!-- Cart Display -->
+                <div id="cartContainer" class="cart-container" style="display: none;">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartItems">
+                            <!-- Cart items will be added here -->
+                        </tbody>
+                    </table>
+                    <div id="cartTotal" class="cart-total">
+                        Cart Total: ZMW 0.00
+                    </div>
+                    <div class="cart-actions">
+                        <button id="processCartBtn" class="btn-primary" onclick="processCart()">
+                            Process All Sales
+                        </button>
+                        <button class="btn-danger" onclick="clearCart()">
+                            Clear Cart
+                        </button>
+                    </div>
                 </div>
                 
                 <button id="reverseBtn" class="btn-danger" onclick="reverseSales()" style="display: none;">
@@ -616,10 +688,10 @@
         let currentSaleDate = new Date().toISOString().split('T')[0];
         let sales = [];
         let inventory = [];
+        let cart = [];
         let unsubscribeSales = null;
         let unsubscribeInventory = null;
-        let isFilteringByProduct = false;
-        let isProcessing = false; // Flag to prevent multiple clicks
+        let isProcessing = false;
 
         // Check if branch is selected
         if (!branchId) {
@@ -631,11 +703,11 @@
         window.onload = function() {
             setupInventoryListener();
             initializeDates();
+            loadCartFromLocalStorage();
         };
 
         function initializeDates() {
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('saleDate').value = today;
             document.getElementById('filterDate').value = today;
             setupSalesListener(today);
         }
@@ -644,9 +716,8 @@
             const form = document.getElementById('saleForm');
             form.classList.toggle('show');
             const btn = document.getElementById('toggleFormBtn');
-            btn.textContent = form.classList.contains('show') ? 'Hide Form' : 'Record Sale';
+            btn.textContent = form.classList.contains('show') ? 'Hide Form' : 'Add Item to Cart';
             
-            // Clear status message when toggling form
             const statusElement = document.getElementById('saleStatus');
             statusElement.style.display = 'none';
             statusElement.className = 'status-message';
@@ -674,7 +745,6 @@
             const productSelect = document.getElementById('productCode');
             productSelect.innerHTML = '<option value="">Select Product</option>';
             
-            // Sort inventory alphabetically by product name
             const sortedInventory = [...inventory].sort((a, b) => {
                 return a.name.localeCompare(b.name);
             });
@@ -691,7 +761,6 @@
         function setupSalesListener(date) {
             if (unsubscribeSales) unsubscribeSales();
             
-            isFilteringByProduct = false;
             const salesQuery = query(
                 collection(db, 'sales'), 
                 where('branchId', '==', branchId),
@@ -732,93 +801,194 @@
             salesTableBody.appendChild(row);
         }
 
-        async function makeSale() {
-            // Prevent multiple clicks
-            if (isProcessing) {
-                console.log("Sale already in progress...");
-                return;
-            }
-            
+        // Cart Functions
+        function addToCart() {
             const productCode = document.getElementById('productCode').value;
             const quantity = parseInt(document.getElementById('quantity').value);
-            const date = document.getElementById('saleDate').value;
-            
-            // Get UI elements
-            const submitBtn = document.getElementById('submitSaleBtn');
             const statusElement = document.getElementById('saleStatus');
 
-            // Validate inputs
-            if (!productCode || isNaN(quantity) || quantity <= 0 || !date) {
-                showStatus(statusElement, "Please fill all fields with valid values.", "error");
+            if (!productCode || isNaN(quantity) || quantity <= 0) {
+                showStatus(statusElement, "Please select a product and enter quantity", "error");
                 return;
             }
 
-            try {
-                // Set processing state
-                isProcessing = true;
-                setButtonLoading(submitBtn, true, "Processing Sale...");
-                statusElement.style.display = 'none';
+            const product = inventory.find(item => item.code === productCode);
+            if (!product) {
+                showStatus(statusElement, "Product not found", "error");
+                return;
+            }
 
-                await runTransaction(db, async (transaction) => {
-                    // 1. Find product in inventory
-                    const q = query(
-                        collection(db, 'inventory'),
-                        where('branchId', '==', branchId),
-                        where('code', '==', productCode)
-                    );
-                    const querySnapshot = await getDocs(q);
-                    
-                    if (querySnapshot.empty) {
-                        throw new Error("Selected product not found in inventory.");
-                    }
-                    
-                    const itemDoc = querySnapshot.docs[0];
-                    const itemRef = doc(db, 'inventory', itemDoc.id);
-                    const currentStock = itemDoc.data().stock;
-                    
-                    // 2. Check stock availability
-                    if (currentStock < quantity) {
-                        throw new Error(`Insufficient stock. Only ${currentStock} units available.`);
-                    }
-                    
-                    // 3. DEDUCT FROM WAREHOUSE INVENTORY
-                    transaction.update(itemRef, { 
-                        stock: increment(-quantity), // This deducts the sold quantity
-                        sold: increment(quantity)    // This increases the sold count
-                    });
-                    
-                    // 4. Record the sale
-                    const saleEntry = { 
-                        date, 
-                        code: productCode, 
-                        name: itemDoc.data().name, 
-                        price: itemDoc.data().price, 
-                        quantity, 
-                        branchId,
-                        timestamp: serverTimestamp()
-                    };
-                    
-                    const saleRef = doc(collection(db, 'sales'));
-                    transaction.set(saleRef, saleEntry);
+            if (product.stock < quantity) {
+                showStatus(statusElement, `Only ${product.stock} units available`, "error");
+                return;
+            }
+
+            // Check if item already in cart
+            const existingItemIndex = cart.findIndex(item => item.code === productCode);
+            if (existingItemIndex > -1) {
+                // Update quantity
+                const newQuantity = cart[existingItemIndex].quantity + quantity;
+                if (newQuantity > product.stock) {
+                    showStatus(statusElement, `Cannot add more. Available: ${product.stock}`, "error");
+                    return;
+                }
+                cart[existingItemIndex].quantity = newQuantity;
+                cart[existingItemIndex].total = newQuantity * product.price;
+            } else {
+                // Add new item
+                cart.push({
+                    code: product.code,
+                    name: product.name,
+                    price: product.price,
+                    quantity: quantity,
+                    total: quantity * product.price,
+                    stock: product.stock
                 });
+            }
+
+            showStatus(statusElement, "Item added to cart", "success");
+            updateCartDisplay();
+            saveCartToLocalStorage();
+            
+            // Clear form
+            document.getElementById('quantity').value = 1;
+            
+            // Hide success message after 2 seconds
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 2000);
+        }
+
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cartItems');
+            const cartContainer = document.getElementById('cartContainer');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            cartItems.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartContainer.style.display = 'none';
+                return;
+            }
+            
+            cartContainer.style.display = 'block';
+            
+            let grandTotal = 0;
+            cart.forEach((item, index) => {
+                grandTotal += item.total;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name} (${item.code})</td>
+                    <td>ZMW ${item.price.toFixed(2)}</td>
+                    <td>${item.quantity}</td>
+                    <td>ZMW ${item.total.toFixed(2)}</td>
+                    <td><button class="small-btn" onclick="removeFromCart(${index})">Remove</button></td>
+                `;
+                cartItems.appendChild(row);
+            });
+            
+            cartTotal.textContent = `Cart Total: ZMW ${grandTotal.toFixed(2)}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+            saveCartToLocalStorage();
+        }
+
+        function clearCart() {
+            if (cart.length === 0) return;
+            if (confirm("Are you sure you want to clear the cart?")) {
+                cart = [];
+                updateCartDisplay();
+                saveCartToLocalStorage();
+            }
+        }
+
+        async function processCart() {
+            if (isProcessing) {
+                console.log("Already processing...");
+                return;
+            }
+
+            if (cart.length === 0) {
+                alert("Cart is empty!");
+                return;
+            }
+
+            const saleDate = new Date().toISOString().split('T')[0];
+            const processBtn = document.getElementById('processCartBtn');
+            const statusElement = document.getElementById('saleStatus');
+
+            try {
+                isProcessing = true;
+                setButtonLoading(processBtn, true, "Processing...");
                 
-                // Success message
-                showStatus(statusElement, "Sale processed successfully!", "success");
+                // Process each item in cart
+                for (const item of cart) {
+                    await runTransaction(db, async (transaction) => {
+                        // Find product in inventory
+                        const q = query(
+                            collection(db, 'inventory'),
+                            where('branchId', '==', branchId),
+                            where('code', '==', item.code)
+                        );
+                        const querySnapshot = await getDocs(q);
+                        
+                        if (querySnapshot.empty) {
+                            throw new Error(`Product ${item.code} not found in inventory`);
+                        }
+                        
+                        const itemDoc = querySnapshot.docs[0];
+                        const itemRef = doc(db, 'inventory', itemDoc.id);
+                        const currentStock = itemDoc.data().stock;
+                        
+                        // Check stock availability
+                        if (currentStock < item.quantity) {
+                            throw new Error(`Insufficient stock for ${item.name}. Available: ${currentStock}`);
+                        }
+                        
+                        // Update inventory
+                        transaction.update(itemRef, { 
+                            stock: increment(-item.quantity),
+                            sold: increment(item.quantity)
+                        });
+                        
+                        // Record sale
+                        const saleEntry = { 
+                            date: saleDate, 
+                            code: item.code, 
+                            name: item.name, 
+                            price: item.price, 
+                            quantity: item.quantity, 
+                            branchId,
+                            timestamp: serverTimestamp()
+                        };
+                        
+                        const saleRef = doc(collection(db, 'sales'));
+                        transaction.set(saleRef, saleEntry);
+                    });
+                }
                 
-                // Clear form
-                document.getElementById('quantity').value = '';
+                // Clear cart after successful processing
+                cart = [];
+                updateCartDisplay();
+                saveCartToLocalStorage();
                 
-                // Reset button after short delay
-                setTimeout(() => {
-                    setButtonLoading(submitBtn, false, "Submit Sale");
-                    isProcessing = false;
-                }, 1500);
+                showStatus(statusElement, "All sales processed successfully!", "success");
+                filterSales(); // Refresh sales table
                 
             } catch (error) {
-                console.error("Error recording sale:", error);
+                console.error("Error processing cart:", error);
                 showStatus(statusElement, `Error: ${error.message}`, "error");
-                setButtonLoading(submitBtn, false, "Submit Sale");
+            } finally {
+                setButtonLoading(processBtn, false, "Process All Sales");
                 isProcessing = false;
+                
+                // Hide status message after 3 seconds
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 3000);
             }
         }
 
@@ -834,7 +1004,6 @@
         }
 
         async function reverseSales() {
-            // Prevent multiple clicks
             if (isProcessing) {
                 console.log("Reverse operation already in progress...");
                 return;
@@ -854,11 +1023,10 @@
             }
 
             try {
-                // Set processing state
                 isProcessing = true;
                 const reverseBtn = document.getElementById('reverseBtn');
                 const statusElement = document.getElementById('reverseStatus');
-                setButtonLoading(reverseBtn, true, "Reversing Sales...");
+                setButtonLoading(reverseBtn, true, "Reversing...");
                 statusElement.style.display = 'none';
 
                 for (const checkbox of selectedSales) {
@@ -867,7 +1035,7 @@
                     
                     if (sale) {
                         await runTransaction(db, async (transaction) => {
-                            // 1. Find the product in inventory
+                            // Find product in inventory
                             const q = query(
                                 collection(db, 'inventory'),
                                 where('branchId', '==', branchId),
@@ -883,27 +1051,24 @@
                             const itemDoc = querySnapshot.docs[0];
                             const itemRef = doc(db, 'inventory', itemDoc.id);
                             
-                            // 2. RESTORE INVENTORY (add back the quantity)
+                            // Restore inventory
                             transaction.update(itemRef, { 
                                 stock: increment(sale.quantity),
                                 sold: increment(-sale.quantity)
                             });
                             
-                            // 3. Delete sale record
+                            // Delete sale record
                             const saleRef = doc(db, 'sales', sale.id);
                             transaction.delete(saleRef);
                         });
                     }
                 }
                 
-                // Success message
                 showStatus(statusElement, "Selected sales reversed successfully.", "success");
                 
-                // Reset button after short delay
                 setTimeout(() => {
                     setButtonLoading(reverseBtn, false, "Reverse Selected Sales");
                     isProcessing = false;
-                    // Hide the status message after a few seconds
                     setTimeout(() => {
                         statusElement.style.display = 'none';
                     }, 3000);
@@ -928,18 +1093,34 @@
             }
 
             currentSaleDate = filterDate;
-            document.getElementById('saleDate').value = filterDate;
             setupSalesListener(filterDate);
         }
 
-        // Helper function to show status messages
+        // Local storage for cart persistence
+        function saveCartToLocalStorage() {
+            localStorage.setItem(`cart_${branchId}`, JSON.stringify(cart));
+        }
+
+        function loadCartFromLocalStorage() {
+            const savedCart = localStorage.getItem(`cart_${branchId}`);
+            if (savedCart) {
+                try {
+                    cart = JSON.parse(savedCart);
+                    updateCartDisplay();
+                } catch (e) {
+                    console.error("Error loading cart from localStorage:", e);
+                    cart = [];
+                }
+            }
+        }
+
+        // Helper functions
         function showStatus(element, message, type) {
             element.textContent = message;
             element.className = `status-message status-${type}`;
             element.style.display = 'block';
         }
 
-        // Helper function to set button loading state
         function setButtonLoading(button, isLoading, originalText) {
             if (isLoading) {
                 button.classList.add('btn-loading');
@@ -954,7 +1135,10 @@
         }
 
         // Make functions available globally
-        window.makeSale = makeSale;
+        window.addToCart = addToCart;
+        window.removeFromCart = removeFromCart;
+        window.clearCart = clearCart;
+        window.processCart = processCart;
         window.reverseSales = reverseSales;
         window.filterSales = filterSales;
         window.toggleReverseButton = toggleReverseButton;
