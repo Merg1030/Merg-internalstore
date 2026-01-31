@@ -34,6 +34,7 @@
             min-height: 100vh;
             color: var(--text);
             overflow-x: hidden;
+            width: 100%;
         }
         header {
             height: var(--header-h);
@@ -43,8 +44,18 @@
             border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 2rem;
-            position: fixed; width: 100vw; top: 0; z-index: 1100;
+            position: fixed; 
+            width: 100%; 
+            top: 0; 
+            z-index: 1100;
+            transition: width 0.3s ease, padding-left 0.3s ease;
         }
+        
+        /* When sidebar is hidden, header expands to full width */
+        .sidebar.hidden + main + .sidebar-toggle + header {
+            width: 100%;
+        }
+        
         .logo {
             display: flex; align-items: center; gap: 12px;
         }
@@ -71,12 +82,15 @@
         /* Sidebar Styles */
         .sidebar {
             position: fixed;
-            top: var(--header-h); left: 0;
-            width: var(--sidebar-w); height: calc(100vh - var(--header-h));
+            top: var(--header-h); 
+            left: 0;
+            width: var(--sidebar-w); 
+            height: calc(100vh - var(--header-h));
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
             box-shadow: var(--shadow-md);
-            display: flex; flex-direction: column;
+            display: flex; 
+            flex-direction: column;
             z-index: 1000;
             transition: transform .35s cubic-bezier(.7,.15,.3,.85);
             padding: 1.5rem 0;
@@ -118,29 +132,53 @@
             font-size: 1.1rem;
         }
         
-        /* Main content area */
+        /* Main content area - EXPANDS TO FULL WIDTH WHEN SIDEBAR HIDES */
         main {
             margin-left: var(--sidebar-w);
             margin-top: var(--header-h);
             padding: 2.2rem 2.5vw 2rem 2.5vw;
             min-height: calc(100vh - var(--header-h));
-            transition: margin-left 0.3s ease, padding-left 0.3s ease;
+            transition: margin-left 0.3s ease, width 0.3s ease;
             background: #ffffff;
+            width: calc(100% - var(--sidebar-w));
         }
         
-        /* When sidebar is hidden */
+        /* When sidebar is hidden - MAIN TAKES UP ENTIRE SCREEN */
         .sidebar.hidden + main {
             margin-left: 0;
-            padding-left: 2.5vw;
             width: 100%;
+            padding: 2.2rem 2.5vw 2rem 2.5vw;
+        }
+        
+        /* Dashboard content expands to use full width when sidebar hidden */
+        .sidebar.hidden + main .dashboard-header,
+        .sidebar.hidden + main .stats-grid,
+        .sidebar.hidden + main .welcome-banner,
+        .sidebar.hidden + main .recent-activity {
+            max-width: 100%;
+        }
+        
+        /* Stats grid expands to use more columns when sidebar hidden */
+        .sidebar.hidden + main .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        
+        /* Welcome banner text can be wider */
+        .sidebar.hidden + main .welcome-content p {
+            max-width: 900px;
         }
         
         .dashboard-header {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
             margin-bottom: 2.2rem;
+            width: 100%;
         }
         .dashboard-header h2 {
-            font-size: 2rem; letter-spacing: 0.5px; font-weight: 700;
+            font-size: 2rem; 
+            letter-spacing: 0.5px; 
+            font-weight: 700;
             background: linear-gradient(90deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -159,6 +197,7 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.8rem;
             margin-bottom: 2rem;
+            width: 100%;
         }
         .stat-card {
             background: var(--glass-bg);
@@ -242,6 +281,7 @@
             animation: fadeInCard .9s cubic-bezier(.7,.15,.3,.85) backwards;
             position: relative;
             overflow: hidden;
+            width: 100%;
         }
         .welcome-banner:before {
             content: "";
@@ -263,7 +303,9 @@
             -webkit-text-fill-color: transparent;
         }
         .welcome-content p {
-            opacity: 0.9; max-width: 700px; font-size: 1.1rem;
+            opacity: 0.9; 
+            max-width: 700px; 
+            font-size: 1.1rem;
             line-height: 1.6;
             color: var(--text-fade);
         }
@@ -276,6 +318,7 @@
             box-shadow: var(--shadow-md);
             border: 1px solid var(--border);
             backdrop-filter: blur(12px);
+            width: 100%;
         }
         
         .recent-activity h3 {
@@ -356,7 +399,7 @@
             color: var(--danger);
         }
         
-        /* Sidebar Toggle Button in Header */
+        /* Floating toggle button */
         .sidebar-toggle {
             position: fixed;
             top: calc(var(--header-h) + 20px);
@@ -392,23 +435,30 @@
         /* Responsive Design */
         @media (max-width: 1100px) {
             main { padding-left: 2vw; padding-right: 2vw;}
+            .sidebar.hidden + main { padding-left: 2vw; padding-right: 2vw;}
         }
         
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
+                width: 280px;
             }
             
             .sidebar.visible {
                 transform: translateX(0);
                 box-shadow: var(--shadow-lg);
-                width: 280px;
             }
             
             main { 
                 margin-left: 0;
+                width: 100% !important;
                 padding: 1.5rem;
                 margin-top: var(--header-h);
+            }
+            
+            .sidebar.hidden + main {
+                margin-left: 0;
+                width: 100% !important;
             }
             
             .menu-toggle { 
@@ -432,6 +482,10 @@
             .sidebar-toggle {
                 display: none; /* Hide floating toggle on mobile */
             }
+            
+            header {
+                width: 100%;
+            }
         }
         
         /* Desktop: Always show sidebar by default, allow hiding */
@@ -450,6 +504,38 @@
             
             .sidebar-toggle {
                 display: flex; /* Show floating toggle on desktop */
+            }
+            
+            /* When sidebar hidden on desktop, make cards wider */
+            .sidebar.hidden + main .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            }
+            
+            /* When sidebar hidden on desktop, make welcome banner text wider */
+            .sidebar.hidden + main .welcome-content p {
+                max-width: 1000px;
+            }
+        }
+        
+        /* Large screens - when sidebar hidden, use more space */
+        @media (min-width: 1200px) {
+            .sidebar.hidden + main .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .sidebar.hidden + main {
+                padding: 2.2rem 3vw 2rem 3vw;
+            }
+        }
+        
+        /* Extra large screens */
+        @media (min-width: 1600px) {
+            .sidebar.hidden + main {
+                padding: 2.2rem 5vw 2rem 5vw;
+            }
+            
+            .sidebar.hidden + main .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
             }
         }
         
@@ -486,17 +572,6 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="menu-toggle" id="menuToggle">
-            <i class="fas fa-bars"></i>
-        </div>
-        <div class="logo">
-            <i class="fas fa-store-alt"></i>
-            <h1>Trismart Stores</h1>
-        </div>
-        <div class="date-display" id="currentDateTime"></div>
-    </header>
-    
     <nav class="sidebar visible" id="sidebar">
         <a href="cashbook.html" class="active"><i class="fas fa-user"></i> Accounts</a>
         <a href="Airtel.html"><i class="fab fa-cc-visa"></i> Airtel Money</a>
@@ -506,8 +581,6 @@
         <a href="lowstock.html"><i class="fas fa-exclamation-triangle"></i> Low Stock</a>
         <a href="Report.html"><i class="fas fa-calendar-day"></i> Daily Report</a>
     </nav>
-    
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
     
     <main>
         <div class="dashboard-header">
@@ -574,6 +647,19 @@
         <i class="fas fa-bars"></i>
     </button>
     
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <header>
+        <div class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="logo">
+            <i class="fas fa-store-alt"></i>
+            <h1>Trismart Stores</h1>
+        </div>
+        <div class="date-display" id="currentDateTime"></div>
+    </header>
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
         import { 
@@ -613,6 +699,8 @@
         const menuToggle = document.getElementById('menuToggle');
         const floatingToggle = document.getElementById('floatingToggle');
         const overlay = document.getElementById('sidebarOverlay');
+        const mainContent = document.querySelector('main');
+        const header = document.querySelector('header');
         
         // Check if user has a sidebar preference in localStorage
         let sidebarHidden = localStorage.getItem('sidebarHidden') === 'true';
@@ -621,6 +709,9 @@
         if (sidebarHidden) {
             sidebar.classList.remove('visible');
             sidebar.classList.add('hidden');
+            // Immediately expand main content to full width
+            mainContent.style.width = '100%';
+            mainContent.style.marginLeft = '0';
         } else {
             sidebar.classList.remove('hidden');
             sidebar.classList.add('visible');
@@ -643,6 +734,22 @@
                     overlay.style.display = 'none';
                 }
             }
+            
+            // Force update of main content width
+            updateMainContentWidth();
+        }
+        
+        // Update main content width based on sidebar state
+        function updateMainContentWidth() {
+            if (sidebar.classList.contains('hidden')) {
+                mainContent.style.width = '100%';
+                mainContent.style.marginLeft = '0';
+                header.style.width = '100%';
+            } else {
+                mainContent.style.width = `calc(100% - ${sidebar.offsetWidth}px)`;
+                mainContent.style.marginLeft = `${sidebar.offsetWidth}px`;
+                header.style.width = '100%';
+            }
         }
         
         // Event listeners for toggling sidebar
@@ -655,6 +762,7 @@
             sidebar.classList.add('hidden');
             overlay.style.display = 'none';
             localStorage.setItem('sidebarHidden', true);
+            updateMainContentWidth();
         });
         
         // Close sidebar on link click (mobile)
@@ -665,6 +773,7 @@
                     sidebar.classList.add('hidden');
                     overlay.style.display = 'none';
                     localStorage.setItem('sidebarHidden', true);
+                    updateMainContentWidth();
                 }
             });
         });
@@ -703,6 +812,11 @@
         // Initialize date/time
         updateDateTime();
         setInterval(updateDateTime, 60000); // Update every minute
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            updateMainContentWidth();
+        });
         
         // Setup Firebase listeners
         function setupFirebaseListeners() {
@@ -850,6 +964,7 @@
         function initializeDashboard() {
             setupFirebaseListeners();
             updateDateTime();
+            updateMainContentWidth(); // Ensure correct width on load
         }
         
         // Start the dashboard when page loads
