@@ -13,17 +13,17 @@
             --danger-hover: #e5177b;
             --warning: #f8961e;
             --warning-hover: #e68a00;
-            --success: #4cc9f0;
-            --success-hover: #3ab7de;
-            --bg-dark: #141726;
-            --bg-medium: #1a1d35;
-            --bg-light: #232447;
-            --bg-lighter: #2d2f5a;
-            --border: #35377a;
-            --text-light: #e0e0e0;
-            --text-fade: #b0b0b0;
-            --radius: 12px;
-            --shadow: 0 8px 32px #0004;
+            --success: #2ecc71;
+            --success-hover: #27ae60;
+            --bg-dark: #ffffff;
+            --bg-medium: #f8f9fa;
+            --bg-light: #ffffff;
+            --bg-lighter: #f1f3f5;
+            --border: #dee2e6;
+            --text-light: #212529;
+            --text-fade: #6c757d;
+            --radius: 8px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         * {
@@ -42,13 +42,10 @@
 
         body {
             min-height: 100vh;
-            min-width: 100vw;
-            width: 100vw;
-            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: stretch;
-            background: linear-gradient(135deg, #4361ee10 0%, #4cc9f005 100%), var(--bg-dark);
+            background: var(--bg-dark);
         }
 
         .container {
@@ -61,150 +58,136 @@
             padding: 0;
             margin: 0;
             overflow: hidden;
-            margin: 0 auto;
         }
 
         h2 {
             text-align: center;
-            color: var(--accent);
-            margin: 15px 0;
-            padding: 20px 0;
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            color: var(--primary);
+            margin: 10px 0;
+            padding: 15px 0;
+            font-size: 1.5rem;
+            font-weight: 600;
             width: 100%;
-            background: linear-gradient(90deg, transparent 0%, #232447aa 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, #f1f3f5 50%, transparent 100%);
         }
 
         .header-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 15px;
             width: 100%;
-            padding: 0 15px;
+            padding: 0 10px;
             justify-content: center;
         }
 
         .search-bar {
             flex: 1;
-            min-width: 250px;
-            max-width: 400px;
+            min-width: 200px;
+            max-width: 300px;
         }
 
         input, select {
             width: 100%;
-            padding: 12px 15px;
-            background-color: var(--bg-lighter);
+            padding: 8px 12px;
+            background-color: white;
             color: var(--text-light);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: all 0.2s;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 2px #4361ee40;
+            box-shadow: 0 0 0 2px #4361ee20;
         }
 
         button {
-            color: #2e55e2;
+            color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 8px 16px;
             cursor: pointer;
             border-radius: var(--radius);
             transition: all 0.2s;
-            font-weight: 600;
-            font-size: 1rem;
-            min-width: 180px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            background-color:  #81c4d9;
+            font-weight: 500;
+            font-size: 0.9rem;
+            min-width: 150px;
+            box-shadow: var(--shadow);
         }
 
         .btn-primary {
             background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
-            box-shadow: 0 2px 8px #4361ee30;
         }
         .btn-primary:hover {
             background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
             transform: translateY(-1px);
         }
-        .btn-warning {
-            background: linear-gradient(90deg, var(--warning) 0%, #f9c74f 100%);
-            box-shadow: 0 2px 8px #f8961e30;
+        .action-button {
+            background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
         }
-        .btn-warning:hover {
-            background: linear-gradient(90deg, #f9c74f 0%, var(--warning) 100%);
-            transform: translateY(-1px);
-        }
-        .btn-danger {
-            background: linear-gradient(90deg, var(--danger) 0%, #f7258570 100%);
-            box-shadow: 0 2px 8px #f7258530;
-        }
-        .btn-danger:hover {
-            background: linear-gradient(90deg, #f7258570 0%, var(--danger) 100%);
+        .action-button:hover {
+            background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
             transform: translateY(-1px);
         }
 
         .transfer-form-container {
             display: none;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             width: 100%;
-            padding: 0 15px;
+            padding: 0 10px;
             animation: fadeIn 0.3s ease-out;
         }
 
         .transfer-form {
-            background-color: var(--bg-light);
-            padding: 20px;
+            background-color: white;
+            padding: 15px;
             border-radius: var(--radius);
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
         }
-        .action-button{background-color: #78cce6;}
-
+        
         .transfer-form h3 {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             text-align: center;
-            color: var(--accent);
-            font-size: 1.2rem;
+            color: var(--primary);
+            font-size: 1.1rem;
         }
 
         .transfer-form label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
+            margin-bottom: 5px;
+            font-weight: 500;
             color: var(--text-fade);
+            font-size: 0.9rem;
         }
 
         .toggle-transfer-btn {
-            width: 220px;
-            margin: 0 auto 20px auto;
-            background: var(--bg-light);
-            color: var(--accent);
+            width: 180px;
+            margin: 0 auto 15px auto;
+            background: var(--bg-lighter);
+            color: var(--primary);
             border: 1px solid var(--border);
-            display: inline-block;
         }
 
         .toggle-transfer-btn:hover {
-            background: var(--bg-lighter);
+            background: var(--border);
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
         .form-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 15px;
         }
 
         .form-actions button {
@@ -213,52 +196,50 @@
 
         .product-info {
             background-color: var(--bg-lighter);
-            padding: 15px;
+            padding: 10px;
             border-radius: var(--radius);
-            margin-top: 10px;
+            margin-top: 8px;
             border: 1px solid var(--border);
-        }
-
-        .product-info p {
-            margin-bottom: 5px;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
         }
 
         .scroll-container {
             flex-grow: 1;
             overflow-y: auto;
             width: 100%;
-            padding: 0 15px 15px 15px;
+            padding: 0 10px 10px 10px;
         }
 
         table {
             width: 100%;
-            min-width: 700px;
+            min-width: 600px;
             border-collapse: collapse;
-            margin-top: 10px;
-            background: var(--bg-light);
+            margin-top: 5px;
+            background: white;
             border-radius: var(--radius);
             overflow: hidden;
             border: 1px solid var(--border);
+            box-shadow: var(--shadow);
         }
 
         th, td {
-            padding: 15px;
+            padding: 10px 8px;
             text-align: left;
             border-bottom: 1px solid var(--border);
-            font-size: 1rem;
+            font-size: 0.85rem;
         }
 
         th {
             background-color: var(--bg-lighter);
-            color: var(--accent);
+            color: var(--primary);
             position: sticky;
             top: 0;
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
         tbody tr {
-            background-color: var(--bg-light);
+            background-color: white;
             transition: all 0.2s;
         }
 
@@ -267,17 +248,94 @@
         }
 
         tbody tr:hover {
-            background-color: var(--primary);
-            color: white;
+            background-color: #e3f2fd;
         }
 
         .total-row {
             font-weight: 600;
             background-color: var(--bg-lighter) !important;
+            font-size: 0.9rem;
         }
 
         .total-row td {
-            padding: 12px 15px;
+            padding: 8px;
+        }
+
+        /* --- Three dots menu --- */
+        .menu-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .three-dots-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            min-width: auto;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none;
+        }
+
+        .three-dots-btn:hover {
+            background-color: var(--bg-lighter);
+        }
+
+        .three-dots-btn .dot {
+            width: 4px;
+            height: 4px;
+            background-color: var(--text-fade);
+            border-radius: 50%;
+            margin: 1px;
+        }
+
+        .menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            min-width: 120px;
+            display: none;
+        }
+
+        .menu-dropdown.show {
+            display: block;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.2s;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background-color: var(--bg-lighter);
+        }
+
+        .menu-item.edit {
+            color: var(--primary);
+        }
+
+        .menu-item.delete {
+            color: var(--danger);
         }
 
         /* --- Modal styles for Edit --- */
@@ -292,50 +350,35 @@
             z-index: 10000;
         }
         .modal {
-            background: var(--bg-light);
+            background: white;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            padding: 32px 24px 24px 24px;
-            min-width: 320px;
+            padding: 24px 20px 20px 20px;
+            min-width: 300px;
             max-width: 95vw;
             color: var(--text-light);
             border: 1px solid var(--border);
         }
         .modal h3 {
-            margin-bottom: 20px;
-            color: var(--accent);
+            margin-bottom: 15px;
+            color: var(--primary);
             text-align: center;
+            font-size: 1.1rem;
         }
         .modal label {
             display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
+            margin-bottom: 5px;
+            font-weight: 500;
             color: var(--text-fade);
+            font-size: 0.85rem;
         }
         .modal input {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            padding: 6px 10px;
+            font-size: 0.9rem;
         }
         .modal .form-actions {
             margin-top: 10px;
-            display: flex;
-            gap: 10px;
-        }
-        .edit-btn {
-            background: var(--success);
-            color: #fff;
-            border: none;
-            padding: 8px 14px;
-            font-size: 0.97rem;
-            border-radius: 7px;
-            margin-left: 5px;
-            cursor: pointer;
-        }
-        .edit-btn:hover {
-            background: var(--success-hover);
-        }
-        .edit-locked {
-            opacity: 0.5;
-            pointer-events: none;
         }
 
         @keyframes fadeIn {
@@ -344,35 +387,29 @@
         }
 
         @media (max-width: 1200px) {
-            h2 { font-size: 1.8rem; }
+            h2 { font-size: 1.3rem; }
         }
         @media (max-width: 900px) {
-            .scroll-container { padding: 0 10px 10px 10px; }
-            table { min-width: 600px; }
-            h2 { font-size: 1.6rem; }
-            th, td { padding: 12px; }
+            .scroll-container { padding: 0 8px 8px 8px; }
+            table { min-width: 500px; }
+            h2 { font-size: 1.2rem; }
+            th, td { padding: 8px 6px; }
         }
         @media (max-width: 700px) {
             .header-actions { flex-direction: column; align-items: stretch; }
             .search-bar { max-width: 100%; }
             .form-grid { grid-template-columns: 1fr; }
-            table { min-width: 500px; }
-            th, td { padding: 10px; font-size: 0.95rem; }
-            h2 { font-size: 1.4rem; }
+            table { min-width: 400px; }
+            th, td { padding: 6px 4px; font-size: 0.8rem; }
+            h2 { font-size: 1.1rem; padding: 12px 0; }
         }
         @media (max-width: 540px) {
             .container, .scroll-container, .transfer-form-container { width: 100vw; }
             .toggle-transfer-btn { width: 90%; }
-            .transfer-form { padding: 15px; }
-            table { min-width: 400px; }
-            h2 { font-size: 1.2rem; padding: 15px 0; }
-            .form-actions { flex-direction: column; }
-        }
-        @media (max-width: 440px) {
+            .transfer-form { padding: 12px; }
             table { min-width: 320px; }
-            th, td { padding: 8px; font-size: 0.9rem; }
-            button { min-width: 140px; padding: 10px 15px; }
-            h2 { font-size: 1.1rem; }
+            h2 { font-size: 1rem; padding: 10px 0; }
+            .form-actions { flex-direction: column; }
         }
     </style>
     <script type="module">
@@ -385,6 +422,7 @@
             getDocs, 
             addDoc, 
             updateDoc, 
+            deleteDoc,
             doc, 
             increment,
             onSnapshot,
@@ -412,9 +450,10 @@
 
         let inventory = [];
         let unsubscribeInventory = null;
-        let editLock = false; // lock for password
+        let editLock = false;
+        let activeMenu = null;
 
-        // BRANCH MAPPING (swapped names)
+        // BRANCH MAPPING
         const branches = {
             "makeni": { id: "makeni", name: "Kabanana Branch" },
             "kabana": { id: "kabana", name: "Makeni Branch" }
@@ -425,18 +464,24 @@
             return branches[branchId]?.name || branchId;
         }
 
-        // Function to toggle transfer form visibility
+        // Close any open dropdown menus
+        function closeAllMenus() {
+            if (activeMenu) {
+                activeMenu.classList.remove('show');
+                activeMenu = null;
+            }
+        }
+
+        // Toggle transfer form visibility
         function toggleTransferForm() {
             const formContainer = document.querySelector('.transfer-form-container');
             const toggleBtn = document.getElementById('toggleTransferBtn');
             if (formContainer.style.display === 'none' || formContainer.style.display === '') {
                 formContainer.style.display = 'block';
                 toggleBtn.textContent = 'Hide Transfer Form';
-                toggleBtn.style.backgroundColor = '#3a3a3a';
             } else {
                 formContainer.style.display = 'none';
                 toggleBtn.textContent = 'Show Transfer Form';
-                toggleBtn.style.backgroundColor = '#3a3a3a';
             }
         }
 
@@ -594,7 +639,17 @@
                     <td>${item.sold || 0}</td>
                     <td>${stockValue.toFixed(2)}</td>
                     <td>
-                        <button class="edit-btn${editLock ? ' edit-locked' : ''}" onclick="openEditModal('${item.id}')">Edit</button>
+                        <div class="menu-container">
+                            <button class="three-dots-btn" onclick="toggleMenu(event, '${item.id}')">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </button>
+                            <div class="menu-dropdown" id="menu-${item.id}">
+                                <div class="menu-item edit" onclick="handleEdit('${item.id}')">Edit</div>
+                                <div class="menu-item delete" onclick="handleDelete('${item.id}')">Delete</div>
+                            </div>
+                        </div>
                     </td>
                 `;
                 inventoryTableBody.appendChild(row);
@@ -608,6 +663,58 @@
             `;
             inventoryTableBody.appendChild(totalRow);
         }
+
+        // Toggle dropdown menu
+        window.toggleMenu = function(event, productId) {
+            event.stopPropagation();
+            const menu = document.getElementById(`menu-${productId}`);
+            
+            // Close other open menus
+            if (activeMenu && activeMenu !== menu) {
+                activeMenu.classList.remove('show');
+            }
+            
+            // Toggle current menu
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+                activeMenu = null;
+            } else {
+                menu.classList.add('show');
+                activeMenu = menu;
+            }
+        };
+
+        // Handle edit action from menu
+        window.handleEdit = async function(productId) {
+            closeAllMenus();
+            if (!editLock) {
+                const userPass = prompt("Enter password to edit product details:");
+                if (userPass !== "1030") {
+                    alert("Incorrect password. Editing not allowed.");
+                    return;
+                }
+                editLock = true;
+            }
+            const item = inventory.find(i => i.id === productId);
+            if (!item) return;
+            showEditModal(item);
+        };
+
+        // Handle delete action from menu
+        window.handleDelete = async function(productId) {
+            closeAllMenus();
+            const item = inventory.find(i => i.id === productId);
+            if (!item) return;
+            
+            if (confirm(`Are you sure you want to delete "${item.name}" (${item.code})?`)) {
+                try {
+                    await deleteDoc(doc(db, 'inventory', productId));
+                    alert("Product deleted successfully!");
+                } catch (error) {
+                    alert("Failed to delete product: " + error.message);
+                }
+            }
+        };
 
         async function addNewInventory() {
             const code = prompt("Enter product code:");
@@ -665,7 +772,17 @@
                     <td>${item.sold || 0}</td>
                     <td>${stockValue.toFixed(2)}</td>
                     <td>
-                        <button class="edit-btn${editLock ? ' edit-locked' : ''}" onclick="openEditModal('${item.id}')">Edit</button>
+                        <div class="menu-container">
+                            <button class="three-dots-btn" onclick="toggleMenu(event, '${item.id}')">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </button>
+                            <div class="menu-dropdown" id="menu-${item.id}">
+                                <div class="menu-item edit" onclick="handleEdit('${item.id}')">Edit</div>
+                                <div class="menu-item delete" onclick="handleDelete('${item.id}')">Delete</div>
+                            </div>
+                        </div>
                     </td>
                 `;
                 inventoryTableBody.appendChild(row);
@@ -680,22 +797,7 @@
             inventoryTableBody.appendChild(totalRow);
         }
 
-        // --- Editable Modal Logic ---
-        window.openEditModal = function(productId) {
-            if (!editLock) {
-                const userPass = prompt("Enter password to edit product details:");
-                if (userPass !== "1030") {
-                    alert("Incorrect password. Editing not allowed.");
-                    return;
-                }
-                editLock = true;
-                displayInventory(); // unlock all edit buttons visually
-            }
-            const item = inventory.find(i => i.id === productId);
-            if (!item) return;
-            showModal(item);
-        };
-
+        // --- Edit Modal Functions ---
         function closeModal() {
             const modalBg = document.getElementById('modal-bg');
             if (modalBg) modalBg.remove();
@@ -736,8 +838,8 @@
             }
         }
 
-        function showModal(item) {
-            closeModal(); // Remove any open modals
+        function showEditModal(item) {
+            closeModal();
             const modalBg = document.createElement('div');
             modalBg.className = 'modal-bg';
             modalBg.id = 'modal-bg';
@@ -766,7 +868,12 @@
             modalBg.onclick = function(e){ if(e.target === modalBg) closeModal(); };
         }
 
-        // ----
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function() {
+            closeAllMenus();
+        });
+
+        // Initialize
         window.onload = async function() {
             document.querySelector('h2.HEADER').textContent = `Warehouse - ${getCurrentBranchName()}`;
             setupInventoryListener();
@@ -797,7 +904,7 @@
                         <label for="transferCode">Product Code:</label>
                         <input type="text" id="transferCode" required list="productCodes" placeholder="Enter product code">
                         <datalist id="productCodes"></datalist>
-                        <div id="productInfo" style="margin-top: 10px; color: #84adff;"></div>
+                        <div id="productInfo" style="margin-top: 10px; color: #4361ee;"></div>
                     </div>
                     <div>
                         <label for="transferQuantity">Quantity:</label>
@@ -823,7 +930,7 @@
                         <th>Stock</th>
                         <th>Sold</th>
                         <th>Stock Value</th>
-                        <th>Edit</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
