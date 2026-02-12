@@ -2,187 +2,184 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | Trismart Collections</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Trismart Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
-            --primary-color: #f8f9fa;
-            --secondary-color: #2c3e50;
-            --accent-color: #34495e;
-            --highlight-color: #3498db;
-            --gold-color: #f1c40f;
-            --dark-color: #1a1a1a;
-            --light-color: #ffffff;
-            --danger-color: #e74c3c;
-            --success-color: #27ae60;
-            --gray-color: #95a5a6;
-            --button-gray: #7f8c8d;
-            --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            --primary: #2c3e50;
+            --accent: #34495e;
+            --gold: #f1c40f;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --gray: #7f8c8d;
+            --gray-light: #95a5a6;
+            --gray-bg: #ecf0f1;
+            --light: #f8f9fa;
+            --white: #fff;
+            --dark: #1a1a1a;
+            --shadow: 0 2px 8px rgba(0,0,0,0.04);
+            --radius: 10px;
+            --radius-sm: 6px;
         }
 
         body {
-            background-color: var(--primary-color);
-            color: var(--dark-color);
-            line-height: 1.6;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.5;
             min-height: 100vh;
-            overflow-x: hidden;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+            padding-bottom: 20px;
         }
 
-        body::-webkit-scrollbar {
-            display: none;
+        /* Hide scrollbars everywhere */
+        *::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Clean gray header */
+        header {
+            background: #2c3e50;
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #bdc3c7;
         }
 
         .container {
             width: 100%;
-            max-width: 1400px;
+            padding: 0 12px;
             margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        header {
-            background: var(--dark-color);
-            color: var(--light-color);
-            padding: 15px 0;
-            box-shadow: var(--shadow);
-            border-bottom: 3px solid var(--gold-color);
+            max-width: 100%;
         }
 
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: var(--light-color);
+            gap: 2px;
             text-decoration: none;
         }
 
-        .logo i {
-            font-size: 28px;
-            color: var(--gold-color);
+        .logo span:first-child {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
-        .logo h1 {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        .logo span {
-            color: var(--gold-color);
-            font-weight: 900;
+        .logo span:last-child {
+            color: black;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         .view-site-link {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: var(--button-gray);
-            color: var(--light-color);
-            padding: 10px 20px;
-            border-radius: 5px;
+            gap: 6px;
+            background: #34495e;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 20px;
             text-decoration: none;
+            font-size: 13px;
             font-weight: 600;
-            transition: all 0.3s;
+            white-space: nowrap;
+            border: 1px solid #bdc3c7;
         }
 
-        .view-site-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(127, 140, 141, 0.3);
+        .view-site-link i {
+            color: #f1c40f;
         }
 
+        /* Title area compact */
         .admin-title {
-            text-align: center;
-            margin: 30px 0;
-            color: var(--accent-color);
+            margin: 15px 0 10px;
         }
 
         .admin-title h2 {
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: 20px;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #2c3e50;
         }
 
         .admin-title p {
-            color: #666;
-            font-size: 16px;
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 2px;
         }
 
-        /* Main Layout */
+        /* Single column layout for mobile */
         .admin-layout {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 30px;
-            margin-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        @media (max-width: 992px) {
-            .admin-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Sidebar */
+        /* Compact sidebar/stats */
         .admin-sidebar {
-            background-color: var(--light-color);
-            border-radius: 15px;
-            padding: 25px;
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px;
             box-shadow: var(--shadow);
-            height: fit-content;
-            border: 1px solid #eaeaea;
+            border: 1px solid #bdc3c7;
         }
 
         .admin-sidebar h3 {
-            color: var(--accent-color);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--button-gray);
-            font-weight: 600;
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #bdc3c7;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .stat-card {
-            background: var(--primary-color);
-            padding: 15px;
-            border-radius: 10px;
+            background: #ecf0f1;
+            padding: 12px;
+            border-radius: var(--radius-sm);
             text-align: center;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #bdc3c7;
         }
 
         .stat-card .number {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 700;
-            color: var(--accent-color);
-            display: block;
+            color: #2c3e50;
             line-height: 1;
         }
 
         .stat-card .label {
-            font-size: 14px;
-            color: #666;
-            margin-top: 5px;
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 4px;
         }
 
         .sidebar-menu {
@@ -190,182 +187,146 @@
         }
 
         .sidebar-menu li {
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         .sidebar-menu a {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 12px 15px;
-            background-color: var(--primary-color);
-            border-radius: 10px;
+            padding: 10px 12px;
+            background: #ecf0f1;
+            border-radius: var(--radius-sm);
             text-decoration: none;
-            color: var(--dark-color);
-            transition: all 0.3s;
-            border: 1px solid transparent;
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #bdc3c7;
+            transition: 0.2s;
         }
 
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background: var(--button-gray);
-            color: var(--light-color);
-            border-color: var(--button-gray);
-            transform: translateX(5px);
+        .sidebar-menu a.active {
+            background: #34495e;
+            color: white;
+            border-color: #2c3e50;
         }
 
-        /* Admin Panel */
+        .sidebar-menu a.active i {
+            color: #f1c40f;
+        }
+
+        /* Main panel - compact */
         .admin-panel {
-            background-color: var(--light-color);
-            border-radius: 15px;
-            padding: 30px;
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 18px;
             box-shadow: var(--shadow);
-            border: 1px solid #eaeaea;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        .admin-panel::-webkit-scrollbar {
-            display: none;
+            border: 1px solid #bdc3c7;
         }
 
         .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--button-gray);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #bdc3c7;
         }
 
         .panel-header h3 {
-            color: var(--accent-color);
-            font-size: 22px;
+            font-size: 18px;
+            color: #2c3e50;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
+        .edit-mode-badge {
+            background: #34495e;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            border: 1px solid #bdc3c7;
+        }
+
+        /* Ultra compact form */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 14px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-weight: 600;
-            color: var(--dark-color);
+            font-size: 13px;
+            color: #2c3e50;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
+            padding: 10px 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            background: var(--white);
         }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--button-gray);
-            box-shadow: 0 0 0 3px rgba(127, 140, 141, 0.1);
+            border-color: #34495e;
+            box-shadow: 0 0 0 2px rgba(52, 73, 94, 0.1);
         }
 
         textarea.form-control {
-            min-height: 100px;
-            resize: vertical;
+            min-height: 70px;
         }
 
         .form-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
+        /* Compact promotion fields */
+        .promotion-fields {
+            background: #ecf0f1;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            border-left: 3px solid #34495e;
         }
 
-        .btn-primary {
-            background: var(--button-gray);
-            color: var(--light-color);
-            box-shadow: 0 4px 12px rgba(127, 140, 141, 0.2);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(127, 140, 141, 0.3);
-        }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: var(--dark-color);
-            border: 1px solid #ddd;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .btn-danger {
-            background: var(--danger-color);
-            color: var(--light-color);
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-        }
-
-        .btn-success {
-            background: var(--success-color);
-            color: var(--light-color);
-            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
-        }
-
-        .btn-success:hover {
-            background: #219653;
-        }
-
-        .btn-group {
+        .promotion-fields h4 {
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 10px;
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            align-items: center;
+            gap: 6px;
         }
 
-        @media (max-width: 768px) {
-            .btn-group {
-                flex-direction: column;
-            }
-        }
-
-        /* Multiple Image Upload */
+        /* Image preview grid */
         .multi-image-upload {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .images-preview-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
         }
 
         .image-preview-item {
             position: relative;
-            height: 120px;
-            border-radius: 10px;
+            height: 90px;
+            border-radius: var(--radius-sm);
             overflow: hidden;
-            border: 2px solid #e0e0e0;
+            border: 1px solid #bdc3c7;
         }
 
         .image-preview-item img {
@@ -376,24 +337,19 @@
 
         .remove-image-btn {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--danger-color);
+            top: 4px;
+            right: 4px;
+            background: #e74c3c;
             color: white;
             border: none;
-            width: 25px;
-            height: 25px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            transition: all 0.3s;
-        }
-
-        .remove-image-btn:hover {
-            transform: scale(1.1);
+            font-size: 10px;
+            cursor: pointer;
         }
 
         .add-more-images {
@@ -401,218 +357,209 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            height: 120px;
-            border: 2px dashed #ddd;
-            border-radius: 10px;
-            cursor: pointer;
-            color: #666;
-            transition: all 0.3s;
-            background: var(--primary-color);
-        }
-
-        .add-more-images:hover {
-            border-color: var(--button-gray);
-            color: var(--button-gray);
-            background: #f5f5f5;
-        }
-
-        /* Promotion fields */
-        .promotion-fields {
-            background: #f8f9f9;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--button-gray);
-        }
-
-        .promotion-fields h4 {
-            color: var(--accent-color);
-            margin-bottom: 15px;
-        }
-
-        /* Edit mode styling */
-        .edit-mode-badge {
-            background: var(--button-gray);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
+            height: 90px;
+            border: 1px dashed #bdc3c7;
+            border-radius: var(--radius-sm);
+            background: #ecf0f1;
+            color: #7f8c8d;
             font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            cursor: pointer;
         }
 
-        /* Items List */
+        .add-more-images i {
+            font-size: 20px;
+            margin-bottom: 2px;
+            color: #34495e;
+        }
+
+        /* Compact buttons */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1;
+            white-space: nowrap;
+        }
+
+        .btn-primary { 
+            background: #34495e; 
+            color: white; 
+            border: 1px solid #2c3e50;
+        }
+        .btn-secondary { 
+            background: #ecf0f1; 
+            color: #2c3e50; 
+            border: 1px solid #bdc3c7; 
+        }
+        .btn-danger { 
+            background: #e74c3c; 
+            color: white; 
+            border: 1px solid #c0392b;
+        }
+        .btn-success { 
+            background: #27ae60; 
+            color: white; 
+            border: 1px solid #229954;
+        }
+
+        .btn i {
+            color: #f1c40f;
+        }
+
+        /* Compact product grid */
         .items-list {
-            margin-top: 40px;
+            margin-top: 24px;
         }
 
         .items-list-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--button-gray);
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #bdc3c7;
         }
 
         .items-list-header h3 {
-            color: var(--accent-color);
+            font-size: 16px;
+            color: #2c3e50;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .items-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
+            grid-template-columns: 1fr;
+            gap: 16px;
         }
 
+        /* Compact product card */
         .item-card {
-            background-color: var(--light-color);
-            border-radius: 12px;
+            background: var(--white);
+            border-radius: var(--radius);
             overflow: hidden;
             box-shadow: var(--shadow);
-            border: 1px solid #eaeaea;
-            transition: all 0.3s;
-        }
-
-        .item-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            border-color: var(--button-gray);
+            border: 1px solid #bdc3c7;
+            display: flex;
+            flex-direction: column;
         }
 
         .item-card-img {
-            height: 200px;
             width: 100%;
+            height: 180px;
             object-fit: cover;
         }
 
         .item-card-body {
-            padding: 20px;
+            padding: 14px;
         }
 
         .item-card-category {
-            color: var(--button-gray);
-            font-size: 13px;
+            font-size: 11px;
+            color: #7f8c8d;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
             font-weight: 600;
         }
 
         .item-card-title {
-            font-size: 18px;
-            margin-bottom: 10px;
+            font-size: 16px;
+            margin-bottom: 6px;
             font-weight: 700;
-            color: var(--dark-color);
+            color: #2c3e50;
         }
 
         .item-card-description {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 15px;
-            line-height: 1.5;
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
         .item-card-price {
-            color: var(--accent-color);
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
-            margin-bottom: 15px;
+            color: #2c3e50;
+            margin-bottom: 12px;
         }
 
         .item-card-actions {
-            display: flex;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
 
-        /* Edit buttons in item cards */
-        .edit-item-btn {
-            background: var(--button-gray);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
+        .edit-item-btn { 
+            background: #34495e; 
+            color: white; 
+            padding: 8px;
             border: none;
-            cursor: pointer;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .edit-item-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(127, 140, 141, 0.3);
-        }
-
-        .delete-item-btn {
-            background: var(--danger-color);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            border: none;
+            justify-content: center;
+            gap: 4px;
             cursor: pointer;
+            border: 1px solid #2c3e50;
+        }
+        
+        .delete-item-btn { 
+            background: #e74c3c; 
+            color: white; 
+            padding: 8px;
+            border: none;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-weight: 600;
-            transition: all 0.3s;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+            border: 1px solid #c0392b;
         }
 
-        .delete-item-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        .edit-item-btn i, .delete-item-btn i {
+            color: #f1c40f;
         }
 
-        .no-items {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 40px 20px;
-            color: #777;
-        }
-
-        .no-items i {
-            font-size: 50px;
-            margin-bottom: 15px;
-            color: var(--button-gray);
-            opacity: 0.3;
-        }
-
-        /* Messages */
+        /* Message area */
         .message {
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            display: none;
-            border-left: 4px solid;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border-left-color: var(--success-color);
-            display: block;
-        }
-
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-left-color: var(--danger-color);
-            display: block;
-        }
-
-        .message.info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border-left-color: var(--button-gray);
-            display: block;
-        }
+        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .message.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
 
         /* Loading overlay */
         .loading-overlay {
@@ -621,90 +568,66 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(44, 62, 80, 0.95);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            backdrop-filter: blur(5px);
         }
 
-        .loading-overlay.active {
-            display: flex;
+        .loading-overlay.active { display: flex; }
+
+        .loader {
+            border: 3px solid #ecf0f1;
+            border-top: 3px solid #f1c40f;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .admin-title h2 {
-                font-size: 26px;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .items-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .panel-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .item-card-actions {
-                flex-direction: column;
-            }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* No items */
+        .no-items {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
         }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .no-items i {
+            font-size: 48px;
+            color: #bdc3c7;
+            margin-bottom: 10px;
         }
 
-        .item-card {
-            animation: fadeInUp 0.5s ease forwards;
-            opacity: 0;
+        .no-items h3 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 8px;
         }
 
-        /* Remove all scrollbars */
-        *::-webkit-scrollbar {
-            display: none;
+        .no-items p {
+            font-size: 14px;
         }
 
-        * {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        @media (max-width: 380px) {
+            .form-row { grid-template-columns: 1fr; }
+            .images-preview-container { grid-template-columns: repeat(2, 1fr); }
+            .btn-group { flex-direction: column; }
+            .btn { width: 100%; }
         }
-
-        /* Custom category colors */
-        .category-phone-accessories { border-left: 4px solid var(--button-gray); }
-        .category-computers-accessories { border-left: 4px solid var(--accent-color); }
-        .category-general-electronics { border-left: 4px solid var(--gray-color); }
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Clean gray header - no logo, just text -->
     <header>
         <div class="container">
             <div class="header-content">
                 <a href="index.html" class="logo">
-                    <i class="fas fa-crown"></i>
-                    <h1>Tri<span>smart</span> Admin</h1>
+                    <span>Tri</span>
+                    <span>smart</span>
                 </a>
                 <a href="index.html" class="view-site-link">
                     <i class="fas fa-eye"></i> View Store
@@ -716,8 +639,8 @@
     <!-- Admin Title -->
     <div class="container">
         <div class="admin-title">
-            <h2><i class="fas fa-tools"></i> Product Management Panel</h2>
-            <p>Add, edit, and manage your premium collection products</p>
+            <h2><i class="fas fa-tools" style="color: #f1c40f;"></i> Product Management</h2>
+            <p>Manage your premium collection</p>
         </div>
     </div>
 
@@ -726,11 +649,11 @@
         <div class="admin-layout">
             <!-- Sidebar -->
             <aside class="admin-sidebar">
-                <h3><i class="fas fa-chart-line"></i> Dashboard</h3>
+                <h3><i class="fas fa-chart-line" style="color: #f1c40f;"></i> Dashboard</h3>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <span class="number" id="totalItems">0</span>
-                        <span class="label">Total Products</span>
+                        <span class="label">Products</span>
                     </div>
                     <div class="stat-card">
                         <span class="number" id="totalCategories">0</span>
@@ -738,7 +661,7 @@
                     </div>
                 </div>
                 <ul class="sidebar-menu">
-                    <li><a href="#add-item" class="active"><i class="fas fa-plus-circle"></i> Add New Product</a></li>
+                    <li><a href="#add-item" class="active"><i class="fas fa-plus-circle"></i> Add Product</a></li>
                     <li><a href="#manage-items"><i class="fas fa-boxes"></i> Manage Products</a></li>
                 </ul>
             </aside>
@@ -747,7 +670,7 @@
             <div class="admin-panel">
                 <!-- Add/Edit Item Form -->
                 <div class="panel-header">
-                    <h3><i class="fas fa-plus-circle"></i> <span id="formTitle">Add New Product</span></h3>
+                    <h3><i class="fas fa-plus-circle" style="color: #f1c40f;"></i> <span id="formTitle">Add New Product</span></h3>
                     <span id="editModeBadge" class="edit-mode-badge" style="display: none;">EDIT MODE</span>
                 </div>
                 
@@ -757,8 +680,8 @@
                 <!-- Loading Overlay -->
                 <div class="loading-overlay" id="loadingOverlay">
                     <div style="text-align: center; color: white;">
-                        <div class="loader" style="border: 4px solid #f3f3f3; border-top: 4px solid var(--button-gray); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
-                        <p>Processing...</p>
+                        <div class="loader"></div>
+                        <p style="color: #ecf0f1;">Processing...</p>
                     </div>
                 </div>
                 
@@ -768,13 +691,13 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="itemName">Product Name *</label>
-                            <input type="text" id="itemName" class="form-control" placeholder="e.g., Premium Smart Watch" required>
+                            <input type="text" id="itemName" class="form-control" placeholder="e.g., Premium Watch" required>
                         </div>
                         
                         <div class="form-group">
                             <label for="itemCategory">Category *</label>
                             <select id="itemCategory" class="form-control" required>
-                                <option value="">Select a category</option>
+                                <option value="">Select</option>
                                 <option value="phone-accessories">Phone Accessories</option>
                                 <option value="computers-accessories">Computers Accessories</option>
                                 <option value="general-electronics">General Electronics</option>
@@ -784,7 +707,7 @@
                     
                     <div class="form-group">
                         <label for="itemDescription">Description *</label>
-                        <textarea id="itemDescription" class="form-control" placeholder="Describe the product, features, materials used, etc." required></textarea>
+                        <textarea id="itemDescription" class="form-control" placeholder="Product features, materials, etc." required></textarea>
                     </div>
                     
                     <div class="form-row">
@@ -794,22 +717,22 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="itemStock">Stock Quantity *</label>
+                            <label for="itemStock">Stock *</label>
                             <input type="number" id="itemStock" class="form-control" placeholder="e.g., 10" min="0" value="1" required>
                         </div>
                     </div>
                     
                     <!-- Promotion Fields -->
                     <div class="promotion-fields">
-                        <h4><i class="fas fa-tag"></i> Promotion Settings (Optional)</h4>
+                        <h4><i class="fas fa-tag" style="color: #f1c40f;"></i> Promotion (Optional)</h4>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="itemPromotion">Promotion Text</label>
-                                <input type="text" id="itemPromotion" class="form-control" placeholder="e.g., 20% OFF, Limited Time Offer">
+                                <input type="text" id="itemPromotion" class="form-control" placeholder="e.g., 20% OFF">
                             </div>
                             <div class="form-group">
-                                <label for="itemOldPrice">Original Price (for display)</label>
-                                <input type="number" id="itemOldPrice" class="form-control" placeholder="Original price before promotion" min="0" step="0.01">
+                                <label for="itemOldPrice">Original Price</label>
+                                <input type="number" id="itemOldPrice" class="form-control" placeholder="Original price" min="0" step="0.01">
                             </div>
                         </div>
                     </div>
@@ -818,24 +741,16 @@
                     <div class="form-group multi-image-upload">
                         <label>Product Images *</label>
                         
-                        <!-- URL Input for Images -->
                         <div class="form-group">
                             <label for="imageUrls">Image URLs (One per line)</label>
-                            <textarea id="imageUrls" class="form-control" placeholder="Paste image URLs (one per line)&#10;Example:&#10;https://images.unsplash.com/photo-1505740420928-5e560c06d30e&#10;https://images.unsplash.com/photo-1546868871-7041f2a55e12" rows="4"></textarea>
-                            <small style="color: #666; display: block; margin-top: 5px;">
-                                <strong>Tip:</strong> Use Unsplash or other image hosting services. Enter one URL per line.
-                            </small>
+                            <textarea id="imageUrls" class="form-control" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg" rows="3"></textarea>
                         </div>
                         
-                        <!-- Image Preview Container -->
-                        <div class="images-preview-container" id="imagesPreview">
-                            <!-- Image previews will be added here -->
-                        </div>
+                        <div class="images-preview-container" id="imagesPreview"></div>
                         
-                        <!-- Add More Images Button -->
                         <div class="add-more-images" id="addMoreImagesBtn">
-                            <i class="fas fa-plus-circle" style="font-size: 24px; margin-bottom: 5px;"></i>
-                            <span>Add More Images</span>
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add Images</span>
                         </div>
                         <input type="file" id="imageUpload" accept="image/*" multiple style="display: none;">
                     </div>
@@ -845,10 +760,10 @@
                             <i class="fas fa-plus-circle"></i> <span id="submitBtnText">Add Product</span>
                         </button>
                         <button type="button" class="btn btn-secondary" id="resetFormBtn">
-                            <i class="fas fa-redo"></i> Reset Form
+                            <i class="fas fa-redo"></i> Reset
                         </button>
                         <button type="button" class="btn btn-danger" id="cancelEditBtn" style="display: none;">
-                            <i class="fas fa-times"></i> Cancel Edit
+                            <i class="fas fa-times"></i> Cancel
                         </button>
                     </div>
                 </form>
@@ -856,16 +771,15 @@
                 <!-- Existing Items -->
                 <div class="items-list">
                     <div class="items-list-header">
-                        <h3><i class="fas fa-boxes"></i> Existing Products</h3>
-                        <span id="itemsCount">0 products</span>
+                        <h3><i class="fas fa-boxes" style="color: #f1c40f;"></i> Products</h3>
+                        <span id="itemsCount" style="color: #7f8c8d; font-size: 13px;">0 products</span>
                     </div>
                     
                     <div class="items-grid" id="itemsGrid">
-                        <!-- Items will be loaded here -->
                         <div class="no-items">
                             <i class="fas fa-box-open"></i>
                             <h3>No products yet</h3>
-                            <p>Add your first product using the form above</p>
+                            <p>Add your first product above</p>
                         </div>
                     </div>
                 </div>
@@ -873,483 +787,354 @@
         </div>
     </main>
 
-    <!-- Firebase and App Scripts -->
- <script type="module">
-    // Import Firebase modules
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
 
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyA8fSfsDB0J81iM0FWwbl233nHafBorKV4",
-        authDomain: "chris-89177.firebaseapp.com",
-        databaseURL: "https://chris-89177-default-rtdb.firebaseio.com",
-        projectId: "chris-89177",
-        storageBucket: "chris-89177.firebasestorage.app",
-        messagingSenderId: "2833785676",
-        appId: "1:2833785676:web:d934ffdbaf64c2f5f5a5e9",
-        measurementId: "G-1R78MFJFEK"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8fSfsDB0J81iM0FWwbl233nHafBorKV4",
+            authDomain: "chris-89177.firebaseapp.com",
+            databaseURL: "https://chris-89177-default-rtdb.firebaseio.com",
+            projectId: "chris-89177",
+            storageBucket: "chris-89177.firebasestorage.app",
+            messagingSenderId: "2833785676",
+            appId: "1:2833785676:web:d934ffdbaf64c2f5f5a5e9",
+            measurementId: "G-1R78MFJFEK"
+        };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const productsCollection = collection(db, "products");
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const productsCollection = collection(db, "products");
 
-    // DOM Elements
-    const itemForm = document.getElementById('itemForm');
-    const itemsGrid = document.getElementById('itemsGrid');
-    const messageArea = document.getElementById('messageArea');
-    const totalItems = document.getElementById('totalItems');
-    const totalCategories = document.getElementById('totalCategories');
-    const itemsCount = document.getElementById('itemsCount');
-    const resetFormBtn = document.getElementById('resetFormBtn');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const formTitle = document.getElementById('formTitle');
-    const editModeBadge = document.getElementById('editModeBadge');
-    const submitBtn = document.getElementById('submitBtn');
-    const submitBtnText = document.getElementById('submitBtnText');
-    const cancelEditBtn = document.getElementById('cancelEditBtn');
-    const imagesPreview = document.getElementById('imagesPreview');
-    const addMoreImagesBtn = document.getElementById('addMoreImagesBtn');
-    const imageUpload = document.getElementById('imageUpload');
-    const imageUrls = document.getElementById('imageUrls');
-    const itemIdInput = document.getElementById('itemId');
+        // DOM Elements
+        const itemForm = document.getElementById('itemForm');
+        const itemsGrid = document.getElementById('itemsGrid');
+        const messageArea = document.getElementById('messageArea');
+        const totalItems = document.getElementById('totalItems');
+        const totalCategories = document.getElementById('totalCategories');
+        const itemsCount = document.getElementById('itemsCount');
+        const resetFormBtn = document.getElementById('resetFormBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const formTitle = document.getElementById('formTitle');
+        const editModeBadge = document.getElementById('editModeBadge');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitBtnText = document.getElementById('submitBtnText');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const imagesPreview = document.getElementById('imagesPreview');
+        const addMoreImagesBtn = document.getElementById('addMoreImagesBtn');
+        const imageUpload = document.getElementById('imageUpload');
+        const imageUrls = document.getElementById('imageUrls');
+        const itemIdInput = document.getElementById('itemId');
 
-    // Form inputs
-    const itemName = document.getElementById('itemName');
-    const itemCategory = document.getElementById('itemCategory');
-    const itemDescription = document.getElementById('itemDescription');
-    const itemPrice = document.getElementById('itemPrice');
-    const itemStock = document.getElementById('itemStock');
-    const itemPromotion = document.getElementById('itemPromotion');
-    const itemOldPrice = document.getElementById('itemOldPrice');
+        const itemName = document.getElementById('itemName');
+        const itemCategory = document.getElementById('itemCategory');
+        const itemDescription = document.getElementById('itemDescription');
+        const itemPrice = document.getElementById('itemPrice');
+        const itemStock = document.getElementById('itemStock');
+        const itemPromotion = document.getElementById('itemPromotion');
+        const itemOldPrice = document.getElementById('itemOldPrice');
 
-    // Variables
-    let selectedImages = [];
-    let isEditMode = false;
-    let currentEditId = null;
+        let selectedImages = [];
+        let isEditMode = false;
+        let currentEditId = null;
 
-    // Check if we're in edit mode from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const editId = urlParams.get('edit');
-    if (editId) {
-        isEditMode = true;
-        currentEditId = editId;
-        loadItemForEditing(editId);
-    }
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('edit');
+        if (editId) {
+            isEditMode = true;
+            currentEditId = editId;
+            loadItemForEditing(editId);
+        }
 
-    // Load and display items from Firestore
-    function loadItems() {
-        onSnapshot(productsCollection, (snapshot) => {
-            itemsGrid.innerHTML = '';
-            
-            if (snapshot.empty) {
-                itemsGrid.innerHTML = `
-                    <div class="no-items">
-                        <i class="fas fa-box-open"></i>
-                        <h3>No products yet</h3>
-                        <p>Add your first product using the form above</p>
-                    </div>
-                `;
+        function loadItems() {
+            onSnapshot(productsCollection, (snapshot) => {
+                itemsGrid.innerHTML = '';
                 
-                totalItems.textContent = '0';
-                itemsCount.textContent = '0 products';
-                return;
-            }
-            
-            const items = [];
-            const categories = new Set();
-            
-            snapshot.docs.forEach((doc) => {
-                const item = doc.data();
-                item.id = doc.id;
-                items.push(item);
-                
-                if (item.category) {
-                    categories.add(item.category);
-                }
-            });
-            
-            // Sort by creation date (newest first)
-            items.sort((a, b) => {
-                if (a.createdAt && b.createdAt) {
-                    return new Date(b.createdAt) - new Date(a.createdAt);
-                }
-                return 0;
-            });
-            
-            // Update stats
-            totalItems.textContent = items.length;
-            totalCategories.textContent = categories.size;
-            itemsCount.textContent = `${items.length} product${items.length !== 1 ? 's' : ''}`;
-            
-            // Display items
-            items.forEach((item, index) => {
-                // Get first image for thumbnail
-                const images = item.images || [];
-                const firstImage = images[0] || item.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop';
-                
-                // Determine category class
-                const categoryClass = `category-${item.category ? item.category.replace(' ', '-') : 'general'}`;
-                
-                const itemCard = document.createElement('div');
-                itemCard.className = `item-card ${categoryClass}`;
-                itemCard.style.animationDelay = `${index * 0.1}s`;
-                itemCard.innerHTML = `
-                    <img src="${firstImage}" alt="${item.name}" class="item-card-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop'">
-                    <div class="item-card-body">
-                        <div class="item-card-category">${item.category ? item.category.replace('-', ' ').toUpperCase() : 'PRODUCT'}</div>
-                        <h3 class="item-card-title">${item.name}</h3>
-                        <p class="item-card-description">${item.description || 'No description available'}</p>
-                        <div class="item-card-price">
-                            ${item.promotion && item.oldPrice ? 
-                                `<span style="text-decoration: line-through; color: #999; margin-right: 5px; font-size: 14px;">ZMW ${parseFloat(item.oldPrice).toLocaleString()}</span>` : ''}
-                            ZMW ${item.price ? parseFloat(item.price).toLocaleString() : '0'}
-                            ${item.promotion ? `<span style="color: var(--button-gray); font-size: 12px; margin-left: 5px;"><i class="fas fa-tag"></i> ${item.promotion}</span>` : ''}
+                if (snapshot.empty) {
+                    itemsGrid.innerHTML = `
+                        <div class="no-items">
+                            <i class="fas fa-box-open"></i>
+                            <h3>No products yet</h3>
+                            <p>Add your first product using the form above</p>
                         </div>
-                        <div class="item-card-actions">
-                            <button class="edit-item-btn edit-item-btn-action" data-id="${item.id}">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="delete-item-btn" data-id="${item.id}">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-                `;
+                    `;
+                    totalItems.textContent = '0';
+                    itemsCount.textContent = '0 products';
+                    return;
+                }
                 
-                itemsGrid.appendChild(itemCard);
-            });
-            
-            // Add event listeners to buttons
-            document.querySelectorAll('.edit-item-btn-action').forEach(button => {
-                button.addEventListener('click', function() {
-                    const itemId = this.getAttribute('data-id');
-                    enterEditMode(itemId);
+                const items = [];
+                const categories = new Set();
+                
+                snapshot.docs.forEach((doc) => {
+                    const item = doc.data();
+                    item.id = doc.id;
+                    items.push(item);
+                    if (item.category) categories.add(item.category);
+                });
+                
+                items.sort((a, b) => {
+                    if (a.createdAt && b.createdAt) return new Date(b.createdAt) - new Date(a.createdAt);
+                    return 0;
+                });
+                
+                totalItems.textContent = items.length;
+                totalCategories.textContent = categories.size;
+                itemsCount.textContent = `${items.length} product${items.length !== 1 ? 's' : ''}`;
+                
+                items.forEach((item, index) => {
+                    const images = item.images || [];
+                    const firstImage = images[0] || item.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop';
+                    
+                    const itemCard = document.createElement('div');
+                    itemCard.className = 'item-card';
+                    itemCard.style.animationDelay = `${index * 0.1}s`;
+                    itemCard.innerHTML = `
+                        <img src="${firstImage}" alt="${item.name}" class="item-card-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop'">
+                        <div class="item-card-body">
+                            <div class="item-card-category">${item.category ? item.category.replace('-', ' ').toUpperCase() : 'PRODUCT'}</div>
+                            <h3 class="item-card-title">${item.name}</h3>
+                            <p class="item-card-description">${item.description || 'No description available'}</p>
+                            <div class="item-card-price">
+                                ${item.promotion && item.oldPrice ? 
+                                    `<span style="text-decoration: line-through; color: #95a5a6; margin-right: 5px; font-size: 13px;">ZMW ${parseFloat(item.oldPrice).toLocaleString()}</span>` : ''}
+                                ZMW ${item.price ? parseFloat(item.price).toLocaleString() : '0'}
+                                ${item.promotion ? `<span style="color: #f1c40f; font-size: 11px; margin-left: 5px;"><i class="fas fa-tag"></i> ${item.promotion}</span>` : ''}
+                            </div>
+                            <div class="item-card-actions">
+                                <button class="edit-item-btn" data-id="${item.id}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="delete-item-btn" data-id="${item.id}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    itemsGrid.appendChild(itemCard);
+                });
+                
+                document.querySelectorAll('.edit-item-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const itemId = this.getAttribute('data-id');
+                        enterEditMode(itemId);
+                    });
+                });
+                
+                document.querySelectorAll('.delete-item-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const itemId = this.getAttribute('data-id');
+                        deleteItem(itemId);
+                    });
                 });
             });
-            
-            document.querySelectorAll('.delete-item-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const itemId = this.getAttribute('data-id');
-                    deleteItem(itemId);
-                });
-            });
-        }, (error) => {
-            console.error("Firestore error: ", error);
-            showMessage(`Firestore Error: ${error.message}. Please update your Firestore security rules.`, 'error');
-        });
-    }
-
-    // Load item for editing
-    async function loadItemForEditing(itemId) {
-        try {
-            loadingOverlay.classList.add('active');
-            
-            const itemDoc = await getDoc(doc(db, "products", itemId));
-            if (itemDoc.exists()) {
-                const item = itemDoc.data();
-                
-                // Set form values
-                itemIdInput.value = itemId;
-                itemName.value = item.name || '';
-                itemCategory.value = item.category || '';
-                itemDescription.value = item.description || '';
-                itemPrice.value = item.price || '';
-                itemStock.value = item.stock || 1;
-                itemPromotion.value = item.promotion || '';
-                itemOldPrice.value = item.oldPrice || '';
-                
-                // Load images
-                selectedImages = [];
-                if (item.images && Array.isArray(item.images)) {
-                    selectedImages = [...item.images];
-                } else if (item.image) {
-                    selectedImages = [item.image];
-                }
-                updateImagePreviews();
-                
-                // Update form for edit mode
-                formTitle.textContent = 'Edit Product';
-                editModeBadge.style.display = 'inline-block';
-                submitBtnText.textContent = 'Update Product';
-                cancelEditBtn.style.display = 'inline-flex';
-                
-                showMessage(`Editing: ${item.name}`, 'info');
-            } else {
-                showMessage('Product not found!', 'error');
-                exitEditMode();
-            }
-        } catch (error) {
-            console.error("Error loading product: ", error);
-            showMessage(`Error loading product: ${error.message}`, 'error');
-        } finally {
-            loadingOverlay.classList.remove('active');
         }
-    }
 
-    // Enter edit mode
-    async function enterEditMode(itemId) {
-        isEditMode = true;
-        currentEditId = itemId;
-        await loadItemForEditing(itemId);
-        
-        // Scroll to form
-        document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // Exit edit mode
-    function exitEditMode() {
-        isEditMode = false;
-        currentEditId = null;
-        resetForm();
-        formTitle.textContent = 'Add New Product';
-        editModeBadge.style.display = 'none';
-        submitBtnText.textContent = 'Add Product';
-        cancelEditBtn.style.display = 'none';
-        
-        // Remove edit ID from URL
-        const url = new URL(window.location);
-        url.searchParams.delete('edit');
-        window.history.replaceState({}, '', url);
-    }
-
-    // Add or update item
-    async function saveItem(itemData) {
-        try {
-            loadingOverlay.classList.add('active');
-            
-            if (isEditMode && currentEditId) {
-                // Update existing product
-                const updatedData = {
-                    ...itemData,
-                    updatedAt: new Date().toISOString()
-                };
-                await updateDoc(doc(db, "products", currentEditId), updatedData);
-                showMessage('Product updated successfully!', 'success');
-                exitEditMode();
-            } else {
-                // Add new product
-                const newItemData = {
-                    ...itemData,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                };
-                await addDoc(productsCollection, newItemData);
-                showMessage('Product added successfully!', 'success');
-                resetForm();
-            }
-        } catch (error) {
-            console.error("Error saving product: ", error);
-            showMessage(`Error: ${error.message}`, 'error');
-            
-            // If it's a permissions error, show instructions
-            if (error.code === 'permission-denied' || error.message.includes('permission')) {
-                showMessage(`
-                    <strong>FIX FIREBASE SECURITY RULES:</strong><br>
-                    1. Go to <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a><br>
-                    2. Select your project (chris-89177)<br>
-                    3. Go to Firestore Database > Rules tab<br>
-                    4. Replace the rules with:<br>
-                    <code style="background: #f5f5f5; padding: 5px; display: block; margin: 5px 0;">
-                    rules_version = '2';<br>
-                    service cloud.firestore {<br>
-                      &nbsp;match /databases/{database}/documents {<br>
-                        &nbsp;&nbsp;match /{document=**} {<br>
-                          &nbsp;&nbsp;&nbsp;allow read, write: if true;<br>
-                        &nbsp;&nbsp;}<br>
-                      &nbsp;}<br>
-                    }
-                    </code>
-                    5. Click "Publish"
-                `, 'error');
-            }
-        } finally {
-            loadingOverlay.classList.remove('active');
-        }
-    }
-
-    // Delete item from Firestore
-    async function deleteItem(itemId) {
-        if (confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+        async function loadItemForEditing(itemId) {
             try {
-                await deleteDoc(doc(db, "products", itemId));
-                showMessage('Product deleted successfully!', 'success');
+                loadingOverlay.classList.add('active');
+                const itemDoc = await getDoc(doc(db, "products", itemId));
+                if (itemDoc.exists()) {
+                    const item = itemDoc.data();
+                    itemIdInput.value = itemId;
+                    itemName.value = item.name || '';
+                    itemCategory.value = item.category || '';
+                    itemDescription.value = item.description || '';
+                    itemPrice.value = item.price || '';
+                    itemStock.value = item.stock || 1;
+                    itemPromotion.value = item.promotion || '';
+                    itemOldPrice.value = item.oldPrice || '';
+                    
+                    selectedImages = [];
+                    if (item.images && Array.isArray(item.images)) selectedImages = [...item.images];
+                    else if (item.image) selectedImages = [item.image];
+                    updateImagePreviews();
+                    
+                    formTitle.textContent = 'Edit Product';
+                    editModeBadge.style.display = 'inline-block';
+                    submitBtnText.textContent = 'Update Product';
+                    cancelEditBtn.style.display = 'inline-flex';
+                    showMessage(`Editing: ${item.name}`, 'info');
+                }
             } catch (error) {
-                console.error("Error deleting product: ", error);
-                showMessage('Error deleting product. Please try again.', 'error');
+                showMessage(`Error loading product`, 'error');
+            } finally {
+                loadingOverlay.classList.remove('active');
             }
         }
-    }
 
-    // Show message
-    function showMessage(message, type) {
-        messageArea.innerHTML = `
-            <div class="message ${type}">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                ${message}
-            </div>
-        `;
-        
-        // Auto-hide success messages after 5 seconds
-        if (type === 'success') {
-            setTimeout(() => {
-                messageArea.innerHTML = '';
-            }, 5000);
+        function enterEditMode(itemId) {
+            isEditMode = true;
+            currentEditId = itemId;
+            loadItemForEditing(itemId);
+            document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
         }
-    }
 
-    // Handle image selection
-    function handleImageUpload(files) {
-        Array.from(files).forEach(file => {
-            if (!file.type.match('image.*')) {
-                showMessage('Please select image files only (JPG, PNG, etc.)', 'error');
-                return;
+        function exitEditMode() {
+            isEditMode = false;
+            currentEditId = null;
+            resetForm();
+            formTitle.textContent = 'Add New Product';
+            editModeBadge.style.display = 'none';
+            submitBtnText.textContent = 'Add Product';
+            cancelEditBtn.style.display = 'none';
+            const url = new URL(window.location);
+            url.searchParams.delete('edit');
+            window.history.replaceState({}, '', url);
+        }
+
+        async function saveItem(itemData) {
+            try {
+                loadingOverlay.classList.add('active');
+                if (isEditMode && currentEditId) {
+                    const updatedData = { ...itemData, updatedAt: new Date().toISOString() };
+                    await updateDoc(doc(db, "products", currentEditId), updatedData);
+                    showMessage('Product updated successfully!', 'success');
+                    exitEditMode();
+                } else {
+                    const newItemData = { ...itemData, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+                    await addDoc(productsCollection, newItemData);
+                    showMessage('Product added successfully!', 'success');
+                    resetForm();
+                }
+            } catch (error) {
+                showMessage(`Error: ${error.message}`, 'error');
+            } finally {
+                loadingOverlay.classList.remove('active');
             }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                selectedImages.push(e.target.result);
-                updateImagePreviews();
-            };
-            reader.readAsDataURL(file);
-        });
-    }
+        }
 
-    // Update image previews
-    function updateImagePreviews() {
-        imagesPreview.innerHTML = '';
-        
-        selectedImages.forEach((img, index) => {
-            const previewItem = document.createElement('div');
-            previewItem.className = 'image-preview-item';
-            previewItem.innerHTML = `
-                <img src="${img}" alt="Preview ${index + 1}">
-                <button type="button" class="remove-image-btn" data-index="${index}">
-                    <i class="fas fa-times"></i>
-                </button>
+        async function deleteItem(itemId) {
+            if (confirm('Delete this product? This cannot be undone.')) {
+                try {
+                    await deleteDoc(doc(db, "products", itemId));
+                    showMessage('Product deleted successfully!', 'success');
+                } catch (error) {
+                    showMessage('Error deleting product', 'error');
+                }
+            }
+        }
+
+        function showMessage(message, type) {
+            messageArea.innerHTML = `
+                <div class="message ${type}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    ${message}
+                </div>
             `;
-            imagesPreview.appendChild(previewItem);
-        });
-        
-        // Show "Add More" button if we have less than 10 images
-        if (selectedImages.length < 10) {
-            addMoreImagesBtn.style.display = 'flex';
-        } else {
-            addMoreImagesBtn.style.display = 'none';
+            if (type === 'success') setTimeout(() => messageArea.innerHTML = '', 4000);
         }
-        
-        // Add event listeners to remove buttons
-        document.querySelectorAll('.remove-image-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const index = parseInt(this.getAttribute('data-index'));
-                selectedImages.splice(index, 1);
-                updateImagePreviews();
-            });
-        });
-    }
 
-    // Parse URLs from textarea
-    function parseImageUrls() {
-        const urls = imageUrls.value.split('\n')
-            .map(url => url.trim())
-            .filter(url => url.startsWith('http'));
-        
-        if (urls.length > 0) {
-            selectedImages = [...selectedImages, ...urls];
+        function handleImageUpload(files) {
+            Array.from(files).forEach(file => {
+                if (!file.type.match('image.*')) {
+                    showMessage('Please select image files only', 'error');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImages.push(e.target.result);
+                    updateImagePreviews();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateImagePreviews() {
+            imagesPreview.innerHTML = '';
+            selectedImages.forEach((img, index) => {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'image-preview-item';
+                previewItem.innerHTML = `
+                    <img src="${img}" alt="Preview ${index + 1}">
+                    <button type="button" class="remove-image-btn" data-index="${index}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                imagesPreview.appendChild(previewItem);
+            });
+            
+            addMoreImagesBtn.style.display = selectedImages.length < 10 ? 'flex' : 'none';
+            
+            document.querySelectorAll('.remove-image-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    selectedImages.splice(index, 1);
+                    updateImagePreviews();
+                });
+            });
+        }
+
+        function parseImageUrls() {
+            const urls = imageUrls.value.split('\n')
+                .map(url => url.trim())
+                .filter(url => url.startsWith('http'));
+            if (urls.length > 0) {
+                selectedImages = [...selectedImages, ...urls];
+                updateImagePreviews();
+                imageUrls.value = '';
+            }
+        }
+
+        function resetForm() {
+            itemForm.reset();
+            selectedImages = [];
             updateImagePreviews();
             imageUrls.value = '';
+            itemIdInput.value = '';
         }
-    }
 
-    // Reset form
-    function resetForm() {
-        itemForm.reset();
-        selectedImages = [];
-        updateImagePreviews();
-        imageUrls.value = '';
-        itemIdInput.value = '';
-    }
-
-    // Event Listeners
-    itemForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        // Validate required fields
-        if (!itemName.value || !itemCategory.value || !itemDescription.value || !itemPrice.value || !itemStock.value) {
-            showMessage('Please fill in all required fields.', 'error');
-            return;
-        }
-        
-        if (selectedImages.length === 0) {
-            showMessage('Please add at least one product image.', 'error');
-            return;
-        }
-        
-        // Prepare product data
-        const itemData = {
-            name: itemName.value,
-            category: itemCategory.value,
-            description: itemDescription.value,
-            price: parseFloat(itemPrice.value),
-            stock: parseInt(itemStock.value),
-            images: selectedImages // Store as array
-        };
-        
-        // Add promotion data if provided
-        if (itemPromotion.value) {
-            itemData.promotion = itemPromotion.value;
-            if (itemOldPrice.value) {
-                itemData.oldPrice = parseFloat(itemOldPrice.value);
+        itemForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!itemName.value || !itemCategory.value || !itemDescription.value || !itemPrice.value || !itemStock.value) {
+                showMessage('Please fill in all required fields.', 'error');
+                return;
             }
-        }
-        
-        // Save product
-        await saveItem(itemData);
-    });
-
-    // Image upload events
-    addMoreImagesBtn.addEventListener('click', () => {
-        imageUpload.click();
-    });
-
-    imageUpload.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            handleImageUpload(e.target.files);
-            // Reset file input
-            imageUpload.value = '';
-        }
-    });
-
-    // Parse URLs when textarea loses focus
-    imageUrls.addEventListener('blur', parseImageUrls);
-
-    // Reset form button
-    resetFormBtn.addEventListener('click', () => {
-        if (isEditMode) {
-            if (confirm('Are you sure you want to cancel editing? All changes will be lost.')) {
-                exitEditMode();
+            if (selectedImages.length === 0) {
+                showMessage('Please add at least one product image.', 'error');
+                return;
             }
-        } else {
-            resetForm();
-        }
-    });
+            
+            const itemData = {
+                name: itemName.value,
+                category: itemCategory.value,
+                description: itemDescription.value,
+                price: parseFloat(itemPrice.value),
+                stock: parseInt(itemStock.value),
+                images: selectedImages
+            };
+            
+            if (itemPromotion.value) {
+                itemData.promotion = itemPromotion.value;
+                if (itemOldPrice.value) itemData.oldPrice = parseFloat(itemOldPrice.value);
+            }
+            
+            await saveItem(itemData);
+        });
 
-    // Cancel edit button
-    cancelEditBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to cancel editing? All changes will be lost.')) {
-            exitEditMode();
-        }
-    });
+        addMoreImagesBtn.addEventListener('click', () => imageUpload.click());
+        imageUpload.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleImageUpload(e.target.files);
+                imageUpload.value = '';
+            }
+        });
+        imageUrls.addEventListener('blur', parseImageUrls);
+        
+        resetFormBtn.addEventListener('click', () => {
+            if (isEditMode) {
+                if (confirm('Cancel editing? All changes will be lost.')) exitEditMode();
+            } else resetForm();
+        });
+        
+        cancelEditBtn.addEventListener('click', () => {
+            if (confirm('Cancel editing? All changes will be lost.')) exitEditMode();
+        });
 
-    // Initialize the app
-    loadItems();
-    
-    // Show info message
-    setTimeout(() => {
-        showMessage('Welcome to Trismart Admin Panel. You can add multiple images per product and edit existing products.', 'info');
-    }, 1000);
-</script>
+        loadItems();
+        setTimeout(() => {
+            showMessage('Welcome to Trismart Admin', 'info');
+        }, 1000);
+    </script>
 </body>
 </html>
