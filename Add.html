@@ -203,6 +203,7 @@
             font-weight: 500;
             border: 1px solid #bdc3c7;
             transition: 0.2s;
+            cursor: pointer;
         }
 
         .sidebar-menu a.active {
@@ -213,6 +214,55 @@
 
         .sidebar-menu a.active i {
             color: #f1c40f;
+        }
+
+        /* Toggle Form Button - NEW */
+        .toggle-form-btn {
+            width: 100%;
+            background: #34495e;
+            color: white;
+            border: 1px solid #bdc3c7;
+            border-radius: 30px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: 0.2s;
+        }
+
+        .toggle-form-btn i {
+            color: #f1c40f;
+            font-size: 18px;
+        }
+
+        .toggle-form-btn:hover {
+            background: #2c3e50;
+            transform: translateY(-2px);
+        }
+
+        /* Hidden Form Container - NEW */
+        .form-container {
+            display: none;
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 18px;
+            border: 1px solid #bdc3c7;
+            margin-bottom: 20px;
+        }
+
+        .form-container.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Main panel - compact */
@@ -423,7 +473,7 @@
 
         /* Compact product grid */
         .items-list {
-            margin-top: 24px;
+            margin-top: 16px;
         }
 
         .items-list-header {
@@ -661,112 +711,113 @@
                     </div>
                 </div>
                 <ul class="sidebar-menu">
-                    <li><a href="#add-item" class="active"><i class="fas fa-plus-circle"></i> Add Product</a></li>
-                    <li><a href="#manage-items"><i class="fas fa-boxes"></i> Manage Products</a></li>
+                    <li><a id="toggleFormLink" class="active"><i class="fas fa-plus-circle"></i> Add Product</a></li>
+                    <li><a id="manageProductsLink"><i class="fas fa-boxes"></i> Manage Products</a></li>
                 </ul>
             </aside>
 
             <!-- Main Panel -->
             <div class="admin-panel">
-                <!-- Add/Edit Item Form -->
-                <div class="panel-header">
-                    <h3><i class="fas fa-plus-circle" style="color: #f1c40f;"></i> <span id="formTitle">Add New Product</span></h3>
-                    <span id="editModeBadge" class="edit-mode-badge" style="display: none;">EDIT MODE</span>
-                </div>
-                
                 <!-- Message Area -->
                 <div id="messageArea"></div>
                 
-                <!-- Loading Overlay -->
-                <div class="loading-overlay" id="loadingOverlay">
-                    <div style="text-align: center; color: white;">
-                        <div class="loader"></div>
-                        <p style="color: #ecf0f1;">Processing...</p>
-                    </div>
-                </div>
+                <!-- Toggle Form Button - NEW -->
+                <button id="toggleFormBtn" class="toggle-form-btn">
+                    <i class="fas fa-plus-circle"></i> Add New Product
+                    <i class="fas fa-chevron-down" id="toggleIcon"></i>
+                </button>
                 
-                <form id="itemForm">
-                    <input type="hidden" id="itemId">
+                <!-- Hidden Form Container - NEW (starts hidden) -->
+                <div id="formContainer" class="form-container">
+                    <!-- Add/Edit Item Form -->
+                    <div class="panel-header">
+                        <h3><i class="fas fa-plus-circle" style="color: #f1c40f;"></i> <span id="formTitle">Add New Product</span></h3>
+                        <span id="editModeBadge" class="edit-mode-badge" style="display: none;">EDIT MODE</span>
+                    </div>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="itemName">Product Name *</label>
-                            <input type="text" id="itemName" class="form-control" placeholder="e.g., Premium Watch" required>
-                        </div>
+                    <form id="itemForm">
+                        <input type="hidden" id="itemId">
                         
-                        <div class="form-group">
-                            <label for="itemCategory">Category *</label>
-                            <select id="itemCategory" class="form-control" required>
-                                <option value="">Select</option>
-                                <option value="phone-accessories">Phone Accessories</option>
-                                <option value="computers-accessories">Computers Accessories</option>
-                                <option value="general-electronics">General Electronics</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="itemDescription">Description *</label>
-                        <textarea id="itemDescription" class="form-control" placeholder="Product features, materials, etc." required></textarea>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="itemPrice">Price (ZMW) *</label>
-                            <input type="number" id="itemPrice" class="form-control" placeholder="e.g., 2500" min="0" step="0.01" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="itemStock">Stock *</label>
-                            <input type="number" id="itemStock" class="form-control" placeholder="e.g., 10" min="0" value="1" required>
-                        </div>
-                    </div>
-                    
-                    <!-- Promotion Fields -->
-                    <div class="promotion-fields">
-                        <h4><i class="fas fa-tag" style="color: #f1c40f;"></i> Promotion (Optional)</h4>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="itemPromotion">Promotion Text</label>
-                                <input type="text" id="itemPromotion" class="form-control" placeholder="e.g., 20% OFF">
+                                <label for="itemName">Product Name *</label>
+                                <input type="text" id="itemName" class="form-control" placeholder="e.g., Premium Watch" required>
                             </div>
+                            
                             <div class="form-group">
-                                <label for="itemOldPrice">Original Price</label>
-                                <input type="number" id="itemOldPrice" class="form-control" placeholder="Original price" min="0" step="0.01">
+                                <label for="itemCategory">Category *</label>
+                                <select id="itemCategory" class="form-control" required>
+                                    <option value="">Select</option>
+                                    <option value="phone-accessories">Phone Accessories</option>
+                                    <option value="computers-accessories">Computers Accessories</option>
+                                    <option value="general-electronics">General Electronics</option>
+                                </select>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Multiple Image Upload -->
-                    <div class="form-group multi-image-upload">
-                        <label>Product Images *</label>
                         
                         <div class="form-group">
-                            <label for="imageUrls">Image URLs (One per line)</label>
-                            <textarea id="imageUrls" class="form-control" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg" rows="3"></textarea>
+                            <label for="itemDescription">Description *</label>
+                            <textarea id="itemDescription" class="form-control" placeholder="Product features, materials, etc." required></textarea>
                         </div>
                         
-                        <div class="images-preview-container" id="imagesPreview"></div>
-                        
-                        <div class="add-more-images" id="addMoreImagesBtn">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>Add Images</span>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="itemPrice">Price (ZMW) *</label>
+                                <input type="number" id="itemPrice" class="form-control" placeholder="e.g., 2500" min="0" step="0.01" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="itemStock">Stock *</label>
+                                <input type="number" id="itemStock" class="form-control" placeholder="e.g., 10" min="0" value="1" required>
+                            </div>
                         </div>
-                        <input type="file" id="imageUpload" accept="image/*" multiple style="display: none;">
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-primary" id="submitBtn">
-                            <i class="fas fa-plus-circle"></i> <span id="submitBtnText">Add Product</span>
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="resetFormBtn">
-                            <i class="fas fa-redo"></i> Reset
-                        </button>
-                        <button type="button" class="btn btn-danger" id="cancelEditBtn" style="display: none;">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                    </div>
-                </form>
+                        
+                        <!-- Promotion Fields -->
+                        <div class="promotion-fields">
+                            <h4><i class="fas fa-tag" style="color: #f1c40f;"></i> Promotion (Optional)</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="itemPromotion">Promotion Text</label>
+                                    <input type="text" id="itemPromotion" class="form-control" placeholder="e.g., 20% OFF">
+                                </div>
+                                <div class="form-group">
+                                    <label for="itemOldPrice">Original Price</label>
+                                    <input type="number" id="itemOldPrice" class="form-control" placeholder="Original price" min="0" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Multiple Image Upload -->
+                        <div class="form-group multi-image-upload">
+                            <label>Product Images *</label>
+                            
+                            <div class="form-group">
+                                <label for="imageUrls">Image URLs (One per line)</label>
+                                <textarea id="imageUrls" class="form-control" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="images-preview-container" id="imagesPreview"></div>
+                            
+                            <div class="add-more-images" id="addMoreImagesBtn">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Add Images</span>
+                            </div>
+                            <input type="file" id="imageUpload" accept="image/*" multiple style="display: none;">
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <i class="fas fa-plus-circle"></i> <span id="submitBtnText">Add Product</span>
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="resetFormBtn">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                            <button type="button" class="btn btn-danger" id="cancelEditBtn" style="display: none;">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
                 
                 <!-- Existing Items -->
                 <div class="items-list">
@@ -786,6 +837,14 @@
             </div>
         </div>
     </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div style="text-align: center; color: white;">
+            <div class="loader"></div>
+            <p style="color: #ecf0f1;">Processing...</p>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
@@ -826,6 +885,13 @@
         const imageUrls = document.getElementById('imageUrls');
         const itemIdInput = document.getElementById('itemId');
 
+        // NEW: Toggle elements
+        const formContainer = document.getElementById('formContainer');
+        const toggleFormBtn = document.getElementById('toggleFormBtn');
+        const toggleIcon = document.getElementById('toggleIcon');
+        const toggleFormLink = document.getElementById('toggleFormLink');
+        const manageProductsLink = document.getElementById('manageProductsLink');
+
         const itemName = document.getElementById('itemName');
         const itemCategory = document.getElementById('itemCategory');
         const itemDescription = document.getElementById('itemDescription');
@@ -838,11 +904,51 @@
         let isEditMode = false;
         let currentEditId = null;
 
+        // NEW: Toggle form visibility function
+        function toggleForm(show) {
+            if (show) {
+                formContainer.classList.add('show');
+                toggleIcon.className = 'fas fa-chevron-up';
+                toggleFormBtn.innerHTML = '<i class="fas fa-minus-circle"></i> Close Form <i class="fas fa-chevron-up" id="toggleIcon"></i>';
+                toggleFormLink.classList.add('active');
+                manageProductsLink.classList.remove('active');
+            } else {
+                formContainer.classList.remove('show');
+                toggleIcon.className = 'fas fa-chevron-down';
+                toggleFormBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Add New Product <i class="fas fa-chevron-down" id="toggleIcon"></i>';
+                if (!isEditMode) {
+                    toggleFormLink.classList.remove('active');
+                    manageProductsLink.classList.add('active');
+                }
+            }
+        }
+
+        // NEW: Toggle button click
+        toggleFormBtn.addEventListener('click', () => {
+            if (formContainer.classList.contains('show')) {
+                toggleForm(false);
+            } else {
+                toggleForm(true);
+            }
+        });
+
+        // NEW: Toggle form link click
+        toggleFormLink.addEventListener('click', () => {
+            toggleForm(true);
+        });
+
+        // NEW: Manage products link click
+        manageProductsLink.addEventListener('click', () => {
+            toggleForm(false);
+            document.querySelector('.items-list').scrollIntoView({ behavior: 'smooth' });
+        });
+
         const urlParams = new URLSearchParams(window.location.search);
         const editId = urlParams.get('edit');
         if (editId) {
             isEditMode = true;
             currentEditId = editId;
+            toggleForm(true); // Show form when editing
             loadItemForEditing(editId);
         }
 
@@ -954,6 +1060,7 @@
                     editModeBadge.style.display = 'inline-block';
                     submitBtnText.textContent = 'Update Product';
                     cancelEditBtn.style.display = 'inline-flex';
+                    toggleForm(true); // Show form when editing
                     showMessage(`Editing: ${item.name}`, 'info');
                 }
             } catch (error) {
@@ -967,7 +1074,6 @@
             isEditMode = true;
             currentEditId = itemId;
             loadItemForEditing(itemId);
-            document.querySelector('.admin-panel').scrollIntoView({ behavior: 'smooth' });
         }
 
         function exitEditMode() {
@@ -996,6 +1102,7 @@
                     await addDoc(productsCollection, newItemData);
                     showMessage('Product added successfully!', 'success');
                     resetForm();
+                    toggleForm(false); // Hide form after adding
                 }
             } catch (error) {
                 showMessage(`Error: ${error.message}`, 'error');
@@ -1131,7 +1238,13 @@
             if (confirm('Cancel editing? All changes will be lost.')) exitEditMode();
         });
 
+        // Initialize: form starts HIDDEN
+        toggleForm(false);
+        
+        // Load items
         loadItems();
+        
+        // Welcome message
         setTimeout(() => {
             showMessage('Welcome to Trismart Admin', 'info');
         }, 1000);
