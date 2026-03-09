@@ -3,384 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warehouse - Weekly Stock View</title>
+    <title>Warehouse Inventory</title>
     <style>
+        :root {
+            --primary: #4361ee;
+            --primary-hover: #3a56d4;
+            --accent: #4cc9f0;
+            --danger: #f72585;
+            --danger-hover: #e5177b;
+            --warning: #f8961e;
+            --warning-hover: #e68a00;
+            --success: #2ecc71;
+            --success-hover: #27ae60;
+            --bg-dark: #ffffff;
+            --bg-medium: #f8f9fa;
+            --bg-light: #ffffff;
+            --bg-lighter: #f1f3f5;
+            --border: #dee2e6;
+            --text-light: #212529;
+            --text-fade: #6c757d;
+            --radius: 8px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #3b82f6;
-            --secondary: #64748b;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --bg-main: #f8fafc;
-            --bg-card: #ffffff;
-            --border: #e2e8f0;
-            --border-light: #f1f5f9;
-            --text: #0f172a;
-            --text-light: #475569;
-            --text-fade: #94a3b8;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --radius: 10px;
+        html, body {
+            height: 100%;
+            width: 100%;
+            background: var(--bg-dark);
+            color: var(--text-light);
         }
 
         body {
-            background: var(--bg-main);
-            color: var(--text);
             min-height: 100vh;
-            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            background: var(--bg-dark);
         }
 
         .container {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        .header {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .header h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .branch-name {
-            color: var(--text-light);
-            font-size: 1rem;
-            background: var(--border-light);
-            padding: 6px 12px;
-            border-radius: 20px;
-        }
-
-        .controls {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-
-        .search-box {
-            flex: 2;
-            min-width: 300px;
-            position: relative;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 10px 16px 10px 40px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            background: var(--bg-card);
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .search-box::before {
-            content: "🔍";
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-fade);
-            font-size: 1rem;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            transition: all 0.2s;
-            text-decoration: none;
-            font-size: 0.95rem;
-            white-space: nowrap;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-            border: none;
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-            border: none;
-        }
-
-        .btn-outline {
-            background: white;
-            border: 1px solid var(--border);
-            color: var(--text);
-        }
-
-        .btn-outline:hover {
-            background: var(--border-light);
-        }
-
-        /* Filter Section */
-        .filter-section {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-            display: none;
-        }
-
-        .filter-section.show {
-            display: block;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        .filter-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            align-items: end;
-        }
-
-        .filter-group {
+            width: 100vw;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 5px;
-        }
-
-        .filter-group label {
-            font-size: 0.85rem;
-            font-weight: 500;
+            background-color: var(--bg-dark);
             color: var(--text-light);
-        }
-
-        .filter-group input,
-        .filter-group select {
-            padding: 8px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            background: var(--bg-main);
-            font-size: 0.9rem;
-        }
-
-        .filter-actions {
-            display: flex;
-            gap: 10px;
-            grid-column: 1 / -1;
-            margin-top: 10px;
-        }
-
-        .filter-actions button {
-            flex: 1;
-        }
-
-        .active-filters {
-            background: var(--border-light);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Transfer Form */
-        .transfer-section {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-            display: none;
-        }
-
-        .transfer-section.show {
-            display: block;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .transfer-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            align-items: end;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .form-group label {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-light);
-        }
-
-        .form-group input,
-        .form-group select {
-            padding: 8px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            background: var(--bg-main);
-            font-size: 0.9rem;
-        }
-
-        .product-info {
-            grid-column: 1 / -1;
-            background: var(--border-light);
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        /* Items Grid - Fit 2 cards per screen */
-        .items-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-
-        /* Product Card - Compact */
-        .product-card {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
+            padding: 0;
+            margin: 0;
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: all 0.2s;
         }
 
-        .product-card:hover {
-            box-shadow: var(--shadow);
-        }
-
-        .product-header {
-            padding: 12px 16px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .product-title {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .product-code {
-            font-size: 0.75rem;
-            opacity: 0.9;
-            font-family: monospace;
-        }
-
-        .product-name {
-            font-size: 1rem;
+        h2 {
+            text-align: center;
+            color: var(--primary);
+            margin: 10px 0;
+            padding: 15px 0;
+            font-size: 1.5rem;
             font-weight: 600;
+            width: 100%;
+            background: linear-gradient(90deg, transparent 0%, #f1f3f5 50%, transparent 100%);
         }
 
-        .product-stats {
+        .header-actions {
             display: flex;
-            gap: 16px;
-            font-size: 0.8rem;
-            margin-top: 4px;
-            opacity: 0.95;
-        }
-
-        .product-stats span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* Three Dots Menu */
-        .menu-container {
-            position: relative;
-        }
-
-        .three-dots-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+            padding: 0 10px;
             justify-content: center;
         }
 
+        .search-bar {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: white;
+            color: var(--text-light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px #4361ee20;
+        }
+
+        button {
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: var(--radius);
+            transition: all 0.2s;
+            font-weight: 500;
+            font-size: 0.9rem;
+            min-width: 150px;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
+            transform: translateY(-1px);
+        }
+        .action-button {
+            background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
+        }
+        .action-button:hover {
+            background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
+            transform: translateY(-1px);
+        }
+
+        .transfer-form-container {
+            display: none;
+            margin-bottom: 15px;
+            width: 100%;
+            padding: 0 10px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .transfer-form {
+            background-color: white;
+            padding: 15px;
+            border-radius: var(--radius);
+            max-width: 500px;
+            margin: 0 auto;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        
+        .transfer-form h3 {
+            margin-bottom: 10px;
+            text-align: center;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .transfer-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-fade);
+            font-size: 0.9rem;
+        }
+
+        .toggle-transfer-btn {
+            width: 180px;
+            margin: 0 auto 15px auto;
+            background: var(--bg-lighter);
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .toggle-transfer-btn:hover {
+            background: var(--border);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .form-actions button {
+            flex: 1;
+        }
+
+        .product-info {
+            background-color: var(--bg-lighter);
+            padding: 10px;
+            border-radius: var(--radius);
+            margin-top: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .scroll-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            width: 100%;
+            padding: 0 10px 10px 10px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 550px;
+            border-collapse: collapse;
+            margin-top: 5px;
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        th {
+            background-color: var(--bg-lighter);
+            color: var(--primary);
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        tbody tr {
+            background-color: white;
+            transition: all 0.2s;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--bg-lighter);
+        }
+
+        tbody tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        /* --- Top Total Stock Value display (single line) --- */
+        .total-stock-header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: var(--bg-light);
+            padding: 10px 20px;
+            margin: 0 10px 10px auto;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            width: fit-content;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary);
+            background: linear-gradient(145deg, #ffffff, #f0f2f5);
+        }
+
+        .total-stock-header span {
+            margin-left: 10px;
+            background-color: var(--primary);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- Three dots menu --- */
+        .menu-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .three-dots-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            min-width: auto;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none;
+        }
+
         .three-dots-btn:hover {
-            background: rgba(255,255,255,0.3);
+            background-color: var(--bg-lighter);
+        }
+
+        .three-dots-btn .dot {
+            width: 4px;
+            height: 4px;
+            background-color: var(--text-fade);
+            border-radius: 50%;
+            margin: 1px;
         }
 
         .menu-dropdown {
             position: absolute;
             top: 100%;
             right: 0;
-            background: white;
-            border-radius: 6px;
+            background-color: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             box-shadow: var(--shadow);
-            min-width: 100px;
-            z-index: 100;
-            margin-top: 4px;
+            z-index: 1000;
+            min-width: 120px;
             display: none;
-            overflow: hidden;
         }
 
         .menu-dropdown.show {
@@ -388,273 +330,106 @@
         }
 
         .menu-item {
-            padding: 8px 12px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            padding: 8px 12px;
             cursor: pointer;
             font-size: 0.85rem;
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.2s;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
         }
 
         .menu-item:hover {
-            background: var(--border-light);
+            background-color: var(--bg-lighter);
         }
 
         .menu-item.edit {
             color: var(--primary);
-            border-bottom: 1px solid var(--border-light);
         }
 
         .menu-item.delete {
             color: var(--danger);
         }
 
-        /* History Table - Compact */
-        .history-section {
-            padding: 12px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-
-        .history-table th {
-            text-align: left;
-            padding: 8px 6px;
-            background: var(--border-light);
-            color: var(--text-light);
-            font-weight: 600;
-            border-bottom: 2px solid var(--border);
-            font-size: 0.8rem;
-            position: sticky;
-            top: 0;
-            background: var(--border-light);
-        }
-
-        .history-table td {
-            padding: 6px;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .history-table tbody tr:hover {
-            background: var(--border-light);
-        }
-
-        .week-badge {
-            background: var(--primary);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            display: inline-block;
-        }
-
-        .ord-value {
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        .iss-value {
-            color: var(--danger);
-            font-weight: 600;
-        }
-
-        .balance {
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .no-items {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 40px;
-            background: white;
-            border-radius: var(--radius);
-            color: var(--text-fade);
-        }
-
-        .no-history {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-fade);
-            font-size: 0.9rem;
-        }
-
-        /* Modal */
-        .modal {
+        /* --- Modal styles for Edit --- */
+        .modal-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.45);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 10000;
         }
-
-        .modal-content {
+        .modal {
             background: white;
             border-radius: var(--radius);
-            padding: 20px;
-            max-width: 350px;
-            width: 90%;
+            box-shadow: var(--shadow);
+            padding: 24px 20px 20px 20px;
+            min-width: 300px;
+            max-width: 95vw;
+            color: var(--text-light);
+            border: 1px solid var(--border);
         }
-
-        .modal-content h3 {
-            margin-bottom: 12px;
+        .modal h3 {
+            margin-bottom: 15px;
             color: var(--primary);
+            text-align: center;
             font-size: 1.1rem;
         }
-
-        .modal-content input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .modal-actions button {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
+        .modal label {
+            display: block;
+            margin-bottom: 5px;
             font-weight: 500;
+            color: var(--text-fade);
+            font-size: 0.85rem;
+        }
+        .modal input {
+            margin-bottom: 12px;
+            padding: 6px 10px;
             font-size: 0.9rem;
+        }
+        .modal .form-actions {
+            margin-top: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @media (max-width: 1200px) {
-            .items-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            h2 { font-size: 1.3rem; }
         }
-
         @media (max-width: 900px) {
-            .items-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .search-box {
-                min-width: 100%;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .transfer-form,
-            .filter-form {
-                grid-template-columns: 1fr;
-            }
-
-            .header {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
+            .scroll-container { padding: 0 8px 8px 8px; }
+            table { min-width: 500px; }
+            h2 { font-size: 1.2rem; }
+            th, td { padding: 8px 6px; }
+        }
+        @media (max-width: 700px) {
+            .header-actions { flex-direction: column; align-items: stretch; }
+            .search-bar { max-width: 100%; }
+            .form-grid { grid-template-columns: 1fr; }
+            table { min-width: 400px; }
+            th, td { padding: 6px 4px; font-size: 0.8rem; }
+            h2 { font-size: 1.1rem; padding: 12px 0; }
+        }
+        @media (max-width: 540px) {
+            .container, .scroll-container, .transfer-form-container { width: 100vw; }
+            .toggle-transfer-btn { width: 90%; }
+            .transfer-form { padding: 12px; }
+            table { min-width: 320px; }
+            h2 { font-size: 1rem; padding: 10px 0; }
+            .form-actions { flex-direction: column; }
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Warehouse Stock</h1>
-            <div class="branch-name" id="branchName">Loading...</div>
-        </div>
-
-        <div class="controls">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchInventory()">
-            </div>
-            <button class="btn btn-primary" onclick="toggleFilterForm()" id="toggleFilterBtn">
-                <span>📅</span> Filter
-            </button>
-            <button class="btn btn-success" onclick="toggleTransferForm()" id="toggleTransferBtn">
-                <span>🔄</span> Transfer
-            </button>
-            <a href="Restock.html" style="text-decoration: none;">
-                <button class="btn btn-warning">
-                    <span>📦</span> Restock
-                </button>
-            </a>
-            <div class="active-filters" id="activeFilters" style="display: none;">
-                <span id="filterRange"></span>
-                <button class="btn-outline" onclick="clearFilters()" style="padding: 2px 8px; font-size: 0.8rem;">✕</button>
-            </div>
-        </div>
-
-        <!-- Year & Week Filter Section -->
-        <div class="filter-section" id="filterSection">
-            <h3 style="margin-bottom: 15px; color: var(--primary); font-size: 1rem;">Filter by Year and Week</h3>
-            <div class="filter-form">
-                <div class="filter-group">
-                    <label>Year</label>
-                    <select id="filterYear">
-                        <option value="">All Years</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>From Week</label>
-                    <input type="number" id="fromWeek" min="1" max="53" placeholder="e.g., 10">
-                </div>
-                <div class="filter-group">
-                    <label>To Week</label>
-                    <input type="number" id="toWeek" min="1" max="53" placeholder="e.g., 20">
-                </div>
-                <div class="filter-actions">
-                    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
-                    <button class="btn btn-outline" onclick="toggleFilterForm()">Cancel</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="transfer-section" id="transferSection">
-            <h3 style="margin-bottom: 12px; color: var(--primary); font-size: 1rem;">Transfer Inventory</h3>
-            <form onsubmit="transferInventory(event);" class="transfer-form">
-                <div class="form-group">
-                    <label>Product Code</label>
-                    <input type="text" id="transferCode" required list="productCodes" placeholder="Enter code">
-                    <datalist id="productCodes"></datalist>
-                </div>
-                <div class="form-group">
-                    <label>Quantity</label>
-                    <input type="number" id="transferQuantity" min="1" required placeholder="Qty">
-                </div>
-                <div class="form-group">
-                    <label>Destination</label>
-                    <select id="transferBranch" required>
-                        <option value="">Select</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Go</button>
-                <div class="product-info" id="productInfo"></div>
-            </form>
-        </div>
-
-        <div class="items-grid" id="itemsGrid"></div>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
         import { 
@@ -678,7 +453,8 @@
             projectId: "trismartstores",
             storageBucket: "trismartstores.appspot.com",
             messagingSenderId: "416692703333",
-            appId: "1:416692703333:web:d4b60292621435c748f68c"
+            appId: "1:416692703333:web:d4b60292621435c748f68c",
+            measurementId: "G-NJPQ7L3QWJ"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -686,277 +462,71 @@
 
         const branchId = localStorage.getItem('branchId');
         if (!branchId) {
-            alert('Please select a branch first');
+            alert('Branch ID not found. Please select a branch from the dashboard.');
             window.location.href = 'dashboard.html';
         }
 
         let inventory = [];
-        let salesRecords = [];
-        let grvRecords = [];
         let unsubscribeInventory = null;
-        let unsubscribeSales = null;
-        let unsubscribeGRV = null;
         let editLock = false;
         let activeMenu = null;
 
-        // Filter settings with persistence
-        let filterYear = localStorage.getItem('filterYear') || '';
-        let fromWeek = parseInt(localStorage.getItem('fromWeek')) || 1;
-        let toWeek = parseInt(localStorage.getItem('toWeek')) || 53;
-
+        // BRANCH MAPPING
         const branches = {
             "makeni": { id: "makeni", name: "Kabanana Branch" },
             "kabana": { id: "kabana", name: "Makeni Branch" }
         };
 
+        // Get current branch display name
         function getCurrentBranchName() {
             return branches[branchId]?.name || branchId;
         }
 
-        // Function to get year and week from date
-        function getYearWeekFromDate(dateStr) {
-            try {
-                const date = new Date(dateStr);
-                const year = date.getFullYear();
-                const start = new Date(year, 0, 1);
-                const days = Math.floor((date - start) / (24 * 60 * 60 * 1000));
-                const week = Math.ceil((days + start.getDay() + 1) / 7);
-                return { year, week };
-            } catch (e) {
-                console.error("Error parsing date:", dateStr);
-                return { year: 0, week: 0 };
+        // Close any open dropdown menus
+        function closeAllMenus() {
+            if (activeMenu) {
+                activeMenu.classList.remove('show');
+                activeMenu = null;
             }
         }
 
-        // Get all years that exist in transactions
-        function getAllYears() {
-            const years = new Set();
-            years.add(new Date().getFullYear()); // Add current year
-            
-            salesRecords.forEach(sale => {
-                if (sale.date) {
-                    const { year } = getYearWeekFromDate(sale.date);
-                    if (year > 0) years.add(year);
-                }
-            });
-            
-            grvRecords.forEach(grv => {
-                if (grv.date) {
-                    const { year } = getYearWeekFromDate(grv.date);
-                    if (year > 0) years.add(year);
-                }
-            });
-            
-            return Array.from(years).sort((a, b) => b - a); // Sort descending (latest first)
-        }
-
-        // Get all weeks that exist in transactions
-        function getAllWeeks() {
-            const weeks = new Set();
-            
-            // Always include week 10 as starting point
-            weeks.add(10);
-            
-            salesRecords.forEach(sale => {
-                if (sale.date) {
-                    const { year, week } = getYearWeekFromDate(sale.date);
-                    // Only include if matches filter year or no year filter
-                    if (!filterYear || filterYear === '' || year === parseInt(filterYear)) {
-                        if (week >= 1) weeks.add(week);
-                    }
-                }
-            });
-            
-            grvRecords.forEach(grv => {
-                if (grv.date) {
-                    const { year, week } = getYearWeekFromDate(grv.date);
-                    // Only include if matches filter year or no year filter
-                    if (!filterYear || filterYear === '' || year === parseInt(filterYear)) {
-                        if (week >= 1) weeks.add(week);
-                    }
-                }
-            });
-            
-            return Array.from(weeks).sort((a, b) => a - b);
-        }
-
-        // Get filtered weeks based on fromWeek, toWeek, and year
-        function getFilteredWeeks() {
-            const allWeeks = getAllWeeks();
-            return allWeeks.filter(week => week >= fromWeek && week <= toWeek);
-        }
-
-        // Get transactions for a specific product and week
-        function getProductWeekData(productCode, week) {
-            let ord = 0;
-            let iss = 0;
-            
-            // Get sales (ISS) for this product and week
-            salesRecords.forEach(sale => {
-                if (sale.code === productCode && sale.date) {
-                    const { year, week: saleWeek } = getYearWeekFromDate(sale.date);
-                    // Only include if matches filter year or no year filter
-                    if ((!filterYear || filterYear === '' || year === parseInt(filterYear)) && saleWeek === week) {
-                        iss += sale.quantity || 0;
-                    }
-                }
-            });
-            
-            // Get GRV (ORD) for this product and week
-            grvRecords.forEach(grv => {
-                if (grv.items && Array.isArray(grv.items)) {
-                    grv.items.forEach(item => {
-                        if (item.code === productCode && grv.date) {
-                            const { year, week: grvWeek } = getYearWeekFromDate(grv.date);
-                            if ((!filterYear || filterYear === '' || year === parseInt(filterYear)) && grvWeek === week) {
-                                ord += item.quantity || 0;
-                            }
-                        }
-                    });
-                } else if (grv.code === productCode && grv.date) {
-                    const { year, week: grvWeek } = getYearWeekFromDate(grv.date);
-                    if ((!filterYear || filterYear === '' || year === parseInt(filterYear)) && grvWeek === week) {
-                        ord += grv.quantity || 0;
-                    }
-                }
-            });
-            
-            return { ord, iss };
-        }
-
-        // Populate year dropdown
-        function populateYearDropdown() {
-            const yearSelect = document.getElementById('filterYear');
-            const years = getAllYears();
-            
-            yearSelect.innerHTML = '<option value="">All Years</option>';
-            years.forEach(year => {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                if (filterYear && filterYear === year.toString()) {
-                    option.selected = true;
-                }
-                yearSelect.appendChild(option);
-            });
-        }
-
-        // Update filter display
-        function updateFilterDisplay() {
-            const activeFilters = document.getElementById('activeFilters');
-            const filterRange = document.getElementById('filterRange');
-            
-            let filterText = '';
-            if (filterYear) {
-                filterText = `Year ${filterYear}`;
-            }
-            if (fromWeek !== 1 || toWeek !== 53) {
-                if (filterText) filterText += ' - ';
-                filterText += `Weeks ${fromWeek}-${toWeek}`;
-            }
-            
-            if (filterText) {
-                activeFilters.style.display = 'inline-flex';
-                filterRange.textContent = filterText;
+        // Toggle transfer form visibility
+        function toggleTransferForm() {
+            const formContainer = document.querySelector('.transfer-form-container');
+            const toggleBtn = document.getElementById('toggleTransferBtn');
+            if (formContainer.style.display === 'none' || formContainer.style.display === '') {
+                formContainer.style.display = 'block';
+                toggleBtn.textContent = 'Hide Transfer Form';
             } else {
-                activeFilters.style.display = 'none';
+                formContainer.style.display = 'none';
+                toggleBtn.textContent = 'Show Transfer Form';
             }
-            
-            // Save to localStorage
-            localStorage.setItem('filterYear', filterYear);
-            localStorage.setItem('fromWeek', fromWeek);
-            localStorage.setItem('toWeek', toWeek);
         }
 
-        // Toggle filter form
-        window.toggleFilterForm = function() {
-            const section = document.getElementById('filterSection');
-            const btn = document.getElementById('toggleFilterBtn');
-            
-            // Populate year dropdown with current values
-            populateYearDropdown();
-            
-            // Set current values in inputs
-            document.getElementById('fromWeek').value = fromWeek;
-            document.getElementById('toWeek').value = toWeek;
-            
-            if (section.classList.contains('show')) {
-                section.classList.remove('show');
-                btn.innerHTML = '<span>📅</span> Filter';
-            } else {
-                section.classList.add('show');
-                btn.innerHTML = '<span>📅</span> Hide Filter';
-            }
-        };
-
-        // Apply filters
-        window.applyFilters = function() {
-            const newFilterYear = document.getElementById('filterYear').value;
-            const newFromWeek = parseInt(document.getElementById('fromWeek').value);
-            const newToWeek = parseInt(document.getElementById('toWeek').value);
-            
-            // Validate week inputs if provided
-            if (document.getElementById('fromWeek').value && (isNaN(newFromWeek) || newFromWeek < 1 || newFromWeek > 53)) {
-                alert('Please enter a valid From Week (1-53)');
-                return;
-            }
-            
-            if (document.getElementById('toWeek').value && (isNaN(newToWeek) || newToWeek < 1 || newToWeek > 53)) {
-                alert('Please enter a valid To Week (1-53)');
-                return;
-            }
-            
-            if (!isNaN(newFromWeek) && !isNaN(newToWeek) && newFromWeek > newToWeek) {
-                alert('From week must be less than or equal to To week');
-                return;
-            }
-            
-            filterYear = newFilterYear;
-            fromWeek = !isNaN(newFromWeek) ? newFromWeek : 1;
-            toWeek = !isNaN(newToWeek) ? newToWeek : 53;
-            
-            updateFilterDisplay();
-            toggleFilterForm(); // Hide the form
-            displayInventoryCards(); // Refresh display
-        };
-
-        // Clear filters
-        window.clearFilters = function() {
-            filterYear = '';
-            fromWeek = 1;
-            toWeek = 53;
-            updateFilterDisplay();
-            displayInventoryCards();
-        };
-
-        function setupListeners() {
-            // Load inventory
-            const inventoryQuery = query(collection(db, 'inventory'), where('branchId', '==', branchId));
+        function setupInventoryListener() {
+            const q = query(collection(db, 'inventory'), where('branchId', '==', branchId));
             if (unsubscribeInventory) unsubscribeInventory();
-            
-            unsubscribeInventory = onSnapshot(inventoryQuery, (snapshot) => {
+            unsubscribeInventory = onSnapshot(q, (snapshot) => {
                 inventory = snapshot.docs.map(doc => ({ 
                     id: doc.id, 
                     ...doc.data(),
                     stock: Number(doc.data().stock) || 0,
+                    // sold is still kept in DB but not displayed
                     price: Number(doc.data().price) || 0
                 }));
-                
                 inventory.sort((a, b) => a.code.localeCompare(b.code));
-                
-                // Update datalist for transfer
+                // Populate product codes datalist
                 const productCodesDatalist = document.getElementById('productCodes');
                 productCodesDatalist.innerHTML = '';
                 inventory.forEach(item => {
                     const option = document.createElement('option');
                     option.value = item.code;
-                    option.textContent = `${item.code} - ${item.name}`;
+                    option.setAttribute('data-name', item.name);
                     productCodesDatalist.appendChild(option);
                 });
-                
-                // Update branch dropdown
+                // Populate branch dropdown (only shows the opposite branch)
                 const branchSelect = document.getElementById('transferBranch');
-                branchSelect.innerHTML = '<option value="">Select</option>';
+                branchSelect.innerHTML = '<option value="">Select Destination Branch</option>';
                 const otherBranchId = branchId === "makeni" ? "kabana" : "makeni";
                 const otherBranch = branches[otherBranchId];
                 if (otherBranch) {
@@ -965,348 +535,76 @@
                     option.textContent = otherBranch.name;
                     branchSelect.appendChild(option);
                 }
-                
-                displayInventoryCards();
-            });
-
-            // Load sales records
-            const salesQuery = query(collection(db, 'sales'), where('branchId', '==', branchId));
-            if (unsubscribeSales) unsubscribeSales();
-            
-            unsubscribeSales = onSnapshot(salesQuery, (snapshot) => {
-                salesRecords = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                displayInventoryCards();
-            });
-
-            // Load GRV records
-            const grvQuery = query(collection(db, 'grvRecords'), where('branchId', '==', branchId));
-            if (unsubscribeGRV) unsubscribeGRV();
-            
-            unsubscribeGRV = onSnapshot(grvQuery, (snapshot) => {
-                grvRecords = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                displayInventoryCards();
+                displayInventory();
+            }, (error) => {
+                console.error("Inventory listener error:", error);
+                alert("Error loading inventory updates. Please refresh the page.");
             });
         }
 
-        function displayInventoryCards() {
-            const grid = document.getElementById('itemsGrid');
-            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-            
-            const filteredInventory = inventory.filter(item => 
-                item.name.toLowerCase().includes(searchTerm) || 
-                item.code.toLowerCase().includes(searchTerm)
-            );
-
-            if (filteredInventory.length === 0) {
-                grid.innerHTML = '<div class="no-items">No products found</div>';
-                return;
-            }
-
-            // Get filtered weeks based on current filter settings
-            const weeksToShow = getFilteredWeeks();
-            
-            grid.innerHTML = filteredInventory.map(item => {
-                const stockValue = item.price * item.stock;
-                
-                // Calculate total sales for this product (only for selected year if filter applied)
-                const totalSales = salesRecords
-                    .filter(sale => {
-                        if (sale.code !== item.code) return false;
-                        if (filterYear && sale.date) {
-                            const { year } = getYearWeekFromDate(sale.date);
-                            return year === parseInt(filterYear);
-                        }
-                        return true;
-                    })
-                    .reduce((total, sale) => total + (sale.quantity || 0), 0);
-                
-                // Build weekly data
-                let balance = 0;
-                const weeklyRows = [];
-                
-                weeksToShow.forEach((week, index) => {
-                    if (week === 10) {
-                        // Week 10 - show starting stock
-                        const startingStock = item.stock + totalSales;
-                        balance = startingStock;
-                        
-                        // ORD row for week 10
-                        weeklyRows.push({
-                            week: week,
-                            ord: startingStock,
-                            iss: '',
-                            bal: balance
-                        });
-                        
-                        // Get any sales in week 10
-                        const week10Data = getProductWeekData(item.code, 10);
-                        if (week10Data.iss > 0) {
-                            balance -= week10Data.iss;
-                            weeklyRows.push({
-                                week: week,
-                                ord: '',
-                                iss: week10Data.iss,
-                                bal: balance
-                            });
-                        }
-                    } else {
-                        // For weeks > 10, always show the week
-                        const weekData = getProductWeekData(item.code, week);
-                        
-                        if (weekData.ord > 0) {
-                            // If there are orders, add them first
-                            balance += weekData.ord;
-                            weeklyRows.push({
-                                week: week,
-                                ord: weekData.ord,
-                                iss: '',
-                                bal: balance
-                            });
-                        }
-                        
-                        if (weekData.iss > 0) {
-                            // If there are sales, subtract them
-                            balance -= weekData.iss;
-                            weeklyRows.push({
-                                week: week,
-                                ord: '',
-                                iss: weekData.iss,
-                                bal: balance
-                            });
-                        }
-                        
-                        // If no transactions this week, still show the week with blank ORD/ISS
-                        if (weekData.ord === 0 && weekData.iss === 0) {
-                            weeklyRows.push({
-                                week: week,
-                                ord: '',
-                                iss: '',
-                                bal: balance  // Balance stays same as previous week
-                            });
-                        }
-                    }
-                });
-
-                return `
-                    <div class="product-card" id="product-${item.id}">
-                        <div class="product-header">
-                            <div class="product-title">
-                                <span class="product-code">${item.code}</span>
-                                <span class="product-name">${item.name}</span>
-                                <div class="product-stats">
-                                    <span>💰 ${item.price}</span>
-                                    <span>📦 ${item.stock}</span>
-                                    <span>💵 ${stockValue}</span>
-                                </div>
-                            </div>
-                            <div class="menu-container">
-                                <button class="three-dots-btn" onclick="toggleMenu(event, '${item.id}')">
-                                    ⋮
-                                </button>
-                                <div class="menu-dropdown" id="menu-${item.id}">
-                                    <div class="menu-item edit" onclick="handleEdit('${item.id}')">
-                                        ✏️ Edit
-                                    </div>
-                                    <div class="menu-item delete" onclick="handleDelete('${item.id}')">
-                                        🗑️ Delete
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="history-section">
-                            <table class="history-table">
-                                <thead>
-                                    <tr>
-                                        <th>WEEK</th>
-                                        <th>ORD</th>
-                                        <th>ISS</th>
-                                        <th>BAL</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${weeklyRows.map(row => `
-                                        <tr>
-                                            <td>
-                                                <span class="week-badge">
-                                                    ${row.week}
-                                                </span>
-                                            </td>
-                                            <td class="ord-value">${row.ord}</td>
-                                            <td class="iss-value">${row.iss}</td>
-                                            <td class="balance">${row.bal}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            document.getElementById('branchName').textContent = getCurrentBranchName();
-            updateFilterDisplay();
-        }
-
-        // Toggle menu
-        window.toggleMenu = function(event, productId) {
-            event.stopPropagation();
-            const menu = document.getElementById(`menu-${productId}`);
-            
-            if (activeMenu && activeMenu !== menu) {
-                activeMenu.classList.remove('show');
-            }
-            
-            menu.classList.toggle('show');
-            activeMenu = menu.classList.contains('show') ? menu : null;
-        };
-
-        // Close menus when clicking outside
-        document.addEventListener('click', function() {
-            if (activeMenu) {
-                activeMenu.classList.remove('show');
-                activeMenu = null;
-            }
-        });
-
-        // Edit product
-        window.handleEdit = async function(productId) {
-            closeAllMenus();
-            
-            if (!editLock) {
-                const userPass = prompt("Enter password:");
-                if (userPass !== "1030") {
-                    alert("Incorrect password");
-                    return;
-                }
-                editLock = true;
-            }
-            
-            const item = inventory.find(i => i.id === productId);
-            if (!item) return;
-            
-            const newCode = prompt("New code:", item.code);
-            if (!newCode) return;
-            
-            const newName = prompt("New name:", item.name);
-            if (!newName) return;
-            
-            const newPrice = parseFloat(prompt("New price:", item.price));
-            if (isNaN(newPrice) || newPrice <= 0) return;
-            
-            try {
-                await updateDoc(doc(db, 'inventory', productId), {
-                    code: newCode.toUpperCase(),
-                    name: newName,
-                    price: newPrice
-                });
-                alert("Product updated!");
-                editLock = false;
-            } catch (error) {
-                alert("Error: " + error.message);
-            }
-        };
-
-        // Delete product
-        window.handleDelete = async function(productId) {
-            closeAllMenus();
-            
-            const item = inventory.find(i => i.id === productId);
-            if (!item) return;
-            
-            if (confirm(`Delete ${item.name}?`)) {
-                try {
-                    await deleteDoc(doc(db, 'inventory', productId));
-                    alert("Product deleted!");
-                } catch (error) {
-                    alert("Error: " + error.message);
-                }
-            }
-        };
-
-        // Search
-        window.searchInventory = function() {
-            displayInventoryCards();
-        };
-
-        // Toggle transfer form
-        window.toggleTransferForm = function() {
-            const section = document.getElementById('transferSection');
-            const btn = document.getElementById('toggleTransferBtn');
-            
-            if (section.classList.contains('show')) {
-                section.classList.remove('show');
-                btn.innerHTML = '<span>🔄</span> Transfer';
-            } else {
-                section.classList.add('show');
-                btn.innerHTML = '<span>🔄</span> Hide';
-            }
-        };
-
-        // Setup code autocomplete
         function setupCodeAutocomplete() {
             const codeInput = document.getElementById('transferCode');
             codeInput.addEventListener('input', function() {
                 const selectedCode = this.value.toUpperCase();
                 const item = inventory.find(item => item.code === selectedCode);
                 const infoDiv = document.getElementById('productInfo');
-                
                 if (item) {
                     infoDiv.innerHTML = `
-                        ${item.name} | Stock: ${item.stock} | Price: ${item.price}
+                        <p>Product: <strong>${item.name}</strong></p>
+                        <p>Current Stock: <strong>${item.stock}</strong></p>
+                        <p>Price: <strong>${item.price.toFixed(2)}</strong></p>
                     `;
                 } else {
-                    infoDiv.innerHTML = 'Product not found';
+                    infoDiv.innerHTML = '<p>Product not found in inventory</p>';
                 }
             });
         }
 
-        // Transfer inventory
-        window.transferInventory = async function(event) {
+        async function transferInventory(event) {
             event.preventDefault();
             const code = document.getElementById('transferCode').value.toUpperCase();
             const quantity = parseInt(document.getElementById('transferQuantity').value);
             const destinationBranchId = document.getElementById('transferBranch').value;
 
             if (!code || isNaN(quantity) || quantity <= 0 || !destinationBranchId) {
-                alert("Fill all fields");
+                alert("Please fill all fields with valid values.");
                 return;
             }
 
             const item = inventory.find(item => item.code === code);
             if (!item) {
-                alert("Product not found");
+                alert("Product not found in current branch inventory.");
                 return;
             }
-            
             if (item.stock < quantity) {
-                alert(`Not enough stock! Available: ${item.stock}`);
+                alert(`Not enough stock to transfer. Available: ${item.stock}`);
                 return;
             }
-            
             const destinationBranch = branches[destinationBranchId];
-            if (!confirm(`Transfer ${quantity} to ${destinationBranch.name}?`)) return;
+            if (!destinationBranch) {
+                alert("Invalid destination branch selected.");
+                return;
+            }
+            const confirmMessage = `Are you sure you want to transfer ${quantity} units of ${item.name} (${item.code}) to ${destinationBranch.name}?`;
+            if (!confirm(confirmMessage)) return;
 
             try {
                 await runTransaction(db, async (transaction) => {
                     const itemRef = doc(db, 'inventory', item.id);
+                    const itemDoc = await transaction.get(itemRef);
+                    const currentStock = itemDoc.data().stock;
+                    if (currentStock < quantity) {
+                        throw new Error(`Not enough stock to transfer. Current stock: ${currentStock}`);
+                    }
                     transaction.update(itemRef, { stock: increment(-quantity) });
-                    
                     const q = query(
                         collection(db, 'inventory'),
                         where('branchId', '==', destinationBranchId),
                         where('code', '==', code)
                     );
-                    const destSnapshot = await getDocs(q);
-                    
-                    if (!destSnapshot.empty) {
-                        const destItem = destSnapshot.docs[0];
+                    const destinationSnapshot = await getDocs(q);
+                    if (!destinationSnapshot.empty) {
+                        const destItem = destinationSnapshot.docs[0];
                         const destItemRef = doc(db, 'inventory', destItem.id);
                         transaction.update(destItemRef, { stock: increment(quantity) });
                     } else {
@@ -1320,31 +618,382 @@
                             branchId: destinationBranchId
                         });
                     }
+                    const transferRef = doc(collection(db, 'transfers'));
+                    transaction.set(transferRef, {
+                        date: new Date().toISOString(),
+                        productCode: code,
+                        productName: item.name,
+                        quantity: quantity,
+                        fromBranchId: branchId,
+                        fromBranchName: getCurrentBranchName(),
+                        toBranchId: destinationBranchId,
+                        toBranchName: destinationBranch.name,
+                        status: 'completed',
+                        timestamp: new Date()
+                    });
                 });
-                
-                alert("Transfer successful!");
+                alert(`Successfully transferred ${quantity} units of ${item.name} to ${destinationBranch.name}!`);
                 document.getElementById('transferForm').reset();
                 document.getElementById('productInfo').innerHTML = '';
-                toggleTransferForm();
             } catch (error) {
-                alert("Transfer failed: " + error.message);
-            }
-        };
-
-        function closeAllMenus() {
-            if (activeMenu) {
-                activeMenu.classList.remove('show');
-                activeMenu = null;
+                console.error("Transfer error:", error);
+                alert(`Transfer failed: ${error.message}`);
             }
         }
 
+        function displayInventory() {
+            const inventoryTableBody = document.querySelector('#inventoryTable tbody');
+            inventoryTableBody.innerHTML = '';
+            let totalStockValue = 0;
+            
+            inventory.forEach(item => {
+                const stockValue = item.price * item.stock;
+                totalStockValue += stockValue;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.code}</td>
+                    <td>${item.name}</td>
+                    <td>${item.price.toFixed(2)}</td>
+                    <td>${item.stock}</td>
+                    <td>
+                        <div class="menu-container">
+                            <button class="three-dots-btn" onclick="toggleMenu(event, '${item.id}')">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </button>
+                            <div class="menu-dropdown" id="menu-${item.id}">
+                                <div class="menu-item edit" onclick="handleEdit('${item.id}')">Edit</div>
+                                <div class="menu-item delete" onclick="handleDelete('${item.id}')">Delete</div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                inventoryTableBody.appendChild(row);
+            });
+
+            // Update the top total stock value display (single line)
+            const totalValueSpan = document.getElementById('totalStockValueDisplay');
+            if (totalValueSpan) {
+                totalValueSpan.textContent = totalStockValue.toFixed(2);
+            }
+
+            // No more total row inside table – only the top display remains
+        }
+
+        // Toggle dropdown menu
+        window.toggleMenu = function(event, productId) {
+            event.stopPropagation();
+            const menu = document.getElementById(`menu-${productId}`);
+            
+            // Close other open menus
+            if (activeMenu && activeMenu !== menu) {
+                activeMenu.classList.remove('show');
+            }
+            
+            // Toggle current menu
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+                activeMenu = null;
+            } else {
+                menu.classList.add('show');
+                activeMenu = menu;
+            }
+        };
+
+        // Handle edit action from menu
+        window.handleEdit = async function(productId) {
+            closeAllMenus();
+            if (!editLock) {
+                const userPass = prompt("Enter password to edit product details:");
+                if (userPass !== "1030") {
+                    alert("Incorrect password. Editing not allowed.");
+                    return;
+                }
+                editLock = true;
+            }
+            const item = inventory.find(i => i.id === productId);
+            if (!item) return;
+            showEditModal(item);
+        };
+
+        // Handle delete action from menu
+        window.handleDelete = async function(productId) {
+            closeAllMenus();
+            const item = inventory.find(i => i.id === productId);
+            if (!item) return;
+            
+            if (confirm(`Are you sure you want to delete "${item.name}" (${item.code})?`)) {
+                try {
+                    await deleteDoc(doc(db, 'inventory', productId));
+                    alert("Product deleted successfully!");
+                } catch (error) {
+                    alert("Failed to delete product: " + error.message);
+                }
+            }
+        };
+
+        async function addNewInventory() {
+            const code = prompt("Enter product code:");
+            if (!code) return;
+            const name = prompt("Enter product name:");
+            const price = parseFloat(prompt("Enter product price:"));
+            const stock = parseInt(prompt("Enter initial stock:"));
+            if (!name || isNaN(price) || isNaN(stock) || price <= 0 || stock < 0) {
+                alert("Invalid inputs. Please try again.");
+                return;
+            }
+            const existingItem = inventory.find(item => item.code.toUpperCase() === code.toUpperCase());
+            if (existingItem) {
+                alert("Product code already exists. Please use a different code.");
+                return;
+            }
+            try {
+                await addDoc(collection(db, 'inventory'), {
+                    code: code.toUpperCase(),
+                    name: name,
+                    price: price,
+                    stock: stock,
+                    sold: 0,
+                    branchId: branchId
+                });
+                alert("New inventory added successfully!");
+            } catch (error) {
+                console.error("Error adding new inventory:", error);
+                alert(`Error adding new inventory: ${error.message}`);
+            }
+        }
+
+        function searchInventory() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const filteredInventory = inventory.filter(item => 
+                item.name.toLowerCase().includes(searchInput) || 
+                item.code.toLowerCase().includes(searchInput)
+            );
+            displayFilteredInventory(filteredInventory);
+        }
+
+        function displayFilteredInventory(filteredInventory) {
+            const inventoryTableBody = document.querySelector('#inventoryTable tbody');
+            inventoryTableBody.innerHTML = '';
+            let totalStockValue = 0;
+            
+            filteredInventory.forEach(item => {
+                const stockValue = item.price * item.stock;
+                totalStockValue += stockValue;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.code}</td>
+                    <td>${item.name}</td>
+                    <td>${item.price.toFixed(2)}</td>
+                    <td>${item.stock}</td>
+                    <td>
+                        <div class="menu-container">
+                            <button class="three-dots-btn" onclick="toggleMenu(event, '${item.id}')">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </button>
+                            <div class="menu-dropdown" id="menu-${item.id}">
+                                <div class="menu-item edit" onclick="handleEdit('${item.id}')">Edit</div>
+                                <div class="menu-item delete" onclick="handleDelete('${item.id}')">Delete</div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                inventoryTableBody.appendChild(row);
+            });
+
+            // Update top total value
+            const totalValueSpan = document.getElementById('totalStockValueDisplay');
+            if (totalValueSpan) {
+                totalValueSpan.textContent = totalStockValue.toFixed(2);
+            }
+        }
+
+        // --- Edit Modal Functions ---
+        function closeModal() {
+            const modalBg = document.getElementById('modal-bg');
+            if (modalBg) modalBg.remove();
+        }
+
+        async function saveEditProduct(event, id) {
+            event.preventDefault();
+            const form = event.target;
+            const code = form.code.value.trim().toUpperCase();
+            const name = form.name.value.trim();
+            const price = parseFloat(form.price.value);
+            const stock = parseInt(form.stock.value);
+            if (!code || !name || isNaN(price) || price < 0 || isNaN(stock) || stock < 0) {
+                alert('Please enter valid values for all fields.');
+                return;
+            }
+            // Check for duplicate product code under this branch, if code changed
+            const current = inventory.find(i => i.id === id);
+            if (!current) { alert('Product not found.'); return; }
+            if (code !== current.code) {
+                const exists = inventory.some(i => i.code === code);
+                if (exists) {
+                    alert('Product code already exists! Please use another code.');
+                    return;
+                }
+            }
+            try {
+                await updateDoc(doc(db, 'inventory', id), {
+                    code: code,
+                    name: name,
+                    price: price,
+                    stock: stock
+                });
+                closeModal();
+                alert("Inventory product updated successfully!");
+            } catch (error) {
+                alert("Failed to update product: " + error.message);
+            }
+        }
+
+        function showEditModal(item) {
+            closeModal();
+            const modalBg = document.createElement('div');
+            modalBg.className = 'modal-bg';
+            modalBg.id = 'modal-bg';
+            modalBg.innerHTML = `
+                <div class="modal">
+                    <h3>Edit Product</h3>
+                    <form id="editProductForm">
+                        <label>Product Code</label>
+                        <input type="text" name="code" required value="${item.code}" />
+                        <label>Product Name</label>
+                        <input type="text" name="name" required value="${item.name}" />
+                        <label>Price</label>
+                        <input type="number" name="price" min="0" step="0.01" required value="${item.price}" />
+                        <label>Stock</label>
+                        <input type="number" name="stock" min="0" required value="${item.stock}" />
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Save</button>
+                            <button type="button" class="btn-danger" id="cancelModalBtn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modalBg);
+            document.getElementById('editProductForm').onsubmit = (e) => saveEditProduct(e, item.id);
+            document.getElementById('cancelModalBtn').onclick = closeModal;
+            modalBg.onclick = function(e){ if(e.target === modalBg) closeModal(); };
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function() {
+            closeAllMenus();
+        });
+
         // Initialize
-        window.onload = function() {
-            document.getElementById('branchName').textContent = getCurrentBranchName();
-            updateFilterDisplay();
-            setupListeners();
+        window.onload = async function() {
+            document.querySelector('h2.HEADER').textContent = `Warehouse - ${getCurrentBranchName()}`;
+            setupInventoryListener();
             setupCodeAutocomplete();
         };
+
+        window.transferInventory = transferInventory;
+        window.toggleTransferForm = toggleTransferForm;
+        window.addNewInventory = addNewInventory;
+        window.searchInventory = searchInventory;
     </script>
+</head>
+<body>
+    <div class="container">
+        <h2 class="HEADER">Warehouse</h2>
+
+        <!-- Single line total stock value at the top -->
+        <div class="total-stock-header">
+            Total Stock Value: <span id="totalStockValueDisplay">0.00</span>
+        </div>
+
+        <div class="buttons" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding: 0 10px;">
+            <input type="text" id="searchInput" class="search-bar" onkeyup="searchInventory()" placeholder="Search for products..">
+            <button class="action-button" onclick="addNewInventory()">Add New Inventory</button>
+            <a href="Restock.html"><button class="action-button">Go to Restock History</button></a>
+            <button id="toggleTransferBtn" class="toggle-transfer-btn" onclick="toggleTransferForm()">Show Transfer Form</button>
+        </div>
+        
+        <div class="transfer-form-container">
+            <div class="transfer-form">
+                <h3>Transfer Inventory</h3>
+                <form id="transferForm" onsubmit="transferInventory(event);">
+                    <div>
+                        <label for="transferCode">Product Code:</label>
+                        <input type="text" id="transferCode" required list="productCodes" placeholder="Enter product code">
+                        <datalist id="productCodes"></datalist>
+                        <div id="productInfo" style="margin-top: 10px; color: #4361ee;"></div>
+                    </div>
+                    <div>
+                        <label for="transferQuantity">Quantity:</label>
+                        <input type="number" id="transferQuantity" min="1" required placeholder="Enter quantity">
+                    </div>
+                    <div>
+                        <label for="transferBranch">Destination Branch:</label>
+                        <select id="transferBranch" required>
+                            <option value="">Select Destination Branch</option>
+                        </select>
+                    </div>
+                    <button type="submit">Transfer Inventory</button>
+                </form>
+            </div>
+        </div>
+        <div class="scroll-container">
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th>Product Code</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Current Stock</th>  <!-- Changed from "Stock" to "Current Stock" -->
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- rows added dynamically; no total row inside table -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
 </body>
 </html>
