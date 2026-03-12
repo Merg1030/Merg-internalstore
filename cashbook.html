@@ -1,178 +1,192 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Accounts</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Trismart · Accounts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <style>
-    body { font-family: 'Open Sans', Arial, sans-serif; background: #f4f7fa; margin: 0; }
-    .panel { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(44,62,80,0.04); margin: 40px auto; padding: 30px;}
-    .panel-heading { background: #666363; color: #fff; padding: 18px 24px; font-size: 1.16rem; font-weight: bold; border-radius: 8px 8px 0 0; margin: -30px -30px 24px -30px; }
-    #toggle-form-btn {
-      margin-bottom: 16px; background: #1976d2; color: #fff; border: none;
-      font-size: 15px; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;
-      transition: background 0.2s;
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #f5f5f3;
+      --white: #ffffff;
+      --black: #111111;
+      --ink: #1a1a1a;
+      --mid: #888884;
+      --border: #e0e0db;
+      --lighter: #f2f2ee;
+      --shadow: 0 1px 4px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 24px rgba(0,0,0,0.10);
+      --radius: 14px;
     }
-    #toggle-form-btn:hover { background: #125195; }
-    form { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: flex-end; margin-bottom: 22px; }
-    form label { font-weight: bold; }
-    form input, form select, form button { padding: 7px 12px; font-size: 15px; border-radius: 4px; border: 1px solid #bbb; }
-    form input[type="date"] { min-width: 140px;}
-    form input[type="text"], form input[type="number"], form select { min-width: 120px;}
-    form button { background: #1976d2; color: #fff; border: none; cursor: pointer; font-weight: bold;}
-    form button:hover { background: #0d47a1;}
-    .table-responsive { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; background: #fff; }
-    th, td { padding: 14px 12px; text-align: left; font-size: 15px; }
-    th { font-weight: 700; }
-    tr:nth-child(even) { background: #f7fafc; }
-    tr:hover { background: #eafaf1; }
-    .hide { display: none !important; }
-    .account-filter-bar {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-    .account-filter-btns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .account-btn {
-      background: #e3e8ef;
-      border: none;
-      color: #1976d2;
-      font-weight: bold;
-      padding: 8px 24px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 15px;
-      transition: background 0.18s, color 0.18s;
-      outline: none;
-    }
-    .account-btn.selected,
-    .account-btn:focus {
-      background: #1976d2;
-      color: #fff;
-    }
-    .filter-bar {
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-    .filter-bar label {
-      font-weight: bold;
-    }
-    #expense-form-error { color: #c00; font-size: 0.97rem; margin-bottom: 7px; }
-    .report-btn {
-      background: #4caf50;
-      color: #fff;
-      font-weight: bold;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 25px;
-      margin-bottom: 10px;
-      width: 200px;
-      display: block;
-    }
-    .report-btn:hover {
-      background: #388e3c;
-    }
-    @media (max-width: 900px) {
-      .panel { padding: 5vw 2vw; }
-      .account-filter-bar { flex-direction: column; gap: 10px; }
-      .account-filter-btns { gap: 8px; }
-      .filter-bar { flex-direction: column; gap: 8px; }
-      table th, table td { white-space: nowrap; }
-      .report-btn { width: 100%; }
-    }
-    .transfer-fields { display:none; }
-    .transfer-active .transfer-fields { display: block; }
-    .transfer-active .normal-fields { display: none; }
+    body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding: 40px 32px; }
+    @media (max-width: 600px) { body { padding: 24px 16px; } }
+    .app { max-width: 1200px; margin: 0 auto; }
+
+    /* TOPBAR */
+    .topbar { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 44px; padding-bottom: 24px; border-bottom: 1.5px solid var(--border); flex-wrap: wrap; gap: 20px; }
+    .brand-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+    .brand-title { font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 800; color: var(--black); letter-spacing: -0.02em; line-height: 1; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    /* PILL */
+    .pill { display: inline-flex; align-items: center; gap: 8px; background: var(--white); border: 1px solid var(--border); border-radius: 40px; padding: 9px 18px; font-family: 'Lato', sans-serif; font-size: 0.84rem; font-weight: 700; color: var(--mid); cursor: pointer; text-decoration: none; transition: all 0.18s; box-shadow: var(--shadow); }
+    .pill:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+    .pill.dark { background: var(--black); color: var(--white); border-color: var(--black); }
+    .pill.dark:hover { background: #333; border-color: #333; }
+    .pill input[type="month"] { background: transparent; border: none; font-family: 'Lato', sans-serif; font-size: 0.84rem; font-weight: 700; color: var(--ink); outline: none; cursor: pointer; }
+    .pill input[type="month"]::-webkit-calendar-picker-indicator { opacity: 0.35; cursor: pointer; }
+
+    /* SECTION LABEL */
+    .sec-label { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mid); margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* MODULE CARDS */
+    .modules-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 40px; }
+    @media (max-width: 900px) { .modules-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .modules-grid { grid-template-columns: 1fr; } }
+    .module-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 22px 50px; text-decoration: none; color: var(--ink); display: flex; flex-direction: column; gap: 10px; transition: all 0.2s; box-shadow: var(--shadow); position: relative; }
+    .module-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); border-color: var(--black); }
+    .mod-num { font-family: 'Playfair Display', serif; font-size: 0.72rem; font-weight: 700; color: #bbb; letter-spacing: 0.1em; }
+    .module-card h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--black); }
+    .module-card p { font-size: 0.8rem; color: var(--mid); line-height: 1.5; }
+    .mod-arrow { position: absolute; bottom: 18px; right: 18px; width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--mid); transition: all 0.2s; }
+    .module-card:hover .mod-arrow { background: var(--black); border-color: var(--black); color: var(--white); }
+
+    /* CHART PANEL */
+    .chart-panel { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; box-shadow: var(--shadow); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; }
+    .panel-head h2 { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--black); }
+    .chart-toggles { display: flex; gap: 8px; flex-wrap: wrap; }
+    .ds-toggle { display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px; border-radius: 30px; border: 1px solid var(--border); background: var(--white); font-family: 'Lato', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--ink); cursor: pointer; transition: all 0.18s; user-select: none; }
+    .ds-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; transition: background 0.18s; }
+    .ds-toggle.off { color: #ccc; border-color: #eee; }
+    .ds-toggle.off .ds-dot { background: #ddd !important; }
+    .ds-toggle:hover { border-color: var(--black); }
+
+    /* TABLE PANEL */
+    .table-panel { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); margin-bottom: 20px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    th { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mid); padding: 10px 14px; border-bottom: 1.5px solid var(--border); text-align: left; white-space: nowrap; }
+    td { padding: 13px 14px; border-bottom: 1px solid var(--lighter); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #fafaf8; }
+    .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge.credit { background: var(--lighter); color: var(--ink); border: 1px solid var(--border); }
+    .badge.debit { background: var(--black); color: var(--white); }
+    .badge.transfer { background: #e8e8e4; color: var(--ink); border: 1px solid var(--border); }
+    .empty-msg { text-align: center; padding: 48px; color: var(--mid); font-size: 0.9rem; }
+
+    /* MODAL OVERLAY */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 900; align-items: center; justify-content: center; }
+    .overlay.open { display: flex; }
+    .modal { background: var(--white); border-radius: 18px; padding: 36px; width: 90%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); animation: slideUp 0.22s ease; max-height: 92vh; overflow-y: auto; }
+    @keyframes slideUp { from { transform: translateY(28px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .modal-head h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 800; color: var(--black); }
+    .close-modal { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--white); cursor: pointer; font-size: 0.9rem; color: var(--mid); display: flex; align-items: center; justify-content: center; transition: all 0.18s; }
+    .close-modal:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mid); margin-bottom: 7px; }
+    .field input, .field select { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); font-family: 'Lato', sans-serif; font-size: 0.92rem; color: var(--ink); outline: none; transition: border-color 0.18s; }
+    .field input:focus, .field select:focus { border-color: var(--black); background: var(--white); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* transfer mode show/hide */
+    .transfer-only { display: none; }
+    .transfer-mode .transfer-only { display: block; }
+    .transfer-mode .normal-only { display: none; }
+
+    .submit-btn { width: 100%; padding: 14px; background: var(--black); color: var(--white); border: none; border-radius: 10px; font-family: 'Lato', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.18s; margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .submit-btn:hover { background: #333; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .form-error { color: #c00; font-size: 0.82rem; margin-bottom: 12px; min-height: 18px; }
+
+    /* TOAST */
+    .toast-wrap { position: fixed; bottom: 28px; right: 28px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast { background: var(--black); color: var(--white); border-radius: 10px; padding: 12px 20px; font-size: 0.88rem; font-weight: 700; box-shadow: var(--shadow-md); animation: toastIn 0.22s ease; display: flex; align-items: center; gap: 10px; }
+    .toast.err { background: #c00; }
+    @keyframes toastIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .fadeUp { animation: fadeUp 0.35s ease both; }
   </style>
 </head>
 <body>
-  <div class="panel">
-    <div class="panel-heading">Trismart Stores</div>
-    <button id="toggle-form-btn" type="button">Add transaction</button>
-    <form id="expense-form" autocomplete="off" class="hide">
-      <div>
-        <label for="exp-date">Date</label><br>
-        <input type="date" id="exp-date" required>
-      </div>
-      <div class="normal-fields">
-        <label for="exp-account">Account</label><br>
-        <select id="exp-account" required>
-          <option value="">--Choose--</option>
-          <option value="Cash account">Cash account</option>
-          <option value="Bank account">Bank account</option>
-          <option value="Airtel money">Airtel money</option>
-        </select>
-      </div>
-      <div class="normal-fields">
-        <label for="exp-reference">Reference</label><br>
-        <input type="text" id="exp-reference" required placeholder="Reference Number">
-      </div>
-      <div>
-        <label for="exp-type">Type</label><br>
-        <select id="exp-type" required>
-          <option value="">--Select Type--</option>
-          <option value="debit">Debit</option>
-          <option value="credit">Credit</option>
-          <option value="transfer">Transfer</option>
-        </select>
-      </div>
-      <div class="normal-fields">
-        <label for="exp-amount">Amount</label><br>
-        <input type="number" min="0" id="exp-amount" required placeholder="Amount">
-      </div>
-      <div class="transfer-fields">
-        <label for="exp-from">From Account</label><br>
-        <select id="exp-from">
-          <option value="">--From--</option>
-          <option value="Cash account">Cash account</option>
-          <option value="Bank account">Bank account</option>
-          <option value="Airtel money">Airtel money</option>
-        </select>
-        <label for="exp-to">To Account</label><br>
-        <select id="exp-to">
-          <option value="">--To--</option>
-          <option value="Cash account">Cash account</option>
-          <option value="Bank account">Bank account</option>
-          <option value="Airtel money">Airtel money</option>
-        </select>
-        <label for="exp-transfer-ref">Reference</label><br>
-        <input type="text" id="exp-transfer-ref" placeholder="Transfer Reference">
-        <label for="exp-transfer-amount">Amount</label><br>
-        <input type="number" min="0" id="exp-transfer-amount" placeholder="Amount">
-      </div>
-      <div style="align-self: flex-end;">
-        <button type="submit">Add</button>
-      </div>
-      <div id="expense-form-error"></div>
-    </form>
+<div class="app">
 
-    <div class="account-filter-bar">
-      <div class="account-filter-btns" id="account-btns">
-        <button type="button" class="account-btn" data-account="Cash account">Cash account</button>
-        <button type="button" class="account-btn" data-account="Bank account">Bank account</button>
-        <button type="button" class="account-btn" data-account="Airtel money">Airtel money</button>
+  <div class="topbar">
+    <div>
+      <div class="brand-eyebrow">Trismart Stores</div>
+      <div class="brand-title">Accounts</div>
+    </div>
+    <div class="topbar-right">
+      <div class="pill">
+        <i class="fas fa-calendar" style="font-size:0.75rem"></i>
+        <input type="month" id="globalMonth">
       </div>
-      <div class="filter-bar">
-        <label for="month-filter">Month:</label>
-        <input type="month" id="month-filter">
+      <button class="pill dark" onclick="openModal()">
+        <i class="fas fa-plus"></i> Add Transaction
+      </button>
+      <a href="admin.html" class="pill"><i class="fas fa-arrow-left"></i> Admin</a>
+    </div>
+  </div>
+
+  <div class="sec-label">Financial Modules</div>
+  <div class="modules-grid">
+    <a class="module-card fadeUp" href="total-sales.html" style="animation-delay:0s">
+      <div class="mod-num">01</div>
+      <h3>Total Sales</h3>
+      <p>Revenue records and full sales ledger.</p>
+      <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a class="module-card fadeUp" href="expenses-tracker.html" style="animation-delay:0.07s">
+      <div class="mod-num">02</div>
+      <h3>Expenses</h3>
+      <p>Outgoings, debits and spending records.</p>
+      <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a class="module-card fadeUp" href="profit-tracker.html" style="animation-delay:0.14s">
+      <div class="mod-num">03</div>
+      <h3>Profit Tracker</h3>
+      <p>Net performance and monthly margins.</p>
+      <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a class="module-card fadeUp" href="cashflow-tracker.html" style="animation-delay:0.21s">
+      <div class="mod-num">04</div>
+      <h3>Cash Flow</h3>
+      <p>Cash movement and account balances.</p>
+      <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
+    </a>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-panel fadeUp">
+    <div class="panel-head">
+      <h2>6-Month Overview</h2>
+      <div class="chart-toggles">
+        <button class="ds-toggle" id="tog0" onclick="toggleDS(0)">
+          <span class="ds-dot" style="background:#111"></span> Sales
+        </button>
+        <button class="ds-toggle" id="tog1" onclick="toggleDS(1)">
+          <span class="ds-dot" style="background:#bbb"></span> Expenses
+        </button>
       </div>
     </div>
+    <canvas id="overviewChart" height="130"></canvas>
+  </div>
 
-    <div class="table-responsive">
+  <!-- Recent Transactions -->
+  <div class="table-panel fadeUp">
+    <div class="panel-head">
+      <h2>Recent Transactions</h2>
+    </div>
+    <div class="table-wrap">
       <table>
         <thead>
           <tr>
@@ -180,399 +194,268 @@
             <th>Account</th>
             <th>Reference</th>
             <th>Type</th>
-            <th>Amount</th>
-            <th>Balance</th>
+            <th style="text-align:right">Amount</th>
           </tr>
         </thead>
-        <tbody id="expenses-table-body"></tbody>
+        <tbody id="recentTxns">
+          <tr><td colspan="5" class="empty-msg"><i class="fas fa-spinner fa-spin"></i></td></tr>
+        </tbody>
       </table>
     </div>
-    <button class="report-btn" id="download-pdf-btn" type="button">Download PDF Report</button>
   </div>
 
-  <!-- Firebase App and Analytics script -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-analytics.js";
-    const firebaseConfig = {
-      apiKey: "AIzaSyB-lm7Y3r1F6Vv8PKvY8glLabZDbJsHM1k",
-      authDomain: "trismartstores.firebaseapp.com",
-      projectId: "trismartstores",
-      storageBucket: "trismartstores.firebasestorage.app",
-      messagingSenderId: "416692703333",
-      appId: "1:416692703333:web:d4b60292621435c748f68c",
-      measurementId: "G-NJPQ7L3QWJ"
-    };
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-  </script>
-  <script type="module">
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      onSnapshot,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+</div>
 
-    const app = initializeApp({
-      apiKey: "AIzaSyB-lm7Y3r1F6Vv8PKvY8glLabZDbJsHM1k",
-      authDomain: "trismartstores.firebaseapp.com",
-      projectId: "trismartstores",
-      storageBucket: "trismartstores.firebasestorage.app",
-      messagingSenderId: "416692703333",
-      appId: "1:416692703333:web:d4b60292621435c748f68c",
-      measurementId: "G-NJPQ7L3QWJ"
-    });
+<!-- Toast -->
+<div class="toast-wrap" id="toastWrap"></div>
 
-    const db = getFirestore(app);
+<!-- Modal -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <h2>Add Transaction</h2>
+      <button class="close-modal" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="form-error" id="formErr"></div>
+    <form id="txnForm" onsubmit="submitTxn(event)" autocomplete="off">
 
-    function saveExpensesLocal(expenses) {
-      try { localStorage.setItem("expenses", JSON.stringify(expenses)); } catch {}
-    }
-    function getExpensesLocal() {
-      try { return JSON.parse(localStorage.getItem("expenses") || "[]"); } catch { return []; }
-    }
+      <div class="field-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="fDate" required>
+        </div>
+        <div class="field">
+          <label>Type</label>
+          <select id="fType" required onchange="onTypeChange()">
+            <option value="">— Select —</option>
+            <option value="credit">Credit (In)</option>
+            <option value="debit">Debit (Out)</option>
+            <option value="transfer">Transfer</option>
+          </select>
+        </div>
+      </div>
 
-    function setPersistedMonthFilter(month) {
-      localStorage.setItem("shop_month_filter", month || "");
-    }
-    function getPersistedMonthFilter() {
-      return localStorage.getItem("shop_month_filter") || "";
-    }
-    function setPersistedAccountFilter(account) {
-      localStorage.setItem("shop_account_filter", account ?? "");
-    }
-    function getPersistedAccountFilter() {
-      return localStorage.getItem("shop_account_filter") || "";
-    }
+      <!-- Normal fields -->
+      <div class="field normal-only">
+        <label>Account</label>
+        <select id="fAccount">
+          <option value="">— Choose Account —</option>
+          <option value="Cash account">Cash Account</option>
+          <option value="Bank account">Bank Account</option>
+          <option value="Airtel money">Airtel Money</option>
+        </select>
+      </div>
+      <div class="field normal-only">
+        <label>Reference</label>
+        <input type="text" id="fRef" placeholder="e.g. Invoice #001">
+      </div>
+      <div class="field normal-only">
+        <label>Amount (K)</label>
+        <input type="number" id="fAmount" min="0" step="0.01" placeholder="0.00">
+      </div>
 
-    const expenseForm = document.getElementById("expense-form");
-    const expensesTableBody = document.getElementById("expenses-table-body");
-    const formError = document.getElementById("expense-form-error");
-    const toggleFormBtn = document.getElementById("toggle-form-btn");
-    const accountSelect = document.getElementById("exp-account");
-    const referenceInput = document.getElementById("exp-reference");
-    const dateInput = document.getElementById("exp-date");
-    const typeSelect = document.getElementById("exp-type");
-    const amountInput = document.getElementById("exp-amount");
-    const fromSelect = document.getElementById("exp-from");
-    const toSelect = document.getElementById("exp-to");
-    const transferRefInput = document.getElementById("exp-transfer-ref");
-    const transferAmountInput = document.getElementById("exp-transfer-amount");
-    const accountBtns = document.querySelectorAll(".account-btn");
-    const monthFilter = document.getElementById("month-filter");
-    const downloadPdfBtn = document.getElementById("download-pdf-btn");
+      <!-- Transfer fields -->
+      <div class="field transfer-only">
+        <label>From Account</label>
+        <select id="fFrom">
+          <option value="">— From —</option>
+          <option value="Cash account">Cash Account</option>
+          <option value="Bank account">Bank Account</option>
+          <option value="Airtel money">Airtel Money</option>
+        </select>
+      </div>
+      <div class="field transfer-only">
+        <label>To Account</label>
+        <select id="fTo">
+          <option value="">— To —</option>
+          <option value="Cash account">Cash Account</option>
+          <option value="Bank account">Bank Account</option>
+          <option value="Airtel money">Airtel Money</option>
+        </select>
+      </div>
+      <div class="field transfer-only">
+        <label>Reference</label>
+        <input type="text" id="fTrRef" placeholder="Transfer reference">
+      </div>
+      <div class="field transfer-only">
+        <label>Amount (K)</label>
+        <input type="number" id="fTrAmount" min="0" step="0.01" placeholder="0.00">
+      </div>
 
-    let selectedMonth = getPersistedMonthFilter();
-    if (selectedMonth) {
-      monthFilter.value = selectedMonth;
-    } else {
-      const now = new Date();
-      const defaultMonth = now.toISOString().substring(0, 7);
-      monthFilter.value = defaultMonth;
-      selectedMonth = defaultMonth;
-      setPersistedMonthFilter(defaultMonth);
-    }
-    monthFilter.addEventListener("change", function() {
-      selectedMonth = monthFilter.value;
-      setPersistedMonthFilter(selectedMonth);
-      renderTable();
-    });
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <i class="fas fa-check"></i> Save Transaction
+      </button>
+    </form>
+  </div>
+</div>
 
-    let selectedAccount = getPersistedAccountFilter();
-    function updateAccountBtnStates() {
-      accountBtns.forEach(btn => {
-        if (btn.getAttribute("data-account") === selectedAccount) {
-          btn.classList.add("selected");
-        } else {
-          btn.classList.remove("selected");
-        }
-      });
-    }
-    updateAccountBtnStates();
-    accountBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        accountBtns.forEach(b => b.classList.remove("selected"));
-        btn.classList.add("selected");
-        selectedAccount = btn.getAttribute("data-account");
-        setPersistedAccountFilter(selectedAccount);
-        renderTable();
-      });
-    });
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyB-lm7Y3r1F6Vv8PKvY8glLabZDbJsHM1k",
+    authDomain: "trismartstores.firebaseapp.com",
+    projectId: "trismartstores",
+    storageBucket: "trismartstores.firebasestorage.app",
+    messagingSenderId: "416692703333",
+    appId: "1:416692703333:web:d4b60292621435c748f68c"
+  });
+  const db = firebase.firestore();
 
-    let formVisible = false;
-    expenseForm.classList.add("hide");
-    toggleFormBtn.textContent = "Add transaction";
-    toggleFormBtn.onclick = function() {
-      formVisible = !formVisible;
-      expenseForm.classList.toggle("hide", !formVisible);
-      toggleFormBtn.textContent = formVisible ? "Hide Form" : "Add transaction";
-    };
+  const monthInput = document.getElementById('globalMonth');
+  monthInput.value = localStorage.getItem('shop_month_filter') || new Date().toISOString().substring(0, 7);
+  monthInput.addEventListener('change', () => { localStorage.setItem('shop_month_filter', monthInput.value); render(); });
 
-    typeSelect.addEventListener("change", function() {
-      if (typeSelect.value === "transfer") {
-        expenseForm.classList.add("transfer-active");
-        accountSelect.required = false;
-        referenceInput.required = false;
-        amountInput.required = false;
-        fromSelect.required = true;
-        toSelect.required = true;
-        transferRefInput.required = true;
-        transferAmountInput.required = true;
+  // Toast
+  function toast(msg, isErr = false) {
+    const w = document.getElementById('toastWrap');
+    const el = document.createElement('div');
+    el.className = 'toast' + (isErr ? ' err' : '');
+    el.innerHTML = `<i class="fas fa-${isErr ? 'times-circle' : 'check-circle'}"></i> ${msg}`;
+    w.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  // Modal
+  function openModal() {
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('txnForm').reset();
+    document.getElementById('txnForm').classList.remove('transfer-mode');
+    document.getElementById('formErr').textContent = '';
+    document.getElementById('fDate').value = new Date().toISOString().substring(0, 10);
+  }
+  function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+  function overlayClick(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
+  function onTypeChange() {
+    const v = document.getElementById('fType').value;
+    document.getElementById('txnForm').classList.toggle('transfer-mode', v === 'transfer');
+  }
+
+  // Submit
+  async function submitTxn(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('formErr');
+    const btn = document.getElementById('submitBtn');
+    errEl.textContent = '';
+    const type = document.getElementById('fType').value;
+    const date = document.getElementById('fDate').value;
+    if (!type) { errEl.textContent = 'Please select a type.'; return; }
+    if (!date) { errEl.textContent = 'Please enter a date.';  return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+    try {
+      if (type === 'transfer') {
+        const from = document.getElementById('fFrom').value;
+        const to   = document.getElementById('fTo').value;
+        const ref  = document.getElementById('fTrRef').value.trim();
+        const amt  = parseFloat(document.getElementById('fTrAmount').value);
+        if (!from || !to) { errEl.textContent = 'Select both accounts.'; return; }
+        if (from === to)  { errEl.textContent = 'Accounts must differ.';  return; }
+        if (!ref)         { errEl.textContent = 'Enter a reference.';      return; }
+        if (!amt || amt <= 0) { errEl.textContent = 'Enter a valid amount.'; return; }
+        const grp = Date.now().toString(36);
+        const ts = firebase.firestore.FieldValue.serverTimestamp();
+        await db.collection('Shop transactions').add({ date, account: from, reference: ref + ' (To: ' + to + ')',   type: 'debit',  amount: amt, transferGroup: grp, createdAt: ts });
+        await db.collection('Shop transactions').add({ date, account: to,   reference: ref + ' (From: ' + from + ')', type: 'credit', amount: amt, transferGroup: grp, createdAt: ts });
       } else {
-        expenseForm.classList.remove("transfer-active");
-        accountSelect.required = true;
-        referenceInput.required = true;
-        amountInput.required = true;
-        fromSelect.required = false;
-        toSelect.required = false;
-        transferRefInput.required = false;
-        transferAmountInput.required = false;
+        const account = document.getElementById('fAccount').value;
+        const ref     = document.getElementById('fRef').value.trim();
+        const amt     = parseFloat(document.getElementById('fAmount').value);
+        if (!account)     { errEl.textContent = 'Select an account.';     return; }
+        if (!ref)         { errEl.textContent = 'Enter a reference.';     return; }
+        if (!amt || amt <= 0) { errEl.textContent = 'Enter a valid amount.'; return; }
+        await db.collection('Shop transactions').add({ date, account, reference: ref, type, amount: amt, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+      }
+      closeModal();
+      toast('Transaction saved!');
+    } catch (err) {
+      toast('Error: ' + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check"></i> Save Transaction';
+    }
+  }
+
+  // Data
+  let allTxns = [];
+  let chart = null;
+  const dsVisible = [true, true];
+
+  db.collection('Shop transactions').onSnapshot(snap => {
+    allTxns = [];
+    snap.forEach(d => { const tx = d.data(); allTxns.push({ ...tx, createdAt: tx.createdAt?.seconds ? tx.createdAt.seconds * 1000 : Date.now() }); });
+    render();
+  });
+
+  function fmtAmt(n) { return 'K ' + Math.abs(n).toLocaleString('en-ZM', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  function render() {
+    const m = monthInput.value;
+    const filtered = m ? allTxns.filter(t => t.date && t.date.substring(0, 7) === m) : allTxns;
+    const sorted = [...filtered].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)).slice(0, 25);
+    const tbody = document.getElementById('recentTxns');
+    if (!sorted.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-msg">No transactions for this period.</td></tr>';
+    } else {
+      tbody.innerHTML = sorted.map(t => `<tr>
+        <td>${t.date || '—'}</td>
+        <td>${t.account || '—'}</td>
+        <td>${t.reference || '—'}</td>
+        <td><span class="badge ${t.type || ''}">${t.type || '—'}</span></td>
+        <td style="text-align:right; font-weight:700">${t.type === 'credit' ? '+' : t.type === 'debit' ? '−' : ''}${fmtAmt(t.amount || 0)}</td>
+      </tr>`).join('');
+    }
+    buildChart();
+  }
+
+  function buildChart() {
+    const now = new Date();
+    const labels = [], salesData = [], expData = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = d.toISOString().substring(0, 7);
+      labels.push(d.toLocaleString('default', { month: 'short', year: '2-digit' }));
+      const ms = allTxns.filter(t => t.date && t.date.substring(0, 7) === key);
+      salesData.push(ms.filter(t => t.type === 'credit').reduce((s, t) => s + (t.amount || 0), 0));
+      expData.push(ms.filter(t => t.type === 'debit').reduce((s, t) => s + (t.amount || 0), 0));
+    }
+    const ctx = document.getElementById('overviewChart').getContext('2d');
+    if (chart) {
+      chart.data.labels = labels;
+      chart.data.datasets[0].data = salesData;
+      chart.data.datasets[1].data = expData;
+      chart.update(); return;
+    }
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Sales',    data: salesData, backgroundColor: '#111111', borderRadius: 6, borderSkipped: false },
+          { label: 'Expenses', data: expData,   backgroundColor: '#cccccc', borderRadius: 6, borderSkipped: false }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => ' K ' + c.parsed.y.toLocaleString('en-ZM', { minimumFractionDigits: 2 }) } }
+        },
+        scales: {
+          x: { ticks: { color: '#999', font: { family: 'Lato', size: 12 } }, grid: { display: false }, border: { display: false } },
+          y: { ticks: { color: '#aaa', font: { family: 'Lato', size: 11 }, callback: v => 'K' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v) }, grid: { color: '#f0f0ec' }, border: { display: false } }
+        }
       }
     });
+  }
 
-    expenseForm.onsubmit = async function(e) {
-      e.preventDefault();
-      formError.textContent = "";
-
-      if(typeSelect.value === "transfer") {
-        const dateVal = dateInput.value;
-        const fromVal = fromSelect.value;
-        const toVal = toSelect.value;
-        const transferRef = transferRefInput.value.trim();
-        const amountVal = parseFloat(transferAmountInput.value);
-
-        if (!fromVal || !toVal || fromVal === toVal || !dateVal || !transferRef || isNaN(amountVal) || amountVal < 0) {
-          formError.textContent = "Please fill all transfer fields correctly (cannot transfer to same account).";
-          return;
-        }
-
-        const transferGroup = Date.now() + Math.random().toString(36).substring(2,8);
-
-        const debitEntry = {
-          date: dateVal,
-          account: fromVal,
-          reference: transferRef + " (To: " + toVal + ")",
-          type: "debit",
-          amount: amountVal,
-          transferGroup,
-          createdAt: Date.now()
-        };
-        const creditEntry = {
-          date: dateVal,
-          account: toVal,
-          reference: transferRef + " (From: " + fromVal + ")",
-          type: "credit",
-          amount: amountVal,
-          transferGroup,
-          createdAt: Date.now() + 1
-        };
-
-        try {
-          await addDoc(collection(db, "Shop transactions"), { ...debitEntry, createdAt: serverTimestamp() });
-          await addDoc(collection(db, "Shop transactions"), { ...creditEntry, createdAt: serverTimestamp() });
-        } catch (err) {}
-
-        let allExpenses = getExpensesLocal();
-        allExpenses.push(debitEntry, creditEntry);
-        saveExpensesLocal(allExpenses);
-
-        expenseForm.reset();
-        expenseForm.classList.remove("transfer-active");
-        typeSelect.value = "";
-        renderTable();
-        return;
-      }
-
-      const dateVal = dateInput.value;
-      const accountVal = accountSelect.value;
-      const referenceVal = referenceInput.value.trim();
-      const typeVal = typeSelect.value;
-      const amountVal = parseFloat(amountInput.value);
-
-      if (!accountVal || !dateVal || !referenceVal || !typeVal || isNaN(amountVal) || amountVal < 0) {
-        formError.textContent = "Please fill all fields correctly.";
-        return;
-      }
-
-      const entry = {
-        date: dateVal,
-        account: accountVal,
-        reference: referenceVal,
-        type: typeVal,
-        amount: amountVal,
-        createdAt: Date.now()
-      };
-
-      try {
-        await addDoc(collection(db, "Shop transactions"), {
-          ...entry,
-          createdAt: serverTimestamp()
-        });
-      } catch (err) {}
-
-      let allExpenses = getExpensesLocal();
-      allExpenses.push(entry);
-      saveExpensesLocal(allExpenses);
-
-      expenseForm.reset();
-      renderTable();
-    };
-
-    let allExpenses = [];
-    function loadExpensesFromLocal() {
-      allExpenses = getExpensesLocal();
-      renderTable();
-    }
-    function loadExpensesFromFirestore() {
-      try {
-        onSnapshot(
-          collection(db, "Shop transactions"),
-          (snapshot) => {
-            allExpenses = [];
-            snapshot.forEach(docSnap => {
-              const exp = docSnap.data();
-              allExpenses.push({
-                ...exp,
-                createdAt: exp.createdAt?.seconds
-                  ? exp.createdAt.seconds * 1000
-                  : Date.now()
-              });
-            });
-            saveExpensesLocal(allExpenses);
-            renderTable();
-          },
-          (err) => {
-            loadExpensesFromLocal();
-          }
-        );
-      } catch {
-        loadExpensesFromLocal();
-      }
-    }
-    loadExpensesFromFirestore();
-
-    function renderTable(pdfMode = false) {
-      let filtered = [...allExpenses];
-
-      if (selectedAccount !== "") {
-        filtered = filtered.filter(exp => exp.account === selectedAccount);
-      }
-
-      if (selectedMonth) {
-        filtered = filtered.filter(exp =>
-          exp.date && exp.date.substring(0, 7) === selectedMonth
-        );
-      }
-
-      filtered.sort((a, b) => {
-        if ((a.date || "") === (b.date || "")) {
-          return ((a.createdAt || 0) - (b.createdAt || 0));
-        }
-        return (a.date || "") < (b.date || "") ? -1 : 1;
-      });
-
-      if (!pdfMode) {
-        expensesTableBody.innerHTML = "";
-      }
-
-      let balanceMap = {};
-      let rows = [];
-      filtered.forEach(exp => {
-        const acc = exp.account || "-";
-        if (!(acc in balanceMap)) balanceMap[acc] = 0;
-        if (exp.type === "credit") {
-          balanceMap[acc] += exp.amount || 0;
-        } else if (exp.type === "debit") {
-          balanceMap[acc] -= exp.amount || 0;
-        }
-        const rowArr = [
-          exp.date ? formatDate(exp.date) : "-",
-          acc,
-          exp.reference || "-",
-          (exp.type || "-"),
-          typeof exp.amount === "number"
-            ? (exp.type === "debit"
-                ? "- "
-                : "+ ") +
-              Math.abs(exp.amount).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              })
-            : "-",
-          balanceMap[acc].toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
-        ];
-        if (!pdfMode) {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${rowArr[0]}</td>
-            <td>${rowArr[1]}</td>
-            <td>${rowArr[2]}</td>
-            <td style="text-transform:capitalize">${rowArr[3]}</td>
-            <td>${rowArr[4]}</td>
-            <td>${rowArr[5]}</td>
-          `;
-          expensesTableBody.appendChild(tr);
-        }
-        rows.push(rowArr);
-      });
-
-      if (pdfMode) return rows;
-    }
-
-    downloadPdfBtn.addEventListener("click", function() {
-      const rows = renderTable(true);
-
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({
-        orientation: "landscape",
-        unit: "pt",
-        format: "a4"
-      });
-
-      const pageWidth = doc.internal.pageSize.getWidth();
-      doc.setFontSize(16);
-      doc.text("Trismart Stores", pageWidth/2, 35, {align: "center"});
-      doc.setFontSize(12);
-      doc.text("Shop Report" + (selectedMonth ? (" - " + selectedMonth) : ""), pageWidth/2, 55, {align: "center"});
-      doc.setFontSize(10);
-
-      const headers = [["Date", "Account", "Reference", "Type", "Amount", "Balance"]];
-      const data = headers.concat(rows);
-
-      let startY = 75;
-      let x = 20;
-      let colWidths = [80, 100, 140, 60, 80, 80];
-      data.forEach((row, rowIdx) => {
-        let colX = x;
-        row.forEach((cell, colIdx) => {
-          if (rowIdx === 0) doc.setFont(undefined, "bold");
-          else doc.setFont(undefined, "normal");
-          doc.text(String(cell), colX+2, startY+15);
-          colX += colWidths[colIdx];
-        });
-        startY += 22;
-        if (startY > doc.internal.pageSize.getHeight()-30) {
-          doc.addPage();
-          startY = 40;
-        }
-      });
-
-      doc.save("Shop_Report_" + (selectedMonth || "all") + ".pdf");
-    });
-
-    function formatDate(isoDateStr) {
-      const date = new Date(isoDateStr);
-      if (isNaN(date.getTime())) return isoDateStr;
-      const dd = String(date.getDate()).padStart(2, '0');
-      const mm = String(date.getMonth() + 1).padStart(2, '0');
-      const yyyy = date.getFullYear();
-      return `${dd}/${mm}/${yyyy}`;
-    }
-
-    renderTable();
-  </script>
+  function toggleDS(idx) {
+    if (!chart) return;
+    dsVisible[idx] = !dsVisible[idx];
+    chart.getDatasetMeta(idx).hidden = !dsVisible[idx];
+    chart.update();
+    document.getElementById('tog' + idx).classList.toggle('off', !dsVisible[idx]);
+  }
+</script>
 </body>
 </html>
