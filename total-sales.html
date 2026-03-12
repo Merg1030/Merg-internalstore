@@ -16,6 +16,7 @@
       --border: #1e1e2a; --border2: #2a2a3a;
       --accent: #6366f1; --accent2: #818cf8;
       --text: #f0f0f8; --muted: #6b7280; --muted2: #4b5563;
+      --green: #10b981; --red: #ef4444;
       --radius: 12px; --shadow: 0 4px 24px rgba(0,0,0,0.4);
     }
     * { scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
@@ -62,7 +63,6 @@
 
     .main { flex: 1; padding: 28px 32px; display: flex; flex-direction: column; gap: 0; }
 
-    /* NO SUMMARY CARDS - only the table */
     .table-card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius); overflow: hidden; flex: 1;
@@ -77,9 +77,7 @@
       padding: 13px 18px; text-align: left; border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
-    /* amount column (index 3) right align, balance column (index 4) right align */
-    th:nth-child(4), td:nth-child(4) { text-align: right; }
-    th:nth-child(5), td:nth-child(5) { text-align: right; }
+    th:last-child, td:last-child { text-align: center; width: 60px; }
     td {
       padding: 14px 18px; border-bottom: 1px solid var(--border);
       color: var(--text); vertical-align: middle;
@@ -89,11 +87,37 @@
     tbody tr:hover { background: var(--surface2); }
     .empty-row td { text-align: center; padding: 64px; color: var(--muted); font-size: 0.9rem; }
 
-    /* plain numbers – neutral */
     .amount-neutral { color: var(--text); font-weight: 500; font-family: 'DM Sans', sans-serif; }
     .amount-bal { color: var(--text); font-weight: 600; font-family: 'Syne', sans-serif; }
 
-    /* MODAL – extremely simple: date, description, reference, amount. NO TYPE SELECTOR */
+    /* Action Menu */
+    .action-btn {
+      background: transparent; border: none; color: var(--muted);
+      cursor: pointer; padding: 8px; border-radius: 6px;
+      transition: all 0.18s; font-size: 1rem;
+    }
+    .action-btn:hover { background: var(--border2); color: var(--text); }
+    .menu-container {
+      position: relative; display: inline-block;
+    }
+    .dropdown-menu {
+      position: absolute; right: 0; top: 100%; z-index: 1000;
+      background: var(--surface2); border: 1px solid var(--border2);
+      border-radius: 8px; padding: 6px; min-width: 120px;
+      box-shadow: var(--shadow); display: none;
+    }
+    .dropdown-menu.show { display: block; }
+    .menu-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      color: var(--text); text-decoration: none; font-size: 0.85rem;
+      border-radius: 6px; transition: all 0.18s; cursor: pointer;
+      border: none; background: transparent; width: 100%; text-align: left;
+    }
+    .menu-item:hover { background: var(--border2); }
+    .menu-item.delete:hover { color: var(--red); }
+    .menu-item i { width: 16px; font-size: 0.85rem; }
+
+    /* Modal */
     .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); z-index: 900; align-items: center; justify-content: center; }
     .overlay.open { display: flex; }
     .modal {
@@ -133,6 +157,13 @@
     }
     .save-btn:hover { background: var(--accent2); }
     .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .delete-btn {
+      background: var(--red); width: 100%; padding: 13px;
+      border: none; border-radius: 8px; color: white; font-weight: 700;
+      cursor: pointer; transition: opacity 0.18s; display: flex;
+      align-items: center; justify-content: center; gap: 8px;
+    }
+    .delete-btn:hover { opacity: 0.8; }
 
     .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
     .toast {
@@ -141,10 +172,13 @@
       display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow);
       animation: toastIn 0.22s ease;
     }
-    .toast.ok { border-color: var(--green); }
-    .toast.ok i { color: var(--green); }
-    .toast.err { border-color: var(--red); }
-    .toast.err i { color: var(--red); }
+    .toast i { font-size: 1rem; }
+    .toast.success { border-left: 4px solid var(--green); }
+    .toast.success i { color: var(--green); }
+    .toast.error { border-left: 4px solid var(--red); }
+    .toast.error i { color: var(--red); }
+    .toast.info { border-left: 4px solid var(--accent); }
+    .toast.info i { color: var(--accent); }
     @keyframes toastIn { from { transform: translateX(16px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   </style>
 </head>
@@ -159,16 +193,15 @@
   <div class="topbar-right">
     <div class="month-pick">
       <i class="fas fa-calendar-alt" style="font-size:0.75rem"></i>
-      <input type="month" id="monthPicker">
+      <input type="month" id="monthPicker" value="">
     </div>
     <button class="btn btn-ghost" id="pdfBtn"><i class="fas fa-file-pdf"></i> PDF</button>
-    <button class="btn btn-primary" onclick="openModal()"><i class="fas fa-plus"></i> Add Transaction</button>
+    <button class="btn btn-primary" onclick="openModal('add')"><i class="fas fa-plus"></i> Add Transaction</button>
   </div>
 </div>
 
 <!-- Main -->
 <div class="main">
-  <!-- Table Card – no summary row -->
   <div class="table-card">
     <div class="table-scroll">
       <table>
@@ -179,28 +212,30 @@
             <th>Reference</th>
             <th>Amount</th>
             <th>Balance</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="salesTbody">
-          <tr class="empty-row"><td colspan="5"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
+          <tr class="empty-row"><td colspan="6"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
+<!-- Toast Container -->
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- Modal – NO TYPE SELECTOR, only date/desc/ref/amount -->
+<!-- Add/Edit Transaction Modal -->
 <div class="overlay" id="overlay" onclick="bgClick(event)">
   <div class="modal">
     <div class="modal-head">
-      <h2>Add Transaction</h2>
+      <h2 id="modalTitle">Add Transaction</h2>
       <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
     </div>
     <div class="form-error" id="formErr"></div>
     <form onsubmit="saveTxn(event)" autocomplete="off">
+      <input type="hidden" id="fId">
       <div class="field">
         <label>Date</label>
         <input type="date" id="fDate" required>
@@ -215,7 +250,7 @@
       </div>
       <div class="field">
         <label>Amount</label>
-        <input type="number" id="fAmount" min="0" step="0.01" placeholder="0.00" required>
+        <input type="number" id="fAmount" min="0.01" step="0.01" placeholder="0.00" required>
       </div>
       <button type="submit" class="save-btn" id="saveBtn">
         <i class="fas fa-check"></i> Save Transaction
@@ -224,8 +259,23 @@
   </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
+<div class="overlay" id="deleteOverlay" onclick="if(event.target===this) closeDeleteModal()">
+  <div class="modal" style="max-width: 380px;">
+    <div class="modal-head">
+      <h2>Delete Transaction</h2>
+      <button class="close-btn" onclick="closeDeleteModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <p style="margin: 20px 0; color: var(--muted);">Are you sure you want to delete this transaction? This action cannot be undone.</p>
+    <input type="hidden" id="deleteId">
+    <button class="delete-btn" onclick="confirmDelete()">
+      <i class="fas fa-trash"></i> Delete Permanently
+    </button>
+  </div>
+</div>
+
 <script>
-  // Firebase init
+  // ==================== FIREBASE INIT ====================
   firebase.initializeApp({
     apiKey: "AIzaSyB-lm7Y3r1F6Vv8PKvY8glLabZDbJsHM1k",
     authDomain: "trismartstores.firebaseapp.com",
@@ -234,143 +284,434 @@
     messagingSenderId: "416692703333",
     appId: "1:416692703333:web:d4b60292621435c748f68c"
   });
+
   const db = firebase.firestore();
+  
+  // Enable persistence
+  db.enablePersistence().catch(err => {
+    if (err.code == 'failed-precondition') {
+      console.log('Multiple tabs open - persistence disabled');
+    }
+  });
 
-  // Month picker
-  const mp = document.getElementById('monthPicker');
-  mp.value = localStorage.getItem('shop_month_filter') || new Date().toISOString().substring(0,7);
-  mp.addEventListener('change', () => { localStorage.setItem('shop_month_filter', mp.value); render(); });
-
-  // Toast helper
-  function toast(msg, type='ok') {
-    const w = document.getElementById('toastWrap');
+  // ==================== GLOBAL VARIABLES ====================
+  let allTransactions = [];
+  let unsubscribeListener = null;
+  let currentEditId = null;
+  
+  // Month picker setup
+  const monthPicker = document.getElementById('monthPicker');
+  const today = new Date();
+  const currentMonth = today.toISOString().substring(0,7);
+  monthPicker.value = localStorage.getItem('sales_month_filter') || currentMonth;
+  
+  // ==================== HELPER FUNCTIONS ====================
+  function toast(message, type = 'success') {
+    const wrap = document.getElementById('toastWrap');
     const el = document.createElement('div');
     el.className = `toast ${type}`;
-    el.innerHTML = `<i class="fas fa-${type==='ok'?'check-circle':'times-circle'}"></i> ${msg}`;
-    w.appendChild(el);
-    setTimeout(() => el.remove(), 3500);
+    
+    let icon = 'check-circle';
+    if (type === 'error') icon = 'times-circle';
+    if (type === 'info') icon = 'info-circle';
+    
+    el.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
+    wrap.appendChild(el);
+    
+    setTimeout(() => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(16px)';
+      setTimeout(() => el.remove(), 300);
+    }, 3500);
   }
 
-  // Modal controls
-  function openModal() {
-    document.getElementById('overlay').classList.add('open');
+  function formatNumber(num) {
+    return Number(num).toLocaleString(undefined, { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    });
+  }
+
+  // Close all dropdowns when clicking outside
+  document.addEventListener('click', function() {
+    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+      menu.classList.remove('show');
+    });
+  });
+
+  // ==================== MODAL CONTROLS ====================
+  window.openModal = function(mode, id = null) {
+    const modal = document.getElementById('overlay');
+    const title = document.getElementById('modalTitle');
+    const form = document.querySelector('#overlay form');
+    
+    if (mode === 'add') {
+      title.textContent = 'Add Transaction';
+      document.getElementById('fId').value = '';
+      document.getElementById('fDate').value = new Date().toISOString().substring(0,10);
+      document.getElementById('fDesc').value = '';
+      document.getElementById('fRef').value = '';
+      document.getElementById('fAmount').value = '';
+    } else if (mode === 'edit' && id) {
+      title.textContent = 'Edit Transaction';
+      const transaction = allTransactions.find(t => t.id === id);
+      if (transaction) {
+        document.getElementById('fId').value = transaction.id;
+        document.getElementById('fDate').value = transaction.date || '';
+        document.getElementById('fDesc').value = transaction.description || '';
+        document.getElementById('fRef').value = transaction.reference || '';
+        document.getElementById('fAmount').value = transaction.amount || '';
+      }
+    }
+    
     document.getElementById('formErr').textContent = '';
-    document.getElementById('fDate').value = new Date().toISOString().substring(0,10);
-    document.getElementById('fDesc').value = '';
-    document.getElementById('fRef').value = '';
-    document.getElementById('fAmount').value = '';
+    modal.classList.add('open');
   }
-  function closeModal() { document.getElementById('overlay').classList.remove('open'); }
-  function bgClick(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
+  
+  window.closeModal = function() {
+    document.getElementById('overlay').classList.remove('open');
+  }
+  
+  window.bgClick = function(e) {
+    if (e.target === document.getElementById('overlay')) closeModal();
+  }
 
-  // Save transaction – no type, all entries increase balance (credit)
-  async function saveTxn(e) {
+  // ==================== DELETE CONTROLS ====================
+  window.openDeleteModal = function(id) {
+    document.getElementById('deleteId').value = id;
+    document.getElementById('deleteOverlay').classList.add('open');
+  }
+  
+  window.closeDeleteModal = function() {
+    document.getElementById('deleteOverlay').classList.remove('open');
+    document.getElementById('deleteId').value = '';
+  }
+  
+  window.confirmDelete = async function() {
+    const id = document.getElementById('deleteId').value;
+    if (!id) return;
+    
+    try {
+      await db.collection('Sales transactions').doc(id).delete();
+      toast('Transaction deleted successfully', 'success');
+      closeDeleteModal();
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast('Error: ' + error.message, 'error');
+    }
+  }
+
+  // ==================== SAVE TRANSACTION ====================
+  window.saveTxn = async function(e) {
     e.preventDefault();
+    
     const errEl = document.getElementById('formErr');
     const btn = document.getElementById('saveBtn');
     errEl.textContent = '';
 
-    const date   = document.getElementById('fDate').value;
-    const desc   = document.getElementById('fDesc').value.trim();
-    const ref    = document.getElementById('fRef').value.trim();
+    const id = document.getElementById('fId').value;
+    const date = document.getElementById('fDate').value;
+    const desc = document.getElementById('fDesc').value.trim();
+    const ref = document.getElementById('fRef').value.trim() || '—';
     const amount = parseFloat(document.getElementById('fAmount').value);
 
-    if (!date)                 { errEl.textContent = 'Select a date.'; return; }
-    if (!desc)                 { errEl.textContent = 'Enter a description.'; return; }
-    if (isNaN(amount)||amount<=0) { errEl.textContent = 'Enter a valid positive amount.'; return; }
+    // Validation
+    if (!date) { errEl.textContent = 'Please select a date.'; return; }
+    if (!desc) { errEl.textContent = 'Please enter a description.'; return; }
+    if (isNaN(amount) || amount <= 0) { errEl.textContent = 'Please enter a valid positive amount.'; return; }
 
+    // Disable button
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
 
     try {
-      // Store all transactions as 'credit' to increase balance.
-      // Collection name kept as 'Sales transactions' for backward compatibility.
-      await db.collection('Sales transactions').add({
-        date,
-        type: 'credit',        // forces balance to increase
+      const transactionData = {
+        date: date,
+        type: 'credit',
         description: desc,
         reference: ref,
-        amount,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+        amount: amount,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      if (id) {
+        // Update existing
+        await db.collection('Sales transactions').doc(id).update(transactionData);
+        toast('Transaction updated successfully!', 'success');
+      } else {
+        // Add new
+        transactionData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        await db.collection('Sales transactions').add(transactionData);
+        toast('Transaction saved successfully!', 'success');
+      }
+      
       closeModal();
-      toast('Transaction saved!');
-    } catch(err) {
-      toast(err.message, 'err');
+      
+    } catch (error) {
+      console.error('Save error:', error);
+      toast('Error: ' + error.message, 'error');
+      errEl.textContent = error.message;
     } finally {
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-check"></i> Save Transaction';
     }
   }
 
-  // Real-time data
-  let allTxns = [];
-  db.collection('Sales transactions').onSnapshot(snap => {
-    allTxns = [];
-    snap.forEach(d => {
-      const tx = d.data();
-      allTxns.push({ id: d.id, ...tx, createdAt: tx.createdAt?.seconds ? tx.createdAt.seconds*1000 : Date.now() });
+  // ==================== TOGGLE DROPDOWN ====================
+  window.toggleMenu = function(event, id) {
+    event.stopPropagation();
+    
+    // Close all other menus
+    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+      if (menu !== event.currentTarget.nextElementSibling) {
+        menu.classList.remove('show');
+      }
     });
-    render();
-  });
-
-  // Plain number formatter (no K, no sign)
-  function fmtPlain(n) {
-    return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    
+    // Toggle this menu
+    const menu = event.currentTarget.nextElementSibling;
+    menu.classList.toggle('show');
   }
 
-  // Render table
-  function render() {
-    const month = mp.value;
-    let filtered = month ? allTxns.filter(t => t.date && t.date.substring(0,7) === month) : [...allTxns];
-    // sort by date ascending
-    filtered.sort((a,b) => (a.date||'').localeCompare(b.date||''));
-
-    let balance = 0;
+  // ==================== RENDER TABLE ====================
+  function renderTable() {
     const tbody = document.getElementById('salesTbody');
+    const selectedMonth = monthPicker.value;
+    
+    // Filter by month
+    let filtered = allTransactions;
+    if (selectedMonth) {
+      filtered = allTransactions.filter(t => 
+        t.date && t.date.substring(0,7) === selectedMonth
+      );
+    }
+    
+    // Sort by date (oldest first for running balance)
+    filtered.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
-    if (!filtered.length) {
-      tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No transactions for this period.</td></tr>';
-    } else {
-      const rows = [];
-      for (let t of filtered) {
-        // if by any chance a debit exists, respect it, but normally all are credit
-        if (t.type === 'credit') balance += (t.amount || 0);
-        else balance -= (t.amount || 0);
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="6">
+        <i class="fas fa-inbox"></i> No transactions for ${selectedMonth || 'this period'}
+      </td></tr>`;
+      return;
+    }
 
-        rows.push(`<tr>
+    // Calculate running balance
+    let balance = 0;
+    const rows = [];
+
+    filtered.forEach(t => {
+      // Calculate balance (all credits add)
+      if (t.type === 'credit') balance += (t.amount || 0);
+      else balance -= (t.amount || 0);
+
+      rows.push(`
+        <tr>
           <td>${t.date || '—'}</td>
           <td>${t.description || '—'}</td>
           <td style="color:var(--muted)">${t.reference || '—'}</td>
-          <td class="amount-neutral">${fmtPlain(t.amount || 0)}</td>
-          <td class="amount-bal">${fmtPlain(balance)}</td>
-        </tr>`);
-      }
-      tbody.innerHTML = rows.join('');
-    }
+          <td class="amount-neutral">${formatNumber(t.amount || 0)}</td>
+          <td class="amount-bal">${formatNumber(balance)}</td>
+          <td style="text-align: center;">
+            <div class="menu-container" onclick="event.stopPropagation()">
+              <button class="action-btn" onclick="toggleMenu(event, '${t.id}')">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+              <div class="dropdown-menu">
+                <button class="menu-item" onclick="openModal('edit', '${t.id}'); event.stopPropagation();">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="menu-item delete" onclick="openDeleteModal('${t.id}'); event.stopPropagation();">
+                  <i class="fas fa-trash"></i> Delete
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `);
+    });
 
-    // No summary cards to update
+    tbody.innerHTML = rows.join('');
   }
 
-  // PDF export (uses table text content)
+  // ==================== SETUP FIREBASE LISTENER ====================
+  function setupListener() {
+    // Show loading
+    document.getElementById('salesTbody').innerHTML = 
+      '<tr class="empty-row"><td colspan="6"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+    
+    // Clear existing listener
+    if (unsubscribeListener) {
+      unsubscribeListener();
+    }
+    
+    // Set up real-time listener
+    unsubscribeListener = db.collection('Sales transactions')
+      .orderBy('date', 'desc')
+      .onSnapshot(snapshot => {
+        
+        // Clear and rebuild transactions array
+        allTransactions = [];
+        
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          
+          // Handle timestamps
+          let createdAt = Date.now();
+          if (data.createdAt && data.createdAt.seconds) {
+            createdAt = data.createdAt.seconds * 1000;
+          }
+          
+          allTransactions.push({
+            id: doc.id,
+            ...data,
+            createdAt: createdAt
+          });
+        });
+        
+        // Update UI
+        renderTable();
+        
+      }, error => {
+        console.error('Listener error:', error);
+        document.getElementById('salesTbody').innerHTML = 
+          `<tr class="empty-row"><td colspan="6">
+            <i class="fas fa-exclamation-triangle" style="color:#ef4444"></i> 
+            Error: ${error.message}
+          </td></tr>`;
+        toast('Sync error: ' + error.message, 'error');
+      });
+  }
+
+  // ==================== MONTH PICKER CHANGE ====================
+  monthPicker.addEventListener('change', () => {
+    localStorage.setItem('sales_month_filter', monthPicker.value);
+    renderTable();
+  });
+
+  // ==================== PDF EXPORT ====================
   document.getElementById('pdfBtn').addEventListener('click', () => {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({orientation:'landscape', unit:'pt', format:'a4'});
-    const pw = doc.internal.pageSize.getWidth();
-    doc.setFontSize(15); doc.text('Trismart Stores — Total Sales', pw/2, 35, {align:'center'});
-    doc.setFontSize(10); doc.text('Month: '+(mp.value||'All'), pw/2, 52, {align:'center'});
-    const headers = ['Date','Description','Reference','Amount','Balance'];
-    const cols    = [80, 180, 120, 90, 90];
-    const rows = [];
-    document.querySelectorAll('#salesTbody tr').forEach(tr => {
-      if (tr.classList.contains('empty-row')) return;
-      rows.push([...tr.querySelectorAll('td')].map(td => td.textContent.trim()));
-    });
-    let y=70, x=20;
-    doc.setFont(undefined,'bold');
-    headers.forEach((h,i)=>{ doc.text(h, x+2, y+14); x+=cols[i]; }); y+=22; doc.setFont(undefined,'normal');
-    rows.forEach(row=>{ let rx=20; row.forEach((c,i)=>{ doc.text(c.substring(0,30), rx+2, y+14); rx+=cols[i]; }); y+=20; if(y>doc.internal.pageSize.getHeight()-30){doc.addPage();y=40;} });
-    doc.save('Trismart_Sales_'+(mp.value||'all')+'.pdf');
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'pt',
+        format: 'a4'
+      });
+      
+      const pageWidth = doc.internal.pageSize.getWidth();
+      
+      // Title
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Trismart Stores — Total Sales', pageWidth/2, 40, { align: 'center' });
+      
+      // Month info
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Month: ${monthPicker.value || 'All Time'}`, pageWidth/2, 60, { align: 'center' });
+      
+      // Table headers
+      const headers = ['Date', 'Description', 'Reference', 'Amount', 'Balance'];
+      const colWidths = [90, 200, 130, 90, 90];
+      let y = 100;
+      let x = 20;
+      
+      // Draw headers
+      doc.setFillColor(22, 22, 31);
+      doc.rect(x, y-10, colWidths.reduce((a,b) => a+b, 0), 20, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      
+      headers.forEach((header, i) => {
+        doc.text(header, x + 5, y);
+        x += colWidths[i];
+      });
+      
+      // Reset for data
+      y += 20;
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      
+      // Get current filtered data
+      const selectedMonth = monthPicker.value;
+      let filtered = allTransactions;
+      if (selectedMonth) {
+        filtered = allTransactions.filter(t => 
+          t.date && t.date.substring(0,7) === selectedMonth
+        );
+      }
+      filtered.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+      
+      // Calculate running balance for PDF
+      let balance = 0;
+      
+      // Draw data rows
+      filtered.forEach(t => {
+        if (t.type === 'credit') balance += (t.amount || 0);
+        else balance -= (t.amount || 0);
+        
+        x = 20;
+        const rowData = [
+          t.date || '—',
+          (t.description || '—').substring(0, 35),
+          (t.reference || '—').substring(0, 20),
+          formatNumber(t.amount || 0),
+          formatNumber(balance)
+        ];
+        
+        rowData.forEach((text, i) => {
+          doc.text(text.toString(), x + 5, y);
+          x += colWidths[i];
+        });
+        
+        y += 20;
+        
+        // Add new page if needed
+        if (y > 500) {
+          doc.addPage();
+          y = 40;
+          
+          // Redraw headers on new page
+          x = 20;
+          doc.setFillColor(22, 22, 31);
+          doc.rect(x, y-10, colWidths.reduce((a,b) => a+b, 0), 20, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFont('helvetica', 'bold');
+          
+          headers.forEach((header, i) => {
+            doc.text(header, x + 5, y);
+            x += colWidths[i];
+          });
+          
+          y += 20;
+          doc.setTextColor(0, 0, 0);
+          doc.setFont('helvetica', 'normal');
+        }
+      });
+      
+      // Save PDF
+      doc.save(`Trismart_Sales_${monthPicker.value || 'all'}.pdf`);
+      toast('PDF generated successfully!', 'success');
+      
+    } catch (error) {
+      console.error('PDF error:', error);
+      toast('Error generating PDF: ' + error.message, 'error');
+    }
+  });
+
+  // ==================== INITIAL SETUP ====================
+  document.addEventListener('DOMContentLoaded', () => {
+    setupListener();
+  });
+
+  // ==================== CLEANUP ====================
+  window.addEventListener('beforeunload', () => {
+    if (unsubscribeListener) {
+      unsubscribeListener();
+    }
   });
 </script>
 </body>
