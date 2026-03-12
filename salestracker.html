@@ -3,762 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Terminal with Discounts</title>
+    <title>Product Sales History</title>
     <style>
-        :root {
-            --primary: #4361ee;
-            --primary-hover: #3a56d4;
-            --accent: #4cc9f0;
-            --danger: #f72585;
-            --danger-hover: #e5177b;
-            --warning: #f8961e;
-            --warning-hover: #e68a00;
-            --success: #2ecc71;
-            --success-hover: #27ae60;
-            --discount: #9c27b0;
-            --discount-hover: #7b1fa2;
-            --bg-dark: #ffffff;
-            --bg-medium: #f8f9fa;
-            --bg-light: #ffffff;
-            --bg-lighter: #f1f3f5;
-            --border: #dee2e6;
-            --text-light: #212529;
-            --text-fade: #6c757d;
-            --radius: 8px;
-            --shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        html, body {
-            height: 100%;
-            width: 100%;
-            background: var(--bg-dark);
-            color: var(--text-light);
-            font-size: 14px;
+            font-family: Arial, sans-serif;
         }
 
         body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: stretch;
-            padding: 0;
-            background: var(--bg-dark);
+            background-color: #121212;
+            color: #ffffff;
         }
 
         .container {
-            height: 100vh;
-            background-color: var(--bg-dark);
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            width: 100vw;
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: #1e1e2d;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
             text-align: center;
-            margin: 8px 0;
-            padding: 15px 0 8px 0;
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--primary);
-            width: 100%;
-            letter-spacing: 0.3px;
-            background: linear-gradient(90deg, transparent 0%, #f1f3f5 50%, transparent 100%);
+            color: #f5c242;
+            margin-bottom: 20px;
         }
 
-        .header-info {
+        .filter-container {
             display: flex;
-            justify-content: flex-end;
-            margin-bottom: 12px;
-            width: 100%;
-            padding: 0 12px;
-        }
-
-        .header-info-container {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .total-sales {
-            padding: 10px 16px;
-            background-color: var(--bg-lighter);
-            border-radius: var(--radius);
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-align: center;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            color: var(--success);
-        }
-
-        .btn-warning {
-            background: linear-gradient(90deg, var(--warning) 0%, #f9c74f 100%);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius);
-            padding: 10px 16px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            transition: all 0.2s;
-        }
-        .btn-warning:hover {
-            background: linear-gradient(90deg, #f9c74f 0%, var(--warning) 100%);
-            transform: translateY(-1px);
-        }
-
-        .btn-discount {
-            background: linear-gradient(90deg, var(--discount) 0%, #ba68c8 100%);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius);
-            padding: 10px 16px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            transition: all 0.2s;
-        }
-        .btn-discount:hover {
-            background: linear-gradient(90deg, #ba68c8 0%, var(--discount) 100%);
-            transform: translateY(-1px);
-        }
-
-        .main-controls {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
             flex-wrap: wrap;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 0 12px;
-            margin: 0 auto;
         }
 
-        .control-group {
-            flex: 1;
-            background-color: white;
-            padding: 16px;
-            border-radius: var(--radius);
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-        }
-
-        .control-group h3 {
-            margin-bottom: 12px;
-            color: var(--primary);
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        input, select {
-            padding: 10px 12px;
-            background-color: white;
-            color: var(--text-light);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px #4361ee20;
-        }
-
-        button {
-            color: #fff;
-            border: none;
-            padding: 10px 16px;
-            cursor: pointer;
-            border-radius: var(--radius);
-            transition: all 0.2s;
-            font-weight: 600;
-            font-size: 0.9rem;
-            width: 100%;
-            margin-top: 6px;
-            box-shadow: var(--shadow);
-        }
-        .btn-primary {
-            background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
-        }
-        .btn-primary:hover {
-            background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
-            transform: translateY(-1px);
-        }
-        .btn-danger {
-            background: linear-gradient(90deg, var(--danger) 0%, #f7258570 100%);
-        }
-        .btn-danger:hover {
-            background: linear-gradient(90deg, #f7258570 0%, var(--danger) 100%);
-            transform: translateY(-1px);
-        }
-
-        .data-container {
-            flex-grow: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            background-color: white;
-            border-radius: var(--radius);
-            padding: 12px;
-            width: 100%;
-            box-sizing: border-box;
-            margin: 0 auto;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-        }
-
-        .table-container {
-            overflow-y: auto;
-            flex-grow: 1;
-            max-height: 400px;
-            margin-top: 12px;
-            width: 100%;
-            border-radius: var(--radius);
+        select {
+            min-width: 250px;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #2c2c2c;
+            color: #ffffff;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
+            margin-top: 20px;
         }
 
         th, td {
-            padding: 10px 8px;
+            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #444;
         }
 
         th {
-            background-color: var(--bg-lighter);
+            background-color: #f5c242;
+            color: #121212;
             position: sticky;
             top: 0;
-            font-weight: 600;
-            color: var(--primary);
-            font-size: 0.9rem;
-        }
-
-        tbody tr {
-            background-color: white;
-            transition: all 0.2s;
         }
 
         tbody tr:nth-child(even) {
-            background-color: var(--bg-lighter);
+            background-color: #2c2c2c;
         }
 
         tbody tr:hover {
-            background-color: #e3f2fd;
+            background-color: #3a3a3a;
         }
 
-        .product-select option:disabled {
-            color: var(--danger);
-        }
-
-        .date-filter {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-            align-items: center;
-            width: 100%;
-            padding: 0 12px;
-            box-sizing: border-box;
-            margin: 0 auto;
-        }
-
-        .date-filter input {
-            margin-bottom: 0;
-            flex: 1;
-            max-width: 250px;
-            font-size: 0.9rem;
-            padding: 10px;
-        }
-
-        .date-filter button {
-            width: auto;
-            padding: 10px 20px;
-            margin-top: 0;
-            font-size: 0.9rem;
-        }
-
-        .sale-form {
-            display: none;
-            margin-top: 12px;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .sale-form.show {
-            display: block;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-buttons button {
-            width: 100%;
-            font-size: 0.9rem;
-            padding: 10px;
-        }
-
-        .discount-section {
-            display: none;
-            margin-top: 12px;
-            padding: 12px;
-            background-color: #f3e5f5;
-            border-radius: var(--radius);
-            border: 1px solid var(--discount);
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .discount-section.show {
-            display: block;
-        }
-
-        .discount-input-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .discount-input-group input {
-            flex: 1;
-            margin-bottom: 0;
-        }
-
-        .discount-input-group button {
-            width: auto;
-            margin-top: 0;
-        }
-
-        .discount-badge {
-            background-color: var(--discount);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-left: 4px;
-        }
-
-        input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--primary);
-        }
-
-        /* Cart items table styles */
-        .cart-container {
-            margin-top: 16px;
-            margin-bottom: 16px;
-            background: white;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .cart-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-
-        .cart-table th {
-            background-color: var(--bg-lighter);
-            color: var(--primary);
-            font-weight: 600;
-            padding: 10px 8px;
-        }
-
-        .cart-table td {
-            padding: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .cart-actions {
-            display: flex;
-            gap: 8px;
-            padding: 10px;
-            background-color: var(--bg-lighter);
-            border-top: 1px solid var(--border);
-            flex-wrap: wrap;
-        }
-
-        .cart-actions button {
-            flex: 1;
-            margin-top: 0;
-            min-width: 120px;
-        }
-
-        .cart-total {
+        .total-sales {
+            font-weight: bold;
+            margin-top: 20px;
             text-align: right;
-            padding: 10px;
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--primary);
-            background-color: var(--bg-lighter);
-            border-top: 1px solid var(--border);
+            font-size: 1.1em;
         }
 
-        .cart-total.discounted {
-            color: var(--discount);
-        }
-
-        .original-price {
-            text-decoration: line-through;
-            color: var(--text-fade);
-            font-size: 0.8rem;
-            margin-right: 4px;
-        }
-
-        /* New styles for loading state and status messages */
-        .btn-loading {
-            position: relative;
-            color: transparent !important;
-            pointer-events: none;
-        }
-        
-        .btn-loading::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 16px;
-            height: 16px;
-            margin: -8px 0 0 -8px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        .status-message {
-            padding: 8px;
-            margin: 8px 0;
-            border-radius: var(--radius);
+        .loading {
             text-align: center;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-        
-        .status-success {
-            background-color: rgba(46, 204, 113, 0.2);
-            color: var(--success);
-            border: 1px solid var(--success);
-        }
-        
-        .status-error {
-            background-color: rgba(247, 37, 133, 0.2);
-            color: var(--danger);
-            border: 1px solid var(--danger);
-        }
-        
-        .status-info {
-            background-color: rgba(67, 97, 238, 0.2);
-            color: var(--primary);
-            border: 1px solid var(--primary);
-        }
-        
-        .small-btn {
-            padding: 5px 10px;
-            font-size: 0.8rem;
-            width: auto;
-            min-width: auto;
-            margin: 0;
-        }
-        
-        .small-btn-discount {
-            background: var(--discount);
-        }
-        
-        .small-btn-discount:hover {
-            background: var(--discount-hover);
-        }
-        
-        .small-btn-danger {
-            background: var(--danger);
-        }
-        
-        .small-btn-danger:hover {
-            background: var(--danger-hover);
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
+            padding: 20px;
+            color: #f5c242;
         }
 
-        /* Mobile-first responsive design */
-        @media (max-width: 1200px) {
-            h2 { font-size: 1.3rem; }
-        }
-        
-        @media (max-width: 900px) {
-            .main-controls { padding: 0 10px; }
-            .data-container { padding: 10px; }
-            h2 { font-size: 1.2rem; }
-            th, td { font-size: 0.82rem; padding: 8px 6px; }
-        }
-        
-        @media (max-width: 700px) {
-            html, body { font-size: 13px; }
-            
-            .container, .data-container, .main-controls, .date-filter { 
-                width: 100%; 
-                padding: 0 10px;
-            }
-            
-            .main-controls { 
-                flex-direction: column; 
-                gap: 10px; 
-            }
-            
-            .control-group { 
-                min-width: 100%; 
-                padding: 12px;
-            }
-            
-            th, td { 
-                padding: 8px 4px; 
-                font-size: 0.78rem; 
-            }
-            
-            .date-filter { 
-                flex-direction: column; 
-                gap: 8px; 
-            }
-            
-            .date-filter input { 
-                max-width: 100%; 
-                font-size: 0.9rem;
-            }
-            
-            .header-info-container { 
-                flex-direction: column; 
-                width: 100%; 
-                gap: 8px; 
-            }
-            
-            .btn-warning { 
-                width: 100%; 
-                font-size: 0.9rem;
-            }
-            
-            h2 { 
-                font-size: 1.1rem; 
-                padding: 12px 0 6px 0;
-            }
-            
-            .action-buttons { 
-                flex-direction: column; 
-                gap: 6px;
-            }
-            
-            .total-sales {
-                font-size: 0.9rem;
-                padding: 8px 12px;
-            }
-            
-            .cart-actions {
-                flex-direction: column;
-            }
-        }
-        
-        @media (max-width: 500px) {
-            html, body { font-size: 12px; }
-            
-            .container, .data-container, .main-controls, .date-filter { 
-                width: 100%; 
-                padding: 0 8px; 
-            }
-            
-            .sale-form { padding: 0; }
-            
-            th, td { 
-                padding: 6px 3px; 
-                font-size: 0.75rem; 
-            }
-            
-            h2 { 
-                font-size: 1rem; 
-                padding-top: 10px; 
-                margin: 5px 0;
-            }
-            
-            button, input, select { 
-                padding: 8px 10px; 
-                font-size: 0.85rem;
-            }
-            
-            .control-group {
-                padding: 10px;
-            }
-            
-            .table-container {
-                max-height: 350px;
-            }
-            
-            th {
-                font-size: 0.8rem;
-                padding: 8px 4px;
-            }
-        }
-        
-        @media (max-width: 400px) {
-            html, body { font-size: 11px; }
-            
-            th, td { 
-                padding: 5px 2px; 
-                font-size: 0.7rem; 
-            }
-            
-            h2 { font-size: 0.9rem; }
-            
-            button, input, select { 
-                padding: 6px 8px; 
-                font-size: 0.8rem;
-            }
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #f44336;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Sales Terminal with Discounts</h2>
-        
-        <div class="header-info">
-            <div class="header-info-container">
-                <button class="btn-warning" onclick="window.location.href='salestracker.html'">
-                    Sales Tracker
-                </button>
-                <div class="total-sales">Total Sales: ZMW 0.00</div>
-            </div>
+        <h2>Product Sales History</h2>
+
+        <div class="filter-container">
+            <select id="productFilter">
+                <option value="">All Products</option>
+                <!-- Products will be loaded here -->
+            </select>
         </div>
 
-        <div class="date-filter">
-            <input type="date" id="filterDate">
-            <button class="btn-primary" onclick="filterSales()">
-                Filter Sales by Date
-            </button>
-        </div>
-        
-        <div class="main-controls">
-            <div class="control-group">
-                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                    <button id="toggleFormBtn" class="btn-primary" onclick="toggleSaleForm()" style="flex: 2;">
-                        Add Item to Cart
-                    </button>
-                    <button id="toggleDiscountBtn" class="btn-discount" onclick="toggleDiscountSection()" style="flex: 1;">
-                        Discount
-                    </button>
-                </div>
-                
-                <!-- Discount Section -->
-                <div id="discountSection" class="discount-section">
-                    <h3 style="color: var(--discount); margin-bottom: 8px;">Apply Fixed Discount</h3>
-                    <div class="discount-input-group">
-                        <input type="number" id="discountAmount" placeholder="Discount Amount (ZMW)" min="0" step="0.01" value="0">
-                        <button class="btn-discount" onclick="applyDiscountToCart()" style="width: auto;">Apply to Cart</button>
-                    </div>
-                    <p style="font-size: 0.8rem; color: var(--text-fade);">Discount applies to entire cart</p>
-                    <div id="discountStatus" class="status-message" style="display: none;"></div>
-                </div>
-                
-                <div id="saleForm" class="sale-form">
-                    <select id="productCode" class="product-select" required>
-                        <option value="">Select Product</option>
-                    </select>
-                    <input type="number" id="quantity" placeholder="Quantity" required min="1" value="1">
-                    <div class="action-buttons">
-                        <button id="addToCartBtn" class="btn-primary" onclick="addToCart()">
-                            Add to Cart
-                        </button>
-                        <button class="btn-danger" onclick="toggleSaleForm()">
-                            Cancel
-                        </button>
-                    </div>
-                    <div id="saleStatus" class="status-message" style="display: none;"></div>
-                </div>
-                
-                <!-- Cart Display -->
-                <div id="cartContainer" class="cart-container" style="display: none;">
-                    <table class="cart-table">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Price</th>
-                                <th>Qty</th>
-                                <th>Total</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cartItems">
-                            <!-- Cart items will be added here -->
-                        </tbody>
-                    </table>
-                    <div id="cartTotal" class="cart-total">
-                        Cart Total: ZMW 0.00
-                    </div>
-                    <div class="cart-actions">
-                        <button id="processCartBtn" class="btn-primary" onclick="processCart()">
-                            Process All Sales
-                        </button>
-                        <button class="btn-danger" onclick="clearCart()">
-                            Clear Cart
-                        </button>
-                    </div>
-                </div>
-                
-                <button id="reverseBtn" class="btn-danger" onclick="reverseSales()" style="display: none;">
-                    Reverse Selected Sales
-                </button>
-                <div id="reverseStatus" class="status-message" style="display: none;"></div>
-            </div>
-        </div>
-        
-        <div class="data-container">
-            <div class="table-container">
-                <table id="salesTable">
-                    <thead>
-                        <tr>
-                            <th width="35px">Select</th>
-                            <th>Date</th>
-                            <th>Code</th>
-                            <th>Product Name</th>
-                            <th>Price</th>
-                            <th>Qty</th>
-                            <th>Discount</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Sales data will populate here -->
-                    </tbody>
-                </table>
-            </div>
+        <div id="loadingMessage" class="loading">Loading sales data...</div>
+        <div id="errorMessage" class="error" style="display: none;"></div>
+
+        <table id="salesHistoryTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Product Code</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Unit Price (ZMW)</th>
+                    <th>Total (ZMW)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Sales data will appear here -->
+            </tbody>
+        </table>
+
+        <div class="total-sales" id="totalSalesHistory">
+            Total Sales: ZMW 0.00
         </div>
     </div>
 
@@ -767,22 +137,15 @@
         import { 
             getFirestore, 
             collection, 
-            addDoc, 
-            updateDoc, 
-            deleteDoc, 
-            doc, 
             query, 
             where,
-            onSnapshot,
-            serverTimestamp,
             getDocs,
-            increment,
-            runTransaction
+            orderBy
         } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-        // Firebase configuration
+        // Your Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+            apiKey: "AIzaSyB-lm7Y3r1F6Vv8PKvY8glLabZDbJsHM1k",
             authDomain: "trismartstores.firebaseapp.com",
             projectId: "trismartstores",
             storageBucket: "trismartstores.appspot.com",
@@ -791,624 +154,163 @@
             measurementId: "G-NJPQ7L3QWJ"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Global variables
+        // DOM elements
+        const productFilter = document.getElementById('productFilter');
+        const salesTableBody = document.querySelector('#salesHistoryTable tbody');
+        const totalSalesElement = document.getElementById('totalSalesHistory');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Check for branchId
         const branchId = localStorage.getItem('branchId');
-        let currentSaleDate = new Date().toISOString().split('T')[0];
-        let sales = [];
-        let inventory = [];
-        let cart = [];
-        let cartDiscount = 0; // Fixed discount amount for the entire cart
-        let unsubscribeSales = null;
-        let unsubscribeInventory = null;
-        let isProcessing = false;
-
-        // Check if branch is selected
         if (!branchId) {
-            alert('Please select a branch from the dashboard first.');
+            showError('Please select a branch first');
             window.location.href = 'dashboard.html';
+            return;
         }
 
-        // Initialize the application
-        window.onload = function() {
-            setupInventoryListener();
-            initializeDates();
-            loadCartFromLocalStorage();
-        };
-
-        function initializeDates() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('filterDate').value = today;
-            setupSalesListener(today);
-        }
-
-        function toggleSaleForm() {
-            const form = document.getElementById('saleForm');
-            form.classList.toggle('show');
-            const btn = document.getElementById('toggleFormBtn');
-            btn.textContent = form.classList.contains('show') ? 'Hide Form' : 'Add Item to Cart';
-            
-            // Hide discount section when showing form
-            if (form.classList.contains('show')) {
-                document.getElementById('discountSection').classList.remove('show');
-            }
-            
-            const statusElement = document.getElementById('saleStatus');
-            statusElement.style.display = 'none';
-            statusElement.className = 'status-message';
-        }
-
-        function toggleDiscountSection() {
-            const section = document.getElementById('discountSection');
-            section.classList.toggle('show');
-            
-            // Hide form when showing discount section
-            if (section.classList.contains('show')) {
-                document.getElementById('saleForm').classList.remove('show');
-                document.getElementById('toggleFormBtn').textContent = 'Add Item to Cart';
-            }
-        }
-
-        function setupInventoryListener() {
-            const q = query(collection(db, 'inventory'), where('branchId', '==', branchId));
-            
-            unsubscribeInventory = onSnapshot(q, (snapshot) => {
-                inventory = snapshot.docs.map(doc => ({ 
-                    id: doc.id, 
-                    ...doc.data(),
-                    stock: Number(doc.data().stock) || 0,
-                    sold: Number(doc.data().sold) || 0,
-                    price: Number(doc.data().price) || 0
-                }));
-                populateProductOptions();
-            }, (error) => {
-                console.error("Inventory listener error:", error);
-                alert("Error loading inventory updates. Please refresh the page.");
-            });
-        }
-
-        function populateProductOptions() {
-            const productSelect = document.getElementById('productCode');
-            productSelect.innerHTML = '<option value="">Select Product</option>';
-            
-            const sortedInventory = [...inventory].sort((a, b) => {
-                return a.name.localeCompare(b.name);
-            });
-            
-            sortedInventory.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.code;
-                option.textContent = `${item.name} (${item.code}) - ZMW ${item.price.toFixed(2)} - Stock: ${item.stock}`;
-                option.disabled = item.stock <= 0;
-                productSelect.appendChild(option);
-            });
-        }
-
-        function setupSalesListener(date) {
-            if (unsubscribeSales) unsubscribeSales();
-            
-            const salesQuery = query(
-                collection(db, 'sales'), 
-                where('branchId', '==', branchId),
-                where('date', '==', date)
-            );
-            
-            unsubscribeSales = onSnapshot(salesQuery, (snapshot) => {
-                sales = [];
-                const salesTableBody = document.querySelector('#salesTable tbody');
-                salesTableBody.innerHTML = '';
+        // Main function to load and display data
+        async function initializePage() {
+            try {
+                // Load products first
+                await loadProducts();
                 
-                snapshot.forEach((doc) => {
-                    const sale = { id: doc.id, ...doc.data() };
-                    sales.push(sale);
-                    addSaleToTable(sale);
+                // Then load sales data
+                await loadSalesData();
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showError('Failed to initialize page. Please refresh.');
+            } finally {
+                loadingMessage.style.display = 'none';
+            }
+        }
+
+        // Load products into the filter dropdown
+        async function loadProducts() {
+            try {
+                const productsQuery = query(
+                    collection(db, 'inventory'),
+                    where('branchId', '==', branchId)
+                );
+                
+                const snapshot = await getDocs(productsQuery);
+                const products = [];
+                
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    products.push({
+                        code: product.code,
+                        name: product.name
+                    });
                 });
-                
-                updateTotalSales();
-            }, (error) => {
-                console.error("Sales listener error:", error);
-                alert("Error loading sales updates. Please refresh the page.");
-            });
+
+                // Sort products by name
+                products.sort((a, b) => a.name.localeCompare(b.name));
+
+                // Add to dropdown
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.code;
+                    option.textContent = `${product.name} (${product.code})`;
+                    productFilter.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showError('Failed to load products');
+                throw error;
+            }
         }
 
-        function addSaleToTable(sale) {
-            const salesTableBody = document.querySelector('#salesTable tbody');
-            const row = document.createElement('tr');
-            const discount = sale.discount || 0;
-            const subtotal = sale.price * sale.quantity;
-            const total = (subtotal - discount).toFixed(2);
-            
-            row.innerHTML = `
-                <td><input type="checkbox" data-id="${sale.id}" onchange="toggleReverseButton()"></td>
-                <td>${sale.date}</td>
-                <td>${sale.code}</td>
-                <td>${sale.name}</td>
-                <td>ZMW ${sale.price.toFixed(2)}</td>
-                <td>${sale.quantity}</td>
-                <td>${discount > 0 ? 'ZMW ' + discount.toFixed(2) : '-'}</td>
-                <td>ZMW ${total}</td>
-            `;
-            salesTableBody.appendChild(row);
-        }
+        // Load sales data based on current filter
+        async function loadSalesData(productCode = '') {
+            try {
+                loadingMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                salesTableBody.innerHTML = '';
 
-        // Cart Functions
-        function addToCart() {
-            const productCode = document.getElementById('productCode').value;
-            const quantity = parseInt(document.getElementById('quantity').value);
-            const statusElement = document.getElementById('saleStatus');
+                // Base query with branch filter
+                let salesQuery = query(
+                    collection(db, 'sales'),
+                    where('branchId', '==', branchId),
+                    orderBy('date', 'desc')
+                );
 
-            if (!productCode || isNaN(quantity) || quantity <= 0) {
-                showStatus(statusElement, "Please select a product and enter quantity", "error");
-                return;
-            }
+                // Add product filter if specified
+                if (productCode) {
+                    salesQuery = query(
+                        salesQuery,
+                        where('code', '==', productCode)
+                    );
+                }
 
-            const product = inventory.find(item => item.code === productCode);
-            if (!product) {
-                showStatus(statusElement, "Product not found", "error");
-                return;
-            }
+                const snapshot = await getDocs(salesQuery);
+                let totalSales = 0;
 
-            if (product.stock < quantity) {
-                showStatus(statusElement, `Only ${product.stock} units available`, "error");
-                return;
-            }
-
-            // Check if item already in cart
-            const existingItemIndex = cart.findIndex(item => item.code === productCode);
-            if (existingItemIndex > -1) {
-                // Update quantity
-                const newQuantity = cart[existingItemIndex].quantity + quantity;
-                if (newQuantity > product.stock) {
-                    showStatus(statusElement, `Cannot add more. Available: ${product.stock}`, "error");
+                if (snapshot.empty) {
+                    const row = salesTableBody.insertRow();
+                    const cell = row.insertCell();
+                    cell.colSpan = 6;
+                    cell.textContent = 'No sales records found';
+                    cell.style.textAlign = 'center';
+                    totalSalesElement.textContent = 'Total Sales: ZMW 0.00';
                     return;
                 }
-                cart[existingItemIndex].quantity = newQuantity;
-                cart[existingItemIndex].subtotal = newQuantity * product.price;
-                cart[existingItemIndex].total = cart[existingItemIndex].subtotal - (cart[existingItemIndex].discount || 0);
-            } else {
-                // Add new item
-                cart.push({
-                    code: product.code,
-                    name: product.name,
-                    price: product.price,
-                    quantity: quantity,
-                    subtotal: quantity * product.price,
-                    discount: 0,
-                    total: quantity * product.price,
-                    stock: product.stock
-                });
-            }
 
-            showStatus(statusElement, "Item added to cart", "success");
-            updateCartDisplay();
-            saveCartToLocalStorage();
-            
-            // Clear form
-            document.getElementById('quantity').value = 1;
-            
-            // Hide success message after 2 seconds
-            setTimeout(() => {
-                statusElement.style.display = 'none';
-            }, 2000);
-        }
+                snapshot.forEach(doc => {
+                    const sale = doc.data();
+                    const total = sale.price * sale.quantity;
+                    totalSales += total;
 
-        function applyDiscountToCart() {
-            const discountAmount = parseFloat(document.getElementById('discountAmount').value);
-            const statusElement = document.getElementById('discountStatus');
-
-            if (isNaN(discountAmount) || discountAmount < 0) {
-                showStatus(statusElement, "Please enter a valid discount amount", "error");
-                return;
-            }
-
-            if (cart.length === 0) {
-                showStatus(statusElement, "Cart is empty. Add items first.", "error");
-                return;
-            }
-
-            // Calculate cart subtotal
-            const cartSubtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
-            
-            if (discountAmount > cartSubtotal) {
-                showStatus(statusElement, `Discount cannot exceed cart total (ZMW ${cartSubtotal.toFixed(2)})`, "error");
-                return;
-            }
-
-            // Store discount at cart level
-            cartDiscount = discountAmount;
-            
-            // Distribute discount proportionally across items
-            if (discountAmount > 0) {
-                let remainingDiscount = discountAmount;
-                
-                // First pass: calculate proportional discounts
-                const itemsWithDiscount = cart.map(item => {
-                    const itemProportion = item.subtotal / cartSubtotal;
-                    const itemDiscount = discountAmount * itemProportion;
-                    return {
-                        ...item,
-                        discount: itemDiscount,
-                        total: item.subtotal - itemDiscount
-                    };
-                });
-                
-                // Adjust for rounding errors (ensure total discount matches exactly)
-                const totalDiscounted = itemsWithDiscount.reduce((sum, item) => sum + item.total, 0);
-                const adjustment = cartSubtotal - discountAmount - totalDiscounted;
-                
-                if (Math.abs(adjustment) > 0.01) {
-                    // Apply adjustment to the largest item
-                    const largestItem = itemsWithDiscount.reduce((max, item) => 
-                        item.subtotal > max.subtotal ? item : max
-                    );
-                    largestItem.total += adjustment;
-                    largestItem.discount -= adjustment;
-                }
-                
-                cart = itemsWithDiscount;
-            } else {
-                // Remove all discounts
-                cart = cart.map(item => ({
-                    ...item,
-                    discount: 0,
-                    total: item.subtotal
-                }));
-            }
-
-            showStatus(statusElement, `Discount of ZMW ${discountAmount.toFixed(2)} applied to cart`, "success");
-            updateCartDisplay();
-            saveCartToLocalStorage();
-            
-            // Hide success message after 3 seconds
-            setTimeout(() => {
-                statusElement.style.display = 'none';
-            }, 3000);
-        }
-
-        function updateCartDisplay() {
-            const cartItems = document.getElementById('cartItems');
-            const cartContainer = document.getElementById('cartContainer');
-            const cartTotal = document.getElementById('cartTotal');
-            
-            cartItems.innerHTML = '';
-            
-            if (cart.length === 0) {
-                cartContainer.style.display = 'none';
-                cartDiscount = 0;
-                document.getElementById('discountAmount').value = '0';
-                return;
-            }
-            
-            cartContainer.style.display = 'block';
-            
-            let grandTotal = 0;
-            let subtotalTotal = 0;
-            
-            cart.forEach((item, index) => {
-                subtotalTotal += item.subtotal;
-                grandTotal += item.total;
-                
-                const row = document.createElement('tr');
-                const hasDiscount = item.discount > 0;
-                
-                row.innerHTML = `
-                    <td>${item.name} (${item.code})</td>
-                    <td>ZMW ${item.price.toFixed(2)}</td>
-                    <td>${item.quantity}</td>
-                    <td>
-                        ${hasDiscount ? `<span class="original-price">ZMW ${item.subtotal.toFixed(2)}</span>` : ''}
-                        ZMW ${item.total.toFixed(2)}
-                        ${hasDiscount ? `<span class="discount-badge">-ZMW ${item.discount.toFixed(2)}</span>` : ''}
-                    </td>
-                    <td>
-                        <button class="small-btn small-btn-danger" onclick="removeFromCart(${index})">Remove</button>
-                    </td>
-                `;
-                cartItems.appendChild(row);
-            });
-            
-            // Update cart total display
-            if (cartDiscount > 0) {
-                cartTotal.innerHTML = `
-                    <span class="original-price">Subtotal: ZMW ${subtotalTotal.toFixed(2)}</span><br>
-                    <strong>Cart Total after Discount: ZMW ${grandTotal.toFixed(2)}</strong>
-                    <span class="discount-badge">-ZMW ${cartDiscount.toFixed(2)}</span>
-                `;
-                cartTotal.classList.add('discounted');
-            } else {
-                cartTotal.textContent = `Cart Total: ZMW ${grandTotal.toFixed(2)}`;
-                cartTotal.classList.remove('discounted');
-            }
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            
-            // Recalculate cart discount if items removed
-            if (cart.length === 0) {
-                cartDiscount = 0;
-                document.getElementById('discountAmount').value = '0';
-            } else if (cartDiscount > 0) {
-                // Reapply discount proportionally
-                const discountAmount = cartDiscount;
-                cartDiscount = 0; // Temporarily reset
-                applyDiscountToCart(discountAmount);
-            }
-            
-            updateCartDisplay();
-            saveCartToLocalStorage();
-        }
-
-        function clearCart() {
-            if (cart.length === 0) return;
-            if (confirm("Are you sure you want to clear the cart?")) {
-                cart = [];
-                cartDiscount = 0;
-                document.getElementById('discountAmount').value = '0';
-                updateCartDisplay();
-                saveCartToLocalStorage();
-            }
-        }
-
-        async function processCart() {
-            if (isProcessing) {
-                console.log("Already processing...");
-                return;
-            }
-
-            if (cart.length === 0) {
-                alert("Cart is empty!");
-                return;
-            }
-
-            const saleDate = new Date().toISOString().split('T')[0];
-            const processBtn = document.getElementById('processCartBtn');
-            const statusElement = document.getElementById('saleStatus');
-
-            try {
-                isProcessing = true;
-                setButtonLoading(processBtn, true, "Processing...");
-                
-                // Process each item in cart
-                for (const item of cart) {
-                    await runTransaction(db, async (transaction) => {
-                        // Find product in inventory
-                        const q = query(
-                            collection(db, 'inventory'),
-                            where('branchId', '==', branchId),
-                            where('code', '==', item.code)
-                        );
-                        const querySnapshot = await getDocs(q);
-                        
-                        if (querySnapshot.empty) {
-                            throw new Error(`Product ${item.code} not found in inventory`);
-                        }
-                        
-                        const itemDoc = querySnapshot.docs[0];
-                        const itemRef = doc(db, 'inventory', itemDoc.id);
-                        const currentStock = itemDoc.data().stock;
-                        
-                        // Check stock availability
-                        if (currentStock < item.quantity) {
-                            throw new Error(`Insufficient stock for ${item.name}. Available: ${currentStock}`);
-                        }
-                        
-                        // Update inventory
-                        transaction.update(itemRef, { 
-                            stock: increment(-item.quantity),
-                            sold: increment(item.quantity)
-                        });
-                        
-                        // Record sale with discount if applied
-                        const saleEntry = { 
-                            date: saleDate, 
-                            code: item.code, 
-                            name: item.name, 
-                            price: item.price, 
-                            quantity: item.quantity,
-                            discount: item.discount || 0,
-                            subtotal: item.subtotal,
-                            total: item.total,
-                            branchId,
-                            timestamp: serverTimestamp()
-                        };
-                        
-                        const saleRef = doc(collection(db, 'sales'));
-                        transaction.set(saleRef, saleEntry);
+                    const row = salesTableBody.insertRow();
+                    
+                    // Format date as "Jan 1, 2023"
+                    const saleDate = new Date(sale.date);
+                    const formattedDate = saleDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
                     });
-                }
-                
-                // Clear cart after successful processing
-                cart = [];
-                cartDiscount = 0;
-                document.getElementById('discountAmount').value = '0';
-                updateCartDisplay();
-                saveCartToLocalStorage();
-                
-                showStatus(statusElement, "All sales processed successfully!", "success");
-                filterSales(); // Refresh sales table
-                
+
+                    row.innerHTML = `
+                        <td>${formattedDate}</td>
+                        <td>${sale.code}</td>
+                        <td>${sale.name}</td>
+                        <td>${sale.quantity}</td>
+                        <td>${sale.price.toFixed(2)}</td>
+                        <td>${total.toFixed(2)}</td>
+                    `;
+                });
+
+                totalSalesElement.textContent = `Total Sales: ZMW ${totalSales.toFixed(2)}`;
+
             } catch (error) {
-                console.error("Error processing cart:", error);
-                showStatus(statusElement, `Error: ${error.message}`, "error");
+                console.error('Error loading sales data:', error);
+                showError('Failed to load sales data. Please check console for details.');
+                throw error;
             } finally {
-                setButtonLoading(processBtn, false, "Process All Sales");
-                isProcessing = false;
-                
-                // Hide status message after 3 seconds
-                setTimeout(() => {
-                    statusElement.style.display = 'none';
-                }, 3000);
+                loadingMessage.style.display = 'none';
             }
         }
 
-        function updateTotalSales() {
-            const total = sales.reduce((sum, sale) => sum + (sale.total || (sale.price * sale.quantity) - (sale.discount || 0)), 0);
-            document.querySelector('.total-sales').textContent = `Total Sales: ZMW ${total.toFixed(2)}`;
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            loadingMessage.style.display = 'none';
         }
 
-        function toggleReverseButton() {
-            const selectedSales = document.querySelectorAll('#salesTable tbody input[type="checkbox"]:checked');
-            const reverseBtn = document.getElementById('reverseBtn');
-            reverseBtn.style.display = selectedSales.length > 0 ? 'block' : 'none';
-        }
+        // Event listener for product filter
+        productFilter.addEventListener('change', () => {
+            const selectedProduct = productFilter.value;
+            loadSalesData(selectedProduct);
+        });
 
-        async function reverseSales() {
-            if (isProcessing) {
-                console.log("Reverse operation already in progress...");
-                return;
-            }
-            
-            const selectedSales = Array.from(
-                document.querySelectorAll('#salesTable tbody input[type="checkbox"]:checked')
-            );
-            
-            if (selectedSales.length === 0) {
-                alert("Please select at least one sale to reverse.");
-                return;
-            }
-
-            if (!confirm(`Are you sure you want to reverse ${selectedSales.length} selected sales?`)) {
-                return;
-            }
-
-            try {
-                isProcessing = true;
-                const reverseBtn = document.getElementById('reverseBtn');
-                const statusElement = document.getElementById('reverseStatus');
-                setButtonLoading(reverseBtn, true, "Reversing...");
-                statusElement.style.display = 'none';
-
-                for (const checkbox of selectedSales) {
-                    const saleId = checkbox.dataset.id;
-                    const sale = sales.find(s => s.id === saleId);
-                    
-                    if (sale) {
-                        await runTransaction(db, async (transaction) => {
-                            // Find product in inventory
-                            const q = query(
-                                collection(db, 'inventory'),
-                                where('branchId', '==', branchId),
-                                where('code', '==', sale.code)
-                            );
-                            const querySnapshot = await getDocs(q);
-                            
-                            if (querySnapshot.empty) {
-                                console.warn(`Product ${sale.code} not found in inventory during reversal`);
-                                return;
-                            }
-                            
-                            const itemDoc = querySnapshot.docs[0];
-                            const itemRef = doc(db, 'inventory', itemDoc.id);
-                            
-                            // Restore inventory
-                            transaction.update(itemRef, { 
-                                stock: increment(sale.quantity),
-                                sold: increment(-sale.quantity)
-                            });
-                            
-                            // Delete sale record
-                            const saleRef = doc(db, 'sales', sale.id);
-                            transaction.delete(saleRef);
-                        });
-                    }
-                }
-                
-                showStatus(statusElement, "Selected sales reversed successfully.", "success");
-                
-                setTimeout(() => {
-                    setButtonLoading(reverseBtn, false, "Reverse Selected Sales");
-                    isProcessing = false;
-                    setTimeout(() => {
-                        statusElement.style.display = 'none';
-                    }, 3000);
-                }, 1500);
-                
-                filterSales();
-            } catch (error) {
-                console.error("Error reversing sales:", error);
-                const statusElement = document.getElementById('reverseStatus');
-                showStatus(statusElement, `Error reversing sales: ${error.message}`, "error");
-                const reverseBtn = document.getElementById('reverseBtn');
-                setButtonLoading(reverseBtn, false, "Reverse Selected Sales");
-                isProcessing = false;
-            }
-        }
-
-        function filterSales() {
-            const filterDate = document.getElementById('filterDate').value;
-            if (!filterDate) {
-                alert("Please select a date to view sales.");
-                return;
-            }
-
-            currentSaleDate = filterDate;
-            setupSalesListener(filterDate);
-        }
-
-        // Local storage for cart persistence
-        function saveCartToLocalStorage() {
-            const cartData = {
-                items: cart,
-                discount: cartDiscount
-            };
-            localStorage.setItem(`cart_${branchId}`, JSON.stringify(cartData));
-        }
-
-        function loadCartFromLocalStorage() {
-            const savedCart = localStorage.getItem(`cart_${branchId}`);
-            if (savedCart) {
-                try {
-                    const cartData = JSON.parse(savedCart);
-                    cart = cartData.items || [];
-                    cartDiscount = cartData.discount || 0;
-                    
-                    if (cartDiscount > 0) {
-                        document.getElementById('discountAmount').value = cartDiscount;
-                    }
-                    
-                    updateCartDisplay();
-                } catch (e) {
-                    console.error("Error loading cart from localStorage:", e);
-                    cart = [];
-                    cartDiscount = 0;
-                }
-            }
-        }
-
-        // Helper functions
-        function showStatus(element, message, type) {
-            element.textContent = message;
-            element.className = `status-message status-${type}`;
-            element.style.display = 'block';
-        }
-
-        function setButtonLoading(button, isLoading, originalText) {
-            if (isLoading) {
-                button.classList.add('btn-loading');
-                button.setAttribute('data-original-text', button.textContent);
-                button.textContent = originalText;
-                button.disabled = true;
-            } else {
-                button.classList.remove('btn-loading');
-                button.textContent = originalText;
-                button.disabled = false;
-            }
-        }
-
-        // Make functions available globally
-        window.addToCart = addToCart;
-        window.removeFromCart = removeFromCart;
-        window.clearCart = clearCart;
-        window.processCart = processCart;
-        window.reverseSales = reverseSales;
-        window.filterSales = filterSales;
-        window.toggleReverseButton = toggleReverseButton;
-        window.toggleSaleForm = toggleSaleForm;
-        window.toggleDiscountSection = toggleDiscountSection;
-        window.applyDiscountToCart = applyDiscountToCart;
+        // Initialize the page when loaded
+        window.addEventListener('load', initializePage);
     </script>
 </body>
 </html>
