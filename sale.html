@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Terminal</title>
+    <title>Sales Terminal with Discounts</title>
     <style>
         :root {
             --primary: #4361ee;
@@ -15,6 +15,8 @@
             --warning-hover: #e68a00;
             --success: #2ecc71;
             --success-hover: #27ae60;
+            --discount: #9c27b0;
+            --discount-hover: #7b1fa2;
             --bg-dark: #ffffff;
             --bg-medium: #f8f9fa;
             --bg-light: #ffffff;
@@ -114,6 +116,23 @@
         }
         .btn-warning:hover {
             background: linear-gradient(90deg, #f9c74f 0%, var(--warning) 100%);
+            transform: translateY(-1px);
+        }
+
+        .btn-discount {
+            background: linear-gradient(90deg, var(--discount) 0%, #ba68c8 100%);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
+        }
+        .btn-discount:hover {
+            background: linear-gradient(90deg, #ba68c8 0%, var(--discount) 100%);
             transform: translateY(-1px);
         }
 
@@ -300,6 +319,47 @@
             padding: 10px;
         }
 
+        .discount-section {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background-color: #f3e5f5;
+            border-radius: var(--radius);
+            border: 1px solid var(--discount);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .discount-section.show {
+            display: block;
+        }
+
+        .discount-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .discount-input-group input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .discount-input-group button {
+            width: auto;
+            margin-top: 0;
+        }
+
+        .discount-badge {
+            background-color: var(--discount);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
         input[type="checkbox"] {
             width: 16px;
             height: 16px;
@@ -341,11 +401,13 @@
             padding: 10px;
             background-color: var(--bg-lighter);
             border-top: 1px solid var(--border);
+            flex-wrap: wrap;
         }
 
         .cart-actions button {
             flex: 1;
             margin-top: 0;
+            min-width: 120px;
         }
 
         .cart-total {
@@ -356,6 +418,17 @@
             color: var(--primary);
             background-color: var(--bg-lighter);
             border-top: 1px solid var(--border);
+        }
+
+        .cart-total.discounted {
+            color: var(--discount);
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: var(--text-fade);
+            font-size: 0.8rem;
+            margin-right: 4px;
         }
 
         /* New styles for loading state and status messages */
@@ -400,16 +473,33 @@
             border: 1px solid var(--danger);
         }
         
+        .status-info {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
         .small-btn {
             padding: 5px 10px;
             font-size: 0.8rem;
             width: auto;
             min-width: auto;
             margin: 0;
+        }
+        
+        .small-btn-discount {
+            background: var(--discount);
+        }
+        
+        .small-btn-discount:hover {
+            background: var(--discount-hover);
+        }
+        
+        .small-btn-danger {
             background: var(--danger);
         }
         
-        .small-btn:hover {
+        .small-btn-danger:hover {
             background: var(--danger-hover);
         }
         
@@ -492,6 +582,10 @@
                 font-size: 0.9rem;
                 padding: 8px 12px;
             }
+            
+            .cart-actions {
+                flex-direction: column;
+            }
         }
         
         @media (max-width: 500px) {
@@ -553,7 +647,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>Sales Terminal</h2>
+        <h2>Sales Terminal with Discounts</h2>
         
         <div class="header-info">
             <div class="header-info-container">
@@ -573,9 +667,25 @@
         
         <div class="main-controls">
             <div class="control-group">
-                <button id="toggleFormBtn" class="btn-primary" onclick="toggleSaleForm()">
-                    Add Item to Cart
-                </button>
+                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <button id="toggleFormBtn" class="btn-primary" onclick="toggleSaleForm()" style="flex: 2;">
+                        Add Item to Cart
+                    </button>
+                    <button id="toggleDiscountBtn" class="btn-discount" onclick="toggleDiscountSection()" style="flex: 1;">
+                        Discount
+                    </button>
+                </div>
+                
+                <!-- Discount Section -->
+                <div id="discountSection" class="discount-section">
+                    <h3 style="color: var(--discount); margin-bottom: 8px;">Apply Fixed Discount</h3>
+                    <div class="discount-input-group">
+                        <input type="number" id="discountAmount" placeholder="Discount Amount (ZMW)" min="0" step="0.01" value="0">
+                        <button class="btn-discount" onclick="applyDiscountToCart()" style="width: auto;">Apply to Cart</button>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-fade);">Discount applies to entire cart</p>
+                    <div id="discountStatus" class="status-message" style="display: none;"></div>
+                </div>
                 
                 <div id="saleForm" class="sale-form">
                     <select id="productCode" class="product-select" required>
@@ -640,6 +750,7 @@
                             <th>Product Name</th>
                             <th>Price</th>
                             <th>Qty</th>
+                            <th>Discount</th>
                             <th>Total</th>
                         </tr>
                     </thead>
@@ -689,6 +800,7 @@
         let sales = [];
         let inventory = [];
         let cart = [];
+        let cartDiscount = 0; // Fixed discount amount for the entire cart
         let unsubscribeSales = null;
         let unsubscribeInventory = null;
         let isProcessing = false;
@@ -718,9 +830,25 @@
             const btn = document.getElementById('toggleFormBtn');
             btn.textContent = form.classList.contains('show') ? 'Hide Form' : 'Add Item to Cart';
             
+            // Hide discount section when showing form
+            if (form.classList.contains('show')) {
+                document.getElementById('discountSection').classList.remove('show');
+            }
+            
             const statusElement = document.getElementById('saleStatus');
             statusElement.style.display = 'none';
             statusElement.className = 'status-message';
+        }
+
+        function toggleDiscountSection() {
+            const section = document.getElementById('discountSection');
+            section.classList.toggle('show');
+            
+            // Hide form when showing discount section
+            if (section.classList.contains('show')) {
+                document.getElementById('saleForm').classList.remove('show');
+                document.getElementById('toggleFormBtn').textContent = 'Add Item to Cart';
+            }
         }
 
         function setupInventoryListener() {
@@ -788,7 +916,10 @@
         function addSaleToTable(sale) {
             const salesTableBody = document.querySelector('#salesTable tbody');
             const row = document.createElement('tr');
-            const total = (sale.price * sale.quantity).toFixed(2);
+            const discount = sale.discount || 0;
+            const subtotal = sale.price * sale.quantity;
+            const total = (subtotal - discount).toFixed(2);
+            
             row.innerHTML = `
                 <td><input type="checkbox" data-id="${sale.id}" onchange="toggleReverseButton()"></td>
                 <td>${sale.date}</td>
@@ -796,6 +927,7 @@
                 <td>${sale.name}</td>
                 <td>ZMW ${sale.price.toFixed(2)}</td>
                 <td>${sale.quantity}</td>
+                <td>${discount > 0 ? 'ZMW ' + discount.toFixed(2) : '-'}</td>
                 <td>ZMW ${total}</td>
             `;
             salesTableBody.appendChild(row);
@@ -833,7 +965,8 @@
                     return;
                 }
                 cart[existingItemIndex].quantity = newQuantity;
-                cart[existingItemIndex].total = newQuantity * product.price;
+                cart[existingItemIndex].subtotal = newQuantity * product.price;
+                cart[existingItemIndex].total = cart[existingItemIndex].subtotal - (cart[existingItemIndex].discount || 0);
             } else {
                 // Add new item
                 cart.push({
@@ -841,6 +974,8 @@
                     name: product.name,
                     price: product.price,
                     quantity: quantity,
+                    subtotal: quantity * product.price,
+                    discount: 0,
                     total: quantity * product.price,
                     stock: product.stock
                 });
@@ -859,6 +994,79 @@
             }, 2000);
         }
 
+        function applyDiscountToCart() {
+            const discountAmount = parseFloat(document.getElementById('discountAmount').value);
+            const statusElement = document.getElementById('discountStatus');
+
+            if (isNaN(discountAmount) || discountAmount < 0) {
+                showStatus(statusElement, "Please enter a valid discount amount", "error");
+                return;
+            }
+
+            if (cart.length === 0) {
+                showStatus(statusElement, "Cart is empty. Add items first.", "error");
+                return;
+            }
+
+            // Calculate cart subtotal
+            const cartSubtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
+            
+            if (discountAmount > cartSubtotal) {
+                showStatus(statusElement, `Discount cannot exceed cart total (ZMW ${cartSubtotal.toFixed(2)})`, "error");
+                return;
+            }
+
+            // Store discount at cart level
+            cartDiscount = discountAmount;
+            
+            // Distribute discount proportionally across items
+            if (discountAmount > 0) {
+                let remainingDiscount = discountAmount;
+                
+                // First pass: calculate proportional discounts
+                const itemsWithDiscount = cart.map(item => {
+                    const itemProportion = item.subtotal / cartSubtotal;
+                    const itemDiscount = discountAmount * itemProportion;
+                    return {
+                        ...item,
+                        discount: itemDiscount,
+                        total: item.subtotal - itemDiscount
+                    };
+                });
+                
+                // Adjust for rounding errors (ensure total discount matches exactly)
+                const totalDiscounted = itemsWithDiscount.reduce((sum, item) => sum + item.total, 0);
+                const adjustment = cartSubtotal - discountAmount - totalDiscounted;
+                
+                if (Math.abs(adjustment) > 0.01) {
+                    // Apply adjustment to the largest item
+                    const largestItem = itemsWithDiscount.reduce((max, item) => 
+                        item.subtotal > max.subtotal ? item : max
+                    );
+                    largestItem.total += adjustment;
+                    largestItem.discount -= adjustment;
+                }
+                
+                cart = itemsWithDiscount;
+            } else {
+                // Remove all discounts
+                cart = cart.map(item => ({
+                    ...item,
+                    discount: 0,
+                    total: item.subtotal
+                }));
+            }
+
+            showStatus(statusElement, `Discount of ZMW ${discountAmount.toFixed(2)} applied to cart`, "success");
+            updateCartDisplay();
+            saveCartToLocalStorage();
+            
+            // Hide success message after 3 seconds
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 3000);
+        }
+
         function updateCartDisplay() {
             const cartItems = document.getElementById('cartItems');
             const cartContainer = document.getElementById('cartContainer');
@@ -868,30 +1076,67 @@
             
             if (cart.length === 0) {
                 cartContainer.style.display = 'none';
+                cartDiscount = 0;
+                document.getElementById('discountAmount').value = '0';
                 return;
             }
             
             cartContainer.style.display = 'block';
             
             let grandTotal = 0;
+            let subtotalTotal = 0;
+            
             cart.forEach((item, index) => {
+                subtotalTotal += item.subtotal;
                 grandTotal += item.total;
+                
                 const row = document.createElement('tr');
+                const hasDiscount = item.discount > 0;
+                
                 row.innerHTML = `
                     <td>${item.name} (${item.code})</td>
                     <td>ZMW ${item.price.toFixed(2)}</td>
                     <td>${item.quantity}</td>
-                    <td>ZMW ${item.total.toFixed(2)}</td>
-                    <td><button class="small-btn" onclick="removeFromCart(${index})">Remove</button></td>
+                    <td>
+                        ${hasDiscount ? `<span class="original-price">ZMW ${item.subtotal.toFixed(2)}</span>` : ''}
+                        ZMW ${item.total.toFixed(2)}
+                        ${hasDiscount ? `<span class="discount-badge">-ZMW ${item.discount.toFixed(2)}</span>` : ''}
+                    </td>
+                    <td>
+                        <button class="small-btn small-btn-danger" onclick="removeFromCart(${index})">Remove</button>
+                    </td>
                 `;
                 cartItems.appendChild(row);
             });
             
-            cartTotal.textContent = `Cart Total: ZMW ${grandTotal.toFixed(2)}`;
+            // Update cart total display
+            if (cartDiscount > 0) {
+                cartTotal.innerHTML = `
+                    <span class="original-price">Subtotal: ZMW ${subtotalTotal.toFixed(2)}</span><br>
+                    <strong>Cart Total after Discount: ZMW ${grandTotal.toFixed(2)}</strong>
+                    <span class="discount-badge">-ZMW ${cartDiscount.toFixed(2)}</span>
+                `;
+                cartTotal.classList.add('discounted');
+            } else {
+                cartTotal.textContent = `Cart Total: ZMW ${grandTotal.toFixed(2)}`;
+                cartTotal.classList.remove('discounted');
+            }
         }
 
         function removeFromCart(index) {
             cart.splice(index, 1);
+            
+            // Recalculate cart discount if items removed
+            if (cart.length === 0) {
+                cartDiscount = 0;
+                document.getElementById('discountAmount').value = '0';
+            } else if (cartDiscount > 0) {
+                // Reapply discount proportionally
+                const discountAmount = cartDiscount;
+                cartDiscount = 0; // Temporarily reset
+                applyDiscountToCart(discountAmount);
+            }
+            
             updateCartDisplay();
             saveCartToLocalStorage();
         }
@@ -900,6 +1145,8 @@
             if (cart.length === 0) return;
             if (confirm("Are you sure you want to clear the cart?")) {
                 cart = [];
+                cartDiscount = 0;
+                document.getElementById('discountAmount').value = '0';
                 updateCartDisplay();
                 saveCartToLocalStorage();
             }
@@ -954,13 +1201,16 @@
                             sold: increment(item.quantity)
                         });
                         
-                        // Record sale
+                        // Record sale with discount if applied
                         const saleEntry = { 
                             date: saleDate, 
                             code: item.code, 
                             name: item.name, 
                             price: item.price, 
-                            quantity: item.quantity, 
+                            quantity: item.quantity,
+                            discount: item.discount || 0,
+                            subtotal: item.subtotal,
+                            total: item.total,
                             branchId,
                             timestamp: serverTimestamp()
                         };
@@ -972,6 +1222,8 @@
                 
                 // Clear cart after successful processing
                 cart = [];
+                cartDiscount = 0;
+                document.getElementById('discountAmount').value = '0';
                 updateCartDisplay();
                 saveCartToLocalStorage();
                 
@@ -993,7 +1245,7 @@
         }
 
         function updateTotalSales() {
-            const total = sales.reduce((sum, sale) => sum + (sale.price * sale.quantity), 0);
+            const total = sales.reduce((sum, sale) => sum + (sale.total || (sale.price * sale.quantity) - (sale.discount || 0)), 0);
             document.querySelector('.total-sales').textContent = `Total Sales: ZMW ${total.toFixed(2)}`;
         }
 
@@ -1098,18 +1350,30 @@
 
         // Local storage for cart persistence
         function saveCartToLocalStorage() {
-            localStorage.setItem(`cart_${branchId}`, JSON.stringify(cart));
+            const cartData = {
+                items: cart,
+                discount: cartDiscount
+            };
+            localStorage.setItem(`cart_${branchId}`, JSON.stringify(cartData));
         }
 
         function loadCartFromLocalStorage() {
             const savedCart = localStorage.getItem(`cart_${branchId}`);
             if (savedCart) {
                 try {
-                    cart = JSON.parse(savedCart);
+                    const cartData = JSON.parse(savedCart);
+                    cart = cartData.items || [];
+                    cartDiscount = cartData.discount || 0;
+                    
+                    if (cartDiscount > 0) {
+                        document.getElementById('discountAmount').value = cartDiscount;
+                    }
+                    
                     updateCartDisplay();
                 } catch (e) {
                     console.error("Error loading cart from localStorage:", e);
                     cart = [];
+                    cartDiscount = 0;
                 }
             }
         }
@@ -1143,6 +1407,8 @@
         window.filterSales = filterSales;
         window.toggleReverseButton = toggleReverseButton;
         window.toggleSaleForm = toggleSaleForm;
+        window.toggleDiscountSection = toggleDiscountSection;
+        window.applyDiscountToCart = applyDiscountToCart;
     </script>
 </body>
 </html>
