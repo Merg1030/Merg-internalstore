@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trismart · simple ledger</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0f; --surface: #111118; --surface2: #16161f;
+      --border: #1e1e2a; --border2: #2a2a3a;
+      --accent: #6366f1; --accent2: #818cf8;
+      --text: #f0f0f8; --muted: #6b7280; --muted2: #4b5563;
+      --radius: 12px; --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    * { scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+    *::-webkit-scrollbar { width: 5px; height: 5px; }
+    *::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+    html, body { height: 100%; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 20px 32px; border-bottom: 1px solid var(--border); background: var(--surface); flex-wrap: wrap; gap: 16px; position: sticky; top: 0; z-index: 100; }
+    .topbar-left { display: flex; align-items: center; gap: 20px; }
+    .back-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border2); background: transparent; color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; font-size: 0.85rem; transition: all 0.18s; }
+    .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .page-title { font-family: 'Syne', sans-serif; font-size: 1.35rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .month-pick { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 8px 14px; font-size: 0.84rem; color: var(--muted); }
+    .month-pick input[type="month"] { background: transparent; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.84rem; font-weight: 600; color: var(--text); outline: none; cursor: pointer; }
+    .month-pick input[type="month"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.84rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.18s; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-ghost { background: var(--surface2); border: 1px solid var(--border2); color: var(--muted); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .main { flex: 1; padding: 28px 32px; display: flex; flex-direction: column; gap: 0; }
+
+    /* table only */
+    .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; flex: 1; display: flex; flex-direction: column; }
+    .table-scroll { overflow-x: auto; flex: 1; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    thead { position: sticky; top: 0; z-index: 10; }
+    th { background: var(--surface2); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); padding: 13px 18px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    /* amount column (index 3) right align, balance column (index 4) right align */
+    th:nth-child(4), td:nth-child(4) { text-align: right; }
+    th:nth-child(5), td:nth-child(5) { text-align: right; }
+    td { padding: 14px 18px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background 0.12s; }
+    tbody tr:hover { background: var(--surface2); }
+    .empty-row td { text-align: center; padding: 64px; color: var(--muted); font-size: 0.9rem; }
+
+    /* plain numbers – neutral */
+    .amount-neutral { color: var(--text); font-weight: 500; font-family: 'DM Sans', sans-serif; }
+    .amount-bal { color: var(--text); font-weight: 600; font-family: 'Syne', sans-serif; }
+
+    /* MODAL – extremely simple: just date, description, reference, amount. NO TYPE SELECTOR */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); z-index: 900; align-items: center; justify-content: center; }
+    .overlay.open { display: flex; }
+    .modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; padding: 32px; width: 90%; max-width: 440px; box-shadow: var(--shadow); animation: slideUp 0.22s ease; max-height: 92vh; overflow-y: auto; }
+    @keyframes slideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .modal-head h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; }
+    .close-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border2); background: transparent; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: all 0.18s; }
+    .close-btn:hover { background: var(--border2); color: var(--text); }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+    .field input { width: 100%; padding: 11px 14px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.18s; }
+    .field input::placeholder { color: var(--muted2); }
+    .field input:focus { border-color: var(--accent); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-error { color: #f87171; font-size: 0.8rem; margin-bottom: 12px; min-height: 16px; }
+    .save-btn { width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.18s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
+    .save-btn:hover { background: var(--accent2); }
+    .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast { background: var(--surface2); border: 1px solid var(--border2); color: var(--text); border-radius: 10px; padding: 12px 18px; font-size: 0.87rem; font-weight: 600; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow); animation: toastIn 0.22s ease; }
+    .toast.ok { border-color: var(--green); }
+    .toast.ok i { color: var(--green); }
+    .toast.err { border-color: var(--red); }
+    .toast.err i { color: var(--red); }
+    @keyframes toastIn { from { transform: translateX(16px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="cashbook.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+    <span class="page-title">EXPENSES ACCOUNT</span>
+  </div>
+  <div class="topbar-right">
+    <div class="month-pick">
+      <i class="fas fa-calendar-alt" style="font-size:0.75rem"></i>
+      <input type="month" id="monthPicker">
+    </div>
+    <button class="btn btn-ghost" id="pdfBtn"><i class="fas fa-file-pdf"></i> PDF</button>
+    <button class="btn btn-primary" onclick="openModal()"><i class="fas fa-plus"></i> Add Transaction</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="table-card">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Reference</th>
+            <th>Amount</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody id="txnTbody">
+          <tr class="empty-row"><td colspan="5"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- MODAL – super simple: only date, description, reference, amount. NO TYPE. -->
+<div class="overlay" id="overlay" onclick="bgClick(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Add Transaction</h2>
+      <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="form-error" id="formErr"></div>
+    <form onsubmit="saveTxn(event)" autocomplete="off">
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="fDate" required>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <input type="text" id="fDesc" placeholder="e.g. Office supplies" required>
+      </div>
+      <div class="field">
+        <label>Reference</label>
+        <input type="text" id="fRef" placeholder="e.g. RCP-042">
+      </div>
+      <div class="field">
+        <label>Amount</label>
+        <input type="number" id="fAmount" min="0" step="0.01" placeholder="0.00" required>
+      </div>
+      <button type="submit" class="save-btn" id="saveBtn">
+        <i class="fas fa-check"></i> Save Transaction
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Firebase init
+  firebase.initializeApp({
+    apiKey: "AIzaSyB-lm7Y3r1F6Vv8PKvY8glLabZDbJsHM1k",
+    authDomain: "trismartstores.firebaseapp.com",
+    projectId: "trismartstores",
+    storageBucket: "trismartstores.firebasestorage.app",
+    messagingSenderId: "416692703333",
+    appId: "1:416692703333:web:d4b60292621435c748f68c"
+  });
+  const db = firebase.firestore();
+
+  // month picker
+  const mp = document.getElementById('monthPicker');
+  mp.value = localStorage.getItem('shop_month_filter') || new Date().toISOString().substring(0,7);
+  mp.addEventListener('change', () => { localStorage.setItem('shop_month_filter', mp.value); render(); });
+
+  // toast
+  function toast(msg, type='ok') {
+    const w = document.getElementById('toastWrap');
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.innerHTML = `<i class="fas fa-${type==='ok'?'check-circle':'times-circle'}"></i> ${msg}`;
+    w.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  function openModal() {
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('formErr').textContent = '';
+    document.getElementById('fDate').value = new Date().toISOString().substring(0,10);
+    document.getElementById('fDesc').value = '';
+    document.getElementById('fRef').value = '';
+    document.getElementById('fAmount').value = '';
+  }
+  function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+  function bgClick(e) { if (e.target === document.getElementById('overlay')) closeModal(); }
+
+  // save transaction – NO type, just store as a simple entry.
+  // We keep a 'type' field in the database only for backward compatibility / balance calculation.
+  // All transactions are treated as "add to balance" – you can change logic if needed.
+  // For simplicity, we set type = 'credit' (i.e., all entries increase the balance).
+  async function saveTxn(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('formErr');
+    const btn = document.getElementById('saveBtn');
+    errEl.textContent = '';
+    const date   = document.getElementById('fDate').value;
+    const desc   = document.getElementById('fDesc').value.trim();
+    const ref    = document.getElementById('fRef').value.trim();
+    const amount = parseFloat(document.getElementById('fAmount').value);
+    if (!date)                 { errEl.textContent = 'Select a date.'; return; }
+    if (!desc)                 { errEl.textContent = 'Enter a description.'; return; }
+    if (isNaN(amount)||amount<=0) { errEl.textContent = 'Enter a valid positive amount.'; return; }
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+    try {
+      // All transactions are stored as 'credit' (increase balance).
+      // If you later need to subtract, you can manually edit in Firestore, but the UI has no concept of debit.
+      await db.collection('Transactions').add({ 
+        date, 
+        type: 'credit',          // keeps the running balance additive
+        description: desc, 
+        reference: ref, 
+        amount, 
+        createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+      });
+      closeModal(); toast('Transaction saved!');
+    } catch(err) { toast(err.message, 'err'); }
+    finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> Save Transaction'; }
+  }
+
+  // realtime data – using collection 'Transactions' (you can change to your existing collection)
+  let allTxns = [];
+  db.collection('Transactions').onSnapshot(snap => {
+    allTxns = [];
+    snap.forEach(d => { const tx = d.data(); allTxns.push({ id: d.id, ...tx, createdAt: tx.createdAt?.seconds ? tx.createdAt.seconds*1000 : Date.now() }); });
+    render();
+  });
+
+  // formatter – plain number (no K, no sign)
+  function fmtPlain(n) {
+    return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function render() {
+    const month = mp.value;
+    let filtered = month ? allTxns.filter(t => t.date && t.date.substring(0,7) === month) : [...allTxns];
+    // sort by date ascending
+    filtered.sort((a,b) => (a.date||'').localeCompare(b.date||''));
+
+    // running balance: all entries increase balance (since type is always 'credit')
+    let balance = 0;
+    const tbody = document.getElementById('txnTbody');
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No transactions for this period.</td></tr>';
+    } else {
+      const rows = [];
+      for (let t of filtered) {
+        // if somehow a debit exists, respect it, but normally all are credit
+        if (t.type === 'credit') balance += (t.amount || 0);
+        else balance -= (t.amount || 0);
+        
+        rows.push(`<tr>
+          <td>${t.date || '—'}</td>
+          <td>${t.description || '—'}</td>
+          <td style="color:var(--muted)">${t.reference || '—'}</td>
+          <td class="amount-neutral">${fmtPlain(t.amount || 0)}</td>
+          <td class="amount-bal">${fmtPlain(balance)}</td>
+        </tr>`);
+      }
+      tbody.innerHTML = rows.join('');
+    }
+  }
+
+  // PDF – plain numbers from table
+  document.getElementById('pdfBtn').addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
+    const pw = doc.internal.pageSize.getWidth();
+    doc.setFontSize(15); doc.text('Trismart — EXPENSES Transactions',pw/2,35,{align:'center'});
+    doc.setFontSize(10); doc.text('Month: '+(mp.value||'All'),pw/2,52,{align:'center'});
+    const headers=['Date','Description','Reference','Amount','Balance'];
+    const cols=[120,180,120,120,120];
+    const rows=[];
+    document.querySelectorAll('#txnTbody tr').forEach(tr => {
+      if (tr.classList.contains('empty-row')) return;
+      rows.push([...tr.querySelectorAll('td')].map(td => td.textContent.trim()));
+    });
+    let y=70,x=20; doc.setFont(undefined,'bold');
+    headers.forEach((h,i)=>{doc.text(h,x+2,y+14);x+=cols[i];}); y+=22; doc.setFont(undefined,'normal');
+    rows.forEach(row=>{let rx=20;row.forEach((c,i)=>{doc.text(c.substring(0,30),rx+2,y+14);rx+=cols[i];});y+=20;if(y>doc.internal.pageSize.getHeight()-30){doc.addPage();y=40;}});
+    doc.save('Trismart_Transactions_'+(mp.value||'all')+'.pdf');
+  });
+</script>
+<!-- live-server injected code (kept) -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+</body>
+</html>
