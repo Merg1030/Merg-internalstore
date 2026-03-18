@@ -1,138 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Cash Ledger</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; background: #d3dfed; width: 100%; font-family: 'Open Sans', Arial, sans-serif; }
-    body { color: #0a1c2f; min-height: 100vh; overflow-x: hidden; line-height: 1.5; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; min-height: 100vh;
+      background: #d3dfed;
+      font-family: 'Open Sans', Arial, sans-serif;
+      color: #0a1c2f;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
 
     .panel {
-      background: #ffffff; border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(20,20,20,0.26);
-      min-height: 100vh; width: 100%; display: flex; flex-direction: column;
+      width: 100%;
+      min-height: 100vh;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* STICKY TOP */
+    /* ── STICKY TOP ── */
     .panel-top-sticky {
-      position: sticky; top: 0; z-index: 20;
-      background: rgba(255,255,255,0.95); backdrop-filter: blur(4px);
-      border-radius: 8px 8px 0 0;
-      box-shadow: 0 2px 10px 0 rgba(20,20,20,0.16); width: 100%;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      width: 100%;
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(20,20,20,0.16);
     }
+
     .panel-heading {
-      background: #0a1c2f; color: white; padding: 0 18px;
-      font-size: 20px; font-weight: bold; letter-spacing: 1px;
-      height: 50px; display: flex; align-items: center; justify-content: space-between;
-      border-radius: 8px 8px 0 0;
+      background: #0a1c2f;
+      color: white;
+      padding: 0 14px;
+      font-size: 17px;
+      font-weight: bold;
+      letter-spacing: 0.8px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .panel-heading .title-wrap {
+      display: flex; align-items: center; gap: 10px; min-width: 0; overflow: hidden;
+    }
+    .panel-heading .title-wrap span:first-child {
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .branch-tag {
-      font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.4px;
       background: rgba(79,195,247,0.18); color: #4fc3f7;
-      padding: 3px 12px; border-radius: 30px; border: 1px solid rgba(79,195,247,0.3);
+      padding: 2px 10px; border-radius: 30px; border: 1px solid rgba(79,195,247,0.3);
+      white-space: nowrap; flex-shrink: 0;
     }
 
-    /* summary pills */
-    .summary-bar {
-      display: flex; gap: 10px; flex-wrap: wrap;
-      padding: 8px 18px; background: #f4f7fb;
-      border-bottom: 1px solid #d4e2f2;
-    }
-    .sum-pill {
-      background: #fff; border: 1px solid #d4e2f2; border-radius: 30px;
-      padding: 5px 16px; font-size: 12px; display: flex; align-items: center; gap: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-    .sum-pill .slabel { color: #7f96b3; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; font-size: 10px; }
-    .sum-pill .sval { font-weight: 800; font-size: 14px; color: #0a1c2f; }
-    .sum-pill .sval.debit  { color: #c0392b; }
-    .sum-pill .sval.credit { color: #1a7a4a; }
-    .sum-pill .sval.bal    { color: #1565c0; }
-    .sum-pill .sval.bal.neg{ color: #c0392b; }
-
-    /* controls */
+    /* ── CONTROLS ROW ── */
     .panel-controls {
-      display: flex; align-items: center; gap: 0.5em; flex-wrap: wrap;
-      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 8px 14px;
+      background: #fff;
+      border-bottom: 1px solid #e4eaf3;
     }
+
     .ctrl-btn {
-      background: white; color: #0a1c2f; border: 1px solid #2b4a73;
-      font-size: 13px; padding: 5px 14px; border-radius: 30px;
-      cursor: pointer; font-weight: bold; transition: background 0.2s;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      background: white;
+      color: #0a1c2f;
+      border: 1px solid #2b4a73;
+      font-size: 13px;
+      padding: 5px 14px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+      white-space: nowrap;
     }
     .ctrl-btn:hover { background: #e6efff; }
+
+    /* search inline in controls */
+    .search-input {
+      flex: 1 1 140px;
+      min-width: 0;
+      padding: 5px 12px;
+      border-radius: 30px;
+      border: 1px solid #b3c7e0;
+      font-size: 13px;
+      background: #f6f9fd;
+      color: #0a1c2f;
+      outline: none;
+    }
+    .search-input:focus { border-color: #2b4a73; background: #fff; }
+
+    /* ── OPTIONS DROPDOWN ── */
     .dropdown { position: relative; display: inline-block; }
     .dropdown-btn {
       background: white; color: #0a1c2f; border: 1px solid #2b4a73;
-      font-size: 13px; padding: 5px 14px; border-radius: 30px;
+      font-size: 13px; padding: 5px 13px; border-radius: 30px;
       cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07); white-space: nowrap;
     }
     .dropdown-btn:hover { background: #e6efff; }
+
     .dropdown-content {
-      display: none; position: absolute; right: 0; background: #fff;
-      min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.18);
-      z-index: 30; border-radius: 6px; padding: 5px 0;
-      border: 2px solid #1f3d62;
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      background: #fff;
+      min-width: 230px;
+      max-width: calc(100vw - 28px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+      z-index: 100;
+      border-radius: 8px;
+      padding: 6px 0;
+      border: 1.5px solid #1f3d62;
     }
     .dropdown-content.show { display: block; }
+
     .dropdown-item {
-      color: #0a1c2f; padding: 8px 16px; display: block; font-size: 13px;
-      cursor: pointer; transition: background 0.2s; border: none; background: none; width: 100%; text-align: left;
+      color: #0a1c2f; padding: 9px 16px; display: block; font-size: 13px;
+      cursor: pointer; transition: background 0.15s;
+      border: none; background: none; width: 100%; text-align: left;
     }
     .dropdown-item:hover { background: #e6efff; }
-    .dropdown-divider { height: 1px; background: #b3c7e0; margin: 5px 0; }
+    .dropdown-divider { height: 1px; background: #d4e2f2; margin: 4px 0; }
+
+    /* filter rows inside dropdown */
+    .dd-filter-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 14px; flex-wrap: wrap;
+    }
+    .dd-filter-row label {
+      font-size: 12px; color: #2b4a73; font-weight: 700;
+      min-width: 38px; white-space: nowrap;
+    }
+    .dd-filter-row select {
+      flex: 1; min-width: 0;
+      padding: 4px 8px; border-radius: 20px; border: 1px solid #b3c7e0;
+      background: #f6f9fd; font-size: 12px; cursor: pointer; color: #0a1c2f;
+    }
+    .dd-filter-row select:focus { outline: none; border-color: #2b4a73; }
+
+    /* toggle switch */
     .filter-toggle {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 16px; font-size: 13px; color: #0a1c2f;
+      padding: 7px 16px; font-size: 13px; color: #0a1c2f; gap: 10px;
     }
-    .toggle-switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+    .toggle-switch { position: relative; display: inline-block; width: 34px; height: 18px; flex-shrink: 0; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .toggle-slider {
       position: absolute; cursor: pointer; inset: 0;
-      background: #ccc; transition: .4s; border-radius: 34px;
+      background: #ccc; transition: .3s; border-radius: 34px;
     }
     .toggle-slider:before {
       position: absolute; content: ""; height: 14px; width: 14px;
-      left: 2px; bottom: 2px; background: white; transition: .4s; border-radius: 50%;
+      left: 2px; bottom: 2px; background: white; transition: .3s; border-radius: 50%;
     }
     input:checked + .toggle-slider { background: #0a1c2f; }
     input:checked + .toggle-slider:before { transform: translateX(16px); }
 
-    /* filters */
-    .sticky-filters { padding: 0 18px 8px; }
-    .filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .search-wrap { flex: 1 1 220px; }
-    .search-wrap input {
-      padding: 6px 12px; border-radius: 30px; background: #fff; color: #0a1c2f;
-      font-size: 13px; width: 100%; max-width: 400px; border: 1px solid #b3c7e0;
-    }
-    .search-wrap input:focus { outline: none; border-color: #2b4a73; }
-    select.fsel {
-      padding: 5px 10px; border-radius: 30px; border: 1px solid #b3c7e0;
-      background: white; font-size: 13px; cursor: pointer;
-    }
-    select.fsel:focus { outline: none; border-color: #2b4a73; }
+    /* collapsible filter sections */
+    .dd-filter-section { overflow: hidden; }
+    .dd-filter-section.collapsed { display: none; }
+
     .hide { display: none !important; }
 
-    /* form */
+    /* ── ENTRY FORM ── */
     .entry-form {
       display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: flex-end;
-      margin: 12px 18px 10px; background: #fff; border-radius: 6px;
-      padding: 12px 9px 10px; font-size: 13px; border: 2px solid #1f3d62;
+      margin: 10px 14px; background: #fff; border-radius: 6px;
+      padding: 12px 10px; font-size: 13px; border: 2px solid #1f3d62;
+      width: calc(100% - 28px);
     }
-    .entry-form label { font-weight: bold; color: #1f3d62; display: block; margin-bottom: 3px; }
+    .entry-form > div { display: flex; flex-direction: column; }
+    .entry-form label { font-weight: bold; color: #1f3d62; margin-bottom: 3px; font-size: 12px; }
     .entry-form input, .entry-form textarea {
       padding: 5px 10px; font-size: 13px; border-radius: 4px;
       border: 1px solid #b3c7e0; background: #fff; color: #0a1c2f;
+      min-width: 0;
     }
-    .entry-form textarea { resize: vertical; min-height: 36px; }
+    .entry-form input[type="date"]    { width: 140px; }
+    .entry-form input[type="text"]    { width: 130px; }
+    .entry-form input[type="number"]  { width: 100px; }
+    .entry-form textarea { resize: vertical; min-height: 36px; width: 200px; }
     .entry-form .submit-btn {
       background: #0a1c2f; color: #fff; border: none;
       cursor: pointer; font-weight: bold; padding: 6px 16px; border-radius: 4px;
@@ -140,21 +202,31 @@
     .entry-form .submit-btn:hover { background: #1f3d62; }
     .entry-form .cancel-btn {
       background: #7f96b3; color: #fff; border: none;
-      cursor: pointer; font-weight: bold; padding: 6px 16px; border-radius: 4px; margin-left: 5px;
+      cursor: pointer; font-weight: bold; padding: 6px 14px; border-radius: 4px; margin-left: 5px;
     }
-    .form-error { color: #b52b2b; width: 100%; font-size: 12px; }
+    .form-error { color: #b52b2b; width: 100%; font-size: 12px; margin-top: 2px; }
 
-    /* table */
-    .table-wrap { flex: 1; width: 100%; overflow-x: auto; padding: 0 18px 18px; }
-    table { width: 100%; border-collapse: collapse; background: #fff; font-size: 13px; }
-    th, td { padding: 10px 6px; text-align: left; font-size: 13px; }
+    /* ── TABLE ── */
+    .table-wrap {
+      flex: 1; width: 100%; overflow-x: auto;
+      padding: 0 0 20px 0;
+      -webkit-overflow-scrolling: touch;
+    }
+    table {
+      width: 100%; border-collapse: collapse;
+      background: #fff; font-size: 13px;
+      min-width: 480px;
+    }
+    th, td { padding: 10px 8px; text-align: left; font-size: 13px; }
     th {
       font-weight: 700; background: #d4e2f2;
       position: sticky; top: 0; z-index: 10;
       color: #0a1c2f; border-bottom: 2px solid #1f3d62;
+      white-space: nowrap;
     }
     tr:nth-child(even) { background: #f9f9f9; }
     tr:hover { background: #e3ecf7; }
+
     tr.week-start-row { background: #e6efff !important; border-top: 2px solid #1f3d62; }
     tr.week-start-row td { font-style: italic; color: #1f3d62; font-size: 12px; }
 
@@ -164,116 +236,143 @@
     .bl { font-weight: 700; color: #1565c0; }
     .bl.neg { color: #c0392b; }
 
-    /* row action menu */
-    .action-cell { position: relative; width: 40px; text-align: center; }
+    /* ── ROW ACTION MENU ── */
+    .action-cell { position: relative; width: 36px; text-align: center; }
     .action-btn {
-      background: none; border: none; cursor: pointer; font-size: 16px;
-      color: #2b4a73; padding: 2px 6px; border-radius: 4px;
+      background: none; border: none; cursor: pointer; font-size: 15px;
+      color: #2b4a73; padding: 3px 6px; border-radius: 4px;
     }
     .action-btn:hover { background: #e6efff; }
     .row-dd {
-      display: none; position: absolute; right: 25px; top: 0;
+      display: none; position: absolute; right: 0; top: 100%;
       background: white; min-width: 130px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 4px;
-      z-index: 100; border: 2px solid #1f3d62;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15); border-radius: 6px;
+      z-index: 200; border: 1.5px solid #1f3d62;
     }
     .row-dd.show { display: block; }
     .row-dd-item {
-      color: #0a1c2f; padding: 8px 12px; display: block; font-size: 13px;
-      cursor: pointer; transition: background 0.2s; border: none; background: none; width: 100%; text-align: left;
+      color: #0a1c2f; padding: 9px 13px; display: block; font-size: 13px;
+      cursor: pointer; transition: background 0.15s;
+      border: none; background: none; width: 100%; text-align: left;
     }
     .row-dd-item:hover { background: #e6efff; }
     .row-dd-item.delete:hover { background: #ffe5e5; color: #cc0000; }
 
-    @media (max-width: 700px) {
-      .filter-bar { flex-direction: column; align-items: stretch; }
-      .entry-form { margin: 10px; }
-      .table-wrap { padding: 0 8px 12px; }
+    /* ── MOBILE ── */
+    @media (max-width: 600px) {
+      .panel-heading { font-size: 14px; padding: 0 10px; }
+      .panel-controls { padding: 7px 10px; gap: 6px; }
+      .entry-form { margin: 8px 10px; width: calc(100% - 20px); padding: 10px 8px; }
+      .entry-form input[type="date"],
+      .entry-form input[type="text"],
+      .entry-form input[type="number"],
+      .entry-form textarea { width: 100% !important; }
+      .entry-form > div { width: 100%; }
+      .entry-form > div:last-of-type { flex-direction: row; align-items: flex-end; flex-wrap: wrap; gap: 6px; }
+      th, td { padding: 8px 5px; font-size: 12px; }
+      .table-wrap { padding-bottom: 16px; }
+      .dropdown-content { right: 0; min-width: 200px; }
     }
   </style>
 </head>
 <body>
 <div class="panel">
 
+  <!-- ══ STICKY HEADER ══ -->
   <div class="panel-top-sticky">
-
-    <!-- heading -->
     <div class="panel-heading">
-      <span id="pageTitle">Cash Ledger</span>
-      <span class="branch-tag" id="branchTag">Loading…</span>
-    </div>
-
-    <!-- summary -->
-    <div class="summary-bar">
-      <div class="sum-pill">
-        <span class="slabel">Total Debit</span>
-        <span class="sval debit" id="sumDebit">0.00</span>
-      </div>
-      <div class="sum-pill">
-        <span class="slabel">Total Credit</span>
-        <span class="sval credit" id="sumCredit">0.00</span>
-      </div>
-      <div class="sum-pill">
-        <span class="slabel">Balance</span>
-        <span class="sval bal" id="sumBal">0.00</span>
+      <div class="title-wrap">
+        <span id="pageTitle">Cash Ledger</span>
+        <span class="branch-tag" id="branchTag">Loading…</span>
       </div>
     </div>
 
     <!-- controls -->
     <div class="panel-controls">
       <button id="toggleFormBtn" class="ctrl-btn"><i class="fa fa-plus"></i> Transaction</button>
-      <div class="dropdown">
+
+      <!-- search -->
+      <input type="text" id="searchInput" class="search-input" placeholder="Search description, ref…">
+
+      <!-- options dropdown -->
+      <div class="dropdown" style="margin-left:auto;">
         <button class="dropdown-btn" id="optBtn"><i class="fa fa-ellipsis-v"></i> Options</button>
         <div class="dropdown-content" id="optMenu">
+
+          <!-- PDF -->
           <button class="dropdown-item" id="pdfBtn"><i class="fa fa-download"></i> Download PDF</button>
+
+          <!-- week b/f toggle -->
           <button class="dropdown-item" id="weekBfBtn"><i class="fa fa-calendar"></i> Hide week b/f</button>
+
           <div class="dropdown-divider"></div>
+
+          <!-- By week toggle -->
           <div class="filter-toggle">
-            <span>Week filter</span>
-            <label class="toggle-switch"><input type="checkbox" id="weekToggle"><span class="toggle-slider"></span></label>
+            <span>By week filter</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="weekToggle">
+              <span class="toggle-slider"></span>
+            </label>
           </div>
+          <div class="dd-filter-section collapsed" id="weekSection">
+            <div class="dd-filter-row">
+              <label>Week</label>
+              <select id="weekSel"><option value="ALL">All weeks</option></select>
+            </div>
+          </div>
+
+          <div class="dropdown-divider"></div>
+
+          <!-- By month toggle -->
           <div class="filter-toggle">
-            <span>Month filter</span>
-            <label class="toggle-switch"><input type="checkbox" id="monthToggle"><span class="toggle-slider"></span></label>
+            <span>By month filter</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="monthToggle">
+              <span class="toggle-slider"></span>
+            </label>
           </div>
+          <div class="dd-filter-section collapsed" id="monthSection">
+            <div class="dd-filter-row">
+              <label>Month</label>
+              <select id="monthSel"></select>
+              <select id="yearSel" style="max-width:75px;"></select>
+            </div>
+          </div>
+
+          <div class="dropdown-divider"></div>
+
+          <!-- Type filter toggle -->
+          <div class="filter-toggle">
+            <span>Type filter</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="typeToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="dd-filter-section collapsed" id="typeSection">
+            <div class="dd-filter-row">
+              <label>Type</label>
+              <select id="typeSel">
+                <option value="all">All types</option>
+                <option value="debit">Debits</option>
+                <option value="credit">Credits</option>
+              </select>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
+  </div><!-- /panel-top-sticky -->
 
-    <!-- filter bar -->
-    <div class="sticky-filters">
-      <div class="filter-bar">
-        <div class="search-wrap">
-          <input type="text" id="searchInput" placeholder="Search description, ref…">
-        </div>
-        <div id="weekFilterWrap" class="hide">
-          <select id="weekSel" class="fsel"><option value="ALL">All weeks</option></select>
-        </div>
-        <div id="monthFilterWrap" class="hide">
-          <select id="monthSel" class="fsel"></select>
-          <select id="yearSel" class="fsel"></select>
-        </div>
-        <select id="periodSel" class="fsel" style="max-width:155px;">
-          <option value="all">All time</option>
-          <option value="week" selected>By week number</option>
-          <option value="month">By month</option>
-        </select>
-        <select id="typeSel" class="fsel" style="max-width:130px;">
-          <option value="all">All types</option>
-          <option value="debit">Debits</option>
-          <option value="credit">Credits</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <!-- entry form -->
+  <!-- ══ ENTRY FORM ══ -->
   <form id="entryForm" class="entry-form hide" autocomplete="off">
     <div><label>Date</label><input type="date" id="fDate" required></div>
-    <div><label>Description</label><textarea id="fDesc" placeholder="Description" style="width:220px;"></textarea></div>
-    <div><label>Ref</label><input type="text" id="fRef" placeholder="Invoice / reference" style="width:130px;"></div>
-    <div><label>Debit</label><input type="number" min="0" id="fDebit" value="0" step="0.01" style="width:110px;"></div>
-    <div><label>Credit</label><input type="number" min="0" id="fCredit" value="0" step="0.01" style="width:110px;"></div>
+    <div><label>Description</label><textarea id="fDesc" placeholder="Description"></textarea></div>
+    <div><label>Ref</label><input type="text" id="fRef" placeholder="Invoice / ref"></div>
+    <div><label>Debit</label><input type="number" min="0" id="fDebit" value="0" step="0.01"></div>
+    <div><label>Credit</label><input type="number" min="0" id="fCredit" value="0" step="0.01"></div>
     <div style="align-self:flex-end;">
       <button type="submit" id="saveBtn" class="submit-btn">Add</button>
       <button type="button" id="cancelBtn" class="cancel-btn hide">Cancel</button>
@@ -281,14 +380,18 @@
     <div id="formError" class="form-error"></div>
   </form>
 
-  <!-- table -->
+  <!-- ══ TABLE ══ -->
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th>Date</th><th>Description</th><th>Ref</th>
-          <th class="text-right">Debit</th><th class="text-right">Credit</th>
-          <th class="text-right">Balance</th><th class="action-cell">Act.</th>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Ref</th>
+          <th class="text-right">Debit</th>
+          <th class="text-right">Credit</th>
+          <th class="text-right">Balance</th>
+          <th class="action-cell">Act.</th>
         </tr>
       </thead>
       <tbody id="tBody">
@@ -297,15 +400,16 @@
     </table>
   </div>
 
-</div>
+</div><!-- /panel -->
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+  import { initializeApp }  from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
   import {
     getFirestore, collection, addDoc, updateDoc, deleteDoc,
     doc, onSnapshot, Timestamp, query, orderBy, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
+  /* ── Firebase config (same project as inventory) ── */
   const firebaseConfig = {
     apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
     authDomain: "trismartstores.firebaseapp.com",
@@ -318,236 +422,357 @@
   const db  = getFirestore(app);
   const COL = "cash_ledger";
 
+  /* ── Branch ── */
   const branchId = localStorage.getItem('branchId');
-  if (!branchId) { alert('Branch ID not found. Please select a branch.'); window.location.href='dashboard.html'; }
-  const NAMES = { "makeni":"Kabanana Branch", "kabana":"Makeni Branch" };
+  if (!branchId) { alert('Branch ID not found. Please select a branch.'); window.location.href = 'dashboard.html'; }
+  const NAMES = { "makeni": "Kabanana Branch", "kabana": "Makeni Branch" };
   const branchName = NAMES[branchId] || branchId;
-  document.getElementById('branchTag').textContent = branchName;
-  document.getElementById('pageTitle').textContent = `Cash Ledger — ${branchName}`;
+  document.getElementById('branchTag').textContent  = branchName;
+  document.getElementById('pageTitle').textContent  = `Cash Ledger — ${branchName}`;
 
-  // dom
-  const tBody         = document.getElementById('tBody');
-  const entryForm     = document.getElementById('entryForm');
-  const toggleFormBtn = document.getElementById('toggleFormBtn');
-  const fDate         = document.getElementById('fDate');
-  const fDesc         = document.getElementById('fDesc');
-  const fRef          = document.getElementById('fRef');
-  const fDebit        = document.getElementById('fDebit');
-  const fCredit       = document.getElementById('fCredit');
-  const saveBtn       = document.getElementById('saveBtn');
-  const cancelBtn     = document.getElementById('cancelBtn');
-  const formError     = document.getElementById('formError');
-  const searchInput   = document.getElementById('searchInput');
-  const weekSel       = document.getElementById('weekSel');
-  const monthSel      = document.getElementById('monthSel');
-  const yearSel       = document.getElementById('yearSel');
-  const periodSel     = document.getElementById('periodSel');
-  const typeSel       = document.getElementById('typeSel');
-  const optBtn        = document.getElementById('optBtn');
-  const optMenu       = document.getElementById('optMenu');
-  const pdfBtn        = document.getElementById('pdfBtn');
-  const weekBfBtn     = document.getElementById('weekBfBtn');
+  /* ── Auth: only Chris can edit/delete ── */
+  const ALLOWED_USER = 'Chris';
+  function checkUser() {
+    const name = prompt('Enter your username:');
+    if (!name) return false;
+    if (name.trim().toLowerCase() !== ALLOWED_USER.toLowerCase()) {
+      alert(`Access denied. Only ${ALLOWED_USER} can perform this action.`);
+      return false;
+    }
+    return true;
+  }
+
+  /* ── DOM ── */
+  const tBody        = document.getElementById('tBody');
+  const entryForm    = document.getElementById('entryForm');
+  const toggleFormBtn= document.getElementById('toggleFormBtn');
+  const fDate        = document.getElementById('fDate');
+  const fDesc        = document.getElementById('fDesc');
+  const fRef         = document.getElementById('fRef');
+  const fDebit       = document.getElementById('fDebit');
+  const fCredit      = document.getElementById('fCredit');
+  const saveBtn      = document.getElementById('saveBtn');
+  const cancelBtn    = document.getElementById('cancelBtn');
+  const formError    = document.getElementById('formError');
+  const searchInput  = document.getElementById('searchInput');
+  const weekSel      = document.getElementById('weekSel');
+  const monthSel     = document.getElementById('monthSel');
+  const yearSel      = document.getElementById('yearSel');
+  const typeSel      = document.getElementById('typeSel');
+  const optBtn       = document.getElementById('optBtn');
+  const optMenu      = document.getElementById('optMenu');
+  const pdfBtn       = document.getElementById('pdfBtn');
+  const weekBfBtn    = document.getElementById('weekBfBtn');
+  const weekToggle   = document.getElementById('weekToggle');
+  const monthToggle  = document.getElementById('monthToggle');
+  const typeToggle   = document.getElementById('typeToggle');
+  const weekSection  = document.getElementById('weekSection');
+  const monthSection = document.getElementById('monthSection');
+  const typeSection  = document.getElementById('typeSection');
 
   let all = [], filtered = [];
   let editId = null, formOpen = false, activeMenu = null, showWkBf = true;
 
-  // ── week helpers ──
-  function getWN(d){d=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));d.setUTCDate(d.getUTCDate()+4-(d.getUTCDay()||7));const y=new Date(Date.UTC(d.getUTCFullYear(),0,1));return Math.ceil((((d-y)/86400000)+1)/7);}
-  function getWY(date){let d=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()));d.setUTCDate(d.getUTCDate()+4-(d.getUTCDay()||7));return{week:getWN(date),year:d.getUTCFullYear()};}
-  function monOfWeek(year,week){const j4=new Date(year,0,4);const dow=j4.getDay()||7;const w1=new Date(j4);w1.setDate(j4.getDate()-(dow-1));const m=new Date(w1);m.setDate(w1.getDate()+(week-1)*7);m.setHours(0,0,0,0);return m;}
-  function wk(y,w){return`${y}-${String(w).padStart(2,'0')}`;}
-  function esc(s){return s?.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m])??'';}
-  function fmtDate(d){return d.toISOString().split('T')[0].split('-').reverse().join('/');}
-  function fmt(n){return Number(n).toFixed(2);}
-
-  // ── populate selects ──
-  function buildWeekSel(){
-    const s=new Set();all.forEach(tx=>{const wy=getWY(tx.date);s.add(`${wy.year}-${wy.week}`);});
-    const arr=[...s].map(x=>({y:+x.split('-')[0],w:+x.split('-')[1]})).sort((a,b)=>b.y-a.y||b.w-a.w);
-    weekSel.innerHTML='<option value="ALL">All weeks</option>'+arr.map(x=>`<option value="${x.y}-${x.w}">Week ${x.w}, ${x.y}</option>`).join('');
+  /* ── Helpers ── */
+  function getWN(d) {
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const y = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d - y) / 86400000) + 1) / 7);
   }
-  function buildMonthSel(){
-    const years=[...new Set(all.map(tx=>tx.date.getFullYear()))].sort((a,b)=>b-a);
-    const mn=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    monthSel.innerHTML='<option value="all">All months</option>'+mn.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('');
-    yearSel.innerHTML=years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  function getWY(date) {
+    let d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    return { week: getWN(date), year: d.getUTCFullYear() };
+  }
+  function monOfWeek(year, week) {
+    const j4 = new Date(year, 0, 4);
+    const dow = j4.getDay() || 7;
+    const w1 = new Date(j4); w1.setDate(j4.getDate() - (dow - 1));
+    const m = new Date(w1); m.setDate(w1.getDate() + (week - 1) * 7);
+    m.setHours(0, 0, 0, 0); return m;
+  }
+  function wk(y, w) { return `${y}-${String(w).padStart(2, '0')}`; }
+  function esc(s) { return s?.replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]) ?? ''; }
+  function fmtDate(d) { return d.toISOString().split('T')[0].split('-').reverse().join('/'); }
+  function fmt(n) { return Number(n).toFixed(2); }
+
+  /* ── Populate selects ── */
+  function buildWeekSel() {
+    const s = new Set();
+    all.forEach(tx => { const wy = getWY(tx.date); s.add(`${wy.year}-${wy.week}`); });
+    const arr = [...s].map(x => ({ y: +x.split('-')[0], w: +x.split('-')[1] })).sort((a, b) => b.y - a.y || b.w - a.w);
+    weekSel.innerHTML = '<option value="ALL">All weeks</option>' + arr.map(x => `<option value="${x.y}-${x.w}">Week ${x.w}, ${x.y}</option>`).join('');
+  }
+  function buildMonthSel() {
+    const years = [...new Set(all.map(tx => tx.date.getFullYear()))].sort((a, b) => b - a);
+    const mn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    monthSel.innerHTML = '<option value="all">All months</option>' + mn.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
+    yearSel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
   }
 
-  // ── filter ──
-  function doFilter(){
-    let f=[...all];
-    const q=searchInput.value.trim().toLowerCase();
-    if(q)f=f.filter(tx=>(tx.description+' '+(tx.ref||'')).toLowerCase().includes(q));
-    const p=periodSel.value;
-    if(p==='week'&&weekSel.value!=='ALL'){
-      const[y,w]=weekSel.value.split('-').map(Number);
-      const s=monOfWeek(y,w),e=new Date(s);e.setDate(s.getDate()+6);e.setHours(23,59,59,999);
-      f=f.filter(tx=>tx.date>=s&&tx.date<=e);
-    }else if(p==='month'&&monthSel.value!=='all'&&yearSel.value){
-      const y=+yearSel.value,m=+monthSel.value-1;
-      const s=new Date(y,m,1);s.setHours(0,0,0,0);
-      const e=new Date(y,m+1,0);e.setHours(23,59,59,999);
-      f=f.filter(tx=>tx.date>=s&&tx.date<=e);
+  /* ── Filter ── */
+  function doFilter() {
+    let f = [...all];
+    const q = searchInput.value.trim().toLowerCase();
+    if (q) f = f.filter(tx => (tx.description + ' ' + (tx.ref || '')).toLowerCase().includes(q));
+
+    // week filter (only if toggled on and a specific week chosen)
+    if (weekToggle.checked && weekSel.value !== 'ALL') {
+      const [y, w] = weekSel.value.split('-').map(Number);
+      const s = monOfWeek(y, w), e = new Date(s);
+      e.setDate(s.getDate() + 6); e.setHours(23, 59, 59, 999);
+      f = f.filter(tx => tx.date >= s && tx.date <= e);
     }
-    if(typeSel.value==='debit')f=f.filter(tx=>tx.debit>0);
-    if(typeSel.value==='credit')f=f.filter(tx=>tx.credit>0);
-    f.sort((a,b)=>a.date-b.date);
-    filtered=f;
+
+    // month filter (only if toggled on)
+    if (monthToggle.checked && monthSel.value !== 'all' && yearSel.value) {
+      const y = +yearSel.value, m = +monthSel.value - 1;
+      const s = new Date(y, m, 1); s.setHours(0, 0, 0, 0);
+      const e = new Date(y, m + 1, 0); e.setHours(23, 59, 59, 999);
+      f = f.filter(tx => tx.date >= s && tx.date <= e);
+    }
+
+    // type filter (only if toggled on)
+    if (typeToggle.checked) {
+      if (typeSel.value === 'debit')  f = f.filter(tx => tx.debit > 0);
+      if (typeSel.value === 'credit') f = f.filter(tx => tx.credit > 0);
+    }
+
+    f.sort((a, b) => a.date - b.date);
+    filtered = f;
     render();
   }
 
-  // ── render ──
-  function render(){
-    let td=0,tc=0;
-    filtered.forEach(tx=>{td+=tx.debit;tc+=tx.credit;});
-    const bal=tc-td;
-    document.getElementById('sumDebit').textContent=fmt(td);
-    document.getElementById('sumCredit').textContent=fmt(tc);
-    const bEl=document.getElementById('sumBal');
-    bEl.textContent=fmt(bal);
-    bEl.className='sval bal'+(bal<0?' neg':'');
-
-    if(!filtered.length){tBody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:30px;color:#7f96b3;">No transactions found.</td></tr>`;return;}
-
-    let rows='',rb=0;
-    if(!showWkBf){
-      filtered.forEach(tx=>{rb+=(tx.credit-tx.debit);rows+=row(tx,rb);});
-      tBody.innerHTML=rows;attach();return;
+  /* ── Render table ── */
+  function render() {
+    if (!filtered.length) {
+      tBody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:#7f96b3;">No transactions found.</td></tr>`;
+      return;
     }
-    const wm=new Map();
-    filtered.forEach(tx=>{const wy=getWY(tx.date);const k=wk(wy.year,wy.week);if(!wm.has(k))wm.set(k,{y:wy.year,w:wy.week,txns:[]});wm.get(k).txns.push(tx);});
-    [...wm.keys()].sort().forEach(k=>{
-      const{y,w,txns}=wm.get(k);
-      rows+=`<tr class="week-start-row"><td colspan="3">↳ <strong>Week ${w}, ${y} — starting balance</strong></td><td class="text-right">—</td><td class="text-right">—</td><td class="text-right"><strong>${fmt(rb)}</strong></td><td></td></tr>`;
-      txns.sort((a,b)=>a.date-b.date).forEach(tx=>{rb+=(tx.credit-tx.debit);rows+=row(tx,rb);});
+
+    let rows = '', rb = 0;
+
+    if (!showWkBf) {
+      filtered.forEach(tx => { rb += (tx.credit - tx.debit); rows += buildRow(tx, rb); });
+      tBody.innerHTML = rows; attachMenus(); return;
+    }
+
+    // group by ISO week
+    const wm = new Map();
+    filtered.forEach(tx => {
+      const wy = getWY(tx.date);
+      const k = wk(wy.year, wy.week);
+      if (!wm.has(k)) wm.set(k, { y: wy.year, w: wy.week, txns: [] });
+      wm.get(k).txns.push(tx);
     });
-    tBody.innerHTML=rows;attach();
+    [...wm.keys()].sort().forEach(k => {
+      const { y, w, txns } = wm.get(k);
+      rows += `<tr class="week-start-row">
+        <td colspan="3">↳ <strong>Week ${w}, ${y} — starting balance</strong></td>
+        <td class="text-right">—</td><td class="text-right">—</td>
+        <td class="text-right"><strong>${fmt(rb)}</strong></td><td></td>
+      </tr>`;
+      txns.sort((a, b) => a.date - b.date).forEach(tx => { rb += (tx.credit - tx.debit); rows += buildRow(tx, rb); });
+    });
+    tBody.innerHTML = rows;
+    attachMenus();
   }
 
-  function row(tx,bal){
-    return`<tr>
+  function buildRow(tx, bal) {
+    return `<tr>
       <td>${fmtDate(tx.date)}</td>
       <td>${esc(tx.description)}</td>
-      <td>${esc(tx.ref||'—')}</td>
-      <td class="text-right">${tx.debit?`<span class="dr">${fmt(tx.debit)}</span>`:''}</td>
-      <td class="text-right">${tx.credit?`<span class="cr">${fmt(tx.credit)}</span>`:''}</td>
-      <td class="text-right"><span class="bl${bal<0?' neg':''}">${fmt(bal)}</span></td>
+      <td>${esc(tx.ref || '—')}</td>
+      <td class="text-right">${tx.debit  ? `<span class="dr">${fmt(tx.debit)}</span>`  : ''}</td>
+      <td class="text-right">${tx.credit ? `<span class="cr">${fmt(tx.credit)}</span>` : ''}</td>
+      <td class="text-right"><span class="bl${bal < 0 ? ' neg' : ''}">${fmt(bal)}</span></td>
       <td class="action-cell">
         <button class="action-btn" data-id="${tx.id}"><i class="fa fa-ellipsis-v"></i></button>
-        <div class="row-dd" data-mid="${tx.id}">
+        <div class="row-dd" id="rdd-${tx.id}">
           <button class="row-dd-item editItem" data-id="${tx.id}"><i class="fa fa-edit"></i> Edit</button>
           <button class="row-dd-item delete deleteItem" data-id="${tx.id}"><i class="fa fa-trash"></i> Delete</button>
         </div>
-      </td></tr>`;
+      </td>
+    </tr>`;
   }
 
-  function attach(){
-    document.querySelectorAll('#tBody .action-btn').forEach(btn=>{
-      btn.addEventListener('click',e=>{
+  function attachMenus() {
+    // dots button
+    document.querySelectorAll('#tBody .action-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
         e.stopPropagation();
-        const m=btn.nextElementSibling;
-        if(activeMenu===m){m.classList.remove('show');activeMenu=null;}
-        else{if(activeMenu)activeMenu.classList.remove('show');m.classList.add('show');activeMenu=m;}
+        const m = document.getElementById(`rdd-${btn.dataset.id}`);
+        if (activeMenu === m) { m.classList.remove('show'); activeMenu = null; }
+        else { if (activeMenu) activeMenu.classList.remove('show'); m.classList.add('show'); activeMenu = m; }
       });
     });
-    document.querySelectorAll('#tBody .editItem').forEach(btn=>{
-      btn.addEventListener('click',e=>{
+
+    // edit
+    document.querySelectorAll('#tBody .editItem').forEach(btn => {
+      btn.addEventListener('click', e => {
         e.stopPropagation();
-        if(activeMenu){activeMenu.classList.remove('show');activeMenu=null;}
-        const pass=prompt('Enter password to edit:');
-        if(pass!=='1030'){alert('Incorrect password.');return;}
-        const tx=all.find(t=>t.id===btn.dataset.id);
-        if(tx)openEdit(tx);
+        closeMenu();
+        if (!checkUser()) return;
+        const tx = all.find(t => t.id === btn.dataset.id);
+        if (tx) openEdit(tx);
       });
     });
-    document.querySelectorAll('#tBody .deleteItem').forEach(btn=>{
-      btn.addEventListener('click',async e=>{
+
+    // delete
+    document.querySelectorAll('#tBody .deleteItem').forEach(btn => {
+      btn.addEventListener('click', async e => {
         e.stopPropagation();
-        if(activeMenu){activeMenu.classList.remove('show');activeMenu=null;}
-        const pass=prompt('Enter password to delete:');
-        if(pass!=='1030'){alert('Incorrect password.');return;}
-        if(confirm('Delete this transaction?'))await deleteDoc(doc(db,COL,btn.dataset.id));
+        closeMenu();
+        if (!checkUser()) return;
+        if (confirm('Delete this transaction?')) {
+          await deleteDoc(doc(db, COL, btn.dataset.id));
+        }
       });
     });
   }
 
-  // ── form ──
-  toggleFormBtn.addEventListener('click',()=>{
-    formOpen=!formOpen;
-    entryForm.classList.toggle('hide',!formOpen);
-    toggleFormBtn.innerHTML=formOpen?'<i class="fa fa-minus"></i> Hide':'<i class="fa fa-plus"></i> Transaction';
-    if(!formOpen)resetForm();
+  function closeMenu() {
+    if (activeMenu) { activeMenu.classList.remove('show'); activeMenu = null; }
+  }
+
+  /* ── Form ── */
+  toggleFormBtn.addEventListener('click', () => {
+    formOpen = !formOpen;
+    entryForm.classList.toggle('hide', !formOpen);
+    toggleFormBtn.innerHTML = formOpen ? '<i class="fa fa-minus"></i> Hide' : '<i class="fa fa-plus"></i> Transaction';
+    if (!formOpen) resetForm();
   });
-  cancelBtn.addEventListener('click',()=>{resetForm();formOpen=false;entryForm.classList.add('hide');toggleFormBtn.innerHTML='<i class="fa fa-plus"></i> Transaction';});
 
-  function resetForm(){
-    editId=null;entryForm.reset();
-    fDebit.value=0;fCredit.value=0;
-    fDate.value=new Date().toISOString().split('T')[0];
-    saveBtn.innerText='Add';cancelBtn.classList.add('hide');formError.innerText='';
-  }
-  function openEdit(tx){
-    editId=tx.id;
-    fDate.value=tx.date.toISOString().split('T')[0];
-    fDesc.value=tx.description||'';fRef.value=tx.ref||'';
-    fDebit.value=tx.debit;fCredit.value=tx.credit;
-    saveBtn.innerText='Update';cancelBtn.classList.remove('hide');
-    if(!formOpen){formOpen=true;entryForm.classList.remove('hide');toggleFormBtn.innerHTML='<i class="fa fa-minus"></i> Hide';}
-    entryForm.scrollIntoView({behavior:'smooth',block:'nearest'});
+  cancelBtn.addEventListener('click', () => {
+    resetForm(); formOpen = false;
+    entryForm.classList.add('hide');
+    toggleFormBtn.innerHTML = '<i class="fa fa-plus"></i> Transaction';
+  });
+
+  function resetForm() {
+    editId = null; entryForm.reset();
+    fDebit.value = 0; fCredit.value = 0;
+    fDate.value = new Date().toISOString().split('T')[0];
+    saveBtn.innerText = 'Add';
+    cancelBtn.classList.add('hide');
+    formError.innerText = '';
   }
 
-  entryForm.addEventListener('submit',async e=>{
+  function openEdit(tx) {
+    editId = tx.id;
+    fDate.value   = tx.date.toISOString().split('T')[0];
+    fDesc.value   = tx.description || '';
+    fRef.value    = tx.ref || '';
+    fDebit.value  = tx.debit;
+    fCredit.value = tx.credit;
+    saveBtn.innerText = 'Update';
+    cancelBtn.classList.remove('hide');
+    if (!formOpen) {
+      formOpen = true;
+      entryForm.classList.remove('hide');
+      toggleFormBtn.innerHTML = '<i class="fa fa-minus"></i> Hide';
+    }
+    entryForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  entryForm.addEventListener('submit', async e => {
     e.preventDefault();
-    const debit=parseFloat(fDebit.value)||0,credit=parseFloat(fCredit.value)||0;
-    if(!fDate.value||!fDesc.value.trim()||(debit===0&&credit===0)){formError.innerText='Please fill in Date, Description, and at least Debit or Credit.';return;}
-    const data={date:Timestamp.fromDate(new Date(fDate.value)),description:fDesc.value.trim(),ref:fRef.value.trim()||'',debit,credit,branchId,updatedAt:serverTimestamp()};
-    try{
-      if(editId)await updateDoc(doc(db,COL,editId),data);
-      else await addDoc(collection(db,COL),{...data,createdAt:serverTimestamp()});
+    const debit  = parseFloat(fDebit.value)  || 0;
+    const credit = parseFloat(fCredit.value) || 0;
+    if (!fDate.value || !fDesc.value.trim() || (debit === 0 && credit === 0)) {
+      formError.innerText = 'Please fill in Date, Description, and at least Debit or Credit.';
+      return;
+    }
+    const data = {
+      date: Timestamp.fromDate(new Date(fDate.value)),
+      description: fDesc.value.trim(),
+      ref: fRef.value.trim() || '',
+      debit, credit, branchId,
+      updatedAt: serverTimestamp()
+    };
+    try {
+      if (editId) await updateDoc(doc(db, COL, editId), data);
+      else await addDoc(collection(db, COL), { ...data, createdAt: serverTimestamp() });
       cancelBtn.click();
-    }catch(err){formError.innerText=err.message;}
+    } catch (err) { formError.innerText = err.message; }
   });
 
-  // ── Firestore listener ──
-  onSnapshot(query(collection(db,COL),orderBy('date','asc')),(snap)=>{
-    all=snap.docs.map(d=>{const x=d.data();return{id:d.id,date:x.date?.toDate()||new Date(),description:x.description||'',ref:x.ref||'',debit:x.debit||0,credit:x.credit||0,branchId:x.branchId||''};}).filter(tx=>tx.branchId===branchId);
-    buildWeekSel();buildMonthSel();doFilter();
-  },err=>{console.error(err);tBody.innerHTML=`<tr><td colspan="7" style="text-align:center;color:red;">Error loading. Refresh.</td></tr>`;});
+  /* ── Firestore listener (filtered by branchId) ── */
+  onSnapshot(
+    query(collection(db, COL), orderBy('date', 'asc')),
+    snap => {
+      all = snap.docs
+        .map(d => { const x = d.data(); return { id: d.id, date: x.date?.toDate() || new Date(), description: x.description || '', ref: x.ref || '', debit: x.debit || 0, credit: x.credit || 0, branchId: x.branchId || '' }; })
+        .filter(tx => tx.branchId === branchId);
+      buildWeekSel(); buildMonthSel(); doFilter();
+    },
+    err => {
+      console.error(err);
+      tBody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:red;">Error loading. Refresh.</td></tr>`;
+    }
+  );
 
-  // ── filter listeners ──
-  searchInput.addEventListener('input',doFilter);
-  periodSel.addEventListener('change',doFilter);
-  weekSel.addEventListener('change',doFilter);
-  monthSel.addEventListener('change',doFilter);
-  yearSel.addEventListener('change',doFilter);
-  typeSel.addEventListener('change',doFilter);
-  document.getElementById('weekToggle').addEventListener('change',e=>{document.getElementById('weekFilterWrap').classList.toggle('hide',!e.target.checked);});
-  document.getElementById('monthToggle').addEventListener('change',e=>{document.getElementById('monthFilterWrap').classList.toggle('hide',!e.target.checked);});
+  /* ── Options dropdown ── */
+  optBtn.addEventListener('click', e => { e.stopPropagation(); optMenu.classList.toggle('show'); });
 
-  weekBfBtn.addEventListener('click',()=>{
-    showWkBf=!showWkBf;
-    weekBfBtn.innerHTML=showWkBf?'<i class="fa fa-calendar"></i> Hide week b/f':'<i class="fa fa-calendar"></i> Show week b/f';
+  /* ── Filter toggles (show/hide sections inside dropdown) ── */
+  weekToggle.addEventListener('change', () => {
+    weekSection.classList.toggle('collapsed', !weekToggle.checked);
+    doFilter();
+  });
+  monthToggle.addEventListener('change', () => {
+    monthSection.classList.toggle('collapsed', !monthToggle.checked);
+    doFilter();
+  });
+  typeToggle.addEventListener('change', () => {
+    typeSection.classList.toggle('collapsed', !typeToggle.checked);
+    doFilter();
+  });
+
+  /* ── Filter change listeners ── */
+  searchInput.addEventListener('input', doFilter);
+  weekSel.addEventListener('change', doFilter);
+  monthSel.addEventListener('change', doFilter);
+  yearSel.addEventListener('change', doFilter);
+  typeSel.addEventListener('change', doFilter);
+
+  /* ── Week b/f toggle ── */
+  weekBfBtn.addEventListener('click', () => {
+    showWkBf = !showWkBf;
+    weekBfBtn.innerHTML = showWkBf
+      ? '<i class="fa fa-calendar"></i> Hide week b/f'
+      : '<i class="fa fa-calendar"></i> Show week b/f';
     render();
   });
 
-  // ── options dropdown ──
-  optBtn.addEventListener('click',e=>{e.stopPropagation();optMenu.classList.toggle('show');});
-
-  // ── PDF ──
-  pdfBtn.addEventListener('click',()=>{
-    if(!filtered.length)return alert('No data to export.');
-    const{jsPDF}=window.jspdf;const p=new jsPDF('landscape');
-    p.setFontSize(16);p.text(`Cash Ledger — ${branchName}`,20,20);
-    let b=0;
-    const body=filtered.map(t=>{b+=(t.credit-t.debit);return[fmtDate(t.date),t.description,t.ref||'—',t.debit?fmt(t.debit):'',t.credit?fmt(t.credit):'',fmt(b)];});
-    p.autoTable({head:[['Date','Description','Ref','Debit','Credit','Balance']],body,startY:30,styles:{fontSize:10},headStyles:{fillColor:[10,28,47]}});
+  /* ── PDF ── */
+  pdfBtn.addEventListener('click', () => {
+    if (!filtered.length) return alert('No data to export.');
+    const { jsPDF } = window.jspdf;
+    const p = new jsPDF('landscape');
+    p.setFontSize(16);
+    p.text(`Cash Ledger — ${branchName}`, 20, 20);
+    let b = 0;
+    const body = filtered.map(t => {
+      b += (t.credit - t.debit);
+      return [fmtDate(t.date), t.description, t.ref || '—', t.debit ? fmt(t.debit) : '', t.credit ? fmt(t.credit) : '', fmt(b)];
+    });
+    p.autoTable({ head: [['Date','Description','Ref','Debit','Credit','Balance']], body, startY: 30, styles: { fontSize: 10 }, headStyles: { fillColor: [10,28,47] } });
     p.save(`cash-ledger-${branchId}.pdf`);
   });
 
-  // ── close all on outside click ──
-  document.addEventListener('click',()=>{if(activeMenu){activeMenu.classList.remove('show');activeMenu=null;}optMenu.classList.remove('show');});
+  /* ── Close all menus on outside click ── */
+  document.addEventListener('click', () => {
+    closeMenu();
+    optMenu.classList.remove('show');
+  });
 
-  fDate.value=new Date().toISOString().split('T')[0];
+  /* ── Keep dropdown open when clicking inside it ── */
+  optMenu.addEventListener('click', e => e.stopPropagation());
+
+  /* ── Init date ── */
+  fDate.value = new Date().toISOString().split('T')[0];
 </script>
 </body>
 </html>
