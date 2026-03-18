@@ -387,12 +387,12 @@
   document.getElementById('pageTitle').textContent  = `Cash Ledger — ${branchName}`;
 
   /* ── Auth: only Chris can edit/delete ── */
-  const ALLOWED_USER = 'Chris@10';
+  const ALLOWED_USER = 'Chris';
   function checkUser() {
     const name = prompt('Enter your username:');
     if (!name) return false;
     if (name.trim().toLowerCase() !== ALLOWED_USER.toLowerCase()) {
-      alert(`Access denied. Only ${ALLOWED_USER} can perform this action.`);
+      alert('Access denied.');
       return false;
     }
     return true;
@@ -640,6 +640,9 @@
       formError.innerText = 'Please fill in Date, Description, and at least Debit or Credit.';
       return;
     }
+    // disable button to prevent duplicates
+    saveBtn.disabled = true;
+    saveBtn.innerText = editId ? 'Saving…' : 'Adding…';
     const data = {
       date: Timestamp.fromDate(new Date(fDate.value)),
       description: fDesc.value.trim(),
@@ -651,7 +654,12 @@
       if (editId) await updateDoc(doc(db, COL, editId), data);
       else await addDoc(collection(db, COL), { ...data, createdAt: serverTimestamp() });
       cancelBtn.click();
-    } catch (err) { formError.innerText = err.message; }
+    } catch (err) {
+      formError.innerText = err.message;
+      // re-enable on error so user can retry
+      saveBtn.disabled = false;
+      saveBtn.innerText = editId ? 'Update' : 'Add';
+    }
   });
 
   /* ── Firestore listener (filtered by branchId) ── */
