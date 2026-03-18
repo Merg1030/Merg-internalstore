@@ -387,7 +387,7 @@
   document.getElementById('pageTitle').textContent  = `Cash Ledger — ${branchName}`;
 
   /* ── Auth: only Chris can edit/delete ── */
-  const ALLOWED_USER = 'Chris';
+  const ALLOWED_USER = 'Chris...';
   function checkUser() {
     const name = prompt('Enter your username:');
     if (!name) return false;
