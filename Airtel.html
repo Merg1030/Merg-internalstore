@@ -4,648 +4,299 @@
   <meta charset="UTF-8">
   <title>Trismart Book of Accounts</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot, deleteDoc, doc, updateDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-    window.initializeApp = initializeApp;
-    window.getFirestore = getFirestore;
-    window.collection = collection;
-    window.addDoc = addDoc;
-    window.query = query;
-    window.where = where;
-    window.onSnapshot = onSnapshot;
-    window.deleteDoc = deleteDoc;
-    window.doc = doc;
-    window.updateDoc = updateDoc;
-    window.getDocs = getDocs;
-    window.writeBatch = writeBatch;
-  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    body { background: #f5f7fa; min-height: 100vh; }
+
+    /* ── TOP HEADER ── */
+    .app-header {
+      background: #0a1c2f; color: white; padding: 0 24px;
+      height: 56px; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
-    
-    body {
-      background: #f5f7fa;
-      min-height: 100vh;
-      padding: 20px;
+    .app-header h1 { font-size: 18px; letter-spacing: 1px; font-weight: 700; }
+    .app-header span { font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; }
+
+    /* ── VIEW SWITCHER ── */
+    .view-container { display: none; }
+    .view-container.active { display: block; }
+
+    /* ══════════════════════════════════════
+       ACCOUNTS VIEW
+    ══════════════════════════════════════ */
+    .accounts-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px 10px; flex-wrap: wrap; gap: 10px;
     }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
+    .accounts-topbar h2 { font-size: 20px; color: #0a1c2f; }
+
+    .btn-primary {
+      background: #1976d2; color: white; border: none; padding: 10px 20px;
+      border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s;
     }
-    
-    /* Header */
-    .header {
-      text-align: center;
-      margin-bottom: 40px;
-      padding-top: 20px;
-    }
-    
-    .header h1 {
-      font-size: 32px;
-      color: #1976d2;
-      margin-bottom: 8px;
-    }
-    
-    .header p {
-      color: #666;
-      font-size: 16px;
-    }
-    
-    /* Top Bar */
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 30px;
-      padding: 0 20px;
-    }
-    
-    .add-btn {
-      background: #1976d2;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    .add-btn:hover {
-      background: #1565c0;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(25, 118, 210, 0.2);
-    }
-    
-    /* Category Filter */
+    .btn-primary:hover { background: #1565c0; transform: translateY(-1px); }
+
     .category-filter {
-      display: flex;
-      gap: 10px;
-      margin: 20px;
-      flex-wrap: wrap;
+      display: flex; gap: 8px; padding: 8px 24px 16px; flex-wrap: wrap;
     }
-    
     .filter-btn {
-      padding: 8px 16px;
-      border-radius: 20px;
-      border: 2px solid #ddd;
-      background: white;
-      color: #666;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s;
+      padding: 7px 16px; border-radius: 20px; border: 2px solid #ddd;
+      background: white; color: #666; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.2s;
     }
-    
-    .filter-btn:hover {
-      border-color: #1976d2;
-      color: #1976d2;
-    }
-    
-    .filter-btn.active {
-      background: #1976d2;
-      color: white;
-      border-color: #1976d2;
-    }
-    
-    .category-tag {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-top: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    .category-business {
-      background: #e3f2fd;
-      color: #1565c0;
-    }
-    
-    .category-personal {
-      background: #f3e5f5;
-      color: #7b1fa2;
-    }
-    
-    .category-general {
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
-    
-    /* Form */
+    .filter-btn:hover { border-color: #1976d2; color: #1976d2; }
+    .filter-btn.active { background: #1976d2; color: white; border-color: #1976d2; }
+
+    /* Add account form */
     .account-form {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      margin: 0 20px 30px 20px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-      display: none;
-      border: 2px solid transparent;
-      transition: all 0.3s ease;
+      background: white; border-radius: 10px; padding: 18px 20px;
+      margin: 0 24px 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+      display: none; border: 2px solid #1976d2;
     }
-    
-    .account-form.active {
-      display: block;
-      border-color: #1976d2;
-    }
-    
-    .form-row {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-    }
-    
+    .account-form.active { display: block; }
+    .form-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .form-row input, .form-row select {
-      flex: 1;
-      padding: 14px 16px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      outline: none;
-      font-size: 15px;
-      color: #333;
-      transition: border-color 0.3s;
-      background: white;
+      flex: 1; min-width: 160px; padding: 10px 14px; border-radius: 7px;
+      border: 1px solid #ddd; font-size: 14px; outline: none; background: white; color: #333;
     }
-    
-    .form-row input:focus, .form-row select:focus {
-      border-color: #1976d2;
-      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
-    }
-    
-    .form-row button {
-      background: #1976d2;
-      color: white;
-      border: none;
-      padding: 14px 28px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: background 0.3s;
-      white-space: nowrap;
-    }
-    
-    .form-row button:hover {
-      background: #1565c0;
-    }
-    
-    /* Accounts Grid */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 25px;
-      padding: 20px;
-    }
-    
+    .form-row input:focus, .form-row select:focus { border-color: #1976d2; }
+    .form-row button { background: #1976d2; color: white; border: none; padding: 10px 22px; border-radius: 7px; font-weight: 600; font-size: 14px; cursor: pointer; }
+    .form-row button:hover { background: #1565c0; }
+
+    /* Cards grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 20px; padding: 0 24px 40px; }
+
     .card {
-      background: white;
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-      text-decoration: none;
-      color: #333;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      position: relative;
+      background: white; border-radius: 12px; padding: 26px 24px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.07); border: 2px solid transparent;
+      transition: all 0.25s; display: flex; flex-direction: column; align-items: center;
+      position: relative; cursor: pointer; text-align: center;
     }
-    
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-      border-color: #1976d2;
-    }
-    
-    .icon {
-      width: 70px;
-      height: 70px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      color: white;
-      margin-bottom: 20px;
-      font-weight: bold;
+    .card:hover { transform: translateY(-4px); box-shadow: 0 8px 22px rgba(0,0,0,0.12); border-color: #1976d2; }
+
+    .card-icon {
+      width: 64px; height: 64px; border-radius: 12px; display: flex; align-items: center;
+      justify-content: center; font-size: 24px; font-weight: 700; color: white; margin-bottom: 14px;
       background: linear-gradient(135deg, #1976d2, #1565c0);
     }
-    
-    .card h2 {
-      font-size: 22px;
-      margin-bottom: 10px;
-      color: #333;
+    .card h2 { font-size: 18px; color: #0a1c2f; margin-bottom: 6px; }
+    .card-balance { font-size: 22px; font-weight: 700; color: #0a1c2f; margin: 8px 0; }
+    .card-balance.negative { color: #e53935; }
+    .card-balance.positive { color: #2e7d32; }
+    .card-txn-count { font-size: 12px; color: #888; margin-bottom: 14px; }
+
+    .category-tag {
+      display: inline-block; padding: 3px 12px; border-radius: 12px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;
     }
-    
-    .card p {
-      color: #666;
-      font-size: 15px;
-      line-height: 1.5;
-      margin-bottom: 20px;
-    }
-    
+    .cat-business { background: #e3f2fd; color: #1565c0; }
+    .cat-personal { background: #f3e5f5; color: #7b1fa2; }
+    .cat-general  { background: #e8f5e9; color: #2e7d32; }
+
     .open-btn {
-      background: #1976d2;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      transition: background 0.3s;
-      margin-top: 10px;
-      width: 100%;
-      max-width: 200px;
+      background: #1976d2; color: white; border: none; padding: 10px 0;
+      border-radius: 7px; font-weight: 600; font-size: 14px; cursor: pointer;
+      width: 100%; margin-top: 6px; transition: background 0.2s;
     }
-    
-    .open-btn:hover {
-      background: #1565c0;
-    }
-    
-    /* Card Actions Menu */
-    .card-actions {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      z-index: 10;
-    }
-    
-    .action-menu-btn {
-      background: none;
-      border: none;
-      color: #666;
-      cursor: pointer;
-      font-size: 24px;
-      padding: 5px 10px;
-      border-radius: 4px;
-      transition: all 0.2s;
-    }
-    
-    .action-menu-btn:hover {
-      background: #f0f0f0;
-      color: #333;
-    }
-    
+    .open-btn:hover { background: #1565c0; }
+
+    /* card 3-dot menu */
+    .card-actions { position: absolute; top: 12px; right: 12px; }
+    .action-menu-btn { background: none; border: none; color: #aaa; cursor: pointer; font-size: 22px; padding: 2px 8px; border-radius: 4px; }
+    .action-menu-btn:hover { background: #f0f0f0; color: #333; }
     .action-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      display: none;
-      flex-direction: column;
-      min-width: 150px;
-      z-index: 1000;
-      overflow: hidden;
+      display: none; position: absolute; right: 0; top: 100%; background: white;
+      border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      min-width: 160px; z-index: 200; overflow: hidden;
     }
-    
-    .action-menu.show {
-      display: flex;
-    }
-    
+    .action-menu.show { display: block; }
     .action-menu-item {
-      padding: 12px 16px;
-      background: none;
-      border: none;
-      text-align: left;
-      cursor: pointer;
-      font-size: 14px;
-      color: #333;
-      transition: background 0.2s;
-      border-bottom: 1px solid #f0f0f0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      display: flex; align-items: center; gap: 8px; padding: 11px 15px;
+      background: none; border: none; width: 100%; text-align: left; font-size: 13px;
+      cursor: pointer; color: #333; border-bottom: 1px solid #f0f0f0; transition: background 0.15s;
     }
-    
-    .action-menu-item:last-child {
-      border-bottom: none;
-    }
-    
-    .action-menu-item:hover {
-      background: #f8f9fa;
-    }
-    
-    .action-menu-item.edit {
-      color: #1976d2;
-    }
-    
-    .action-menu-item.delete {
-      color: #e53935;
-    }
-    
-    .action-menu-item.category {
-      color: #4caf50;
-    }
-    
-    /* Empty State */
+    .action-menu-item:last-child { border-bottom: none; }
+    .action-menu-item:hover { background: #f8f9fa; }
+    .action-menu-item.edit { color: #1976d2; }
+    .action-menu-item.delete { color: #e53935; }
+
     .empty-state {
-      background: white;
-      border-radius: 12px;
-      padding: 60px 30px;
-      text-align: center;
-      margin: 20px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-      border: 2px dashed #ddd;
+      background: white; border-radius: 12px; padding: 60px 30px; text-align: center;
+      margin: 0 24px; box-shadow: 0 3px 10px rgba(0,0,0,0.07); border: 2px dashed #ddd; display: none;
     }
-    
-    .empty-state h3 {
-      font-size: 22px;
-      color: #666;
-      margin-bottom: 10px;
+    .empty-state h3 { font-size: 20px; color: #666; margin-bottom: 8px; }
+    .empty-state p { color: #999; font-size: 14px; }
+
+    /* ══════════════════════════════════════
+       TRANSACTIONS VIEW
+    ══════════════════════════════════════ */
+    .txn-view-header {
+      background: #0a1c2f; color: white; padding: 14px 24px;
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
     }
-    
-    .empty-state p {
-      color: #888;
-      font-size: 16px;
-      margin-bottom: 20px;
+    .back-btn {
+      background: rgba(255,255,255,0.12); border: none; color: white; padding: 7px 14px;
+      border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.2s;
+      display: flex; align-items: center; gap: 6px;
     }
-    
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
+    .back-btn:hover { background: rgba(255,255,255,0.22); }
+    .txn-account-title { font-size: 18px; font-weight: 700; }
+    .txn-account-cat { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+    .txn-summary-bar {
+      display: flex; gap: 14px; padding: 14px 24px; flex-wrap: wrap;
+      background: #f0f4f8; border-bottom: 1px solid #dde4ee;
     }
-    
-    .modal.active {
-      display: flex;
+    .summary-chip {
+      background: white; border-radius: 8px; padding: 10px 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07); min-width: 120px;
     }
-    
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      padding: 30px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    .summary-chip .label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #888; }
+    .summary-chip .value { font-size: 20px; font-weight: 700; margin-top: 2px; }
+    .summary-chip .value.debit  { color: #e53935; }
+    .summary-chip .value.credit { color: #2e7d32; }
+    .summary-chip .value.balance { color: #0a1c2f; }
+
+    /* Txn controls */
+    .txn-controls {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 12px 24px; background: white; border-bottom: 1px solid #eee;
+      position: sticky; top: 56px; z-index: 50;
     }
-    
-    .modal-header {
-      margin-bottom: 20px;
+    .txn-ctrl-btn {
+      background: white; color: #0a1c2f; border: 1px solid #b3c7e0; font-size: 13px;
+      padding: 6px 14px; border-radius: 30px; cursor: pointer; font-weight: 600;
+      display: flex; align-items: center; gap: 6px; transition: background 0.15s;
     }
-    
-    .modal-header h3 {
-      font-size: 20px;
-      color: #333;
-      margin-bottom: 5px;
+    .txn-ctrl-btn:hover { background: #e6efff; }
+    .txn-search { flex: 1; min-width: 200px; }
+    .txn-search input {
+      width: 100%; padding: 7px 14px; border-radius: 30px; border: 1px solid #b3c7e0;
+      font-size: 13px; outline: none; background: white;
     }
-    
-    .modal-header p {
-      color: #666;
-      font-size: 14px;
+    .txn-type-filter {
+      padding: 7px 12px; border-radius: 30px; border: 1px solid #b3c7e0;
+      background: white; font-size: 13px; outline: none;
     }
-    
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-top: 25px;
+
+    /* Txn entry form */
+    .txn-form {
+      display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: flex-end;
+      margin: 12px 24px; background: white; border-radius: 8px;
+      padding: 14px 12px 12px; font-size: 13px; border: 2px solid #1976d2;
     }
-    
-    .modal-btn {
-      padding: 10px 20px;
-      border-radius: 6px;
-      border: none;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 14px;
+    .txn-form label { font-weight: 700; color: #1976d2; display: block; margin-bottom: 3px; font-size: 12px; }
+    .txn-form input, .txn-form textarea {
+      padding: 7px 10px; font-size: 13px; border-radius: 5px;
+      border: 1px solid #c5d5e8; background: white; color: #0a1c2f; outline: none;
     }
-    
-    .modal-btn.cancel {
-      background: #f0f0f0;
-      color: #333;
+    .txn-form input:focus, .txn-form textarea:focus { border-color: #1976d2; }
+    .txn-form textarea { resize: vertical; min-height: 34px; }
+    .txn-form-actions { display: flex; gap: 6px; align-self: flex-end; }
+    .txn-form-actions button {
+      padding: 7px 16px; font-size: 13px; border-radius: 5px; border: none;
+      cursor: pointer; font-weight: 600;
     }
-    
-    .modal-btn.cancel:hover {
-      background: #e0e0e0;
+    .btn-add-txn { background: #0a1c2f; color: white; }
+    .btn-add-txn:hover { background: #1f3d62; }
+    .btn-cancel-txn { background: #b0bec5; color: white; }
+    .txn-form-error { color: #e53935; font-size: 12px; width: 100%; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; padding: 0 24px 40px; }
+    table { width: 100%; border-collapse: collapse; background: white; font-size: 13px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-radius: 8px; overflow: hidden; }
+    th { background: #d4e2f2; color: #0a1c2f; font-weight: 700; padding: 11px 8px; border-bottom: 2px solid #1976d2; text-align: left; }
+    td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f0f6ff; }
+    .text-right { text-align: right; }
+    .td-debit { color: #e53935; font-weight: 600; }
+    .td-credit { color: #2e7d32; font-weight: 600; }
+    .td-balance { font-weight: 700; color: #0a1c2f; }
+    .td-balance.neg { color: #e53935; }
+
+    /* row action */
+    .row-action-cell { position: relative; width: 38px; text-align: center; }
+    .row-act-btn { background: none; border: none; cursor: pointer; color: #7a96b3; font-size: 16px; padding: 2px 6px; border-radius: 4px; }
+    .row-act-btn:hover { background: #e6efff; color: #0a1c2f; }
+    .row-act-menu {
+      display: none; position: absolute; right: 28px; top: 0; background: white;
+      border: 1px solid #ddd; border-radius: 7px; box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      min-width: 130px; z-index: 300; overflow: hidden;
     }
-    
-    .modal-btn.delete {
-      background: #e53935;
-      color: white;
+    .row-act-menu.show { display: block; }
+    .row-act-item {
+      display: flex; align-items: center; gap: 8px; padding: 9px 13px;
+      background: none; border: none; width: 100%; text-align: left; font-size: 13px;
+      cursor: pointer; color: #333; border-bottom: 1px solid #f5f5f5; transition: background 0.15s;
     }
-    
-    .modal-btn.delete:hover {
-      background: #c62828;
+    .row-act-item:last-child { border-bottom: none; }
+    .row-act-item:hover { background: #f5f9ff; }
+    .row-act-item.del { color: #e53935; }
+    .row-act-item.del:hover { background: #fff5f5; }
+
+    /* Modals */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 2000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-box { background: white; border-radius: 12px; padding: 28px; width: 90%; max-width: 460px; box-shadow: 0 10px 30px rgba(0,0,0,0.18); }
+    .modal-box h3 { font-size: 18px; color: #0a1c2f; margin-bottom: 6px; }
+    .modal-box p { color: #666; font-size: 14px; margin-bottom: 4px; }
+    .modal-warning { color: #e53935; font-weight: 600; font-size: 13px; margin-top: 8px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+    .mbtn { padding: 9px 20px; border-radius: 6px; border: none; font-weight: 600; font-size: 14px; cursor: pointer; }
+    .mbtn.cancel { background: #f0f0f0; color: #333; }
+    .mbtn.cancel:hover { background: #e0e0e0; }
+    .mbtn.confirm-del { background: #e53935; color: white; }
+    .mbtn.confirm-del:hover { background: #c62828; }
+    .mbtn.save { background: #1976d2; color: white; }
+    .mbtn.save:hover { background: #1565c0; }
+    .edit-form-field { margin-bottom: 12px; }
+    .edit-form-field label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 4px; }
+    .edit-form-field input, .edit-form-field select {
+      width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid #ddd;
+      font-size: 14px; outline: none; background: white;
     }
-    
-    .modal-btn.save {
-      background: #1976d2;
-      color: white;
-    }
-    
-    .modal-btn.save:hover {
-      background: #1565c0;
-    }
-    
-    .modal-btn.apply {
-      background: #4caf50;
-      color: white;
-    }
-    
-    .modal-btn.apply:hover {
-      background: #43a047;
-    }
-    
-    .category-options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 20px 0;
-    }
-    
-    .category-option {
-      padding: 15px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .category-option:hover {
-      border-color: #1976d2;
-      background: #f8f9fa;
-    }
-    
-    .category-option.selected {
-      border-color: #1976d2;
-      background: #e3f2fd;
-    }
-    
-    .category-option.business {
-      border-left: 4px solid #1565c0;
-    }
-    
-    .category-option.personal {
-      border-left: 4px solid #7b1fa2;
-    }
-    
-    .category-option.general {
-      border-left: 4px solid #2e7d32;
-    }
-    
-    .category-badge {
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    
-    .badge-business {
-      background: #e3f2fd;
-      color: #1565c0;
-    }
-    
-    .badge-personal {
-      background: #f3e5f5;
-      color: #7b1fa2;
-    }
-    
-    .badge-general {
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
-    
-    /* Bulk Category Modal */
-    .bulk-instructions {
-      background: #e3f2fd;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 15px 0;
-      font-size: 14px;
-      color: #1565c0;
-    }
-    
-    .account-list {
-      max-height: 300px;
-      overflow-y: auto;
-      margin: 15px 0;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
-    }
-    
-    .account-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .account-item:last-child {
-      border-bottom: none;
-    }
-    
-    /* Footer */
-    .footer {
-      text-align: center;
-      margin-top: 50px;
-      padding: 20px;
-      color: #666;
-      font-size: 14px;
-      border-top: 1px solid #eee;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-      .grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        padding: 10px;
-      }
-      
-      .card {
-        padding: 25px;
-      }
-      
-      .header h1 {
-        font-size: 28px;
-      }
-      
-      .top-bar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
-        padding: 0 10px;
-      }
-      
-      .form-row {
-        flex-direction: column;
-      }
-      
-      .form-row button {
-        width: 100%;
-      }
-      
-      .account-form {
-        margin: 0 10px 20px 10px;
-      }
-      
-      .modal-content {
-        padding: 20px;
-      }
-      
-      .category-filter {
-        margin: 10px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
+    .edit-form-field input:focus, .edit-form-field select:focus { border-color: #1976d2; }
+
+    @media (max-width: 600px) {
+      .grid { grid-template-columns: 1fr; padding: 0 12px 30px; }
+      .txn-summary-bar { padding: 10px 12px; }
+      .txn-controls, .table-wrap, .txn-form { padding-left: 12px; padding-right: 12px; }
+      .accounts-topbar { padding: 16px 12px 8px; }
+      .category-filter { padding: 6px 12px 12px; }
+      .account-form { margin: 0 12px 16px; }
+      .empty-state { margin: 0 12px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>Trismart Book of Accounts</h1>
-      <p>Manage all your financial accounts by category</p>
-    </div>
-    
-    <div class="top-bar">
+
+  <!-- App Header -->
+  <div class="app-header">
+    <h1>TRISMART · BOOK OF ACCOUNTS</h1>
+    <span id="header-branch-label"></span>
+  </div>
+
+  <!-- ══════════════════ ACCOUNTS VIEW ══════════════════ -->
+  <div class="view-container active" id="accounts-view">
+
+    <div class="accounts-topbar">
       <h2>Accounts</h2>
-      <button class="add-btn" id="toggleAddBtn">+ Add Account</button>
+      <button class="btn-primary" id="toggleAddBtn">+ Add Account</button>
     </div>
-    
-    <div class="category-filter" id="categoryFilter">
+
+    <div class="category-filter">
       <button class="filter-btn active" data-category="all">All Accounts</button>
       <button class="filter-btn" data-category="business">Business</button>
       <button class="filter-btn" data-category="personal">Personal</button>
       <button class="filter-btn" data-category="general">General</button>
     </div>
-    
-    <form id="accountForm" class="account-form">
+
+    <form id="accountForm" class="account-form" autocomplete="off">
       <div class="form-row">
-        <input type="text" id="accountNameInput" placeholder="Enter Account Name" required>
+        <input type="text" id="accountNameInput" placeholder="Account Name" required>
         <select id="accountCategoryInput">
           <option value="general">General</option>
           <option value="business">Business</option>
@@ -654,630 +305,616 @@
         <button type="submit" id="submitAccountBtn">Create Account</button>
       </div>
     </form>
-    
+
     <div class="grid" id="cardList"></div>
-    
-    <div id="noAccounts" class="empty-state" style="display: none;">
+    <div class="empty-state" id="noAccounts">
       <h3>No Accounts Yet</h3>
       <p>Click "Add Account" to create your first account</p>
     </div>
-    
-    <div class="footer">
-      Trismart Stores – Book of Accounts
+  </div>
+
+  <!-- ══════════════════ TRANSACTIONS VIEW ══════════════════ -->
+  <div class="view-container" id="txn-view">
+
+    <div class="txn-view-header">
+      <button class="back-btn" id="backBtn"><i class="fa fa-arrow-left"></i> Accounts</button>
+      <div>
+        <div class="txn-account-title" id="txn-title">Account</div>
+        <div class="txn-account-cat" id="txn-cat-label"></div>
+      </div>
+    </div>
+
+    <!-- Summary chips -->
+    <div class="txn-summary-bar">
+      <div class="summary-chip">
+        <div class="label">Total Debits</div>
+        <div class="value debit" id="sum-debit">0.00</div>
+      </div>
+      <div class="summary-chip">
+        <div class="label">Total Credits</div>
+        <div class="value credit" id="sum-credit">0.00</div>
+      </div>
+      <div class="summary-chip">
+        <div class="label">Balance</div>
+        <div class="value balance" id="sum-balance">0.00</div>
+      </div>
+      <div class="summary-chip">
+        <div class="label">Transactions</div>
+        <div class="value balance" id="sum-count">0</div>
+      </div>
+    </div>
+
+    <!-- Controls bar -->
+    <div class="txn-controls">
+      <button class="txn-ctrl-btn" id="toggle-txn-form-btn"><i class="fa fa-plus"></i> Transaction</button>
+      <div class="dropdown" style="position:relative;">
+        <button class="txn-ctrl-btn" id="txn-options-btn"><i class="fa fa-ellipsis-v"></i> Options</button>
+        <div class="action-menu" id="txn-options-menu" style="left:0;right:auto;top:100%;min-width:180px;">
+          <button class="action-menu-item" id="txn-pdf-btn"><i class="fa fa-download"></i> Download PDF</button>
+        </div>
+      </div>
+      <div class="txn-search">
+        <input type="text" id="txn-search-input" placeholder="Search description, ref...">
+      </div>
+      <select class="txn-type-filter" id="txn-type-filter">
+        <option value="all">All types</option>
+        <option value="debit">Debits only</option>
+        <option value="credit">Credits only</option>
+      </select>
+    </div>
+
+    <!-- Transaction entry form -->
+    <form id="txn-form" class="txn-form hide" autocomplete="off">
+      <div><label>Date</label><input type="date" id="txn-date" required></div>
+      <div><label>Description</label><textarea id="txn-desc" placeholder="Description" style="width:200px;"></textarea></div>
+      <div><label>Ref</label><input type="text" id="txn-ref" placeholder="Invoice / ref" style="width:130px;"></div>
+      <div><label>Debit</label><input type="number" min="0" step="0.01" id="txn-debit" value="0" style="width:110px;"></div>
+      <div><label>Credit</label><input type="number" min="0" step="0.01" id="txn-credit" value="0" style="width:110px;"></div>
+      <div class="txn-form-actions">
+        <button type="submit" class="btn-add-txn" id="txn-submit-btn">Add</button>
+        <button type="button" class="btn-cancel-txn hide" id="txn-cancel-edit-btn">Cancel</button>
+      </div>
+      <div class="txn-form-error" id="txn-form-error"></div>
+    </form>
+
+    <!-- Transactions table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Ref</th>
+            <th class="text-right">Debit</th>
+            <th class="text-right">Credit</th>
+            <th class="text-right">Balance</th>
+            <th style="width:38px;">Act.</th>
+          </tr>
+        </thead>
+        <tbody id="txn-tbody">
+          <tr><td colspan="7" style="text-align:center;padding:30px;color:#aaa;">No transactions yet</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
-  <div class="modal" id="deleteModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Delete Account</h3>
-        <p id="deleteAccountText">Are you sure you want to delete this account? This action cannot be undone.</p>
-        <p style="color: #e53935; font-weight: 500; margin-top: 10px;">
-          ⚠️ Warning: All transactions in this account will also be deleted!
-        </p>
-      </div>
-      <div class="modal-actions">
-        <button class="modal-btn cancel" id="cancelDeleteBtn">Cancel</button>
-        <button class="modal-btn delete" id="confirmDeleteBtn">Delete Account</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Edit Account Modal -->
-  <div class="modal" id="editModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Edit Account</h3>
-        <p>Update the account details</p>
-      </div>
-      <div class="form-row" style="margin: 20px 0;">
-        <input type="text" id="editAccountName" placeholder="Enter new account name" required>
-        <select id="editAccountCategory">
+  <!-- ── Edit Account Modal ── -->
+  <div class="modal" id="editAccModal">
+    <div class="modal-box">
+      <h3>Edit Account</h3>
+      <p style="margin-bottom:18px;">Update the account details</p>
+      <div class="edit-form-field"><label>Account Name</label><input type="text" id="edit-acc-name" placeholder="Account name"></div>
+      <div class="edit-form-field">
+        <label>Category</label>
+        <select id="edit-acc-cat">
           <option value="general">General</option>
           <option value="business">Business</option>
           <option value="personal">Personal</option>
         </select>
       </div>
       <div class="modal-actions">
-        <button class="modal-btn cancel" id="cancelEditBtn">Cancel</button>
-        <button class="modal-btn save" id="saveEditBtn">Save Changes</button>
+        <button class="mbtn cancel" id="cancelEditAccBtn">Cancel</button>
+        <button class="mbtn save" id="saveEditAccBtn">Save Changes</button>
       </div>
     </div>
   </div>
 
-  <!-- Category Management Modal -->
-  <div class="modal" id="categoryModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>📊 Manage Account Categories</h3>
-        <p>Select a category to apply to multiple accounts at once</p>
-      </div>
-      
-      <div class="bulk-instructions">
-        <strong>Bulk Category Update:</strong> Select accounts below and choose a category to update them all at once.
-      </div>
-      
-      <div class="category-options" id="bulkCategoryOptions">
-        <div class="category-option business" data-category="business">
-          <div>
-            <strong>Business</strong>
-            <p style="font-size: 13px; color: #666; margin-top: 5px;">For business-related accounts</p>
-          </div>
-          <span class="category-badge badge-business">Business</span>
-        </div>
-        
-        <div class="category-option personal" data-category="personal">
-          <div>
-            <strong>Personal</strong>
-            <p style="font-size: 13px; color: #666; margin-top: 5px;">For personal accounts</p>
-          </div>
-          <span class="category-badge badge-personal">Personal</span>
-        </div>
-        
-        <div class="category-option general" data-category="general">
-          <div>
-            <strong>General</strong>
-            <p style="font-size: 13px; color: #666; margin-top: 5px;">For general purpose accounts</p>
-          </div>
-          <span class="category-badge badge-general">General</span>
-        </div>
-      </div>
-      
-      <div class="account-list" id="bulkAccountList">
-        <!-- Accounts will be populated here -->
-      </div>
-      
+  <!-- ── Delete Account Modal ── -->
+  <div class="modal" id="deleteAccModal">
+    <div class="modal-box">
+      <h3>Delete Account</h3>
+      <p id="delete-acc-text">Are you sure you want to delete this account?</p>
+      <p class="modal-warning">⚠️ All transactions in this account will also be deleted!</p>
       <div class="modal-actions">
-        <button class="modal-btn cancel" id="cancelCategoryBtn">Cancel</button>
-        <button class="modal-btn apply" id="applyCategoryBtn">Apply to Selected</button>
+        <button class="mbtn cancel" id="cancelDeleteAccBtn">Cancel</button>
+        <button class="mbtn confirm-del" id="confirmDeleteAccBtn">Delete Account</button>
       </div>
     </div>
   </div>
 
-  <script type="module">
-    const firebaseConfig = {
-      apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
-      authDomain: "trismartstores.firebaseapp.com",
-      projectId: "trismartstores",
-      storageBucket: "trismartstores.appspot.com",
-      messagingSenderId: "416692703333",
-      appId: "1:416692703333:web:d4b60292621435c748f68c",
-      measurementId: "G-NJPQ7L3QWJ"
-    };
-    const app = window.initializeApp(firebaseConfig);
-    const db = window.getFirestore(app);
+  <!-- ── Edit Transaction Modal ── -->
+  <div class="modal" id="editTxnModal">
+    <div class="modal-box">
+      <h3>Edit Transaction</h3>
+      <p style="margin-bottom:16px;">Update the transaction details</p>
+      <div class="edit-form-field"><label>Date</label><input type="date" id="edit-txn-date"></div>
+      <div class="edit-form-field"><label>Description</label><input type="text" id="edit-txn-desc" placeholder="Description"></div>
+      <div class="edit-form-field"><label>Ref</label><input type="text" id="edit-txn-ref" placeholder="Invoice / reference"></div>
+      <div class="edit-form-field"><label>Debit</label><input type="number" min="0" step="0.01" id="edit-txn-debit" value="0"></div>
+      <div class="edit-form-field"><label>Credit</label><input type="number" min="0" step="0.01" id="edit-txn-credit" value="0"></div>
+      <div class="modal-actions">
+        <button class="mbtn cancel" id="cancelEditTxnBtn">Cancel</button>
+        <button class="mbtn save" id="saveEditTxnBtn">Update</button>
+      </div>
+    </div>
+  </div>
 
-    const branchId = localStorage.getItem('branchId');
-    if (!branchId) {
-      alert('Please select a branch from the dashboard first.');
-      window.location.href = 'dashboard.html';
-    }
+  <!-- ── Delete Transaction Modal ── -->
+  <div class="modal" id="deleteTxnModal">
+    <div class="modal-box">
+      <h3>Delete Transaction</h3>
+      <p>Are you sure you want to delete this transaction? This cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="mbtn cancel" id="cancelDeleteTxnBtn">Cancel</button>
+        <button class="mbtn confirm-del" id="confirmDeleteTxnBtn">Delete</button>
+      </div>
+    </div>
+  </div>
 
-    // State variables
-    const toggleAddBtn = document.getElementById("toggleAddBtn");
-    const accountForm = document.getElementById("accountForm");
-    let formVisible = false;
-    let accounts = [];
-    let selectedAccountId = null;
-    let selectedAccountName = null;
-    let isEditMode = false;
-    
-    // Get initial selected category from localStorage or default to 'all'
-    let selectedCategory = localStorage.getItem('accountCategoryFilter') || 'all';
-    let selectedAccountsForBulk = new Set();
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, updateDoc, deleteDoc, doc,
+    onSnapshot, Timestamp, query, where, orderBy, serverTimestamp, getDocs, writeBatch
+  } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-    // Initialize category filter from localStorage
-    function initializeCategoryFilter() {
-      // Remove active class from all buttons
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      
-      // Find and activate the saved filter button
-      const activeBtn = document.querySelector(`.filter-btn[data-category="${selectedCategory}"]`);
-      if (activeBtn) {
-        activeBtn.classList.add('active');
-      } else {
-        // Fallback to 'all' if saved category doesn't exist
-        const allBtn = document.querySelector('.filter-btn[data-category="all"]');
-        if (allBtn) {
-          allBtn.classList.add('active');
-          selectedCategory = 'all';
-          localStorage.setItem('accountCategoryFilter', 'all');
-        }
-      }
-    }
+  const firebaseConfig = {
+    apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+    authDomain: "trismartstores.firebaseapp.com",
+    projectId: "trismartstores",
+    storageBucket: "trismartstores.appspot.com",
+    messagingSenderId: "416692703333",
+    appId: "1:416692703333:web:d4b60292621435c748f68c"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
 
-    // Toggle add account form
-    toggleAddBtn.addEventListener("click", () => {
-      formVisible = !formVisible;
-      accountForm.classList.toggle('active', formVisible);
-      toggleAddBtn.textContent = formVisible ? "Cancel" : "+ Add Account";
-      document.getElementById("submitAccountBtn").textContent = "Create Account";
-      document.getElementById("accountNameInput").value = "";
-      document.getElementById("accountCategoryInput").value = "general";
+  const branchId = localStorage.getItem('branchId') || 'default';
+  document.getElementById('header-branch-label').textContent = branchId !== 'default' ? `Branch: ${branchId}` : '';
+
+  // ── Helpers ──
+  function esc(s){ return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]); }
+  function hide(el){ el.classList.add('hide'); }
+  function show(el){ el.classList.remove('hide'); }
+
+  // ═════════════════════════════════════════════
+  //  ACCOUNTS
+  // ═════════════════════════════════════════════
+  let accounts = [];
+  let accountBalances = {}; // accountId → running balance
+  let selectedAccId = null;
+  let selectedAccName = null;
+  let accFormVisible = false;
+  let selectedCategory = localStorage.getItem('accCatFilter') || 'all';
+  let activeCardMenu = null;
+
+  const accountsView   = document.getElementById('accounts-view');
+  const toggleAddBtn   = document.getElementById('toggleAddBtn');
+  const accountForm    = document.getElementById('accountForm');
+  const cardList       = document.getElementById('cardList');
+  const noAccounts     = document.getElementById('noAccounts');
+
+  // init category filter
+  function initCatFilter(){
+    document.querySelectorAll('.filter-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.category === selectedCategory);
     });
+  }
+  initCatFilter();
 
-    // Category filter - with persistent storage
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        // Update selected category
-        selectedCategory = this.dataset.category;
-        
-        // Save to localStorage
-        localStorage.setItem('accountCategoryFilter', selectedCategory);
-        
-        // Update active state
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        
-        // Filter accounts
-        filterAccountsByCategory();
-      });
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.addEventListener('click', function(){
+      selectedCategory = this.dataset.category;
+      localStorage.setItem('accCatFilter', selectedCategory);
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      applyCatFilter();
     });
+  });
 
-    // Filter accounts by category
-    function filterAccountsByCategory() {
-      const cards = document.querySelectorAll('.card');
-      cards.forEach(card => {
-        const category = card.dataset.category;
-        if (selectedCategory === 'all' || category === selectedCategory) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-      
-      // Show/hide empty state
-      const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
-      const noAccounts = document.getElementById("noAccounts");
-      if (visibleCards.length === 0 && accounts.length > 0) {
-        noAccounts.style.display = 'block';
-        noAccounts.innerHTML = `
-          <h3>No ${selectedCategory} Accounts</h3>
-          <p>No accounts found in the ${selectedCategory} category</p>
-          <button class="add-btn" style="margin-top: 20px;" onclick="document.querySelector('.filter-btn[data-category=\"all\"]').click()">
-            Show All Accounts
-          </button>
-        `;
-      } else if (accounts.length === 0) {
-        noAccounts.style.display = 'block';
-        noAccounts.innerHTML = `
-          <h3>No Accounts Yet</h3>
-          <p>Click "Add Account" to create your first account</p>
-        `;
-      } else {
-        noAccounts.style.display = 'none';
-      }
-    }
+  function applyCatFilter(){
+    let anyVisible = false;
+    document.querySelectorAll('#cardList .card').forEach(card=>{
+      const show = selectedCategory === 'all' || card.dataset.category === selectedCategory;
+      card.style.display = show ? 'flex' : 'none';
+      if(show) anyVisible = true;
+    });
+    noAccounts.style.display = (!anyVisible) ? 'block' : 'none';
+  }
 
-    // Get category display name
-    function getCategoryDisplayName(category) {
-      switch(category) {
-        case 'business': return 'Business';
-        case 'personal': return 'Personal';
-        case 'general': return 'General';
-        default: return 'General';
-      }
-    }
+  toggleAddBtn.addEventListener('click', ()=>{
+    accFormVisible = !accFormVisible;
+    accountForm.classList.toggle('active', accFormVisible);
+    toggleAddBtn.textContent = accFormVisible ? 'Cancel' : '+ Add Account';
+    document.getElementById('submitAccountBtn').textContent = 'Create Account';
+    document.getElementById('accountNameInput').value = '';
+    document.getElementById('accountCategoryInput').value = 'general';
+  });
 
-    // Get category class
-    function getCategoryClass(category) {
-      switch(category) {
-        case 'business': return 'category-business';
-        case 'personal': return 'category-personal';
-        case 'general': return 'category-general';
-        default: return 'category-general';
-      }
-    }
+  accountForm.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const name = document.getElementById('accountNameInput').value.trim();
+    const category = document.getElementById('accountCategoryInput').value;
+    if(!name){ alert('Enter an account name'); return; }
+    try{
+      await addDoc(collection(db,'accounts'),{ name, category, branchId, created: new Date().toISOString() });
+      document.getElementById('accountNameInput').value='';
+      accountForm.classList.remove('active');
+      accFormVisible = false;
+      toggleAddBtn.textContent = '+ Add Account';
+    }catch(err){ alert('Error: '+err.message); }
+  });
 
-    // Render accounts
-    function renderAccountsRealtime() {
-      const cardList = document.getElementById("cardList");
-      const noAccounts = document.getElementById("noAccounts");
-      const q = window.query(
-        window.collection(db, "accounts"),
-        window.where("branchId", "==", branchId)
-      );
-      window.onSnapshot(q, (snapshot) => {
-        cardList.innerHTML = "";
-        accounts = [];
-        
-        if (snapshot.empty) {
-          noAccounts.style.display = "block";
-        } else {
-          noAccounts.style.display = "none";
-          snapshot.forEach(doc => {
-            const data = doc.data();
-            const account = { id: doc.id, ...data };
-            accounts.push(account);
-            
-            const card = document.createElement("div");
-            card.className = "card";
-            card.dataset.accountId = doc.id;
-            card.dataset.category = data.category || 'general';
-            
-            // Generate initials for icon
-            const initials = data.name
-              .split(' ')
-              .map(word => word[0])
-              .join('')
-              .toUpperCase()
-              .substring(0, 2);
-            
-            // Category tag
-            const category = data.category || 'general';
-            const categoryDisplay = getCategoryDisplayName(category);
-            const categoryClass = getCategoryClass(category);
-            
-            card.innerHTML = `
-              <div class="icon">${initials}</div>
-              <h2>${data.name}</h2>
-              <div class="category-tag ${categoryClass}">${categoryDisplay}</div>
-              <p>View transactions and account details</p>
-              <button class="open-btn">Open Account</button>
-              
-              <div class="card-actions">
-                <button class="action-menu-btn" data-account-id="${doc.id}">⋮</button>
-                <div class="action-menu" id="menu-${doc.id}">
-                  <button class="action-menu-item edit" onclick="openEditModal('${doc.id}')">
-                    ✏️ Edit Account
-                  </button>
-                  <button class="action-menu-item category" onclick="openBulkModalWithAccount('${doc.id}')">
-                    📊 Change Category
-                  </button>
-                  <button class="action-menu-item delete" onclick="openDeleteModal('${doc.id}')">
-                    🗑️ Delete Account
-                  </button>
-                </div>
-              </div>
-            `;
-            
-            cardList.appendChild(card);
-          });
-          
-          // Add event listeners
-          setupEventListeners();
-          
-          // Apply saved category filter
-          filterAccountsByCategory();
-        }
-      });
-    }
+  // render accounts realtime — also track balances
+  const accQ = query(collection(db,'accounts'), where('branchId','==',branchId));
+  onSnapshot(accQ, snap=>{
+    accounts = [];
+    snap.forEach(d=>{ accounts.push({id:d.id,...d.data()}); });
+    renderCards();
+  });
 
-    // Setup event listeners for cards
-    function setupEventListeners() {
-      // Add event listeners to open buttons
-      document.querySelectorAll('.open-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const card = btn.closest('.card');
-          const accountId = card.dataset.accountId;
-          window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
-        });
-      });
-      
-      // Add event listeners to 3-dots menu buttons
-      document.querySelectorAll('.action-menu-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const accountId = btn.dataset.accountId;
-          
-          // Hide all other menus
-          document.querySelectorAll('.action-menu').forEach(menu => {
-            menu.classList.remove('show');
-          });
-          
-          // Show this menu
-          const menu = document.getElementById(`menu-${accountId}`);
-          if (menu) {
-            const rect = btn.getBoundingClientRect();
-            menu.style.top = (rect.bottom - rect.top) + 'px';
-            menu.style.right = '0px';
-            menu.classList.add('show');
-          }
-        });
-      });
-      
-      // Make card clickable for opening account
-      document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('click', (e) => {
-          // Only trigger if not clicking on buttons or menus
-          if (!e.target.closest('.open-btn') && !e.target.closest('.action-menu-btn') && !e.target.closest('.action-menu')) {
-            const accountId = card.dataset.accountId;
-            window.location.href = `accounts.html?id=${encodeURIComponent(accountId)}`;
-          }
-        });
-      });
-    }
-
-    // Global functions for account actions
-    window.openEditModal = function(accountId) {
-      const account = accounts.find(acc => acc.id === accountId);
-      if (account) {
-        selectedAccountId = accountId;
-        selectedAccountName = account.name;
-        
-        // Populate edit form
-        document.getElementById("editAccountName").value = account.name;
-        document.getElementById("editAccountCategory").value = account.category || 'general';
-        
-        // Hide any open menu
-        document.querySelectorAll('.action-menu').forEach(menu => {
-          menu.classList.remove('show');
-        });
-        
-        // Show edit modal
-        document.getElementById("editModal").classList.add('active');
-      }
-    };
-
-    window.openDeleteModal = function(accountId) {
-      const account = accounts.find(acc => acc.id === accountId);
-      if (account) {
-        selectedAccountId = accountId;
-        selectedAccountName = account.name;
-        
-        // Update delete message
-        document.getElementById("deleteAccountText").textContent = 
-          `Are you sure you want to delete the account "${account.name}"? This action cannot be undone.`;
-        
-        // Hide any open menu
-        document.querySelectorAll('.action-menu').forEach(menu => {
-          menu.classList.remove('show');
-        });
-        
-        // Show delete modal
-        document.getElementById("deleteModal").classList.add('active');
-      }
-    };
-
-    window.openBulkModalWithAccount = function(accountId) {
-      selectedAccountsForBulk = new Set([accountId]);
-      openCategoryModal();
-    };
-
-    // Open category management modal
-    function openCategoryModal() {
-      // Populate account list
-      const accountList = document.getElementById("bulkAccountList");
-      accountList.innerHTML = '';
-      
-      // Select all accounts by default when opening from menu
-      if (selectedAccountsForBulk.size === 0 || selectedAccountsForBulk.size === 1) {
-        selectedAccountsForBulk = new Set(accounts.map(acc => acc.id));
-      }
-      
-      accounts.forEach(account => {
-        const div = document.createElement("div");
-        div.className = "account-item";
-        
-        const isSelected = selectedAccountsForBulk.has(account.id);
-        const category = account.category || 'general';
-        const categoryClass = getCategoryClass(category);
-        
-        div.innerHTML = `
-          <div>
-            <strong>${account.name}</strong>
-            <div style="font-size: 12px; color: #666; margin-top: 5px;">
-              Current: <span class="${categoryClass}" style="padding: 2px 8px;">${getCategoryDisplayName(category)}</span>
-            </div>
+  function renderCards(){
+    cardList.innerHTML='';
+    if(!accounts.length){ noAccounts.style.display='block'; return; }
+    noAccounts.style.display='none';
+    accounts.forEach(acc=>{
+      const cat = acc.category||'general';
+      const initials = acc.name.split(' ').map(w=>w[0]).join('').toUpperCase().substring(0,2);
+      const bal = accountBalances[acc.id] || 0;
+      const balClass = bal < 0 ? 'negative' : bal > 0 ? 'positive' : '';
+      const catLabel = {business:'Business',personal:'Personal',general:'General'}[cat]||'General';
+      const catClass = {business:'cat-business',personal:'cat-personal',general:'cat-general'}[cat]||'cat-general';
+      const card = document.createElement('div');
+      card.className='card'; card.dataset.accountId=acc.id; card.dataset.category=cat;
+      card.innerHTML=`
+        <div class="card-icon">${esc(initials)}</div>
+        <h2>${esc(acc.name)}</h2>
+        <div class="category-tag ${catClass}">${catLabel}</div>
+        <div class="card-balance ${balClass}">${bal.toFixed(2)}</div>
+        <div class="card-txn-count" id="txn-count-${acc.id}">Loading…</div>
+        <button class="open-btn">Open Account</button>
+        <div class="card-actions">
+          <button class="action-menu-btn" data-acc-id="${acc.id}">⋮</button>
+          <div class="action-menu" id="card-menu-${acc.id}">
+            <button class="action-menu-item edit" data-acc-id="${acc.id}">✏️ Edit Account</button>
+            <button class="action-menu-item delete" data-acc-id="${acc.id}">🗑️ Delete Account</button>
           </div>
-          <div>
-            <input type="checkbox" ${isSelected ? 'checked' : ''} data-account-id="${account.id}" 
-                   style="transform: scale(1.3); cursor: pointer;">
-          </div>
-        `;
-        
-        accountList.appendChild(div);
-      });
-      
-      // Add checkbox event listeners
-      accountList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-          const accountId = this.dataset.accountId;
-          if (this.checked) {
-            selectedAccountsForBulk.add(accountId);
-          } else {
-            selectedAccountsForBulk.delete(accountId);
-          }
-        });
-      });
-      
-      // Reset category selection
-      document.querySelectorAll('.category-option').forEach(opt => {
-        opt.classList.remove('selected');
-      });
-      
-      // Show modal
-      document.getElementById("categoryModal").classList.add('active');
-    }
+        </div>`;
+      cardList.appendChild(card);
 
-    // Category option selection
-    document.querySelectorAll('.category-option').forEach(option => {
-      option.addEventListener('click', function() {
-        document.querySelectorAll('.category-option').forEach(opt => {
-          opt.classList.remove('selected');
-        });
-        this.classList.add('selected');
-      });
-    });
-
-    // Handle form submission (Add)
-    document.getElementById("accountForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const nameInput = document.getElementById("accountNameInput");
-      const categorySelect = document.getElementById("accountCategoryInput");
-      const name = nameInput.value.trim();
-      const category = categorySelect.value;
-
-      if (!name) {
-        alert("Please enter an account name");
-        return;
-      }
-
-      try {
-        const accountData = {
-          name,
-          category,
-          branchId,
-          created: new Date().toISOString()
-        };
-
-        await window.addDoc(window.collection(db, "accounts"), accountData);
-        
-        // Reset form
-        nameInput.value = "";
-        categorySelect.value = "general";
-        formVisible = false;
-        accountForm.classList.remove('active');
-        toggleAddBtn.textContent = "+ Add Account";
-        
-      } catch (err) {
-        alert("Error creating account: " + err.message);
-      }
-    });
-
-    // Handle edit save
-    document.getElementById("saveEditBtn").addEventListener("click", async function() {
-      const newName = document.getElementById("editAccountName").value.trim();
-      const newCategory = document.getElementById("editAccountCategory").value;
-      
-      if (!newName) {
-        alert("Please enter an account name");
-        return;
-      }
-
-      if (!selectedAccountId) return;
-
-      try {
-        await window.updateDoc(window.doc(db, "accounts", selectedAccountId), {
-          name: newName,
-          category: newCategory,
-          updated: new Date().toISOString()
-        });
-
-        // Close modal and reset state
-        document.getElementById("editModal").classList.remove('active');
-        selectedAccountId = null;
-        selectedAccountName = null;
-        
-      } catch (err) {
-        alert("Error updating account: " + err.message);
-      }
-    });
-
-    // Handle delete confirmation
-    document.getElementById("confirmDeleteBtn").addEventListener("click", async function() {
-      if (!selectedAccountId) return;
-
-      try {
-        // Delete the account
-        await window.deleteDoc(window.doc(db, "accounts", selectedAccountId));
-        
-        // Close modal and reset state
-        document.getElementById("deleteModal").classList.remove('active');
-        selectedAccountId = null;
-        selectedAccountName = null;
-        
-      } catch (err) {
-        alert("Error deleting account: " + err.message);
-      }
-    });
-
-    // Apply category to selected accounts
-    document.getElementById("applyCategoryBtn").addEventListener("click", async function() {
-      const selectedOption = document.querySelector('.category-option.selected');
-      if (!selectedOption) {
-        alert("Please select a category first");
-        return;
-      }
-
-      const newCategory = selectedOption.dataset.category;
-      if (!newCategory) return;
-
-      if (selectedAccountsForBulk.size === 0) {
-        alert("Please select at least one account");
-        return;
-      }
-
-      try {
-        const batch = window.writeBatch(db);
-        let count = 0;
-
-        for (const accountId of selectedAccountsForBulk) {
-          const accountRef = window.doc(db, "accounts", accountId);
-          batch.update(accountRef, {
-            category: newCategory,
-            updated: new Date().toISOString()
-          });
-          count++;
+      // live txn count + balance per card
+      const txnQ = query(collection(db,'transactions'), where('accountId','==',acc.id));
+      onSnapshot(txnQ, txnSnap=>{
+        let bal=0, count=txnSnap.size;
+        txnSnap.forEach(d=>{ const t=d.data(); bal+=(t.credit||0)-(t.debit||0); });
+        accountBalances[acc.id]=bal;
+        const countEl=document.getElementById(`txn-count-${acc.id}`);
+        if(countEl) countEl.textContent=`${count} transaction${count!==1?'s':''}`;
+        // update balance display on card
+        const balEl=card.querySelector('.card-balance');
+        if(balEl){
+          balEl.textContent=bal.toFixed(2);
+          balEl.className='card-balance'+(bal<0?' negative':bal>0?' positive':'');
         }
+      });
 
-        await batch.commit();
-        
-        alert(`✓ Successfully updated category for ${count} account(s)`);
-        
-        // Close modal and reset
-        document.getElementById("categoryModal").classList.remove('active');
-        selectedAccountsForBulk = new Set();
-        
-      } catch (err) {
-        alert("Error updating categories: " + err.message);
-      }
-    });
-
-    // Cancel delete
-    document.getElementById("cancelDeleteBtn").addEventListener("click", function() {
-      document.getElementById("deleteModal").classList.remove('active');
-      selectedAccountId = null;
-      selectedAccountName = null;
-    });
-
-    // Cancel edit
-    document.getElementById("cancelEditBtn").addEventListener("click", function() {
-      document.getElementById("editModal").classList.remove('active');
-      selectedAccountId = null;
-      selectedAccountName = null;
-    });
-
-    // Cancel category modal
-    document.getElementById("cancelCategoryBtn").addEventListener("click", function() {
-      document.getElementById("categoryModal").classList.remove('active');
-      selectedAccountsForBulk = new Set();
-    });
-
-    // Close menus when clicking outside
-    document.addEventListener('click', function() {
-      document.querySelectorAll('.action-menu').forEach(menu => {
-        menu.classList.remove('show');
+      // open button
+      card.querySelector('.open-btn').addEventListener('click',e=>{ e.stopPropagation(); openAccount(acc.id); });
+      card.addEventListener('click',e=>{
+        if(!e.target.closest('.open-btn')&&!e.target.closest('.action-menu-btn')&&!e.target.closest('.action-menu')) openAccount(acc.id);
+      });
+      // 3-dot menu
+      card.querySelector('.action-menu-btn').addEventListener('click',e=>{
+        e.stopPropagation();
+        const menu=document.getElementById(`card-menu-${acc.id}`);
+        const isOpen=menu.classList.contains('show');
+        document.querySelectorAll('.action-menu').forEach(m=>m.classList.remove('show'));
+        if(!isOpen){ menu.classList.add('show'); activeCardMenu=menu; }
+      });
+      card.querySelector('.action-menu-item.edit').addEventListener('click',e=>{
+        e.stopPropagation(); openEditAccModal(acc.id);
+      });
+      card.querySelector('.action-menu-item.delete').addEventListener('click',e=>{
+        e.stopPropagation(); openDeleteAccModal(acc.id);
       });
     });
+    applyCatFilter();
+  }
 
-    // Initialize
-    initializeCategoryFilter();
-    renderAccountsRealtime();
-  </script>
+  document.addEventListener('click',()=>{
+    document.querySelectorAll('.action-menu').forEach(m=>m.classList.remove('show'));
+    document.getElementById('txn-options-menu').classList.remove('show');
+    if(activeTxnMenu){ activeTxnMenu.classList.remove('show'); activeTxnMenu=null; }
+  });
+
+  // ── Edit Account Modal ──
+  function openEditAccModal(id){
+    const acc=accounts.find(a=>a.id===id); if(!acc)return;
+    selectedAccId=id;
+    document.getElementById('edit-acc-name').value=acc.name;
+    document.getElementById('edit-acc-cat').value=acc.category||'general';
+    document.getElementById('editAccModal').classList.add('active');
+  }
+  document.getElementById('cancelEditAccBtn').addEventListener('click',()=>{ document.getElementById('editAccModal').classList.remove('active'); });
+  document.getElementById('saveEditAccBtn').addEventListener('click', async()=>{
+    const name=document.getElementById('edit-acc-name').value.trim();
+    const cat=document.getElementById('edit-acc-cat').value;
+    if(!name){ alert('Enter a name'); return; }
+    try{ await updateDoc(doc(db,'accounts',selectedAccId),{name,category:cat,updated:new Date().toISOString()}); document.getElementById('editAccModal').classList.remove('active'); }catch(err){alert(err.message);}
+  });
+
+  // ── Delete Account Modal ──
+  function openDeleteAccModal(id){
+    const acc=accounts.find(a=>a.id===id); if(!acc)return;
+    selectedAccId=id;
+    document.getElementById('delete-acc-text').textContent=`Delete account "${acc.name}"? This cannot be undone.`;
+    document.getElementById('deleteAccModal').classList.add('active');
+  }
+  document.getElementById('cancelDeleteAccBtn').addEventListener('click',()=>{ document.getElementById('deleteAccModal').classList.remove('active'); });
+  document.getElementById('confirmDeleteAccBtn').addEventListener('click',async()=>{
+    if(!selectedAccId)return;
+    try{
+      // delete all transactions in this account too
+      const txSnap=await getDocs(query(collection(db,'transactions'),where('accountId','==',selectedAccId)));
+      const batch=writeBatch(db);
+      txSnap.forEach(d=>batch.delete(d.ref));
+      batch.delete(doc(db,'accounts',selectedAccId));
+      await batch.commit();
+      document.getElementById('deleteAccModal').classList.remove('active');
+    }catch(err){alert(err.message);}
+  });
+
+
+  // ═════════════════════════════════════════════
+  //  TRANSACTIONS
+  // ═════════════════════════════════════════════
+  const txnView          = document.getElementById('txn-view');
+  const backBtn          = document.getElementById('backBtn');
+  const txnTitle         = document.getElementById('txn-title');
+  const txnCatLabel      = document.getElementById('txn-cat-label');
+  const txnTbody         = document.getElementById('txn-tbody');
+  const txnForm          = document.getElementById('txn-form');
+  const txnToggleBtn     = document.getElementById('toggle-txn-form-btn');
+  const txnFormVisible_el= txnForm;
+  const txnSubmitBtn     = document.getElementById('txn-submit-btn');
+  const txnCancelEditBtn = document.getElementById('txn-cancel-edit-btn');
+  const txnSearchInput   = document.getElementById('txn-search-input');
+  const txnTypeFilter    = document.getElementById('txn-type-filter');
+
+  let currentAccountId   = null;
+  let allTxns            = [];
+  let txnFormOpen        = false;
+  let editingTxnId       = null;
+  let activeTxnMenu      = null;
+  let txnUnsubscribe     = null;
+
+  function openAccount(accId){
+    const acc = accounts.find(a=>a.id===accId);
+    if(!acc)return;
+    currentAccountId = accId;
+    txnTitle.textContent = acc.name;
+    const catLabel={business:'Business Account',personal:'Personal Account',general:'General Account'}[acc.category||'general'];
+    txnCatLabel.textContent = catLabel;
+
+    // reset form/filters
+    txnForm.classList.add('hide'); txnFormOpen=false;
+    txnToggleBtn.innerHTML='<i class="fa fa-plus"></i> Transaction';
+    txnSearchInput.value='';
+    txnTypeFilter.value='all';
+    txnSubmitBtn.textContent='Add';
+    hide(txnCancelEditBtn);
+    editingTxnId=null;
+
+    // show txn view
+    accountsView.classList.remove('active');
+    txnView.classList.add('active');
+
+    // unsubscribe old listener
+    if(txnUnsubscribe){ txnUnsubscribe(); txnUnsubscribe=null; }
+
+    // listen realtime
+    const txQ = query(collection(db,'transactions'), where('accountId','==',accId), orderBy('date','asc'));
+    txnUnsubscribe = onSnapshot(txQ, snap=>{
+      allTxns=[];
+      snap.forEach(d=>{ allTxns.push({id:d.id,...d.data(),dateObj:d.data().date?.toDate()||new Date()}); });
+      filterAndRenderTxns();
+    });
+  }
+
+  backBtn.addEventListener('click',()=>{
+    if(txnUnsubscribe){ txnUnsubscribe(); txnUnsubscribe=null; }
+    txnView.classList.remove('active');
+    accountsView.classList.add('active');
+  });
+
+  txnToggleBtn.addEventListener('click',()=>{
+    txnFormOpen=!txnFormOpen;
+    txnForm.classList.toggle('hide',!txnFormOpen);
+    txnToggleBtn.innerHTML=txnFormOpen?'<i class="fa fa-minus"></i> Hide':'<i class="fa fa-plus"></i> Transaction';
+    if(!txnFormOpen) cancelTxnEdit();
+  });
+
+  txnSearchInput.addEventListener('input', filterAndRenderTxns);
+  txnTypeFilter.addEventListener('change', filterAndRenderTxns);
+
+  function filterAndRenderTxns(){
+    let list = [...allTxns];
+    const term = txnSearchInput.value.trim().toLowerCase();
+    if(term) list=list.filter(t=>((t.description||'')+(t.ref||'')).toLowerCase().includes(term));
+    const type=txnTypeFilter.value;
+    if(type==='debit')  list=list.filter(t=>(t.debit||0)>0);
+    if(type==='credit') list=list.filter(t=>(t.credit||0)>0);
+    list.sort((a,b)=>a.dateObj-b.dateObj);
+    renderTxnTable(list);
+  }
+
+  function renderTxnTable(list){
+    // summaries
+    const totalDebit  = list.reduce((s,t)=>s+(t.debit||0),0);
+    const totalCredit = list.reduce((s,t)=>s+(t.credit||0),0);
+    const balance     = totalCredit - totalDebit;
+    document.getElementById('sum-debit').textContent   = totalDebit.toFixed(2);
+    document.getElementById('sum-credit').textContent  = totalCredit.toFixed(2);
+    const sumBal=document.getElementById('sum-balance');
+    sumBal.textContent=balance.toFixed(2);
+    sumBal.className='value balance'+(balance<0?' debit':balance>0?' credit':'');
+    document.getElementById('sum-count').textContent   = list.length;
+
+    if(!list.length){
+      txnTbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:30px;color:#aaa;">No transactions found</td></tr>`;
+      return;
+    }
+    let rows=''; let running=0;
+    list.forEach(t=>{
+      running += (t.credit||0)-(t.debit||0);
+      const dateStr = t.dateObj.toISOString().split('T')[0];
+      const debitStr  = t.debit  ? t.debit.toFixed(2)  : '';
+      const creditStr = t.credit ? t.credit.toFixed(2) : '';
+      const balClass  = running<0?' neg':'';
+      rows+=`<tr>
+        <td>${esc(dateStr)}</td>
+        <td>${esc(t.description||'')}</td>
+        <td>${esc(t.ref||'-')}</td>
+        <td class="text-right td-debit">${debitStr}</td>
+        <td class="text-right td-credit">${creditStr}</td>
+        <td class="text-right td-balance${balClass}">${running.toFixed(2)}</td>
+        <td class="row-action-cell">
+          <button class="row-act-btn" data-id="${t.id}"><i class="fa fa-ellipsis-v"></i></button>
+          <div class="row-act-menu" id="txn-menu-${t.id}">
+            <button class="row-act-item txn-edit-btn" data-id="${t.id}"><i class="fa fa-edit"></i> Edit</button>
+            <button class="row-act-item del txn-del-btn" data-id="${t.id}"><i class="fa fa-trash"></i> Delete</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+    txnTbody.innerHTML=rows;
+    attachTxnRowListeners();
+  }
+
+  function attachTxnRowListeners(){
+    txnTbody.querySelectorAll('.row-act-btn').forEach(btn=>{
+      btn.addEventListener('click',e=>{
+        e.stopPropagation();
+        const menu=document.getElementById(`txn-menu-${btn.dataset.id}`);
+        if(activeTxnMenu===menu){ menu.classList.remove('show'); activeTxnMenu=null; }
+        else{ if(activeTxnMenu)activeTxnMenu.classList.remove('show'); menu.classList.add('show'); activeTxnMenu=menu; }
+      });
+    });
+    txnTbody.querySelectorAll('.txn-edit-btn').forEach(btn=>{
+      btn.addEventListener('click',e=>{ e.stopPropagation(); openEditTxnModal(btn.dataset.id); if(activeTxnMenu){activeTxnMenu.classList.remove('show');activeTxnMenu=null;} });
+    });
+    txnTbody.querySelectorAll('.txn-del-btn').forEach(btn=>{
+      btn.addEventListener('click',e=>{ e.stopPropagation(); openDeleteTxnModal(btn.dataset.id); if(activeTxnMenu){activeTxnMenu.classList.remove('show');activeTxnMenu=null;} });
+    });
+  }
+
+  // ── Add / Update transaction ──
+  document.getElementById('txn-date').value = new Date().toISOString().split('T')[0];
+
+  txnForm.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const dateVal   = document.getElementById('txn-date').value;
+    const desc      = document.getElementById('txn-desc').value.trim();
+    const ref       = document.getElementById('txn-ref').value.trim();
+    const debit     = parseFloat(document.getElementById('txn-debit').value)||0;
+    const credit    = parseFloat(document.getElementById('txn-credit').value)||0;
+    const errEl     = document.getElementById('txn-form-error');
+
+    if(!dateVal||!desc||(debit===0&&credit===0)){ errEl.textContent='Date, description and debit/credit are required.'; return; }
+    errEl.textContent='';
+    const data = {
+      accountId: currentAccountId,
+      date: Timestamp.fromDate(new Date(dateVal)),
+      description: desc, ref, debit, credit,
+      updatedAt: serverTimestamp()
+    };
+    try{
+      if(editingTxnId){ await updateDoc(doc(db,'transactions',editingTxnId),data); }
+      else{ await addDoc(collection(db,'transactions'),{...data,createdAt:serverTimestamp()}); }
+      cancelTxnEdit();
+      txnFormOpen=false; txnForm.classList.add('hide');
+      txnToggleBtn.innerHTML='<i class="fa fa-plus"></i> Transaction';
+    }catch(err){ errEl.textContent=err.message; }
+  });
+
+  function cancelTxnEdit(){
+    editingTxnId=null;
+    txnForm.reset();
+    document.getElementById('txn-date').value=new Date().toISOString().split('T')[0];
+    txnSubmitBtn.textContent='Add';
+    hide(txnCancelEditBtn);
+    document.getElementById('txn-form-error').textContent='';
+  }
+  txnCancelEditBtn.addEventListener('click',cancelTxnEdit);
+
+  // ── Edit Txn Modal ──
+  function openEditTxnModal(id){
+    const t=allTxns.find(x=>x.id===id); if(!t)return;
+    editingTxnId=id;
+    document.getElementById('edit-txn-date').value  = t.dateObj.toISOString().split('T')[0];
+    document.getElementById('edit-txn-desc').value  = t.description||'';
+    document.getElementById('edit-txn-ref').value   = t.ref||'';
+    document.getElementById('edit-txn-debit').value = t.debit||0;
+    document.getElementById('edit-txn-credit').value= t.credit||0;
+    document.getElementById('editTxnModal').classList.add('active');
+  }
+  document.getElementById('cancelEditTxnBtn').addEventListener('click',()=>{ document.getElementById('editTxnModal').classList.remove('active'); editingTxnId=null; });
+  document.getElementById('saveEditTxnBtn').addEventListener('click', async()=>{
+    if(!editingTxnId)return;
+    const dateVal = document.getElementById('edit-txn-date').value;
+    const desc    = document.getElementById('edit-txn-desc').value.trim();
+    const ref     = document.getElementById('edit-txn-ref').value.trim();
+    const debit   = parseFloat(document.getElementById('edit-txn-debit').value)||0;
+    const credit  = parseFloat(document.getElementById('edit-txn-credit').value)||0;
+    if(!dateVal||!desc){ alert('Date and description are required'); return; }
+    try{
+      await updateDoc(doc(db,'transactions',editingTxnId),{
+        date:Timestamp.fromDate(new Date(dateVal)), description:desc, ref, debit, credit, updatedAt:serverTimestamp()
+      });
+      document.getElementById('editTxnModal').classList.remove('active');
+      editingTxnId=null;
+    }catch(err){alert(err.message);}
+  });
+
+  // ── Delete Txn Modal ──
+  let deletingTxnId=null;
+  function openDeleteTxnModal(id){ deletingTxnId=id; document.getElementById('deleteTxnModal').classList.add('active'); }
+  document.getElementById('cancelDeleteTxnBtn').addEventListener('click',()=>{ document.getElementById('deleteTxnModal').classList.remove('active'); deletingTxnId=null; });
+  document.getElementById('confirmDeleteTxnBtn').addEventListener('click', async()=>{
+    if(!deletingTxnId)return;
+    try{ await deleteDoc(doc(db,'transactions',deletingTxnId)); document.getElementById('deleteTxnModal').classList.remove('active'); deletingTxnId=null; }catch(err){alert(err.message);}
+  });
+
+  // ── PDF ──
+  document.getElementById('txn-options-btn').addEventListener('click',e=>{ e.stopPropagation(); document.getElementById('txn-options-menu').classList.toggle('show'); });
+  document.getElementById('txn-pdf-btn').addEventListener('click',()=>{
+    const list=allTxns.filter(t=>{
+      const term=txnSearchInput.value.trim().toLowerCase();
+      const typeOk = txnTypeFilter.value==='all'||(txnTypeFilter.value==='debit'&&t.debit>0)||(txnTypeFilter.value==='credit'&&t.credit>0);
+      const searchOk = !term||((t.description||'')+(t.ref||'')).toLowerCase().includes(term);
+      return typeOk&&searchOk;
+    }).sort((a,b)=>a.dateObj-b.dateObj);
+    if(!list.length){ alert('No transactions to export'); return; }
+    const {jsPDF}=window.jspdf;
+    const docPdf=new jsPDF('landscape');
+    const acc=accounts.find(a=>a.id===currentAccountId);
+    docPdf.setFontSize(16); docPdf.text(`${acc?acc.name:'Account'} – Transactions`,20,20);
+    docPdf.setFontSize(10); docPdf.text(`Generated: ${new Date().toLocaleDateString()}`,20,28);
+    let running=0;
+    const rows=list.map(t=>{ running+=(t.credit||0)-(t.debit||0); return [t.dateObj.toISOString().split('T')[0],t.description||'',t.ref||'-',t.debit?t.debit.toFixed(2):'',t.credit?t.credit.toFixed(2):'',running.toFixed(2)]; });
+    docPdf.autoTable({head:[['Date','Description','Ref','Debit','Credit','Balance']],body:rows,startY:34});
+    docPdf.save(`${acc?acc.name.replace(/\s+/g,'_'):'account'}_transactions.pdf`);
+  });
+</script>
 </body>
 </html>
