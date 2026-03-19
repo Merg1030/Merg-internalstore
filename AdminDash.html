@@ -166,6 +166,17 @@
         }
         .nav-item:hover::before { transform: scaleY(1); }
 
+        /* Special highlight for Master Warehouse */
+        .nav-item.master-warehouse {
+            border-color: #ffd60030;
+            background: linear-gradient(135deg, #111318, #16130a);
+        }
+        .nav-item.master-warehouse::before { background: #ffd600; }
+        .nav-item.master-warehouse:hover {
+            border-color: #ffd60060;
+            background: linear-gradient(135deg, #1a1700, #16130a);
+        }
+
         .nav-item-left {
             display: flex;
             align-items: center;
@@ -186,7 +197,7 @@
         .nav-icon.orange { background: #ff9f4312; color: #ff9f43; }
         .nav-icon.pink   { background: #ff4d6d12; color: var(--danger); }
         .nav-icon.teal   { background: #00cdb712; color: #00cdb7; }
-        .nav-icon.gold   { background: #ffd60012; color: #ffd600; }
+        .nav-icon.gold   { background: #ffd60018; color: #ffd600; }
 
         .nav-text strong {
             display: block;
@@ -198,6 +209,22 @@
             font-size: 0.78rem;
             color: var(--muted);
         }
+
+        /* Admin-only badge */
+        .admin-badge {
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: #ffd60020;
+            color: #ffd600;
+            border: 1px solid #ffd60040;
+            border-radius: 100px;
+            padding: 2px 8px;
+            font-family: 'Space Mono', monospace;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
         .nav-arrow {
             color: var(--muted);
             font-size: 0.8rem;
@@ -208,6 +235,7 @@
             color: var(--accent);
             transform: translateX(4px);
         }
+        .nav-item.master-warehouse:hover .nav-arrow { color: #ffd600; }
 
         /* ── BACK BTN ── */
         .back-btn {
@@ -352,6 +380,21 @@
                 <i class="fa-solid fa-chevron-right nav-arrow"></i>
             </a>
 
+            <!-- ── MASTER WAREHOUSE (Chris only) ── -->
+            <a class="nav-item master-warehouse" onclick="goToMasterWarehouse(); return false;" href="#">
+                <div class="nav-item-left">
+                    <div class="nav-icon gold"><i class="fa-solid fa-warehouse"></i></div>
+                    <div class="nav-text">
+                        <strong>
+                            Master Warehouse
+                            <span class="admin-badge">Admin Only</span>
+                        </strong>
+                        <span>Manage central stock &amp; distribute to branches</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right nav-arrow"></i>
+            </a>
+
         </div>
 
         <a href="dashboard.html" class="back-btn">
@@ -379,9 +422,15 @@
         }
 
         function navigateTo(page) { window.location.href = page; }
+
         function goToAdminCashbook() {
             localStorage.setItem('branchId', 'admin');
             window.location.href = 'cashbook.html';
+        }
+
+        function goToMasterWarehouse() {
+            // No need to set branchId — master-warehouse.html uses its own MASTER_ID constant
+            window.location.href = 'master-warehouse.html';
         }
 
         let inactivityTimer;
