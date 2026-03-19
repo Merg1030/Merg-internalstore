@@ -11,7 +11,6 @@
             --danger: #f72585;
             --warning: #f8961e;
             --success: #2ecc71;
-            --master: #f8961e;
             --bg: #f4f6fb;
             --surface: #ffffff;
             --bg-lighter: #f1f3f5;
@@ -27,29 +26,66 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Poppins', Tahoma, Geneva, Verdana, sans-serif; }
         html, body { height: 100%; background: var(--bg); color: var(--text); }
         body { min-height: 100vh; display: flex; }
-
         .page-wrap { width: 100vw; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
         /* ── TOP BAR ── */
         .topbar {
             background: var(--surface);
             border-bottom: 1px solid var(--border);
-            padding: 0 20px;
+            padding: 0 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
             min-height: 64px;
             box-shadow: var(--shadow);
             flex-shrink: 0;
         }
-        .topbar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .page-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); white-space: nowrap; }
+        .topbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        .page-title { font-size: 1.05rem; font-weight: 700; color: var(--primary); white-space: nowrap; }
+
+        /* Branch switcher — admin only */
+        .branch-switcher {
+            display: none; /* shown via JS for admin */
+            align-items: center;
+            gap: 4px;
+            background: var(--bg-lighter);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 3px 4px;
+        }
+        .branch-tab {
+            padding: 5px 13px;
+            border-radius: 100px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-fade);
+            transition: all 0.18s;
+            white-space: nowrap;
+            box-shadow: none;
+            min-width: unset;
+        }
+        .branch-tab:hover { color: var(--primary); background: white; }
+        .branch-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(67,97,238,0.25);
+        }
+        .branch-tab.active-master {
+            background: linear-gradient(135deg, #f8961e, #f3722c);
+            color: white;
+            box-shadow: 0 2px 8px rgba(248,150,30,0.3);
+        }
+
         .master-pill {
             display: none;
-            background: linear-gradient(90deg, var(--master), #f3722c);
-            color: white; font-size: 0.63rem; font-weight: 700;
+            background: linear-gradient(90deg, #f8961e, #f3722c);
+            color: white; font-size: 0.62rem; font-weight: 700;
             letter-spacing: 0.12em; text-transform: uppercase;
             padding: 3px 10px; border-radius: 100px;
         }
@@ -57,16 +93,31 @@
             background: linear-gradient(135deg, #eef2ff, #e0e7ff);
             border: 1px solid #c7d2fe; color: var(--primary);
             font-size: 0.82rem; font-weight: 600;
-            padding: 6px 16px; border-radius: 100px; white-space: nowrap;
+            padding: 5px 14px; border-radius: 100px; white-space: nowrap;
         }
         .total-pill span { font-weight: 800; }
+
+        /* View-only badge for branch staff */
+        .view-only-badge {
+            display: none;
+            background: #f1f3f5;
+            border: 1px solid var(--border);
+            color: var(--text-fade);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 100px;
+        }
+
         .topbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
         /* ── BUTTONS ── */
         .btn {
             display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 16px; border: none; border-radius: var(--radius);
-            cursor: pointer; font-size: 0.85rem; font-weight: 600;
+            padding: 8px 15px; border: none; border-radius: var(--radius);
+            cursor: pointer; font-size: 0.84rem; font-weight: 600;
             transition: all 0.18s; white-space: nowrap;
             box-shadow: 0 1px 4px rgba(0,0,0,0.08); text-decoration: none;
         }
@@ -87,7 +138,7 @@
         .search-wrap input {
             padding: 8px 12px 8px 34px; border: 1px solid var(--border);
             border-radius: var(--radius); font-size: 0.85rem;
-            background: var(--bg); color: var(--text); width: 220px;
+            background: var(--bg); color: var(--text); width: 200px;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         .search-wrap input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
@@ -99,7 +150,6 @@
             z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.25s;
         }
         .panel-overlay.open { opacity: 1; pointer-events: all; }
-
         .slide-panel {
             position: fixed; top: 0; right: 0;
             width: min(480px, 100vw); height: 100vh;
@@ -111,17 +161,11 @@
         .slide-panel.open { transform: translateX(0); }
 
         .panel-header {
-            padding: 22px 24px 18px; border-bottom: 1px solid var(--border);
+            padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
-        .panel-header h3 {
-            font-size: 1.05rem; font-weight: 700; color: var(--text);
-            display: flex; align-items: center; gap: 10px;
-        }
-        .panel-icon {
-            width: 36px; height: 36px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .panel-header h3 { font-size: 1.05rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 10px; }
+        .panel-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
         .panel-icon.green { background: #d4f5e7; color: #27ae60; }
         .panel-icon.blue  { background: #e0e7ff; color: var(--primary); }
 
@@ -133,26 +177,18 @@
         }
         .close-panel-btn:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
-        .panel-body {
-            flex: 1; overflow-y: auto; padding: 24px;
-            display: flex; flex-direction: column; gap: 16px;
-        }
+        .panel-body { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 15px; }
 
         /* ── FORM FIELDS ── */
         .field-group { display: flex; flex-direction: column; gap: 6px; }
-        .field-group label {
-            font-size: 0.76rem; font-weight: 700; color: var(--text-fade);
-            text-transform: uppercase; letter-spacing: 0.07em;
-        }
-        .field-group input,
-        .field-group select {
+        .field-group label { font-size: 0.75rem; font-weight: 700; color: var(--text-fade); text-transform: uppercase; letter-spacing: 0.07em; }
+        .field-group input, .field-group select {
             width: 100%; padding: 10px 14px;
             border: 1.5px solid var(--border); border-radius: var(--radius);
             font-size: 0.92rem; color: var(--text); background: var(--bg);
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .field-group input:focus,
-        .field-group select:focus {
+        .field-group input:focus, .field-group select:focus {
             outline: none; border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(67,97,238,0.1); background: white;
         }
@@ -164,20 +200,13 @@
             padding: 12px 14px; font-size: 0.83rem; color: var(--primary);
             min-height: 46px; display: flex; align-items: center; gap: 8px;
         }
-
         .tip-text { font-size: 0.78rem; color: var(--text-fade); }
 
-        .panel-footer {
-            padding: 16px 24px; border-top: 1px solid var(--border);
-            display: flex; gap: 10px; flex-shrink: 0;
-        }
+        .panel-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; flex-shrink: 0; }
         .panel-footer .btn { flex: 1; justify-content: center; padding: 11px; }
 
         /* ── TOAST ── */
-        .toast-wrap {
-            position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-            display: flex; flex-direction: column; gap: 8px; pointer-events: none;
-        }
+        .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
         .toast {
             background: #1e2029; color: white; padding: 12px 18px;
             border-radius: var(--radius); font-size: 0.86rem; font-weight: 500;
@@ -190,24 +219,21 @@
         @keyframes toastIn  { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         @keyframes toastOut { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(12px); } }
 
-        /* ── MAIN CONTENT ── */
-        .main-content { flex: 1; overflow-y: auto; padding: 16px 20px 20px; }
+        /* ── MAIN ── */
+        .main-content { flex: 1; overflow-y: auto; padding: 16px 18px 20px; }
         .table-card {
             background: var(--surface); border-radius: var(--radius-lg);
             border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden;
         }
 
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        table { width: 100%; border-collapse: collapse; min-width: 480px; }
         thead th {
             background: #f8f9ff; color: var(--text-fade);
-            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+            font-size: 0.71rem; font-weight: 700; text-transform: uppercase;
             letter-spacing: 0.1em; padding: 13px 14px;
             border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; text-align: left;
         }
-        tbody td {
-            padding: 12px 14px; font-size: 0.88rem;
-            border-bottom: 1px solid #f0f2f8; color: var(--text); transition: background 0.12s;
-        }
+        tbody td { padding: 12px 14px; font-size: 0.88rem; border-bottom: 1px solid #f0f2f8; transition: background 0.12s; }
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover td { background: #f8f9ff; }
 
@@ -266,18 +292,18 @@
         .modal .form-actions { display: flex; gap: 10px; margin-top: 20px; }
         .modal .form-actions .btn { flex: 1; justify-content: center; }
 
-        .empty-row td { text-align: center; padding: 48px 20px; color: var(--text-fade); font-size: 0.9rem; }
+        .empty-row td { text-align: center; padding: 52px 20px; color: var(--text-fade); font-size: 0.9rem; }
 
         @media (max-width: 700px) {
-            .topbar { padding: 10px 14px; }
+            .topbar { padding: 10px 12px; }
             .search-wrap input { width: 140px; }
             .slide-panel { width: 100vw; }
             .field-row { grid-template-columns: 1fr; }
         }
         @media (max-width: 480px) {
-            .topbar-right { gap: 5px; }
             .btn { padding: 7px 10px; font-size: 0.79rem; }
             .main-content { padding: 10px; }
+            .branch-tab { padding: 5px 9px; font-size: 0.72rem; }
         }
     </style>
 
@@ -302,13 +328,13 @@
         const app = initializeApp(firebaseConfig);
         const db  = getFirestore(app);
 
-        const branchId = localStorage.getItem('branchId');
+        // ── STATE ──
+        let branchId = localStorage.getItem('branchId') || '';
         const userName = (localStorage.getItem('userName') || '').toLowerCase();
         const isAdmin  = userName === 'chris';
-        const isMaster = branchId === 'master';
 
         if (!branchId) {
-            alert('Branch ID not found.');
+            alert('Branch ID not found. Please log in again.');
             window.location.href = 'dashboard.html';
         }
 
@@ -323,8 +349,11 @@
         let sourceInventory = [];
         let activeMenu      = null;
         let editUnlocked    = false;
+        let unsubscribe     = null;
 
-        /* ── TOAST ── */
+        /* ─────────────────────────────────────────
+           TOAST
+        ───────────────────────────────────────── */
         function toast(msg, type = 'success') {
             const wrap = document.getElementById('toastWrap');
             const el   = document.createElement('div');
@@ -334,7 +363,9 @@
             setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 350); }, 3000);
         }
 
-        /* ── PANEL ── */
+        /* ─────────────────────────────────────────
+           PANELS
+        ───────────────────────────────────────── */
         function openPanel(id) {
             document.getElementById('panelOverlay').classList.add('open');
             document.getElementById(id).classList.add('open');
@@ -348,27 +379,94 @@
             closePanelById('transferPanel');
         });
 
-        /* ── ROLE UI ── */
-        function setupRoleUI() {
-            if (isMaster) document.getElementById('masterPill').style.display = 'inline-flex';
-            // Restock/GRV button — admin only
-            const rb = document.getElementById('restockBtn');
-            if (rb) rb.style.display = isAdmin ? 'inline-flex' : 'none';
+        /* ─────────────────────────────────────────
+           BRANCH SWITCHER (admin only)
+        ───────────────────────────────────────── */
+        function setupBranchSwitcher() {
+            if (!isAdmin) return;
+
+            const switcher = document.getElementById('branchSwitcher');
+            switcher.style.display = 'flex';
+
+            // Build tabs
+            switcher.innerHTML = '';
+            Object.values(BRANCHES).forEach(b => {
+                const btn = document.createElement('button');
+                btn.className = 'branch-tab';
+                btn.textContent = b.id === 'master' ? '⭐ Master' : b.name;
+                btn.dataset.bid = b.id;
+                btn.onclick = () => switchBranch(b.id);
+                switcher.appendChild(btn);
+            });
+
+            updateSwitcherActive();
         }
 
-        /* ── INVENTORY LISTENER (current branchId) ── */
+        function updateSwitcherActive() {
+            document.querySelectorAll('.branch-tab').forEach(btn => {
+                btn.classList.remove('active', 'active-master');
+                if (btn.dataset.bid === branchId) {
+                    btn.classList.add(branchId === 'master' ? 'active-master' : 'active');
+                }
+            });
+        }
+
+        function switchBranch(newBranchId) {
+            if (newBranchId === branchId) return;
+            branchId = newBranchId;
+            localStorage.setItem('branchId', branchId);
+
+            // Update header
+            document.getElementById('pageTitle').textContent = `Warehouse — ${getBranchName(branchId)}`;
+            const mp = document.getElementById('masterPill');
+            mp.style.display = branchId === 'master' ? 'inline-flex' : 'none';
+
+            updateSwitcherActive();
+
+            // Close any open panels
+            closePanelById('addPanel');
+            closePanelById('transferPanel');
+
+            // Restart inventory listener for new branch
+            if (unsubscribe) unsubscribe();
+            setupListener();
+        }
+
+        /* ─────────────────────────────────────────
+           ROLE UI
+        ───────────────────────────────────────── */
+        function setupRoleUI() {
+            // Branch switcher — admin only
+            setupBranchSwitcher();
+
+            if (isAdmin) {
+                // Admin: show all controls
+                document.getElementById('adminControls').style.display = 'flex';
+                document.getElementById('restockBtn').style.display    = 'inline-flex';
+                document.getElementById('masterPill').style.display    = branchId === 'master' ? 'inline-flex' : 'none';
+            } else {
+                // Branch staff: view only
+                document.getElementById('adminControls').style.display = 'none';
+                document.getElementById('restockBtn').style.display    = 'none';
+                document.getElementById('viewOnlyBadge').style.display = 'inline-flex';
+            }
+        }
+
+        /* ─────────────────────────────────────────
+           INVENTORY LISTENER
+        ───────────────────────────────────────── */
         function setupListener() {
             const q = query(collection(db, 'inventory'), where('branchId', '==', branchId));
-            onSnapshot(q, snap => {
+            unsubscribe = onSnapshot(q, snap => {
                 inventory = snap.docs.map(d => ({
                     id: d.id, ...d.data(),
                     stock: Number(d.data().stock) || 0,
                     price: Number(d.data().price) || 0
                 }));
                 inventory.sort((a, b) => a.code.localeCompare(b.code));
+                sourceInventory = [...inventory];
                 rebuildDatalist('addProductCodes', inventory);
                 rebuildDatalist('transferCodes', inventory);
-                sourceInventory = inventory; // default source = current branch
                 renderTable(inventory);
             }, err => { console.error(err); toast('Error loading inventory', 'error'); });
         }
@@ -380,25 +478,29 @@
             items.forEach(i => { const o = document.createElement('option'); o.value = i.code; dl.appendChild(o); });
         }
 
-        /* ── RENDER TABLE ── */
+        /* ─────────────────────────────────────────
+           RENDER TABLE
+        ───────────────────────────────────────── */
         function renderTable(items) {
             const tbody = document.querySelector('#inventoryTable tbody');
             tbody.innerHTML = '';
             let total = 0;
+
             if (!items.length) {
-                tbody.innerHTML = `<tr class="empty-row"><td colspan="5">No items found. Add inventory to get started.</td></tr>`;
+                // colspan = 5 if admin (has Actions col), 4 if staff
+                const cols = isAdmin ? 5 : 4;
+                tbody.innerHTML = `<tr class="empty-row"><td colspan="${cols}">No items found in this warehouse.</td></tr>`;
                 document.getElementById('totalVal').textContent = '0.00';
                 return;
             }
+
             items.forEach(item => {
                 total += item.price * item.stock;
                 const sc = item.stock === 0 ? 'stock-zero' : item.stock < 10 ? 'stock-low' : 'stock-ok';
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><span class="code-chip">${item.code}</span></td>
-                    <td>${item.name}</td>
-                    <td>ZMW ${item.price.toFixed(2)}</td>
-                    <td><span class="stock-chip ${sc}">${item.stock}</span></td>
+
+                // Actions cell — only for admin
+                const actionsCell = isAdmin ? `
                     <td>
                         <div class="menu-container">
                             <button class="three-dots-btn" onclick="toggleMenu(event,'${item.id}')">
@@ -409,26 +511,37 @@
                                 <div class="menu-item delete" onclick="handleDelete('${item.id}')">🗑️ Delete</div>
                             </div>
                         </div>
-                    </td>`;
+                    </td>` : '';
+
+                tr.innerHTML = `
+                    <td><span class="code-chip">${item.code}</span></td>
+                    <td>${item.name}</td>
+                    <td>ZMW ${item.price.toFixed(2)}</td>
+                    <td><span class="stock-chip ${sc}">${item.stock}</span></td>
+                    ${actionsCell}
+                `;
                 tbody.appendChild(tr);
             });
             document.getElementById('totalVal').textContent = total.toFixed(2);
         }
 
-        /* ── SEARCH ── */
+        /* ─────────────────────────────────────────
+           SEARCH
+        ───────────────────────────────────────── */
         window.searchInventory = function() {
             const q = document.getElementById('searchInput').value.toLowerCase();
             renderTable(inventory.filter(i => i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q)));
         };
 
-        /* ── ADD PANEL ── */
+        /* ─────────────────────────────────────────
+           ADD PANEL
+        ───────────────────────────────────────── */
         window.openAddPanel = function() {
             document.getElementById('addForm').reset();
             openPanel('addPanel');
             setTimeout(() => document.getElementById('addItemCode').focus(), 320);
         };
 
-        // Code typed → auto-fill name/price if already exists
         document.getElementById('addItemCode').addEventListener('input', function() {
             const code  = this.value.toUpperCase();
             const found = inventory.find(i => i.code === code);
@@ -452,63 +565,58 @@
             }
             try {
                 await addDoc(collection(db, 'inventory'), { code, name, price, stock, sold: 0, branchId });
-                toast(`"${name}" added successfully!`);
+                toast(`"${name}" added to ${getBranchName(branchId)}!`);
                 closePanelById('addPanel');
             } catch (err) { toast('Error: ' + err.message, 'error'); }
         };
 
-        /* ── TRANSFER PANEL ── */
+        /* ─────────────────────────────────────────
+           TRANSFER PANEL
+        ───────────────────────────────────────── */
         window.openTransferPanel = function() {
             document.getElementById('transferForm').reset();
             document.getElementById('transferPreview').textContent = 'Enter a product code above to preview';
+
+            // Source picker — always shown for admin (they can pick any branch as source)
+            const wrap = document.getElementById('transferSourceWrap');
+            wrap.style.display = 'block';
+            const sel = document.getElementById('transferSource');
+            sel.innerHTML = '<option value="">— Select Source —</option>';
+            Object.values(BRANCHES).forEach(b => {
+                const o = document.createElement('option');
+                o.value = b.id; o.textContent = getBranchName(b.id);
+                if (b.id === branchId) o.selected = true;
+                sel.appendChild(o);
+            });
+
+            // Default: source = currently viewing branch
+            sourceInventory = [...inventory];
+            rebuildDatalist('transferCodes', sourceInventory);
+            buildDestOptions(branchId);
+
             openPanel('transferPanel');
-
-            if (isAdmin) {
-                // Show source picker and default to current branch
-                const wrap = document.getElementById('transferSourceWrap');
-                wrap.style.display = 'block';
-                const sel = document.getElementById('transferSource');
-                sel.innerHTML = '<option value="">— Select Source —</option>';
-                Object.values(BRANCHES).forEach(b => {
-                    const o = document.createElement('option');
-                    o.value = b.id; o.textContent = b.name;
-                    if (b.id === branchId) o.selected = true;
-                    sel.appendChild(o);
-                });
-                buildDestOptions(branchId);
-                sourceInventory = inventory;
-                rebuildDatalist('transferCodes', inventory);
-            } else {
-                document.getElementById('transferSourceWrap').style.display = 'none';
-                buildDestOptions(branchId);
-                sourceInventory = inventory;
-                rebuildDatalist('transferCodes', inventory);
-            }
-
             setTimeout(() => document.getElementById('transferCode').focus(), 320);
         };
 
         function buildDestOptions(srcId) {
             const sel = document.getElementById('transferDest');
             sel.innerHTML = '<option value="">— Select Destination —</option>';
-            const allowed = isAdmin
-                ? Object.keys(BRANCHES).filter(id => id !== srcId)
-                : (['master', branchId === 'makeni' ? 'kabana' : 'makeni']); // branch staff: master + other branch
-            allowed.forEach(id => {
+            // All branches except the source
+            Object.keys(BRANCHES).filter(id => id !== srcId).forEach(id => {
                 const o = document.createElement('option');
                 o.value = id; o.textContent = getBranchName(id);
                 sel.appendChild(o);
             });
         }
 
-        // Admin changes source → reload source inventory + update dest options
+        // Admin changes source branch → reload that branch's inventory
         window.handleSourceChange = async function() {
             const srcId = document.getElementById('transferSource').value;
             if (!srcId) return;
-            document.getElementById('transferPreview').textContent = 'Loading source inventory…';
+            document.getElementById('transferPreview').textContent = 'Loading…';
             try {
                 if (srcId === branchId) {
-                    sourceInventory = inventory;
+                    sourceInventory = [...inventory];
                 } else {
                     const snap = await getDocs(query(collection(db, 'inventory'), where('branchId', '==', srcId)));
                     sourceInventory = snap.docs.map(d => ({
@@ -521,10 +629,9 @@
                 buildDestOptions(srcId);
                 document.getElementById('transferCode').value = '';
                 document.getElementById('transferPreview').textContent = 'Enter a product code above to preview';
-            } catch (err) { toast('Error loading source: ' + err.message, 'error'); }
+            } catch (err) { toast('Error loading source inventory: ' + err.message, 'error'); }
         };
 
-        // Code input → live preview
         document.getElementById('transferCode').addEventListener('input', function() {
             const code = this.value.toUpperCase();
             const item = sourceInventory.find(i => i.code === code);
@@ -541,10 +648,9 @@
             const code   = document.getElementById('transferCode').value.toUpperCase();
             const qty    = parseInt(document.getElementById('transferQty').value);
             const destId = document.getElementById('transferDest').value;
-            const srcId  = isAdmin
-                ? (document.getElementById('transferSource')?.value || branchId)
-                : branchId;
+            const srcId  = document.getElementById('transferSource')?.value || branchId;
 
+            if (!srcId)  { toast('Please select a source branch.', 'error'); return; }
             if (!code || isNaN(qty) || qty <= 0 || !destId) { toast('Please fill all fields.', 'error'); return; }
             if (srcId === destId) { toast('Source and destination cannot be the same.', 'error'); return; }
 
@@ -552,7 +658,7 @@
             if (!item) { toast('Product not found in source.', 'error'); return; }
             if (item.stock < qty) { toast(`Not enough stock. Available: ${item.stock}`, 'error'); return; }
 
-            if (!confirm(`Transfer ${qty}× ${item.name}\nFrom: ${getBranchName(srcId)}\nTo: ${getBranchName(destId)}`)) return;
+            if (!confirm(`Transfer ${qty}× ${item.name}\nFrom: ${getBranchName(srcId)} → ${getBranchName(destId)}`)) return;
 
             try {
                 await runTransaction(db, async tx => {
@@ -561,18 +667,24 @@
                     if ((srcDoc.data().stock || 0) < qty) throw new Error(`Stock changed. Current: ${srcDoc.data().stock}`);
                     tx.update(srcRef, { stock: increment(-qty) });
 
-                    const destSnap = await getDocs(query(collection(db, 'inventory'), where('branchId', '==', destId), where('code', '==', code)));
+                    const destSnap = await getDocs(query(
+                        collection(db, 'inventory'),
+                        where('branchId', '==', destId),
+                        where('code', '==', code)
+                    ));
                     if (!destSnap.empty) {
                         tx.update(doc(db, 'inventory', destSnap.docs[0].id), { stock: increment(qty) });
                     } else {
-                        tx.set(doc(collection(db, 'inventory')), { code, name: item.name, price: item.price, stock: qty, sold: 0, branchId: destId });
+                        tx.set(doc(collection(db, 'inventory')), {
+                            code, name: item.name, price: item.price,
+                            stock: qty, sold: 0, branchId: destId
+                        });
                     }
-
                     tx.set(doc(collection(db, 'transfers')), {
                         date: new Date().toISOString(), productCode: code,
                         productName: item.name, quantity: qty,
                         fromBranchId: srcId, fromBranchName: getBranchName(srcId),
-                        toBranchId: destId,   toBranchName:  getBranchName(destId),
+                        toBranchId:  destId, toBranchName:  getBranchName(destId),
                         status: 'completed', timestamp: new Date()
                     });
                 });
@@ -582,7 +694,9 @@
             } catch (err) { console.error(err); toast('Transfer failed: ' + err.message, 'error'); }
         };
 
-        /* ── MENU ── */
+        /* ─────────────────────────────────────────
+           MENU
+        ───────────────────────────────────────── */
         function closeAllMenus() {
             if (activeMenu) { activeMenu.classList.remove('show'); activeMenu = null; }
         }
@@ -595,7 +709,9 @@
         };
         document.addEventListener('click', closeAllMenus);
 
-        /* ── EDIT ── */
+        /* ─────────────────────────────────────────
+           EDIT
+        ───────────────────────────────────────── */
         window.handleEdit = async function(id) {
             closeAllMenus();
             if (!editUnlocked) {
@@ -642,7 +758,9 @@
             bg.onclick = ev => { if (ev.target === bg) bg.remove(); };
         };
 
-        /* ── DELETE ── */
+        /* ─────────────────────────────────────────
+           DELETE
+        ───────────────────────────────────────── */
         window.handleDelete = async function(id) {
             closeAllMenus();
             const item = inventory.find(i => i.id === id);
@@ -654,25 +772,42 @@
             } catch (err) { toast('Error: ' + err.message, 'error'); }
         };
 
-        /* ── INIT ── */
+        /* ─────────────────────────────────────────
+           INIT
+        ───────────────────────────────────────── */
         window.onload = function() {
             document.getElementById('pageTitle').textContent = `Warehouse — ${getBranchName(branchId)}`;
             setupRoleUI();
             setupListener();
+
+            // Table header — hide Actions column for non-admin
+            const actionsHeader = document.getElementById('actionsHeader');
+            if (actionsHeader) actionsHeader.style.display = isAdmin ? '' : 'none';
         };
     </script>
 </head>
 <body>
     <div class="page-wrap">
 
-        <!-- TOP BAR -->
+        <!-- ── TOP BAR ── -->
         <div class="topbar">
             <div class="topbar-left">
                 <span class="page-title" id="pageTitle">Warehouse</span>
                 <span class="master-pill" id="masterPill">⭐ Master</span>
-                <div class="total-pill">Total Stock Value: <span id="totalVal">0.00</span> ZMW</div>
+
+                <!-- Branch switcher tabs — rendered by JS for admin -->
+                <div class="branch-switcher" id="branchSwitcher"></div>
+
+                <!-- View-only badge for branch staff -->
+                <span class="view-only-badge" id="viewOnlyBadge">👁 View Only</span>
+
+                <div class="total-pill">
+                    Total Stock: <span id="totalVal">0.00</span> ZMW
+                </div>
             </div>
+
             <div class="topbar-right">
+                <!-- Search — everyone -->
                 <div class="search-wrap">
                     <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
@@ -680,17 +815,19 @@
                     <input type="text" id="searchInput" placeholder="Search products…" oninput="searchInventory()">
                 </div>
 
-                <button class="btn btn-success" onclick="openAddPanel()">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    Add Item
-                </button>
+                <!-- Admin-only controls group -->
+                <div id="adminControls" style="display:none; align-items:center; gap:8px;">
+                    <button class="btn btn-success" onclick="openAddPanel()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Add Item
+                    </button>
+                    <button class="btn btn-primary" onclick="openTransferPanel()">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                        Transfer
+                    </button>
+                </div>
 
-                <button class="btn btn-primary" onclick="openTransferPanel()">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                    Transfer
-                </button>
-
-                <!-- GRV/Restock — admin only, hidden via JS -->
+                <!-- GRV/Restock — admin only -->
                 <a href="Restock.html" id="restockBtn" class="btn btn-warning" style="display:none;">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 4H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5l5 5v11a2 2 0 0 1-2 2z"/></svg>
                     GRV / Restock
@@ -698,7 +835,7 @@
             </div>
         </div>
 
-        <!-- TABLE -->
+        <!-- ── TABLE ── -->
         <div class="main-content">
             <div class="table-card">
                 <table id="inventoryTable">
@@ -708,7 +845,7 @@
                             <th>Product Name</th>
                             <th>Price</th>
                             <th>Stock</th>
-                            <th>Actions</th>
+                            <th id="actionsHeader">Actions</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -720,14 +857,12 @@
     <!-- OVERLAY -->
     <div class="panel-overlay" id="panelOverlay"></div>
 
-    <!-- ADD ITEM PANEL -->
+    <!-- ── ADD ITEM PANEL ── -->
     <div class="slide-panel" id="addPanel">
         <div class="panel-header">
             <h3>
                 <span class="panel-icon green">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 </span>
                 Add New Item
             </h3>
@@ -756,13 +891,11 @@
                         <input type="number" id="addItemStock" min="0" placeholder="0" required>
                     </div>
                 </div>
-                <p class="tip-text">💡 If the product code exists in this inventory, details will auto-fill above.</p>
+                <p class="tip-text">💡 Typing an existing code will auto-fill the name and price.</p>
             </div>
             <div class="panel-footer">
                 <button type="submit" class="btn btn-success">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     Save Item
                 </button>
                 <button type="button" class="btn btn-ghost" onclick="closePanelById('addPanel')">Cancel</button>
@@ -770,14 +903,12 @@
         </form>
     </div>
 
-    <!-- TRANSFER PANEL -->
+    <!-- ── TRANSFER PANEL ── -->
     <div class="slide-panel" id="transferPanel">
         <div class="panel-header">
             <h3>
                 <span class="panel-icon blue">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                 </span>
                 Transfer Stock
             </h3>
@@ -786,10 +917,9 @@
         <form id="transferForm" onsubmit="submitTransfer(event)">
             <div class="panel-body">
 
-                <!-- Admin only source picker -->
-                <div id="transferSourceWrap" style="display:none;">
+                <div id="transferSourceWrap">
                     <div class="field-group">
-                        <label>From (Source Branch)</label>
+                        <label>From (Source Branch) *</label>
                         <select id="transferSource" onchange="handleSourceChange()">
                             <option value="">— Select Source —</option>
                         </select>
@@ -823,9 +953,7 @@
             </div>
             <div class="panel-footer">
                 <button type="submit" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     Confirm Transfer
                 </button>
                 <button type="button" class="btn btn-ghost" onclick="closePanelById('transferPanel')">Cancel</button>
