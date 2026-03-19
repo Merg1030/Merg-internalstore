@@ -43,6 +43,20 @@
             font-size: 14px;
         }
 
+        /* Master warehouse banner — hidden by default, shown via JS */
+        .master-banner {
+            display: none;
+            background: linear-gradient(90deg, #f8961e, #f3722c);
+            color: white;
+            text-align: center;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 12px;
+            letter-spacing: 0.05em;
+        }
+
         .control-panel {
             background-color: #f5f5f5;
             padding: 15px;
@@ -153,6 +167,11 @@
             font-size: 16px;
         }
 
+        /* Orange version when in master mode */
+        .current-grv.master-mode {
+            background-color: #f8961e;
+        }
+
         .items-table-container {
             overflow-x: auto;
             margin: 20px 0;
@@ -230,8 +249,17 @@
             transition: background-color 0.3s;
         }
 
+        /* Orange process button for master mode */
+        .process-btn.master-mode {
+            background-color: #f8961e;
+        }
+
         .process-btn:hover {
             background-color: #c82333;
+        }
+
+        .process-btn.master-mode:hover {
+            background-color: #e07b0a;
         }
 
         .status-badge {
@@ -356,29 +384,11 @@
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .input-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            th, td {
-                padding: 8px 5px;
-                font-size: 12px;
-            }
-            
-            .control-btn {
-                padding: 8px 15px;
-                font-size: 12px;
-                margin: 5px;
-            }
-            
-            .modal-content {
-                padding: 15px;
-                width: 95%;
-            }
+            .container { padding: 15px; }
+            .input-grid { grid-template-columns: 1fr; }
+            th, td { padding: 8px 5px; font-size: 12px; }
+            .control-btn { padding: 8px 15px; font-size: 12px; margin: 5px; }
+            .modal-content { padding: 15px; width: 95%; }
         }
     </style>
 </head>
@@ -386,6 +396,11 @@
     <div class="container">
         <h1>GRV PROCESSING SYSTEM</h1>
         <p class="subtitle">Manage Goods Received Vouchers</p>
+
+        <!-- Shown only when branchId = "master" -->
+        <div class="master-banner" id="masterBanner">
+            ⭐ MASTER WAREHOUSE — Receiving stock into central inventory
+        </div>
         
         <div class="control-panel">
             <button class="control-btn" onclick="showProcessSection()">Process New GRV</button>
@@ -393,7 +408,7 @@
             <button class="control-btn hide" onclick="hideAllSections()" style="display: none;" id="hideBtn">Hide All</button>
         </div>
         
-        <!-- Process GRV Section (Hidden by default) -->
+        <!-- Process GRV Section -->
         <div id="processSection" class="hidden-section">
             <div class="current-grv" id="currentGRV">
                 Currently Adding to: GRV-01
@@ -445,23 +460,21 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="itemsTableBody">
-                        <!-- Items will be added here dynamically -->
-                    </tbody>
+                    <tbody id="itemsTableBody"></tbody>
                 </table>
             </div>
             
             <div class="process-section">
-                <button class="process-btn" onclick="processGRV()">
+                <button class="process-btn" id="processBtnEl" onclick="processGRV()">
                     PROCESS GRV (Create GRV File)
                 </button>
-                <p style="color: #ffffff; margin-top: 10px; font-size: 13px;">
+                <p style="color: #ffffff; margin-top: 10px; font-size: 13px;" id="processSubtitle">
                     Click to process all items above as a single GRV file
                 </p>
             </div>
         </div>
         
-        <!-- GRV History Section (Hidden by default) -->
+        <!-- GRV History Section -->
         <div id="historySection" class="hidden-section">
             <div style="margin: 20px 0;">
                 <h2 style="color: #000000; margin-bottom: 15px; font-size: 18px;">Processed GRV Files</h2>
@@ -478,9 +491,7 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="grvHistoryBody">
-                            <!-- GRV history will be added here -->
-                        </tbody>
+                        <tbody id="grvHistoryBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -524,34 +535,30 @@
                             <th>Supplier</th>
                         </tr>
                     </thead>
-                    <tbody id="modalItemsBody">
-                        <!-- Items will be added here dynamically -->
-                    </tbody>
+                    <tbody id="modalItemsBody"></tbody>
                 </table>
             </div>
             
             <div style="text-align: center; margin-top: 20px;">
                 <button onclick="closeModal()" style="
-                    background-color: #6c757d;
-                    color: white;
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 3px;
-                    cursor: pointer;
-                ">Close</button>
+                    background-color: #6c757d; color: white; border: none;
+                    padding: 8px 20px; border-radius: 3px; cursor: pointer;">Close</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+        import {
+            getFirestore, collection, query, where,
+            getDocs, addDoc, updateDoc, doc, getDoc, setDoc
+        } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyB-lm7Y3r1F6Vv8PKvY8glLabZDbJsHM1k",
-            authDomain: "trismartstores.firebasestorage.app",
+            apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+            authDomain: "trismartstores.firebaseapp.com",
             projectId: "trismartstores",
-            storageBucket: "trismartstores.firebasestorage.app",
+            storageBucket: "trismartstores.appspot.com",
             messagingSenderId: "416692703333",
             appId: "1:416692703333:web:d4b60292621435c748f68c",
             measurementId: "G-NJPQ7L3QWJ"
@@ -561,23 +568,34 @@
         const db = getFirestore(app);
 
         const branchId = localStorage.getItem('branchId');
-        
         if (!branchId) {
             alert('Branch ID not found. Please select a branch from the dashboard.');
             window.location.href = 'dashboard.html';
         }
+
+        // Is this the master warehouse mode?
+        const isMaster = branchId === 'master';
 
         let items = [];
         let currentGRV = 1;
         let processedGRVs = [];
         let inventory = [];
 
+        // Apply master-mode styling if needed
+        function applyMasterStyling() {
+            if (!isMaster) return;
+            document.getElementById('masterBanner').style.display = 'block';
+            document.getElementById('currentGRV').classList.add('master-mode');
+            document.getElementById('processBtnEl').classList.add('master-mode');
+            document.getElementById('processSubtitle').textContent =
+                'Click to process all items above — stock will be added to Master Warehouse';
+        }
+
         // Get next GRV number from database
         async function getNextGRVNumber() {
             try {
                 const grvCounterRef = doc(db, 'grvCounter', branchId);
                 const grvCounterSnap = await getDoc(grvCounterRef);
-                
                 if (grvCounterSnap.exists()) {
                     currentGRV = grvCounterSnap.data().nextGRV;
                 } else {
@@ -592,18 +610,18 @@
             }
         }
 
-        // Fetch inventory for dropdown
+        // Fetch inventory — always pulls from the current branchId
+        // So when branchId = "master", it shows master warehouse items
         async function fetchInventory() {
             try {
                 const q = query(collection(db, 'inventory'), where('branchId', '==', branchId));
-                const inventorySnapshot = await getDocs(q);
-                inventory = inventorySnapshot.docs.map(doc => ({ 
-                    id: doc.id, 
-                    code: doc.data().code,
-                    name: doc.data().name,
-                    stock: doc.data().stock || 0
+                const snap = await getDocs(q);
+                inventory = snap.docs.map(d => ({
+                    id: d.id,
+                    code: d.data().code,
+                    name: d.data().name,
+                    stock: d.data().stock || 0
                 }));
-                
                 inventory.sort((a, b) => a.name.localeCompare(b.name));
                 populateItemDropdown();
             } catch (error) {
@@ -611,49 +629,36 @@
             }
         }
 
-        // Populate item name dropdown
         function populateItemDropdown() {
-            const itemNameSelect = document.getElementById('itemName');
-            itemNameSelect.innerHTML = '<option value="">Select item</option>';
-            
+            const sel = document.getElementById('itemName');
+            sel.innerHTML = '<option value="">Select item</option>';
             inventory.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.name;
-                option.textContent = item.name;
-                option.setAttribute('data-code', item.code);
-                itemNameSelect.appendChild(option);
+                const opt = document.createElement('option');
+                opt.value = item.name;
+                opt.textContent = item.name;
+                opt.setAttribute('data-code', item.code);
+                sel.appendChild(opt);
             });
         }
 
-        // Auto-fill item code when name is selected
         function autoFillItemCode() {
-            const itemNameSelect = document.getElementById('itemName');
-            const selectedOption = itemNameSelect.options[itemNameSelect.selectedIndex];
-            const itemCode = selectedOption.getAttribute('data-code');
-            
-            if (itemCode) {
-                document.getElementById('itemCode').value = itemCode;
+            const sel = document.getElementById('itemName');
+            const code = sel.options[sel.selectedIndex].getAttribute('data-code');
+            document.getElementById('itemCode').value = code || '';
+            if (code) {
                 document.getElementById('quantity').focus();
                 document.getElementById('quantity').select();
-            } else {
-                document.getElementById('itemCode').value = '';
             }
         }
 
-        // Show process section
         function showProcessSection() {
             hideAllSections();
             document.getElementById('processSection').classList.remove('hidden-section');
             document.getElementById('processSection').classList.add('visible-section');
             document.getElementById('hideBtn').style.display = 'inline-block';
-            
-            // Auto-focus on item name dropdown
-            setTimeout(() => {
-                document.getElementById('itemName').focus();
-            }, 100);
+            setTimeout(() => document.getElementById('itemName').focus(), 100);
         }
 
-        // Show GRV history section
         function showGRVHistory() {
             hideAllSections();
             document.getElementById('historySection').classList.remove('hidden-section');
@@ -661,7 +666,6 @@
             document.getElementById('hideBtn').style.display = 'inline-block';
         }
 
-        // Hide all sections
         function hideAllSections() {
             document.getElementById('processSection').classList.remove('visible-section');
             document.getElementById('processSection').classList.add('hidden-section');
@@ -670,94 +674,83 @@
             document.getElementById('hideBtn').style.display = 'none';
         }
 
-        // Load items from localStorage
         function loadLocalData() {
-            const savedItems = localStorage.getItem('grvItems');
-            if (savedItems) {
-                items = JSON.parse(savedItems);
-                updateTable();
-            }
-            
-            const savedProcessed = localStorage.getItem('processedGRVs');
-            if (savedProcessed) {
-                processedGRVs = JSON.parse(savedProcessed);
-                updateGRVHistory();
-            }
+            // Use a per-branch localStorage key so master data doesn't bleed into branch data
+            const savedItems = localStorage.getItem(`grvItems_${branchId}`);
+            if (savedItems) { items = JSON.parse(savedItems); updateTable(); }
+
+            const savedProcessed = localStorage.getItem(`processedGRVs_${branchId}`);
+            if (savedProcessed) { processedGRVs = JSON.parse(savedProcessed); updateGRVHistory(); }
         }
 
-        // Save items to localStorage
         function saveLocalData() {
-            localStorage.setItem('grvItems', JSON.stringify(items));
-            localStorage.setItem('processedGRVs', JSON.stringify(processedGRVs));
+            localStorage.setItem(`grvItems_${branchId}`, JSON.stringify(items));
+            localStorage.setItem(`processedGRVs_${branchId}`, JSON.stringify(processedGRVs));
         }
 
-        // Update GRV display
         function updateGRVDisplay() {
-            const grvNumber = currentGRV.toString().padStart(2, '0');
-            document.getElementById('currentGRV').textContent = `Currently Adding to: GRV-${grvNumber}`;
+            const num = currentGRV.toString().padStart(2, '0');
+            const prefix = isMaster ? 'MGRV' : 'GRV';
+            document.getElementById('currentGRV').textContent =
+                `Currently Adding to: ${prefix}-${num}`;
         }
 
-        // Add item to the list
         function addItem() {
-            const itemName = document.getElementById('itemName').value.trim();
-            const itemCode = document.getElementById('itemCode').value.trim();
-            const quantity = parseInt(document.getElementById('quantity').value);
+            const itemName  = document.getElementById('itemName').value.trim();
+            const itemCode  = document.getElementById('itemCode').value.trim();
+            const quantity  = parseInt(document.getElementById('quantity').value);
             const unitPrice = parseFloat(document.getElementById('unitPrice').value);
-            const supplier = document.getElementById('supplier').value.trim();
-            
-            if (!itemName || !itemCode || !quantity || quantity < 1 || !unitPrice || unitPrice < 0 || !supplier) {
+            const supplier  = document.getElementById('supplier').value.trim();
+
+            if (!itemName || !itemCode || !quantity || quantity < 1 || isNaN(unitPrice) || unitPrice < 0 || !supplier) {
                 showMessage('Please fill in all fields with valid values', 'error');
                 return;
             }
-            
+
+            const prefix = isMaster ? 'MGRV' : 'GRV';
+            const grvNum = `${prefix}-${currentGRV.toString().padStart(2, '0')}`;
+
             const newItem = {
                 id: Date.now(),
                 code: itemCode,
                 name: itemName,
-                quantity: quantity,
-                unitPrice: unitPrice,
+                quantity,
+                unitPrice,
                 totalPrice: (quantity * unitPrice).toFixed(2),
-                supplier: supplier,
+                supplier,
                 status: 'pending',
-                grvNumber: `GRV-${currentGRV.toString().padStart(2, '0')}`,
-                branchId: branchId
+                grvNumber: grvNum,
+                branchId
             };
-            
+
             items.push(newItem);
             updateTable();
             saveLocalData();
-            
+
             document.getElementById('quantity').value = '1';
             document.getElementById('unitPrice').value = '0.00';
             document.getElementById('supplier').value = '';
-            
+
             showMessage(`Item "${itemName}" added successfully`, 'success');
             document.getElementById('quantity').focus();
             document.getElementById('quantity').select();
         }
 
-        // Update the table with items
         function updateTable() {
-            const tableBody = document.getElementById('itemsTableBody');
-            tableBody.innerHTML = '';
-            
-            const currentGRVItems = items.filter(item => 
-                item.grvNumber === `GRV-${currentGRV.toString().padStart(2, '0')}` && 
-                item.branchId === branchId
-            );
-            
-            if (currentGRVItems.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 20px; color: #666666;">
-                            No items added yet. Add items using the form above.
-                        </td>
-                    </tr>
-                `;
+            const tbody = document.getElementById('itemsTableBody');
+            tbody.innerHTML = '';
+
+            const prefix = isMaster ? 'MGRV' : 'GRV';
+            const grvNum = `${prefix}-${currentGRV.toString().padStart(2, '0')}`;
+            const currentItems = items.filter(i => i.grvNumber === grvNum && i.branchId === branchId);
+
+            if (currentItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;color:#666;">
+                    No items added yet. Add items using the form above.</td></tr>`;
                 return;
             }
-            
-            currentGRVItems.forEach(item => {
+
+            currentItems.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${item.code}</td>
@@ -773,125 +766,108 @@
                         </div>
                     </td>
                 `;
-                tableBody.appendChild(row);
+                tbody.appendChild(row);
             });
         }
 
-        // Delete an item
         function deleteItem(id) {
-            if (confirm('Are you sure you want to delete this item?')) {
-                items = items.filter(item => item.id !== id);
+            if (confirm('Delete this item?')) {
+                items = items.filter(i => i.id !== id);
                 updateTable();
                 saveLocalData();
-                showMessage('Item deleted successfully', 'success');
+                showMessage('Item deleted', 'success');
             }
         }
 
-        // Process GRV and save to database
         async function processGRV() {
-            const currentGRVItems = items.filter(item => 
-                item.grvNumber === `GRV-${currentGRV.toString().padStart(2, '0')}` && 
-                item.status === 'pending' &&
-                item.branchId === branchId
+            const prefix = isMaster ? 'MGRV' : 'GRV';
+            const grvNum = `${prefix}-${currentGRV.toString().padStart(2, '0')}`;
+
+            const pendingItems = items.filter(i =>
+                i.grvNumber === grvNum && i.status === 'pending' && i.branchId === branchId
             );
-            
-            if (currentGRVItems.length === 0) {
+
+            if (pendingItems.length === 0) {
                 showMessage('No pending items to process for this GRV', 'error');
                 return;
             }
-            
-            if (!confirm(`Process ${currentGRVItems.length} items as GRV-${currentGRV.toString().padStart(2, '0')}?`)) {
-                return;
-            }
-            
+
+            const destination = isMaster ? 'Master Warehouse' : `Branch (${branchId})`;
+            if (!confirm(`Process ${pendingItems.length} item(s) as ${grvNum} → ${destination}?`)) return;
+
             try {
                 const grv = {
-                    grvNumber: `GRV-${currentGRV.toString().padStart(2, '0')}`,
+                    grvNumber: grvNum,
                     date: new Date().toISOString().split('T')[0],
                     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-                    items: currentGRVItems,
-                    totalItems: currentGRVItems.length,
-                    totalQuantity: currentGRVItems.reduce((sum, item) => sum + item.quantity, 0),
-                    totalValue: currentGRVItems.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0),
-                    branchId: branchId,
+                    items: pendingItems,
+                    totalItems: pendingItems.length,
+                    totalQuantity: pendingItems.reduce((s, i) => s + i.quantity, 0),
+                    totalValue: pendingItems.reduce((s, i) => s + parseFloat(i.totalPrice), 0),
+                    branchId,
+                    isMasterWarehouse: isMaster,
                     status: 'processed',
                     createdAt: new Date().toISOString()
                 };
-                
-                // Save to GRV collection
+
                 await addDoc(collection(db, 'grvRecords'), grv);
-                
-                // Update inventory stock
-                for (const item of currentGRVItems) {
-                    const inventoryItem = inventory.find(inv => inv.code === item.code);
-                    if (inventoryItem) {
-                        const itemRef = doc(db, 'inventory', inventoryItem.id);
-                        const newStock = (inventoryItem.stock || 0) + item.quantity;
-                        await updateDoc(itemRef, { stock: newStock });
-                        
-                        const restockEntry = {
+
+                // Update inventory stock (always updates the correct branchId's inventory)
+                for (const item of pendingItems) {
+                    const invItem = inventory.find(inv => inv.code === item.code);
+                    if (invItem) {
+                        const itemRef = doc(db, 'inventory', invItem.id);
+                        await updateDoc(itemRef, { stock: (invItem.stock || 0) + item.quantity });
+                        // Update local copy so subsequent items in same session are accurate
+                        invItem.stock = (invItem.stock || 0) + item.quantity;
+
+                        await addDoc(collection(db, 'restockHistory'), {
                             date: grv.date,
                             code: item.code,
                             name: item.name,
                             price: item.unitPrice,
                             quantity: item.quantity,
                             total: item.totalPrice,
-                            branchId: branchId,
-                            grvNumber: grv.grvNumber
-                        };
-                        await addDoc(collection(db, 'restockHistory'), restockEntry);
+                            branchId,
+                            grvNumber: grvNum
+                        });
                     }
                 }
-                
-                // Update GRV counter
-                const grvCounterRef = doc(db, 'grvCounter', branchId);
-                await setDoc(grvCounterRef, { nextGRV: currentGRV + 1 }, { merge: true });
-                
-                // Mark items as processed
-                items.forEach(item => {
-                    if (item.grvNumber === `GRV-${currentGRV.toString().padStart(2, '0')}`) {
-                        item.status = 'processed';
-                    }
-                });
-                
+
+                // Advance GRV counter
+                const counterRef = doc(db, 'grvCounter', branchId);
+                await setDoc(counterRef, { nextGRV: currentGRV + 1 }, { merge: true });
+
+                // Mark local items as processed
+                items.forEach(i => { if (i.grvNumber === grvNum) i.status = 'processed'; });
+
                 processedGRVs.push(grv);
                 currentGRV++;
-                
+
                 await getNextGRVNumber();
                 updateTable();
                 updateGRVHistory();
                 saveLocalData();
-                
-                showMessage(
-                    `GRV-${(currentGRV-1).toString().padStart(2, '0')} processed successfully`,
-                    'success'
-                );
-                
+
+                showMessage(`${grvNum} processed successfully!`, 'success');
+
             } catch (error) {
                 console.error('Error processing GRV:', error);
                 showMessage('Error processing GRV. Please try again.', 'error');
             }
         }
 
-        // Update GRV history display
         function updateGRVHistory() {
-            const historyBody = document.getElementById('grvHistoryBody');
-            historyBody.innerHTML = '';
-            
+            const body = document.getElementById('grvHistoryBody');
+            body.innerHTML = '';
+
             if (processedGRVs.length === 0) {
-                historyBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 15px; color: #666666;">
-                            No GRV files processed yet.
-                        </td>
-                    </tr>
-                `;
+                body.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:15px;color:#666;">
+                    No GRV files processed yet.</td></tr>`;
                 return;
             }
-            
-            const sortedHistory = [...processedGRVs].reverse();
-            
-            sortedHistory.forEach(grv => {
+
+            [...processedGRVs].reverse().forEach(grv => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${grv.grvNumber}</td>
@@ -904,27 +880,21 @@
                         <button class="view-items-btn" onclick="viewGRVDetails('${grv.grvNumber}')">View Items</button>
                     </td>
                 `;
-                historyBody.appendChild(row);
+                body.appendChild(row);
             });
         }
 
-        // View GRV details in modal
         function viewGRVDetails(grvNumber) {
             const grv = processedGRVs.find(g => g.grvNumber === grvNumber);
-            
-            if (!grv) {
-                showMessage('GRV details not found', 'error');
-                return;
-            }
-            
-            document.getElementById('modalTitle').textContent = `GRV Items - ${grv.grvNumber}`;
+            if (!grv) { showMessage('GRV not found', 'error'); return; }
+
+            document.getElementById('modalTitle').textContent = `GRV Items — ${grv.grvNumber}`;
             document.getElementById('modalGRVNumber').textContent = grv.grvNumber;
             document.getElementById('modalDate').textContent = grv.date;
             document.getElementById('modalTime').textContent = grv.time;
-            
-            const modalItemsBody = document.getElementById('modalItemsBody');
-            modalItemsBody.innerHTML = '';
-            
+
+            const body = document.getElementById('modalItemsBody');
+            body.innerHTML = '';
             grv.items.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -935,60 +905,54 @@
                     <td>${item.totalPrice}</td>
                     <td>${item.supplier}</td>
                 `;
-                modalItemsBody.appendChild(row);
+                body.appendChild(row);
             });
-            
+
             document.getElementById('grvModal').classList.add('active');
         }
 
-        // Close modal
         function closeModal() {
             document.getElementById('grvModal').classList.remove('active');
         }
 
-        // Show message
         function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.innerHTML = text;
-            messageDiv.className = `message message-${type}`;
-            messageDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 3000);
+            const el = document.getElementById('message');
+            el.innerHTML = text;
+            el.className = `message message-${type}`;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 3000);
         }
 
-        // Fetch existing GRV records
         async function fetchExistingGRVs() {
             try {
                 const q = query(collection(db, 'grvRecords'), where('branchId', '==', branchId));
-                const grvSnapshot = await getDocs(q);
-                processedGRVs = grvSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const snap = await getDocs(q);
+                processedGRVs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 updateGRVHistory();
                 saveLocalData();
             } catch (error) {
-                console.error('Error fetching GRV records:', error);
+                console.error('Error fetching GRVs:', error);
             }
         }
 
-        // Initialize
-        window.onload = async function() {
+        window.onload = async function () {
+            applyMasterStyling();
             await getNextGRVNumber();
             await fetchInventory();
             loadLocalData();
             await fetchExistingGRVs();
         };
 
-        // Make functions available globally
-        window.addItem = addItem;
-        window.deleteItem = deleteItem;
-        window.processGRV = processGRV;
+        // Expose to global scope
+        window.addItem          = addItem;
+        window.deleteItem       = deleteItem;
+        window.processGRV       = processGRV;
         window.showProcessSection = showProcessSection;
-        window.showGRVHistory = showGRVHistory;
-        window.hideAllSections = hideAllSections;
+        window.showGRVHistory   = showGRVHistory;
+        window.hideAllSections  = hideAllSections;
         window.autoFillItemCode = autoFillItemCode;
-        window.viewGRVDetails = viewGRVDetails;
-        window.closeModal = closeModal;
+        window.viewGRVDetails   = viewGRVDetails;
+        window.closeModal       = closeModal;
     </script>
 </body>
 </html>
