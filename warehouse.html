@@ -132,6 +132,21 @@
             transform: translateY(-1px);
         }
 
+        /* Master warehouse badge shown in header */
+        .master-badge {
+            display: none;
+            background: linear-gradient(90deg, #f8961e, #f3722c);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 3px 12px;
+            border-radius: 100px;
+            margin: 0 auto 6px auto;
+            width: fit-content;
+        }
+
         .transfer-form-container {
             display: none;
             margin-bottom: 15px;
@@ -251,7 +266,6 @@
             background-color: #e3f2fd;
         }
 
-        /* --- Top Total Stock Value display (single line) --- */
         .total-stock-header {
             display: flex;
             justify-content: flex-end;
@@ -279,7 +293,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* --- Three dots menu --- */
         .menu-container {
             position: relative;
             display: inline-block;
@@ -298,6 +311,8 @@
             align-items: center;
             justify-content: center;
             box-shadow: none;
+            flex-direction: column;
+            gap: 3px;
         }
 
         .three-dots-btn:hover {
@@ -309,7 +324,6 @@
             height: 4px;
             background-color: var(--text-fade);
             border-radius: 50%;
-            margin: 1px;
         }
 
         .menu-dropdown {
@@ -356,7 +370,6 @@
             color: var(--danger);
         }
 
-        /* --- Modal styles for Edit --- */
         .modal-bg {
             position: fixed;
             top: 0; left: 0;
@@ -399,14 +412,16 @@
             margin-top: 10px;
         }
 
+        .btn-danger {
+            background: linear-gradient(90deg, var(--danger) 0%, var(--danger-hover) 100%);
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @media (max-width: 1200px) {
-            h2 { font-size: 1.3rem; }
-        }
+        @media (max-width: 1200px) { h2 { font-size: 1.3rem; } }
         @media (max-width: 900px) {
             .scroll-container { padding: 0 8px 8px 8px; }
             table { min-width: 500px; }
@@ -430,18 +445,19 @@
             .form-actions { flex-direction: column; }
         }
     </style>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { 
-            getFirestore, 
-            collection, 
-            query, 
-            where, 
-            getDocs, 
-            addDoc, 
-            updateDoc, 
+        import {
+            getFirestore,
+            collection,
+            query,
+            where,
+            getDocs,
+            addDoc,
+            updateDoc,
             deleteDoc,
-            doc, 
+            doc,
             increment,
             onSnapshot,
             runTransaction
@@ -466,23 +482,25 @@
             window.location.href = 'dashboard.html';
         }
 
+        // Is this the master warehouse?
+        const isMaster = branchId === 'master';
+
+        // All known branches including master
+        const branches = {
+            "master": { id: "master", name: "Master Warehouse" },
+            "makeni":  { id: "makeni", name: "Kabanana Branch" },
+            "kabana":  { id: "kabana", name: "Makeni Branch" }
+        };
+
         let inventory = [];
         let unsubscribeInventory = null;
         let editLock = false;
         let activeMenu = null;
 
-        // BRANCH MAPPING
-        const branches = {
-            "makeni": { id: "makeni", name: "Kabanana Branch" },
-            "kabana": { id: "kabana", name: "Makeni Branch" }
-        };
-
-        // Get current branch display name
         function getCurrentBranchName() {
             return branches[branchId]?.name || branchId;
         }
 
-        // Close any open dropdown menus
         function closeAllMenus() {
             if (activeMenu) {
                 activeMenu.classList.remove('show');
@@ -490,7 +508,6 @@
             }
         }
 
-        // Toggle transfer form visibility
         function toggleTransferForm() {
             const formContainer = document.querySelector('.transfer-form-container');
             const toggleBtn = document.getElementById('toggleTransferBtn');
@@ -507,46 +524,58 @@
             const q = query(collection(db, 'inventory'), where('branchId', '==', branchId));
             if (unsubscribeInventory) unsubscribeInventory();
             unsubscribeInventory = onSnapshot(q, (snapshot) => {
-                inventory = snapshot.docs.map(doc => ({ 
-                    id: doc.id, 
-                    ...doc.data(),
-                    stock: Number(doc.data().stock) || 0,
-                    // sold is still kept in DB but not displayed
-                    price: Number(doc.data().price) || 0
+                inventory = snapshot.docs.map(d => ({
+                    id: d.id,
+                    ...d.data(),
+                    stock: Number(d.data().stock) || 0,
+                    price: Number(d.data().price) || 0
                 }));
                 inventory.sort((a, b) => a.code.localeCompare(b.code));
+
                 // Populate product codes datalist
-                const productCodesDatalist = document.getElementById('productCodes');
-                productCodesDatalist.innerHTML = '';
+                const dl = document.getElementById('productCodes');
+                dl.innerHTML = '';
                 inventory.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.code;
-                    option.setAttribute('data-name', item.name);
-                    productCodesDatalist.appendChild(option);
+                    const opt = document.createElement('option');
+                    opt.value = item.code;
+                    dl.appendChild(opt);
                 });
-                // Populate branch dropdown (only shows the opposite branch)
+
+                // Populate transfer destination dropdown
+                // Master → can send to both branches
+                // Branch → can only send to the other branch
                 const branchSelect = document.getElementById('transferBranch');
-                branchSelect.innerHTML = '<option value="">Select Destination Branch</option>';
-                const otherBranchId = branchId === "makeni" ? "kabana" : "makeni";
-                const otherBranch = branches[otherBranchId];
-                if (otherBranch) {
-                    const option = document.createElement('option');
-                    option.value = otherBranch.id;
-                    option.textContent = otherBranch.name;
-                    branchSelect.appendChild(option);
+                branchSelect.innerHTML = '<option value="">Select Destination</option>';
+
+                if (isMaster) {
+                    // Master warehouse: show both branches as destinations
+                    ['makeni', 'kabana'].forEach(id => {
+                        const opt = document.createElement('option');
+                        opt.value = id;
+                        opt.textContent = branches[id].name;
+                        branchSelect.appendChild(opt);
+                    });
+                } else {
+                    // Branch: show only the other branch
+                    const otherId = branchId === 'makeni' ? 'kabana' : 'makeni';
+                    const opt = document.createElement('option');
+                    opt.value = otherId;
+                    opt.textContent = branches[otherId].name;
+                    branchSelect.appendChild(opt);
                 }
+
                 displayInventory();
             }, (error) => {
                 console.error("Inventory listener error:", error);
-                alert("Error loading inventory updates. Please refresh the page.");
+                alert("Error loading inventory updates. Please refresh.");
             });
         }
 
         function setupCodeAutocomplete() {
             const codeInput = document.getElementById('transferCode');
-            codeInput.addEventListener('input', function() {
-                const selectedCode = this.value.toUpperCase();
-                const item = inventory.find(item => item.code === selectedCode);
+            codeInput.addEventListener('input', function () {
+                const code = this.value.toUpperCase();
+                const item = inventory.find(i => i.code === code);
                 const infoDiv = document.getElementById('productInfo');
                 if (item) {
                     infoDiv.innerHTML = `
@@ -555,84 +584,82 @@
                         <p>Price: <strong>${item.price.toFixed(2)}</strong></p>
                     `;
                 } else {
-                    infoDiv.innerHTML = '<p>Product not found in inventory</p>';
+                    infoDiv.innerHTML = code ? '<p>Product not found in this inventory</p>' : '';
                 }
             });
         }
 
         async function transferInventory(event) {
             event.preventDefault();
-            const code = document.getElementById('transferCode').value.toUpperCase();
-            const quantity = parseInt(document.getElementById('transferQuantity').value);
-            const destinationBranchId = document.getElementById('transferBranch').value;
+            const code            = document.getElementById('transferCode').value.toUpperCase();
+            const quantity        = parseInt(document.getElementById('transferQuantity').value);
+            const destBranchId    = document.getElementById('transferBranch').value;
 
-            if (!code || isNaN(quantity) || quantity <= 0 || !destinationBranchId) {
+            if (!code || isNaN(quantity) || quantity <= 0 || !destBranchId) {
                 alert("Please fill all fields with valid values.");
                 return;
             }
 
-            const item = inventory.find(item => item.code === code);
-            if (!item) {
-                alert("Product not found in current branch inventory.");
-                return;
-            }
-            if (item.stock < quantity) {
-                alert(`Not enough stock to transfer. Available: ${item.stock}`);
-                return;
-            }
-            const destinationBranch = branches[destinationBranchId];
-            if (!destinationBranch) {
-                alert("Invalid destination branch selected.");
-                return;
-            }
-            const confirmMessage = `Are you sure you want to transfer ${quantity} units of ${item.name} (${item.code}) to ${destinationBranch.name}?`;
-            if (!confirm(confirmMessage)) return;
+            const item = inventory.find(i => i.code === code);
+            if (!item) { alert("Product not found in this inventory."); return; }
+            if (item.stock < quantity) { alert(`Not enough stock. Available: ${item.stock}`); return; }
+
+            const destBranch = branches[destBranchId];
+            if (!destBranch) { alert("Invalid destination."); return; }
+
+            if (!confirm(`Transfer ${quantity}× ${item.name} (${code}) → ${destBranch.name}?`)) return;
 
             try {
                 await runTransaction(db, async (transaction) => {
                     const itemRef = doc(db, 'inventory', item.id);
                     const itemDoc = await transaction.get(itemRef);
-                    const currentStock = itemDoc.data().stock;
-                    if (currentStock < quantity) {
-                        throw new Error(`Not enough stock to transfer. Current stock: ${currentStock}`);
+                    if (itemDoc.data().stock < quantity) {
+                        throw new Error(`Stock changed. Current: ${itemDoc.data().stock}`);
                     }
+                    // Deduct from source
                     transaction.update(itemRef, { stock: increment(-quantity) });
-                    const q = query(
+
+                    // Add to destination
+                    const destQ = query(
                         collection(db, 'inventory'),
-                        where('branchId', '==', destinationBranchId),
+                        where('branchId', '==', destBranchId),
                         where('code', '==', code)
                     );
-                    const destinationSnapshot = await getDocs(q);
-                    if (!destinationSnapshot.empty) {
-                        const destItem = destinationSnapshot.docs[0];
-                        const destItemRef = doc(db, 'inventory', destItem.id);
-                        transaction.update(destItemRef, { stock: increment(quantity) });
+                    const destSnap = await getDocs(destQ);
+                    if (!destSnap.empty) {
+                        transaction.update(
+                            doc(db, 'inventory', destSnap.docs[0].id),
+                            { stock: increment(quantity) }
+                        );
                     } else {
-                        const newItemRef = doc(collection(db, 'inventory'));
-                        transaction.set(newItemRef, {
-                            code: code,
+                        const newRef = doc(collection(db, 'inventory'));
+                        transaction.set(newRef, {
+                            code,
                             name: item.name,
                             price: item.price,
                             stock: quantity,
                             sold: 0,
-                            branchId: destinationBranchId
+                            branchId: destBranchId
                         });
                     }
-                    const transferRef = doc(collection(db, 'transfers'));
-                    transaction.set(transferRef, {
+
+                    // Log transfer
+                    const tRef = doc(collection(db, 'transfers'));
+                    transaction.set(tRef, {
                         date: new Date().toISOString(),
                         productCode: code,
                         productName: item.name,
-                        quantity: quantity,
+                        quantity,
                         fromBranchId: branchId,
                         fromBranchName: getCurrentBranchName(),
-                        toBranchId: destinationBranchId,
-                        toBranchName: destinationBranch.name,
+                        toBranchId: destBranchId,
+                        toBranchName: destBranch.name,
                         status: 'completed',
                         timestamp: new Date()
                     });
                 });
-                alert(`Successfully transferred ${quantity} units of ${item.name} to ${destinationBranch.name}!`);
+
+                alert(`✓ Successfully transferred ${quantity}× ${item.name} to ${destBranch.name}!`);
                 document.getElementById('transferForm').reset();
                 document.getElementById('productInfo').innerHTML = '';
             } catch (error) {
@@ -642,13 +669,12 @@
         }
 
         function displayInventory() {
-            const inventoryTableBody = document.querySelector('#inventoryTable tbody');
-            inventoryTableBody.innerHTML = '';
+            const tbody = document.querySelector('#inventoryTable tbody');
+            tbody.innerHTML = '';
             let totalStockValue = 0;
-            
+
             inventory.forEach(item => {
-                const stockValue = item.price * item.stock;
-                totalStockValue += stockValue;
+                totalStockValue += item.price * item.stock;
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${item.code}</td>
@@ -657,7 +683,7 @@
                     <td>${item.stock}</td>
                     <td>
                         <div class="menu-container">
-                            <button class="three-dots-btn" onclick="toggleMenu(event, '${item.id}')">
+                            <button class="three-dots-btn" onclick="toggleMenu(event,'${item.id}')">
                                 <div class="dot"></div>
                                 <div class="dot"></div>
                                 <div class="dot"></div>
@@ -669,47 +695,25 @@
                         </div>
                     </td>
                 `;
-                inventoryTableBody.appendChild(row);
+                tbody.appendChild(row);
             });
 
-            // Update the top total stock value display (single line)
-            const totalValueSpan = document.getElementById('totalStockValueDisplay');
-            if (totalValueSpan) {
-                totalValueSpan.textContent = totalStockValue.toFixed(2);
-            }
-
-            // No more total row inside table – only the top display remains
+            document.getElementById('totalStockValueDisplay').textContent = totalStockValue.toFixed(2);
         }
 
-        // Toggle dropdown menu
-        window.toggleMenu = function(event, productId) {
+        window.toggleMenu = function (event, productId) {
             event.stopPropagation();
             const menu = document.getElementById(`menu-${productId}`);
-            
-            // Close other open menus
-            if (activeMenu && activeMenu !== menu) {
-                activeMenu.classList.remove('show');
-            }
-            
-            // Toggle current menu
-            if (menu.classList.contains('show')) {
-                menu.classList.remove('show');
-                activeMenu = null;
-            } else {
-                menu.classList.add('show');
-                activeMenu = menu;
-            }
+            if (activeMenu && activeMenu !== menu) activeMenu.classList.remove('show');
+            menu.classList.toggle('show');
+            activeMenu = menu.classList.contains('show') ? menu : null;
         };
 
-        // Handle edit action from menu
-        window.handleEdit = async function(productId) {
+        window.handleEdit = async function (productId) {
             closeAllMenus();
             if (!editLock) {
-                const userPass = prompt("Enter password to edit product details:");
-                if (userPass !== "1030") {
-                    alert("Incorrect password. Editing not allowed.");
-                    return;
-                }
+                const pass = prompt("Enter password to edit:");
+                if (pass !== "1030") { alert("Incorrect password."); return; }
                 editLock = true;
             }
             const item = inventory.find(i => i.id === productId);
@@ -717,70 +721,59 @@
             showEditModal(item);
         };
 
-        // Handle delete action from menu
-        window.handleDelete = async function(productId) {
+        window.handleDelete = async function (productId) {
             closeAllMenus();
             const item = inventory.find(i => i.id === productId);
             if (!item) return;
-            
-            if (confirm(`Are you sure you want to delete "${item.name}" (${item.code})?`)) {
+            if (confirm(`Delete "${item.name}" (${item.code})?`)) {
                 try {
                     await deleteDoc(doc(db, 'inventory', productId));
-                    alert("Product deleted successfully!");
+                    alert("Product deleted.");
                 } catch (error) {
-                    alert("Failed to delete product: " + error.message);
+                    alert("Failed to delete: " + error.message);
                 }
             }
         };
 
         async function addNewInventory() {
-            const code = prompt("Enter product code:");
+            const code  = prompt("Enter product code:");
             if (!code) return;
-            const name = prompt("Enter product name:");
+            const name  = prompt("Enter product name:");
+            if (!name) return;
             const price = parseFloat(prompt("Enter product price:"));
             const stock = parseInt(prompt("Enter initial stock:"));
             if (!name || isNaN(price) || isNaN(stock) || price <= 0 || stock < 0) {
-                alert("Invalid inputs. Please try again.");
-                return;
+                alert("Invalid inputs."); return;
             }
-            const existingItem = inventory.find(item => item.code.toUpperCase() === code.toUpperCase());
-            if (existingItem) {
-                alert("Product code already exists. Please use a different code.");
-                return;
+            if (inventory.find(i => i.code.toUpperCase() === code.toUpperCase())) {
+                alert("Product code already exists."); return;
             }
             try {
                 await addDoc(collection(db, 'inventory'), {
                     code: code.toUpperCase(),
-                    name: name,
-                    price: price,
-                    stock: stock,
-                    sold: 0,
-                    branchId: branchId
+                    name, price, stock, sold: 0,
+                    branchId
                 });
-                alert("New inventory added successfully!");
+                alert("Inventory added!");
             } catch (error) {
-                console.error("Error adding new inventory:", error);
-                alert(`Error adding new inventory: ${error.message}`);
+                alert(`Error: ${error.message}`);
             }
         }
 
         function searchInventory() {
-            const searchInput = document.getElementById('searchInput').value.toLowerCase();
-            const filteredInventory = inventory.filter(item => 
-                item.name.toLowerCase().includes(searchInput) || 
-                item.code.toLowerCase().includes(searchInput)
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = inventory.filter(i =>
+                i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q)
             );
-            displayFilteredInventory(filteredInventory);
+            displayFilteredInventory(filtered);
         }
 
-        function displayFilteredInventory(filteredInventory) {
-            const inventoryTableBody = document.querySelector('#inventoryTable tbody');
-            inventoryTableBody.innerHTML = '';
-            let totalStockValue = 0;
-            
-            filteredInventory.forEach(item => {
-                const stockValue = item.price * item.stock;
-                totalStockValue += stockValue;
+        function displayFilteredInventory(filtered) {
+            const tbody = document.querySelector('#inventoryTable tbody');
+            tbody.innerHTML = '';
+            let total = 0;
+            filtered.forEach(item => {
+                total += item.price * item.stock;
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${item.code}</td>
@@ -789,7 +782,7 @@
                     <td>${item.stock}</td>
                     <td>
                         <div class="menu-container">
-                            <button class="three-dots-btn" onclick="toggleMenu(event, '${item.id}')">
+                            <button class="three-dots-btn" onclick="toggleMenu(event,'${item.id}')">
                                 <div class="dot"></div>
                                 <div class="dot"></div>
                                 <div class="dot"></div>
@@ -801,63 +794,46 @@
                         </div>
                     </td>
                 `;
-                inventoryTableBody.appendChild(row);
+                tbody.appendChild(row);
             });
-
-            // Update top total value
-            const totalValueSpan = document.getElementById('totalStockValueDisplay');
-            if (totalValueSpan) {
-                totalValueSpan.textContent = totalStockValue.toFixed(2);
-            }
+            document.getElementById('totalStockValueDisplay').textContent = total.toFixed(2);
         }
 
-        // --- Edit Modal Functions ---
         function closeModal() {
-            const modalBg = document.getElementById('modal-bg');
-            if (modalBg) modalBg.remove();
+            const bg = document.getElementById('modal-bg');
+            if (bg) bg.remove();
         }
 
         async function saveEditProduct(event, id) {
             event.preventDefault();
-            const form = event.target;
-            const code = form.code.value.trim().toUpperCase();
-            const name = form.name.value.trim();
+            const form  = event.target;
+            const code  = form.code.value.trim().toUpperCase();
+            const name  = form.name.value.trim();
             const price = parseFloat(form.price.value);
             const stock = parseInt(form.stock.value);
             if (!code || !name || isNaN(price) || price < 0 || isNaN(stock) || stock < 0) {
-                alert('Please enter valid values for all fields.');
-                return;
+                alert('Invalid values.'); return;
             }
-            // Check for duplicate product code under this branch, if code changed
             const current = inventory.find(i => i.id === id);
             if (!current) { alert('Product not found.'); return; }
-            if (code !== current.code) {
-                const exists = inventory.some(i => i.code === code);
-                if (exists) {
-                    alert('Product code already exists! Please use another code.');
-                    return;
-                }
+            if (code !== current.code && inventory.some(i => i.code === code)) {
+                alert('Code already exists!'); return;
             }
             try {
-                await updateDoc(doc(db, 'inventory', id), {
-                    code: code,
-                    name: name,
-                    price: price,
-                    stock: stock
-                });
+                await updateDoc(doc(db, 'inventory', id), { code, name, price, stock });
                 closeModal();
-                alert("Inventory product updated successfully!");
+                alert("Updated successfully!");
             } catch (error) {
-                alert("Failed to update product: " + error.message);
+                alert("Failed to update: " + error.message);
             }
         }
 
         function showEditModal(item) {
             closeModal();
-            const modalBg = document.createElement('div');
-            modalBg.className = 'modal-bg';
-            modalBg.id = 'modal-bg';
-            modalBg.innerHTML = `
+            const bg = document.createElement('div');
+            bg.className = 'modal-bg';
+            bg.id = 'modal-bg';
+            bg.innerHTML = `
                 <div class="modal">
                     <h3>Edit Product</h3>
                     <form id="editProductForm">
@@ -876,46 +852,49 @@
                     </form>
                 </div>
             `;
-            document.body.appendChild(modalBg);
+            document.body.appendChild(bg);
             document.getElementById('editProductForm').onsubmit = (e) => saveEditProduct(e, item.id);
             document.getElementById('cancelModalBtn').onclick = closeModal;
-            modalBg.onclick = function(e){ if(e.target === modalBg) closeModal(); };
+            bg.onclick = (e) => { if (e.target === bg) closeModal(); };
         }
 
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function() {
-            closeAllMenus();
-        });
+        document.addEventListener('click', closeAllMenus);
 
-        // Initialize
-        window.onload = async function() {
-            document.querySelector('h2.HEADER').textContent = `Warehouse - ${getCurrentBranchName()}`;
+        window.onload = function () {
+            // Set header title
+            document.querySelector('h2.HEADER').textContent = `Warehouse — ${getCurrentBranchName()}`;
+
+            // If master warehouse, show the badge
+            if (isMaster) {
+                document.getElementById('masterBadge').style.display = 'block';
+            }
+
             setupInventoryListener();
             setupCodeAutocomplete();
         };
 
-        window.transferInventory = transferInventory;
-        window.toggleTransferForm = toggleTransferForm;
-        window.addNewInventory = addNewInventory;
-        window.searchInventory = searchInventory;
+        window.transferInventory    = transferInventory;
+        window.toggleTransferForm   = toggleTransferForm;
+        window.addNewInventory      = addNewInventory;
+        window.searchInventory      = searchInventory;
     </script>
 </head>
 <body>
     <div class="container">
         <h2 class="HEADER">Warehouse</h2>
+        <div id="masterBadge" class="master-badge">⭐ Master Warehouse — Admin View</div>
 
-        <!-- Single line total stock value at the top -->
         <div class="total-stock-header">
             Total Stock Value: <span id="totalStockValueDisplay">0.00</span>
         </div>
 
-        <div class="buttons" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding: 0 10px;">
+        <div class="buttons" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:0 10px;">
             <input type="text" id="searchInput" class="search-bar" onkeyup="searchInventory()" placeholder="Search for products..">
             <button class="action-button" onclick="addNewInventory()">Add New Inventory</button>
             <a href="Restock.html"><button class="action-button">Go to Restock History</button></a>
             <button id="toggleTransferBtn" class="toggle-transfer-btn" onclick="toggleTransferForm()">Show Transfer Form</button>
         </div>
-        
+
         <div class="transfer-form-container">
             <div class="transfer-form">
                 <h3>Transfer Inventory</h3>
@@ -924,22 +903,25 @@
                         <label for="transferCode">Product Code:</label>
                         <input type="text" id="transferCode" required list="productCodes" placeholder="Enter product code">
                         <datalist id="productCodes"></datalist>
-                        <div id="productInfo" style="margin-top: 10px; color: #4361ee;"></div>
+                        <div id="productInfo" class="product-info" style="display:none;margin-top:8px;"></div>
                     </div>
-                    <div>
+                    <div style="margin-top:10px;">
                         <label for="transferQuantity">Quantity:</label>
                         <input type="number" id="transferQuantity" min="1" required placeholder="Enter quantity">
                     </div>
-                    <div>
-                        <label for="transferBranch">Destination Branch:</label>
+                    <div style="margin-top:10px;">
+                        <label for="transferBranch">Destination:</label>
                         <select id="transferBranch" required>
-                            <option value="">Select Destination Branch</option>
+                            <option value="">Select Destination</option>
                         </select>
                     </div>
-                    <button type="submit">Transfer Inventory</button>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Transfer</button>
+                    </div>
                 </form>
             </div>
         </div>
+
         <div class="scroll-container">
             <table id="inventoryTable">
                 <thead>
@@ -947,53 +929,13 @@
                         <th>Product Code</th>
                         <th>Product Name</th>
                         <th>Price</th>
-                        <th>Current Stock</th>  <!-- Changed from "Stock" to "Current Stock" -->
+                        <th>Current Stock</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- rows added dynamically; no total row inside table -->
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
 </body>
 </html>
