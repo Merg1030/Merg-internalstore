@@ -42,76 +42,54 @@
             box-shadow: var(--shadow);
             flex-shrink: 0;
         }
-        .topbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .topbar-left  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .topbar-right { display: flex; align-items: center; gap: 8px;  flex-wrap: wrap; }
 
         .page-title { font-size: 1.05rem; font-weight: 700; color: var(--primary); white-space: nowrap; }
 
-        /* Branch switcher — admin only */
+        /* branch switcher pill-tabs */
         .branch-switcher {
-            display: none; /* shown via JS for admin */
+            display: none;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             background: var(--bg-lighter);
             border: 1px solid var(--border);
             border-radius: 100px;
             padding: 3px 4px;
         }
         .branch-tab {
-            padding: 5px 13px;
-            border-radius: 100px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            color: var(--text-fade);
-            transition: all 0.18s;
-            white-space: nowrap;
-            box-shadow: none;
-            min-width: unset;
+            padding: 5px 13px; border-radius: 100px;
+            font-size: 0.77rem; font-weight: 600;
+            cursor: pointer; border: none; background: transparent;
+            color: var(--text-fade); transition: all 0.18s;
+            white-space: nowrap; box-shadow: none; min-width: unset;
         }
         .branch-tab:hover { color: var(--primary); background: white; }
-        .branch-tab.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 2px 8px rgba(67,97,238,0.25);
-        }
-        .branch-tab.active-master {
-            background: linear-gradient(135deg, #f8961e, #f3722c);
-            color: white;
-            box-shadow: 0 2px 8px rgba(248,150,30,0.3);
-        }
+        .branch-tab.active        { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(67,97,238,0.25); }
+        .branch-tab.active-master { background: linear-gradient(135deg,#f8961e,#f3722c); color: white; box-shadow: 0 2px 8px rgba(248,150,30,0.3); }
 
         .master-pill {
             display: none;
-            background: linear-gradient(90deg, #f8961e, #f3722c);
+            background: linear-gradient(90deg,#f8961e,#f3722c);
             color: white; font-size: 0.62rem; font-weight: 700;
             letter-spacing: 0.12em; text-transform: uppercase;
             padding: 3px 10px; border-radius: 100px;
         }
         .total-pill {
-            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            background: linear-gradient(135deg,#eef2ff,#e0e7ff);
             border: 1px solid #c7d2fe; color: var(--primary);
             font-size: 0.82rem; font-weight: 600;
             padding: 5px 14px; border-radius: 100px; white-space: nowrap;
         }
         .total-pill span { font-weight: 800; }
 
-        /* View-only badge for branch staff */
         .view-only-badge {
             display: none;
-            background: #f1f3f5;
-            border: 1px solid var(--border);
-            color: var(--text-fade);
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            padding: 3px 10px;
-            border-radius: 100px;
+            background: #f1f3f5; border: 1px solid var(--border);
+            color: var(--text-fade); font-size: 0.7rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            padding: 3px 10px; border-radius: 100px;
         }
-
-        .topbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
         /* ── BUTTONS ── */
         .btn {
@@ -122,15 +100,15 @@
             box-shadow: 0 1px 4px rgba(0,0,0,0.08); text-decoration: none;
         }
         .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), #3a56d4); color: white; }
+        .btn-primary { background: linear-gradient(135deg,var(--primary),#3a56d4); color: white; }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(67,97,238,0.3); }
-        .btn-success { background: linear-gradient(135deg, var(--success), #27ae60); color: white; }
+        .btn-success { background: linear-gradient(135deg,var(--success),#27ae60); color: white; }
         .btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(46,204,113,0.3); }
-        .btn-warning { background: linear-gradient(135deg, var(--warning), #e07b0a); color: white; }
+        .btn-warning { background: linear-gradient(135deg,var(--warning),#e07b0a); color: white; }
         .btn-warning:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(248,150,30,0.3); }
         .btn-ghost { background: var(--bg-lighter); color: var(--primary); border: 1px solid var(--border); }
         .btn-ghost:hover { background: var(--border); }
-        .btn-danger { background: linear-gradient(135deg, var(--danger), #c82333); color: white; }
+        .btn-danger { background: linear-gradient(135deg,var(--danger),#c82333); color: white; }
         .btn-danger:hover { opacity: 0.9; transform: translateY(-1px); }
 
         /* ── SEARCH ── */
@@ -150,9 +128,10 @@
             z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.25s;
         }
         .panel-overlay.open { opacity: 1; pointer-events: all; }
+
         .slide-panel {
             position: fixed; top: 0; right: 0;
-            width: min(480px, 100vw); height: 100vh;
+            width: min(480px,100vw); height: 100vh;
             background: var(--surface); box-shadow: -8px 0 40px rgba(0,0,0,0.15);
             z-index: 201; transform: translateX(100%);
             transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
@@ -182,20 +161,19 @@
         /* ── FORM FIELDS ── */
         .field-group { display: flex; flex-direction: column; gap: 6px; }
         .field-group label { font-size: 0.75rem; font-weight: 700; color: var(--text-fade); text-transform: uppercase; letter-spacing: 0.07em; }
-        .field-group input, .field-group select {
+        .field-group input,
+        .field-group select {
             width: 100%; padding: 10px 14px;
             border: 1.5px solid var(--border); border-radius: var(--radius);
             font-size: 0.92rem; color: var(--text); background: var(--bg);
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .field-group input:focus, .field-group select:focus {
-            outline: none; border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67,97,238,0.1); background: white;
-        }
+        .field-group input:focus,
+        .field-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(67,97,238,0.1); background: white; }
         .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
         .product-preview-box {
-            background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+            background: linear-gradient(135deg,#eef2ff,#e0e7ff);
             border: 1px solid #c7d2fe; border-radius: var(--radius);
             padding: 12px 14px; font-size: 0.83rem; color: var(--primary);
             min-height: 46px; display: flex; align-items: center; gap: 8px;
@@ -217,7 +195,7 @@
         .toast.error   { border-left: 3px solid var(--danger); }
         .toast.fade-out { animation: toastOut 0.3s ease forwards; }
         @keyframes toastIn  { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes toastOut { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(12px); } }
+        @keyframes toastOut { from { opacity:1; transform:translateY(0);    } to { opacity:0; transform:translateY(12px); } }
 
         /* ── MAIN ── */
         .main-content { flex: 1; overflow-y: auto; padding: 16px 18px 20px; }
@@ -284,7 +262,7 @@
         .modal {
             background: white; border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg); padding: 28px 24px 22px;
-            width: min(420px, 95vw); animation: modalIn 0.2s ease;
+            width: min(420px,95vw); animation: modalIn 0.2s ease;
         }
         @keyframes modalIn { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:scale(1); } }
         .modal h3 { margin-bottom: 20px; color: var(--primary); font-size: 1.05rem; }
@@ -293,6 +271,20 @@
         .modal .form-actions .btn { flex: 1; justify-content: center; }
 
         .empty-row td { text-align: center; padding: 52px 20px; color: var(--text-fade); font-size: 0.9rem; }
+
+        /* loading overlay */
+        #loadingOverlay {
+            position: fixed; inset: 0; background: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9998; flex-direction: column; gap: 14px;
+        }
+        .spinner {
+            width: 36px; height: 36px; border: 3px solid var(--border);
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { font-size: 0.88rem; color: var(--text-fade); font-weight: 500; }
 
         @media (max-width: 700px) {
             .topbar { padding: 10px 12px; }
@@ -328,44 +320,72 @@
         const app = initializeApp(firebaseConfig);
         const db  = getFirestore(app);
 
-        // ── STATE ──
-        let branchId = localStorage.getItem('branchId') || '';
-        const userName = (localStorage.getItem('userName') || '').toLowerCase();
+        /* ─────────────────────────────────────
+           SESSION — read from localStorage, never redirect if values exist.
+           Only redirect if userName is completely missing (truly not logged in).
+        ───────────────────────────────────── */
+        const userName = (localStorage.getItem('userName') || '').toLowerCase().trim();
         const isAdmin  = userName === 'chris';
 
-        if (!branchId) {
-            alert('Branch ID not found. Please log in again.');
-            window.location.href = 'dashboard.html';
+        // If no userName at all → not logged in → go to login
+        if (!userName) {
+            window.location.href = 'index.html';
         }
 
+        // branchId: use whatever is stored. For admin it persists across refreshes.
+        // For branch staff it must have been set when they chose their branch.
+        // If somehow missing for a non-admin, fall back safely.
+        let branchId = localStorage.getItem('branchId') || '';
+
+        if (!branchId) {
+            if (isAdmin) {
+                // Admin landed here with no branchId — default to master
+                branchId = 'master';
+                localStorage.setItem('branchId', 'master');
+            } else {
+                // Non-admin with no branch — send back to dashboard to pick one
+                alert('Branch not set. Please select your branch from the dashboard.');
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        /* ─────────────────────────────────────
+           BRANCH MAP
+        ───────────────────────────────────── */
         const BRANCHES = {
             master: { id: 'master', name: 'Master Warehouse' },
-            makeni: { id: 'makeni', name: 'Kabanana Branch' },
-            kabana: { id: 'kabana', name: 'Makeni Branch' }
+            makeni: { id: 'makeni', name: 'Kabanana Branch'  },
+            kabana: { id: 'kabana', name: 'Makeni Branch'    }
         };
         const getBranchName = id => BRANCHES[id]?.name || id;
 
-        let inventory       = [];
-        let sourceInventory = [];
+        /* ─────────────────────────────────────
+           STATE
+        ───────────────────────────────────── */
+        let inventory       = [];   // current branch's inventory
+        let sourceInventory = [];   // inventory of the chosen transfer-source branch
         let activeMenu      = null;
         let editUnlocked    = false;
-        let unsubscribe     = null;
+        let unsubscribe     = null; // Firestore listener cleanup
 
-        /* ─────────────────────────────────────────
+        /* ─────────────────────────────────────
            TOAST
-        ───────────────────────────────────────── */
+        ───────────────────────────────────── */
         function toast(msg, type = 'success') {
             const wrap = document.getElementById('toastWrap');
             const el   = document.createElement('div');
             el.className = `toast ${type}`;
             el.innerHTML = `<span>${type === 'success' ? '✓' : '✕'}</span> ${msg}`;
             wrap.appendChild(el);
-            setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 350); }, 3000);
+            setTimeout(() => {
+                el.classList.add('fade-out');
+                setTimeout(() => el.remove(), 350);
+            }, 3200);
         }
 
-        /* ─────────────────────────────────────────
-           PANELS
-        ───────────────────────────────────────── */
+        /* ─────────────────────────────────────
+           PANEL HELPERS
+        ───────────────────────────────────── */
         function openPanel(id) {
             document.getElementById('panelOverlay').classList.add('open');
             document.getElementById(id).classList.add('open');
@@ -379,26 +399,22 @@
             closePanelById('transferPanel');
         });
 
-        /* ─────────────────────────────────────────
-           BRANCH SWITCHER (admin only)
-        ───────────────────────────────────────── */
+        /* ─────────────────────────────────────
+           BRANCH SWITCHER  (admin only)
+        ───────────────────────────────────── */
         function setupBranchSwitcher() {
             if (!isAdmin) return;
-
             const switcher = document.getElementById('branchSwitcher');
             switcher.style.display = 'flex';
-
-            // Build tabs
             switcher.innerHTML = '';
             Object.values(BRANCHES).forEach(b => {
                 const btn = document.createElement('button');
-                btn.className = 'branch-tab';
+                btn.className   = 'branch-tab';
                 btn.textContent = b.id === 'master' ? '⭐ Master' : b.name;
                 btn.dataset.bid = b.id;
-                btn.onclick = () => switchBranch(b.id);
+                btn.onclick     = () => switchBranch(b.id);
                 switcher.appendChild(btn);
             });
-
             updateSwitcherActive();
         }
 
@@ -411,83 +427,115 @@
             });
         }
 
-        function switchBranch(newBranchId) {
-            if (newBranchId === branchId) return;
-            branchId = newBranchId;
-            localStorage.setItem('branchId', branchId);
+        function switchBranch(newId) {
+            if (newId === branchId) return;
+            branchId = newId;
+            localStorage.setItem('branchId', branchId);   // ← persists across refresh
 
-            // Update header
+            // Update header labels
             document.getElementById('pageTitle').textContent = `Warehouse — ${getBranchName(branchId)}`;
-            const mp = document.getElementById('masterPill');
-            mp.style.display = branchId === 'master' ? 'inline-flex' : 'none';
-
+            document.getElementById('masterPill').style.display = branchId === 'master' ? 'inline-flex' : 'none';
             updateSwitcherActive();
 
-            // Close any open panels
+            // Close open panels & restart listener
             closePanelById('addPanel');
             closePanelById('transferPanel');
-
-            // Restart inventory listener for new branch
             if (unsubscribe) unsubscribe();
             setupListener();
         }
 
-        /* ─────────────────────────────────────────
+        /* ─────────────────────────────────────
            ROLE UI
-        ───────────────────────────────────────── */
+        ───────────────────────────────────── */
         function setupRoleUI() {
-            // Branch switcher — admin only
             setupBranchSwitcher();
 
+            const masterPill   = document.getElementById('masterPill');
+            const adminCtrl    = document.getElementById('adminControls');
+            const restockBtn   = document.getElementById('restockBtn');
+            const viewBadge    = document.getElementById('viewOnlyBadge');
+            const actionsHdr   = document.getElementById('actionsHeader');
+
             if (isAdmin) {
-                // Admin: show all controls
-                document.getElementById('adminControls').style.display = 'flex';
-                document.getElementById('restockBtn').style.display    = 'inline-flex';
-                document.getElementById('masterPill').style.display    = branchId === 'master' ? 'inline-flex' : 'none';
+                adminCtrl.style.display  = 'flex';
+                restockBtn.style.display = 'inline-flex';
+                viewBadge.style.display  = 'none';
+                masterPill.style.display = branchId === 'master' ? 'inline-flex' : 'none';
+                if (actionsHdr) actionsHdr.style.display = '';
             } else {
-                // Branch staff: view only
-                document.getElementById('adminControls').style.display = 'none';
-                document.getElementById('restockBtn').style.display    = 'none';
-                document.getElementById('viewOnlyBadge').style.display = 'inline-flex';
+                adminCtrl.style.display  = 'none';
+                restockBtn.style.display = 'none';
+                viewBadge.style.display  = 'inline-flex';
+                masterPill.style.display = 'none';
+                if (actionsHdr) actionsHdr.style.display = 'none';
             }
         }
 
-        /* ─────────────────────────────────────────
+        /* ─────────────────────────────────────
            INVENTORY LISTENER
-        ───────────────────────────────────────── */
+           Key fix: query is STRICTLY filtered by the exact branchId.
+           Firestore only returns documents where branchId == this exact value.
+        ───────────────────────────────────── */
         function setupListener() {
-            const q = query(collection(db, 'inventory'), where('branchId', '==', branchId));
+            // Always clear previous listener before starting new one
+            if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+
+            // Update title immediately on switch
+            document.getElementById('pageTitle').textContent = `Warehouse — ${getBranchName(branchId)}`;
+
+            const q = query(
+                collection(db, 'inventory'),
+                where('branchId', '==', branchId)   // ← strict match, no bleed-through
+            );
+
             unsubscribe = onSnapshot(q, snap => {
                 inventory = snap.docs.map(d => ({
-                    id: d.id, ...d.data(),
+                    id: d.id,
+                    ...d.data(),
                     stock: Number(d.data().stock) || 0,
                     price: Number(d.data().price) || 0
                 }));
                 inventory.sort((a, b) => a.code.localeCompare(b.code));
                 sourceInventory = [...inventory];
                 rebuildDatalist('addProductCodes', inventory);
-                rebuildDatalist('transferCodes', inventory);
+                rebuildDatalist('transferCodes',   inventory);
                 renderTable(inventory);
-            }, err => { console.error(err); toast('Error loading inventory', 'error'); });
+                hideLoading();
+            }, err => {
+                console.error('Inventory listener error:', err);
+                toast('Error loading inventory. Check your connection.', 'error');
+                hideLoading();
+            });
         }
 
         function rebuildDatalist(id, items) {
             const dl = document.getElementById(id);
             if (!dl) return;
             dl.innerHTML = '';
-            items.forEach(i => { const o = document.createElement('option'); o.value = i.code; dl.appendChild(o); });
+            items.forEach(i => {
+                const o = document.createElement('option');
+                o.value = i.code;
+                dl.appendChild(o);
+            });
         }
 
-        /* ─────────────────────────────────────────
+        /* ─────────────────────────────────────
+           LOADING OVERLAY
+        ───────────────────────────────────── */
+        function hideLoading() {
+            const ov = document.getElementById('loadingOverlay');
+            if (ov) { ov.style.opacity = '0'; setTimeout(() => ov.remove(), 300); }
+        }
+
+        /* ─────────────────────────────────────
            RENDER TABLE
-        ───────────────────────────────────────── */
+        ───────────────────────────────────── */
         function renderTable(items) {
             const tbody = document.querySelector('#inventoryTable tbody');
             tbody.innerHTML = '';
             let total = 0;
 
             if (!items.length) {
-                // colspan = 5 if admin (has Actions col), 4 if staff
                 const cols = isAdmin ? 5 : 4;
                 tbody.innerHTML = `<tr class="empty-row"><td colspan="${cols}">No items found in this warehouse.</td></tr>`;
                 document.getElementById('totalVal').textContent = '0.00';
@@ -496,10 +544,9 @@
 
             items.forEach(item => {
                 total += item.price * item.stock;
-                const sc = item.stock === 0 ? 'stock-zero' : item.stock < 10 ? 'stock-low' : 'stock-ok';
-                const tr = document.createElement('tr');
+                const sc  = item.stock === 0 ? 'stock-zero' : item.stock < 10 ? 'stock-low' : 'stock-ok';
+                const tr  = document.createElement('tr');
 
-                // Actions cell — only for admin
                 const actionsCell = isAdmin ? `
                     <td>
                         <div class="menu-container">
@@ -522,20 +569,25 @@
                 `;
                 tbody.appendChild(tr);
             });
+
             document.getElementById('totalVal').textContent = total.toFixed(2);
         }
 
-        /* ─────────────────────────────────────────
+        /* ─────────────────────────────────────
            SEARCH
-        ───────────────────────────────────────── */
+        ───────────────────────────────────── */
         window.searchInventory = function() {
             const q = document.getElementById('searchInput').value.toLowerCase();
-            renderTable(inventory.filter(i => i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q)));
+            renderTable(
+                q ? inventory.filter(i =>
+                    i.name.toLowerCase().includes(q) || i.code.toLowerCase().includes(q)
+                ) : inventory
+            );
         };
 
-        /* ─────────────────────────────────────────
+        /* ─────────────────────────────────────
            ADD PANEL
-        ───────────────────────────────────────── */
+        ───────────────────────────────────── */
         window.openAddPanel = function() {
             document.getElementById('addForm').reset();
             openPanel('addPanel');
@@ -557,6 +609,7 @@
             const name  = document.getElementById('addItemName').value.trim();
             const price = parseFloat(document.getElementById('addItemPrice').value);
             const stock = parseInt(document.getElementById('addItemStock').value);
+
             if (!code || !name || isNaN(price) || price < 0 || isNaN(stock) || stock < 0) {
                 toast('Please fill in all fields correctly.', 'error'); return;
             }
@@ -564,22 +617,24 @@
                 toast('Product code already exists in this inventory.', 'error'); return;
             }
             try {
-                await addDoc(collection(db, 'inventory'), { code, name, price, stock, sold: 0, branchId });
+                // Always save with the currently viewed branchId
+                await addDoc(collection(db, 'inventory'), {
+                    code, name, price, stock, sold: 0,
+                    branchId: branchId          // ← uses current branchId, not stale value
+                });
                 toast(`"${name}" added to ${getBranchName(branchId)}!`);
                 closePanelById('addPanel');
-            } catch (err) { toast('Error: ' + err.message, 'error'); }
+            } catch (err) { toast('Error adding item: ' + err.message, 'error'); }
         };
 
-        /* ─────────────────────────────────────────
+        /* ─────────────────────────────────────
            TRANSFER PANEL
-        ───────────────────────────────────────── */
+        ───────────────────────────────────── */
         window.openTransferPanel = function() {
             document.getElementById('transferForm').reset();
             document.getElementById('transferPreview').textContent = 'Enter a product code above to preview';
 
-            // Source picker — always shown for admin (they can pick any branch as source)
-            const wrap = document.getElementById('transferSourceWrap');
-            wrap.style.display = 'block';
+            // Build source dropdown — all branches, default = currently viewed
             const sel = document.getElementById('transferSource');
             sel.innerHTML = '<option value="">— Select Source —</option>';
             Object.values(BRANCHES).forEach(b => {
@@ -589,7 +644,7 @@
                 sel.appendChild(o);
             });
 
-            // Default: source = currently viewing branch
+            // Load source inventory = current branch's inventory (already in memory)
             sourceInventory = [...inventory];
             rebuildDatalist('transferCodes', sourceInventory);
             buildDestOptions(branchId);
@@ -601,7 +656,6 @@
         function buildDestOptions(srcId) {
             const sel = document.getElementById('transferDest');
             sel.innerHTML = '<option value="">— Select Destination —</option>';
-            // All branches except the source
             Object.keys(BRANCHES).filter(id => id !== srcId).forEach(id => {
                 const o = document.createElement('option');
                 o.value = id; o.textContent = getBranchName(id);
@@ -609,16 +663,21 @@
             });
         }
 
-        // Admin changes source branch → reload that branch's inventory
+        // Admin picks a different source branch → fetch that branch's inventory live
         window.handleSourceChange = async function() {
             const srcId = document.getElementById('transferSource').value;
             if (!srcId) return;
-            document.getElementById('transferPreview').textContent = 'Loading…';
+
+            document.getElementById('transferPreview').textContent = 'Loading source inventory…';
+            document.getElementById('transferCode').value = '';
+
             try {
                 if (srcId === branchId) {
                     sourceInventory = [...inventory];
                 } else {
-                    const snap = await getDocs(query(collection(db, 'inventory'), where('branchId', '==', srcId)));
+                    const snap = await getDocs(
+                        query(collection(db, 'inventory'), where('branchId', '==', srcId))
+                    );
                     sourceInventory = snap.docs.map(d => ({
                         id: d.id, ...d.data(),
                         stock: Number(d.data().stock) || 0,
@@ -627,11 +686,13 @@
                 }
                 rebuildDatalist('transferCodes', sourceInventory);
                 buildDestOptions(srcId);
-                document.getElementById('transferCode').value = '';
                 document.getElementById('transferPreview').textContent = 'Enter a product code above to preview';
-            } catch (err) { toast('Error loading source inventory: ' + err.message, 'error'); }
+            } catch (err) {
+                toast('Failed to load source inventory: ' + err.message, 'error');
+            }
         };
 
+        // Live product preview as user types code
         document.getElementById('transferCode').addEventListener('input', function() {
             const code = this.value.toUpperCase();
             const item = sourceInventory.find(i => i.code === code);
@@ -648,30 +709,40 @@
             const code   = document.getElementById('transferCode').value.toUpperCase();
             const qty    = parseInt(document.getElementById('transferQty').value);
             const destId = document.getElementById('transferDest').value;
-            const srcId  = document.getElementById('transferSource')?.value || branchId;
+            const srcId  = document.getElementById('transferSource').value;
 
-            if (!srcId)  { toast('Please select a source branch.', 'error'); return; }
-            if (!code || isNaN(qty) || qty <= 0 || !destId) { toast('Please fill all fields.', 'error'); return; }
-            if (srcId === destId) { toast('Source and destination cannot be the same.', 'error'); return; }
+            if (!srcId)                          { toast('Please select a source branch.', 'error'); return; }
+            if (!code || isNaN(qty) || qty <= 0) { toast('Enter a valid product code and quantity.', 'error'); return; }
+            if (!destId)                         { toast('Please select a destination.', 'error'); return; }
+            if (srcId === destId)                { toast('Source and destination cannot be the same.', 'error'); return; }
 
             const item = sourceInventory.find(i => i.code === code);
-            if (!item) { toast('Product not found in source.', 'error'); return; }
+            if (!item)         { toast('Product not found in source inventory.', 'error'); return; }
             if (item.stock < qty) { toast(`Not enough stock. Available: ${item.stock}`, 'error'); return; }
 
-            if (!confirm(`Transfer ${qty}× ${item.name}\nFrom: ${getBranchName(srcId)} → ${getBranchName(destId)}`)) return;
+            if (!confirm(
+                `Transfer ${qty}× ${item.name}\n` +
+                `From: ${getBranchName(srcId)}\n` +
+                `To:   ${getBranchName(destId)}`
+            )) return;
 
             try {
                 await runTransaction(db, async tx => {
+                    // Re-read source stock inside transaction to guard against races
                     const srcRef = doc(db, 'inventory', item.id);
                     const srcDoc = await tx.get(srcRef);
-                    if ((srcDoc.data().stock || 0) < qty) throw new Error(`Stock changed. Current: ${srcDoc.data().stock}`);
+                    const liveStock = srcDoc.data().stock || 0;
+                    if (liveStock < qty) throw new Error(`Stock changed. Current: ${liveStock}`);
+
+                    // Deduct from source
                     tx.update(srcRef, { stock: increment(-qty) });
 
-                    const destSnap = await getDocs(query(
-                        collection(db, 'inventory'),
-                        where('branchId', '==', destId),
-                        where('code', '==', code)
-                    ));
+                    // Find or create destination item
+                    const destSnap = await getDocs(
+                        query(collection(db, 'inventory'),
+                            where('branchId', '==', destId),
+                            where('code',     '==', code))
+                    );
                     if (!destSnap.empty) {
                         tx.update(doc(db, 'inventory', destSnap.docs[0].id), { stock: increment(qty) });
                     } else {
@@ -680,23 +751,28 @@
                             stock: qty, sold: 0, branchId: destId
                         });
                     }
+
+                    // Log transfer
                     tx.set(doc(collection(db, 'transfers')), {
-                        date: new Date().toISOString(), productCode: code,
-                        productName: item.name, quantity: qty,
+                        date: new Date().toISOString(),
+                        productCode: code, productName: item.name, quantity: qty,
                         fromBranchId: srcId, fromBranchName: getBranchName(srcId),
                         toBranchId:  destId, toBranchName:  getBranchName(destId),
                         status: 'completed', timestamp: new Date()
                     });
                 });
 
-                toast(`Transferred ${qty}× ${item.name} → ${getBranchName(destId)}`);
+                toast(`✓ Transferred ${qty}× ${item.name} → ${getBranchName(destId)}`);
                 closePanelById('transferPanel');
-            } catch (err) { console.error(err); toast('Transfer failed: ' + err.message, 'error'); }
+            } catch (err) {
+                console.error('Transfer error:', err);
+                toast('Transfer failed: ' + err.message, 'error');
+            }
         };
 
-        /* ─────────────────────────────────────────
-           MENU
-        ───────────────────────────────────────── */
+        /* ─────────────────────────────────────
+           THREE-DOTS MENU
+        ───────────────────────────────────── */
         function closeAllMenus() {
             if (activeMenu) { activeMenu.classList.remove('show'); activeMenu = null; }
         }
@@ -709,9 +785,9 @@
         };
         document.addEventListener('click', closeAllMenus);
 
-        /* ─────────────────────────────────────────
+        /* ─────────────────────────────────────
            EDIT
-        ───────────────────────────────────────── */
+        ───────────────────────────────────── */
         window.handleEdit = async function(id) {
             closeAllMenus();
             if (!editUnlocked) {
@@ -721,6 +797,7 @@
             }
             const item = inventory.find(i => i.id === id);
             if (!item) return;
+
             const bg = document.createElement('div');
             bg.className = 'modal-bg'; bg.id = 'modal-bg';
             bg.innerHTML = `
@@ -742,51 +819,62 @@
                     </form>
                 </div>`;
             document.body.appendChild(bg);
+
             document.getElementById('editForm').onsubmit = async ev => {
                 ev.preventDefault();
-                const f = ev.target;
-                const code = f.code.value.trim().toUpperCase(), name = f.name.value.trim();
-                const price = parseFloat(f.price.value), stock = parseInt(f.stock.value);
-                if (!code || !name || isNaN(price) || price < 0 || isNaN(stock) || stock < 0) { toast('Invalid values.', 'error'); return; }
-                if (code !== item.code && inventory.some(i => i.code === code)) { toast('Code already exists!', 'error'); return; }
+                const f     = ev.target;
+                const code  = f.code.value.trim().toUpperCase();
+                const name  = f.name.value.trim();
+                const price = parseFloat(f.price.value);
+                const stock = parseInt(f.stock.value);
+                if (!code || !name || isNaN(price) || price < 0 || isNaN(stock) || stock < 0) {
+                    toast('Invalid values.', 'error'); return;
+                }
+                if (code !== item.code && inventory.some(i => i.code === code)) {
+                    toast('That code already exists!', 'error'); return;
+                }
                 try {
                     await updateDoc(doc(db, 'inventory', item.id), { code, name, price, stock });
-                    bg.remove(); toast('Product updated!');
+                    bg.remove();
+                    toast('Product updated!');
                 } catch (err) { toast('Error: ' + err.message, 'error'); }
             };
             document.getElementById('cancelEdit').onclick = () => bg.remove();
             bg.onclick = ev => { if (ev.target === bg) bg.remove(); };
         };
 
-        /* ─────────────────────────────────────────
+        /* ─────────────────────────────────────
            DELETE
-        ───────────────────────────────────────── */
+        ───────────────────────────────────── */
         window.handleDelete = async function(id) {
             closeAllMenus();
             const item = inventory.find(i => i.id === id);
             if (!item) return;
-            if (!confirm(`Delete "${item.name}" (${item.code})?`)) return;
+            if (!confirm(`Delete "${item.name}" (${item.code}) from ${getBranchName(branchId)}?`)) return;
             try {
                 await deleteDoc(doc(db, 'inventory', id));
                 toast('Product deleted.');
             } catch (err) { toast('Error: ' + err.message, 'error'); }
         };
 
-        /* ─────────────────────────────────────────
+        /* ─────────────────────────────────────
            INIT
-        ───────────────────────────────────────── */
+        ───────────────────────────────────── */
         window.onload = function() {
-            document.getElementById('pageTitle').textContent = `Warehouse — ${getBranchName(branchId)}`;
             setupRoleUI();
-            setupListener();
-
-            // Table header — hide Actions column for non-admin
-            const actionsHeader = document.getElementById('actionsHeader');
-            if (actionsHeader) actionsHeader.style.display = isAdmin ? '' : 'none';
+            setupListener();   // starts the Firestore listener for current branchId
         };
+
     </script>
 </head>
 <body>
+
+    <!-- Loading overlay — removed once first snapshot arrives -->
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading inventory…</div>
+    </div>
+
     <div class="page-wrap">
 
         <!-- ── TOP BAR ── -->
@@ -795,10 +883,10 @@
                 <span class="page-title" id="pageTitle">Warehouse</span>
                 <span class="master-pill" id="masterPill">⭐ Master</span>
 
-                <!-- Branch switcher tabs — rendered by JS for admin -->
+                <!-- Branch switcher — admin only, built by JS -->
                 <div class="branch-switcher" id="branchSwitcher"></div>
 
-                <!-- View-only badge for branch staff -->
+                <!-- View-only badge — branch staff only -->
                 <span class="view-only-badge" id="viewOnlyBadge">👁 View Only</span>
 
                 <div class="total-pill">
@@ -807,7 +895,7 @@
             </div>
 
             <div class="topbar-right">
-                <!-- Search — everyone -->
+                <!-- Search — everyone sees this -->
                 <div class="search-wrap">
                     <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="14" height="14">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
@@ -815,27 +903,33 @@
                     <input type="text" id="searchInput" placeholder="Search products…" oninput="searchInventory()">
                 </div>
 
-                <!-- Admin-only controls group -->
+                <!-- Admin-only action buttons -->
                 <div id="adminControls" style="display:none; align-items:center; gap:8px;">
                     <button class="btn btn-success" onclick="openAddPanel()">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
                         Add Item
                     </button>
                     <button class="btn btn-primary" onclick="openTransferPanel()">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                        </svg>
                         Transfer
                     </button>
                 </div>
 
                 <!-- GRV/Restock — admin only -->
                 <a href="Restock.html" id="restockBtn" class="btn btn-warning" style="display:none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 4H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5l5 5v11a2 2 0 0 1-2 2z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 4H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5l5 5v11a2 2 0 0 1-2 2z"/>
+                    </svg>
                     GRV / Restock
                 </a>
             </div>
         </div>
 
-        <!-- ── TABLE ── -->
+        <!-- ── INVENTORY TABLE ── -->
         <div class="main-content">
             <div class="table-card">
                 <table id="inventoryTable">
@@ -852,9 +946,10 @@
                 </table>
             </div>
         </div>
-    </div>
 
-    <!-- OVERLAY -->
+    </div><!-- end .page-wrap -->
+
+    <!-- PANEL OVERLAY -->
     <div class="panel-overlay" id="panelOverlay"></div>
 
     <!-- ── ADD ITEM PANEL ── -->
@@ -862,7 +957,9 @@
         <div class="panel-header">
             <h3>
                 <span class="panel-icon green">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
                 </span>
                 Add New Item
             </h3>
@@ -891,11 +988,13 @@
                         <input type="number" id="addItemStock" min="0" placeholder="0" required>
                     </div>
                 </div>
-                <p class="tip-text">💡 Typing an existing code will auto-fill the name and price.</p>
+                <p class="tip-text">💡 Typing an existing code will auto-fill the name and price fields.</p>
             </div>
             <div class="panel-footer">
                 <button type="submit" class="btn btn-success">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
                     Save Item
                 </button>
                 <button type="button" class="btn btn-ghost" onclick="closePanelById('addPanel')">Cancel</button>
@@ -908,7 +1007,9 @@
         <div class="panel-header">
             <h3>
                 <span class="panel-icon blue">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                    </svg>
                 </span>
                 Transfer Stock
             </h3>
@@ -917,24 +1018,25 @@
         <form id="transferForm" onsubmit="submitTransfer(event)">
             <div class="panel-body">
 
-                <div id="transferSourceWrap">
-                    <div class="field-group">
-                        <label>From (Source Branch) *</label>
-                        <select id="transferSource" onchange="handleSourceChange()">
-                            <option value="">— Select Source —</option>
-                        </select>
-                    </div>
+                <div class="field-group">
+                    <label>From (Source Branch) *</label>
+                    <select id="transferSource" onchange="handleSourceChange()">
+                        <option value="">— Select Source —</option>
+                    </select>
                 </div>
 
                 <div class="field-group">
                     <label>Product Code *</label>
-                    <input type="text" id="transferCode" list="transferCodes" placeholder="Enter product code" required autocomplete="off">
+                    <input type="text" id="transferCode" list="transferCodes"
+                           placeholder="Enter product code" required autocomplete="off">
                     <datalist id="transferCodes"></datalist>
                 </div>
 
                 <div class="field-group">
                     <label>Product Info</label>
-                    <div class="product-preview-box" id="transferPreview">Enter a product code above to preview</div>
+                    <div class="product-preview-box" id="transferPreview">
+                        Enter a product code above to preview
+                    </div>
                 </div>
 
                 <div class="field-row">
@@ -953,7 +1055,9 @@
             </div>
             <div class="panel-footer">
                 <button type="submit" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
                     Confirm Transfer
                 </button>
                 <button type="button" class="btn btn-ghost" onclick="closePanelById('transferPanel')">Cancel</button>
@@ -961,7 +1065,8 @@
         </form>
     </div>
 
-    <!-- TOASTS -->
+    <!-- TOAST CONTAINER -->
     <div class="toast-wrap" id="toastWrap"></div>
+
 </body>
 </html>
