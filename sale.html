@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Terminal</title>
     <style>
-        /* ── SAME DESIGN SYSTEM AS WAREHOUSE ── */
         :root {
             --primary:#4361ee; --accent:#4cc9f0; --danger:#f72585;
             --warning:#f8961e; --success:#2ecc71; --discount:#9c27b0;
@@ -20,7 +19,7 @@
         body{min-height:100vh;display:flex;}
         .page-wrap{width:100vw;min-height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
-        /* ── TOPBAR ── */
+        /* TOPBAR */
         .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;min-height:64px;box-shadow:var(--shadow);flex-shrink:0;}
         .topbar-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
         .topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -28,7 +27,7 @@
         .total-pill{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid #c7d2fe;color:var(--primary);font-size:.82rem;font-weight:600;padding:5px 14px;border-radius:100px;white-space:nowrap;}
         .total-pill span{font-weight:800;}
 
-        /* ── BUTTONS ── */
+        /* BUTTONS */
         .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border:none;border-radius:var(--radius);cursor:pointer;font-size:.84rem;font-weight:600;transition:all .18s;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.08);text-decoration:none;}
         .btn svg{width:15px;height:15px;flex-shrink:0;}
         .btn-primary{background:linear-gradient(135deg,var(--primary),#3a56d4);color:white;}
@@ -48,19 +47,19 @@
         .btn:disabled{opacity:.6;cursor:not-allowed;transform:none!important;}
         .btn-sm{padding:5px 10px;font-size:.76rem;}
 
-        /* ── LAYOUT ── */
+        /* LAYOUT */
         .main-content{flex:1;overflow:hidden;display:flex;}
         .left-panel{width:400px;min-width:300px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
         .left-inner{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
         .right-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:16px;gap:10px;}
 
-        /* ── CARDS ── */
+        /* CARDS */
         .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;}
         .card-hdr{padding:11px 16px;border-bottom:1px solid var(--border);background:var(--bg-lighter);display:flex;align-items:center;justify-content:space-between;}
         .card-hdr h3{font-size:.88rem;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:7px;}
         .card-body{padding:14px 16px;}
 
-        /* ── FORM FIELDS ── */
+        /* FORM FIELDS */
         .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;}
         .fg:last-child{margin-bottom:0;}
         .fg label{font-size:.72rem;font-weight:700;color:var(--text-fade);text-transform:uppercase;letter-spacing:.07em;}
@@ -68,13 +67,12 @@
         .fg input:focus,.fg select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(67,97,238,.1);background:white;}
         select option:disabled{color:var(--danger);}
 
-        /* ── DATE ROW (just the calendar input + button) ── */
+        /* DATE ROW */
         .date-row{display:flex;align-items:center;gap:10px;}
         .date-row input[type=date]{padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:.88rem;color:var(--text);background:var(--surface);cursor:pointer;transition:border-color .2s;box-shadow:var(--shadow);}
         .date-row input[type=date]:focus{outline:none;border-color:var(--primary);}
-        .date-label{font-size:.82rem;font-weight:600;color:var(--text-fade);}
 
-        /* ── CART TABLE ── */
+        /* CART TABLE */
         .cart-wrap{overflow-x:auto;}
         .ct{width:100%;border-collapse:collapse;font-size:.82rem;min-width:300px;}
         .ct th{background:var(--bg-lighter);color:var(--text-fade);font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;}
@@ -91,10 +89,10 @@
         .rm-btn{background:none;border:1px solid var(--danger);color:var(--danger);padding:2px 7px;border-radius:5px;cursor:pointer;font-size:.72rem;font-weight:600;transition:all .15s;box-shadow:none;min-width:unset;width:auto;margin:0;}
         .rm-btn:hover{background:var(--danger);color:white;}
 
-        /* ── SALES TABLE ── */
+        /* SALES TABLE */
         .tcard{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         .tscroll{flex:1;overflow-y:auto;}
-        table.st{width:100%;border-collapse:collapse;min-width:600px;}
+        table.st{width:100%;border-collapse:collapse;min-width:560px;}
         table.st thead th{background:#f8f9ff;color:var(--text-fade);font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:11px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;text-align:left;}
         table.st tbody td{padding:9px 12px;font-size:.86rem;border-bottom:1px solid #f0f2f8;transition:background .12s;}
         table.st tbody tr:last-child td{border-bottom:none;}
@@ -103,12 +101,17 @@
         input[type=checkbox]{width:15px;height:15px;accent-color:var(--primary);cursor:pointer;border:0;padding:0;margin:0;background:transparent;}
         .empty-row td{text-align:center;padding:40px 20px;color:var(--text-fade);font-size:.9rem;}
 
-        /* ── REVERSE BAR ── */
+        /* ACTION BAR (print selected + reverse) */
+        .action-bar{display:none;align-items:center;gap:10px;padding:9px 14px;background:#eef6ff;border:1px solid #c7d2fe;border-radius:var(--radius);flex-wrap:wrap;}
+        .action-bar.show{display:flex;}
+        .action-bar-label{font-size:.82rem;color:var(--primary);font-weight:600;flex:1;}
+
+        /* REVERSE BAR */
         .rev-bar{display:none;align-items:center;gap:10px;padding:9px 14px;background:#fff5f8;border:1px solid #f7b8d0;border-radius:var(--radius);}
         .rev-bar.show{display:flex;}
         .rev-bar span{font-size:.82rem;color:var(--danger);font-weight:600;flex:1;}
 
-        /* ── DISCOUNT PANEL ── */
+        /* DISCOUNT PANEL */
         .disc-panel{background:linear-gradient(135deg,#f9f0ff,#f3e5f5);border:1.5px solid #ce93d8;border-radius:var(--radius);padding:14px;display:none;flex-direction:column;gap:9px;}
         .disc-panel.show{display:flex;}
         .disc-panel label{font-size:.72rem;font-weight:700;color:var(--discount);text-transform:uppercase;letter-spacing:.07em;}
@@ -116,7 +119,7 @@
         .disc-row input{flex:1;padding:9px 12px;border:1.5px solid #ce93d8;border-radius:var(--radius);font-size:.9rem;background:white;}
         .disc-row input:focus{outline:none;border-color:var(--discount);}
 
-        /* ── TOAST ── */
+        /* TOAST */
         .toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
         .toast{background:#1e2029;color:white;padding:11px 17px;border-radius:var(--radius);font-size:.85rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.3);animation:tIn .25s ease;display:flex;align-items:center;gap:9px;max-width:300px;}
         .toast.success{border-left:3px solid var(--success);}
@@ -124,116 +127,166 @@
         .toast.fade-out{animation:tOut .3s ease forwards;}
         @keyframes tIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         @keyframes tOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(12px)}}
-
-        /* ── SPINNER ── */
         .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0;}
         @keyframes sp{to{transform:rotate(360deg)}}
 
-        /* ─────────────────────────────────────────
-           INVOICE MODAL (screen view)
-        ───────────────────────────────────────── */
+        /* MODAL */
         .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
         .modal-overlay.open{display:flex;}
-        .modal-box{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:min(620px,96vw);max-height:92vh;overflow-y:auto;display:flex;flex-direction:column;animation:mIn .22s ease;}
+        .modal-box{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:min(660px,96vw);max-height:94vh;overflow-y:auto;display:flex;flex-direction:column;animation:mIn .22s ease;}
         @keyframes mIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
-        .modal-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+        .modal-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:10px;flex-wrap:wrap;}
+        .modal-hdr-left{display:flex;align-items:center;gap:10px;}
         .modal-hdr h3{font-size:1rem;font-weight:700;color:var(--primary);}
-        .modal-close{background:var(--bg-lighter);border:1px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:var(--text-fade);transition:all .15s;}
+        .modal-close{background:var(--bg-lighter);border:1px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:var(--text-fade);transition:all .15s;flex-shrink:0;}
         .modal-close:hover{background:var(--danger);color:white;border-color:var(--danger);}
-        .modal-body{padding:20px;}
+        .modal-body{padding:20px;display:flex;flex-direction:column;gap:16px;}
         .modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0;}
         .modal-footer .btn{flex:1;justify-content:center;}
 
-        /* ── PAYMENT METHOD CHECKBOXES ── */
-        .pay-methods{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0;}
+        /* Toggle switch: Invoice / Receipt */
+        .doc-type-toggle{display:flex;align-items:center;gap:0;background:var(--bg-lighter);border:1px solid var(--border);border-radius:100px;padding:3px;}
+        .doc-type-btn{padding:5px 14px;border-radius:100px;font-size:.78rem;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--text-fade);transition:all .18s;box-shadow:none;min-width:unset;}
+        .doc-type-btn.active{background:var(--primary);color:white;box-shadow:0 2px 8px rgba(67,97,238,.25);}
+
+        /* Customer info fields in modal */
+        .cust-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+        @media(max-width:480px){.cust-row{grid-template-columns:1fr;}}
+
+        /* Payment method */
+        .pay-methods{display:flex;gap:16px;flex-wrap:wrap;}
         .pay-item{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.88rem;font-weight:600;color:var(--text);}
         .pay-item input[type=checkbox]{width:17px;height:17px;}
 
-        /* ─────────────────────────────────────────
-           PRINTABLE INVOICE  (only shown when printing)
-        ───────────────────────────────────────── */
+        /* Mini section headers in modal */
+        .modal-section-label{font-size:.72rem;font-weight:700;color:var(--text-fade);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+
+        /* PRINT AREA hidden on screen */
         #printArea{display:none;}
 
+        /* ── PRINT STYLES ──────────────────────────────────
+           @page removes browser-injected URL and title.
+           Everything hidden except #printArea.
+        ─────────────────────────────────────────────────── */
         @media print {
-            /* Hide everything except the invoice */
-            body > *:not(#printArea){ display:none !important; }
-            .modal-overlay{ display:none !important; }
-            #printArea{
-                display:block !important;
-                font-family:'Segoe UI',Arial,sans-serif;
-                font-size:11pt;
-                color:#000;
-                padding:0;
-                margin:0;
-                width:100%;
+            @page {
+                margin: 14mm 12mm 14mm 12mm;
+                /* blank string = remove browser header/footer */
+                size: A4 portrait;
             }
 
-            /* A4-ish invoice layout */
-            .inv-paper{
-                width:100%;
-                max-width:210mm;
-                margin:0 auto;
-                padding:18mm 16mm 14mm;
-                background:white;
+            /* Kill page title and URL chrome adds */
+            html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+            body > *:not(#printArea) { display: none !important; }
+            .modal-overlay { display: none !important; }
+
+            #printArea {
+                display: block !important;
+                font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+                font-size: 10.5pt;
+                color: #000;
+                background: white;
+                width: 100%;
             }
 
-            /* Header */
-            .inv-header{
-                display:flex;
-                justify-content:space-between;
-                align-items:flex-start;
-                border-bottom:2.5px solid #000;
-                padding-bottom:10px;
-                margin-bottom:14px;
+            .inv-paper {
+                width: 100%;
+                background: white;
+                padding: 0;
             }
-            .inv-brand h1{font-size:22pt;font-weight:900;letter-spacing:-.5px;color:#000;margin-bottom:2px;}
-            .inv-brand p{font-size:9.5pt;color:#444;margin:1px 0;}
 
-            .inv-meta{text-align:right;}
-            .inv-meta .inv-label{font-size:8pt;text-transform:uppercase;letter-spacing:.08em;color:#666;}
-            .inv-meta .inv-value{font-size:11pt;font-weight:700;color:#000;}
-            .inv-meta .inv-number{font-size:16pt;font-weight:900;color:#000;}
+            /* ── DOCUMENT HEADER ── */
+            .inv-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                border-bottom: 2.5px solid #000;
+                padding-bottom: 10px;
+                margin-bottom: 14px;
+            }
+            .inv-brand-name {
+                font-size: 24pt;
+                font-weight: 900;
+                letter-spacing: -.5px;
+                color: #000;
+                line-height: 1;
+                margin-bottom: 4px;
+            }
+            .inv-brand-info { font-size: 9pt; color: #444; line-height: 1.6; }
+
+            .inv-meta { text-align: right; }
+            .inv-doc-type {
+                font-size: 15pt;
+                font-weight: 900;
+                text-transform: uppercase;
+                letter-spacing: .08em;
+                color: #000;
+                margin-bottom: 4px;
+            }
+            .inv-num-label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: .1em; color: #666; }
+            .inv-num-val   { font-size: 12pt; font-weight: 900; color: #000; }
+            .inv-date-val  { font-size: 9pt; font-weight: 600; color: #333; margin-top: 3px; }
 
             /* PAID stamp */
-            .paid-stamp{
-                display:inline-block;
-                border:3px solid #2ecc71;
-                color:#2ecc71;
-                font-size:18pt;
-                font-weight:900;
-                letter-spacing:.15em;
-                padding:4px 14px;
-                border-radius:4px;
-                transform:rotate(-8deg);
-                margin-top:6px;
-                text-transform:uppercase;
+            .paid-stamp {
+                display: inline-block;
+                border: 3px solid #2ecc71;
+                color: #2ecc71;
+                font-size: 14pt;
+                font-weight: 900;
+                letter-spacing: .2em;
+                padding: 3px 12px;
+                border-radius: 4px;
+                transform: rotate(-7deg);
+                margin-top: 8px;
+                text-transform: uppercase;
             }
 
-            /* Items table */
-            .inv-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:10pt;}
-            .inv-table th{background:#f1f3f5;border-bottom:2px solid #000;padding:7px 8px;text-align:left;font-size:8.5pt;text-transform:uppercase;letter-spacing:.07em;}
-            .inv-table td{padding:7px 8px;border-bottom:1px solid #ddd;}
-            .inv-table tr:last-child td{border-bottom:2px solid #000;}
+            /* ── CUSTOMER BLOCK ── */
+            .inv-customer {
+                background: #f8f9fa;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                padding: 8px 12px;
+                margin-bottom: 14px;
+                font-size: 9.5pt;
+            }
+            .inv-customer-label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: .1em; color: #666; margin-bottom: 4px; }
+            .inv-customer-name  { font-weight: 700; font-size: 10.5pt; }
+            .inv-customer-phone { color: #444; }
 
-            /* Totals block */
-            .inv-totals{margin-left:auto;width:220px;margin-top:4px;}
-            .inv-totals table{width:100%;border-collapse:collapse;font-size:10pt;}
-            .inv-totals td{padding:5px 6px;}
-            .inv-totals tr:last-child{font-weight:900;font-size:12pt;border-top:2px solid #000;}
+            /* ── ITEMS TABLE ── */
+            .inv-table { width: 100%; border-collapse: collapse; margin: 0 0 10px; font-size: 9.5pt; }
+            .inv-table th {
+                background: #f1f3f5;
+                border-top: 1.5px solid #000;
+                border-bottom: 1.5px solid #000;
+                padding: 6px 8px;
+                text-align: left;
+                font-size: 8pt;
+                text-transform: uppercase;
+                letter-spacing: .07em;
+                font-weight: 700;
+            }
+            .inv-table td { padding: 6px 8px; border-bottom: 1px solid #ddd; }
+            .inv-table tbody tr:last-child td { border-bottom: 2px solid #000; }
+            .inv-table tfoot td { padding: 5px 8px; font-size: 9pt; }
+            .inv-table tfoot tr:last-child td { font-weight: 900; font-size: 11pt; border-top: 2px solid #000; padding-top: 6px; }
 
-            /* Payment method */
-            .inv-payment{margin-top:18px;padding-top:10px;border-top:1px solid #bbb;}
-            .inv-payment h4{font-size:8.5pt;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;color:#555;}
-            .inv-pay-opts{display:flex;gap:24px;}
-            .inv-pay-opt{display:flex;align-items:center;gap:7px;font-size:10pt;font-weight:600;}
-            .inv-pay-box{width:14px;height:14px;border:2px solid #000;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
-            .inv-pay-box.checked::after{content:'✓';font-size:9pt;font-weight:900;line-height:1;}
+            /* ── PAYMENT SECTION ── */
+            .inv-payment { margin-top: 14px; padding-top: 10px; border-top: 1px solid #bbb; }
+            .inv-payment-label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: .1em; color: #666; margin-bottom: 6px; font-weight: 700; }
+            .inv-pay-opts { display: flex; gap: 20px; }
+            .inv-pay-opt  { display: flex; align-items: center; gap: 7px; font-size: 9.5pt; font-weight: 600; }
+            .inv-pay-box  { width: 13px; height: 13px; border: 2px solid #000; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+            .inv-pay-box.checked::after { content: '✓'; font-size: 8pt; font-weight: 900; line-height: 1; }
 
-            /* Footer */
-            .inv-footer{margin-top:22px;text-align:center;font-size:8.5pt;color:#666;border-top:1px solid #ddd;padding-top:8px;}
+            /* ── FOOTER ── */
+            .inv-footer { margin-top: 18px; text-align: center; font-size: 8pt; color: #777; border-top: 1px solid #ddd; padding-top: 7px; }
         }
 
-        /* ── RESPONSIVE ── */
+        /* RESPONSIVE */
         @media(max-width:900px){
             .main-content{flex-direction:column;overflow-y:auto;}
             .left-panel{width:100%;min-width:unset;border-right:none;border-bottom:1px solid var(--border);}
@@ -242,7 +295,6 @@
         @media(max-width:600px){
             .topbar{padding:10px 12px;}
             .cart-acts{flex-direction:column;}
-            .date-row{flex-wrap:wrap;}
         }
     </style>
 
@@ -266,15 +318,16 @@
         const branchId=localStorage.getItem('branchId');
         if(!branchId){alert('Branch not set.');window.location.href='dashboard.html';}
 
-        /* ── STATE ── */
+        /* STATE */
         let inventory=[],sales=[],cart=[],cartDiscount=0;
         let currentDate=todayStr(),isProcessing=false;
         let unsubSales=null,unsubInv=null;
-        let invoiceCounter=1; // incremented each session; in production store in Firestore
+        let invoiceCounter=1;
+        let docType='invoice'; // 'invoice' | 'receipt'
 
         function todayStr(){return new Date().toISOString().split('T')[0];}
 
-        /* ── TOAST ── */
+        /* TOAST */
         function toast(msg,type='success'){
             const w=document.getElementById('toastWrap'),el=document.createElement('div');
             el.className=`toast ${type}`;
@@ -283,7 +336,7 @@
             setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),350);},3200);
         }
 
-        /* ── INIT ── */
+        /* INIT */
         window.onload=async function(){
             const names={master:'Master Warehouse',makeni:'Kabanana Branch',kabana:'Makeni Branch'};
             document.getElementById('pageTitle').textContent='Sales Terminal — '+(names[branchId]||branchId);
@@ -291,12 +344,28 @@
             setupInventoryListener();
             setupSalesListener(currentDate);
             loadCartFromStorage();
-
-            // Load invoice counter from localStorage (simple per-branch counter)
             invoiceCounter=parseInt(localStorage.getItem(`inv_ctr_${branchId}`)||'1');
+            // Load saved shop address
+            const savedAddr=localStorage.getItem(`shop_addr_${branchId}`)||'';
+            document.getElementById('shopAddrInput').value=savedAddr;
         };
 
-        /* ── INVENTORY ── */
+        /* SHOP ADDRESS — save as user types */
+        window.saveShopAddr=function(){
+            const v=document.getElementById('shopAddrInput').value;
+            localStorage.setItem(`shop_addr_${branchId}`,v);
+        };
+
+        /* DOC TYPE TOGGLE */
+        window.setDocType=function(type){
+            docType=type;
+            document.getElementById('btnInvoice').classList.toggle('active',type==='invoice');
+            document.getElementById('btnReceipt').classList.toggle('active',type==='receipt');
+            // Update modal title
+            document.getElementById('modalDocTitle').textContent=type==='invoice'?'📄 Invoice':'🧾 Receipt';
+        };
+
+        /* INVENTORY */
         function setupInventoryListener(){
             if(unsubInv)unsubInv();
             unsubInv=onSnapshot(
@@ -307,7 +376,6 @@
                 }
             );
         }
-
         function populateSel(){
             const sel=document.getElementById('prodSel'),cur=sel.value;
             sel.innerHTML='<option value="">— Select Product —</option>';
@@ -321,7 +389,7 @@
             sel.value=cur;
         }
 
-        /* ── DATE CHANGE ── */
+        /* DATE */
         window.applyDateFilter=function(){
             const v=document.getElementById('dateInput').value;
             if(!v){toast('Pick a date.','error');return;}
@@ -329,15 +397,14 @@
             setupSalesListener(v);
         };
 
-        /* ── SALES LISTENER ── */
+        /* SALES LISTENER */
         function setupSalesListener(date){
             if(unsubSales)unsubSales();
             unsubSales=onSnapshot(
                 query(collection(db,'sales'),where('branchId','==',branchId),where('date','==',date)),
                 snap=>{
                     sales=snap.docs.map(d=>({id:d.id,...d.data()}));
-                    renderSales();
-                    updateTotalPill();
+                    renderSales();updateTotalPill();
                 },
                 err=>{console.error(err);toast('Error loading sales.','error');}
             );
@@ -348,14 +415,14 @@
             tb.innerHTML='';
             if(!sales.length){
                 tb.innerHTML='<tr class="empty-row"><td colspan="9">No sales recorded for this date.</td></tr>';
-                updateRevBar();return;
+                updateActionBar();return;
             }
             sales.forEach(s=>{
                 const disc=s.discount||0;
                 const total=s.total!=null?s.total:(s.price*s.quantity)-disc;
                 const tr=document.createElement('tr');
                 tr.innerHTML=`
-                    <td><input type="checkbox" data-id="${s.id}" onchange="updateRevBar()"></td>
+                    <td><input type="checkbox" data-id="${s.id}" onchange="updateActionBar()"></td>
                     <td>${s.date}</td>
                     <td><span class="codechip">${s.code}</span></td>
                     <td>${s.name}</td>
@@ -364,35 +431,32 @@
                     <td>${disc>0?`<span style="color:var(--discount);font-weight:600;">ZMW ${disc.toFixed(2)}</span>`:'<span style="color:var(--text-fade)">—</span>'}</td>
                     <td><strong>ZMW ${Number(total).toFixed(2)}</strong></td>
                     <td>
-                        <button class="btn btn-teal btn-sm" onclick="openInvoice('${s.id}')">
+                        <button class="btn btn-teal btn-sm" onclick="openInvoiceForSingle('${s.id}')">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h5l5 5v11a2 2 0 01-2 2z"/></svg>
-                            Invoice
+                            View
                         </button>
                     </td>`;
                 tb.appendChild(tr);
             });
-            updateRevBar();
+            updateActionBar();
         }
 
         function updateTotalPill(){
             const t=sales.reduce((s,r)=>{const v=r.total!=null?r.total:(r.price*r.quantity)-(r.discount||0);return s+v;},0);
-            document.getElementById('totalPill').innerHTML=`Sales (${formatDateDisplay(currentDate)}): <span>ZMW ${t.toFixed(2)}</span>`;
+            const label=currentDate===todayStr()?'Today':new Date(currentDate+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+            document.getElementById('totalPill').innerHTML=`Sales (${label}): <span>ZMW ${t.toFixed(2)}</span>`;
         }
 
-        function formatDateDisplay(d){
-            const today=todayStr();
-            if(d===today)return'Today';
-            return new Date(d+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-        }
-
-        /* ── REVERSE BAR ── */
-        window.updateRevBar=function(){
-            const n=document.querySelectorAll('#salesTbl tbody input[type=checkbox]:checked').length;
-            document.getElementById('revBar').classList.toggle('show',n>0);
-            if(n>0)document.getElementById('revLabel').textContent=`${n} sale${n>1?'s':''} selected`;
+        /* ACTION BAR — shown when rows are checked (print selected + reverse) */
+        window.updateActionBar=function(){
+            const checked=document.querySelectorAll('#salesTbl tbody input[type=checkbox]:checked');
+            const n=checked.length;
+            const bar=document.getElementById('actionBar');
+            bar.classList.toggle('show',n>0);
+            if(n>0)document.getElementById('actionBarLabel').textContent=`${n} sale${n>1?'s':''} selected`;
         };
 
-        /* ── FORM TOGGLES ── */
+        /* FORM TOGGLES */
         window.toggleForm=function(){
             const f=document.getElementById('addCard');
             const show=f.style.display==='none'||f.style.display==='';
@@ -406,7 +470,7 @@
             if(p.classList.contains('show')){document.getElementById('addCard').style.display='none';document.getElementById('togBtn').textContent='+ Add Item to Cart';}
         };
 
-        /* ── ADD TO CART ── */
+        /* ADD TO CART */
         window.addToCart=function(){
             const code=document.getElementById('prodSel').value;
             const qty=parseInt(document.getElementById('qtyInp').value);
@@ -426,20 +490,18 @@
             cartDiscount=0;document.getElementById('discInp').value='0';
             toast(`${prod.name} added.`);renderCart();saveCart();document.getElementById('qtyInp').value=1;
         };
-
         window.removeFromCart=function(i){
             cart.splice(i,1);
             if(!cart.length){cartDiscount=0;document.getElementById('discInp').value='0';}
             renderCart();saveCart();
         };
-
         window.clearCart=function(){
             if(!cart.length)return;
             if(!confirm('Clear cart?'))return;
             cart=[];cartDiscount=0;document.getElementById('discInp').value='0';renderCart();saveCart();
         };
 
-        /* ── DISCOUNT ── */
+        /* DISCOUNT */
         window.applyDiscount=function(){
             const amt=parseFloat(document.getElementById('discInp').value);
             if(isNaN(amt)||amt<0){toast('Enter a valid amount.','error');return;}
@@ -455,7 +517,7 @@
             toast(amt>0?`Discount ZMW ${amt.toFixed(2)} applied.`:'Discount removed.');renderCart();saveCart();
         };
 
-        /* ── RENDER CART ── */
+        /* RENDER CART */
         function renderCart(){
             const card=document.getElementById('cartCard'),tb=document.getElementById('cartTb'),totEl=document.getElementById('cartTot');
             if(!cart.length){card.style.display='none';return;}
@@ -478,7 +540,7 @@
             }else{totEl.classList.remove('disc');totEl.textContent=`Cart Total: ZMW ${grand.toFixed(2)}`;}
         }
 
-        /* ── PROCESS CART ── */
+        /* PROCESS CART */
         window.processCart=async function(){
             if(isProcessing)return;
             if(!cart.length){toast('Cart is empty.','error');return;}
@@ -503,7 +565,7 @@
             finally{btn.disabled=false;btn.innerHTML='✓ Process Sales';isProcessing=false;}
         };
 
-        /* ── REVERSE ── */
+        /* REVERSE */
         window.reverseSales=async function(){
             if(isProcessing)return;
             const boxes=Array.from(document.querySelectorAll('#salesTbl tbody input[type=checkbox]:checked'));
@@ -521,84 +583,146 @@
                         tx.delete(doc(db,'sales',sale.id));
                     });
                 }
-                toast(`${boxes.length} sale(s) reversed.`);updateRevBar();
+                toast(`${boxes.length} sale(s) reversed.`);updateActionBar();
             }catch(err){console.error(err);toast('Error: '+err.message,'error');}
-            finally{btn.disabled=false;btn.innerHTML='↩ Reverse Selected';isProcessing=false;}
+            finally{btn.disabled=false;btn.innerHTML='↩ Reverse';isProcessing=false;}
         };
 
-        /* ─────────────────────────────────────────
-           INVOICE MODAL
-        ───────────────────────────────────────── */
-        let currentInvoiceSale=null;
+        /* ─────────────────────────────────
+           INVOICE / RECEIPT MODAL
+        ───────────────────────────────── */
 
-        window.openInvoice=function(saleId){
+        /* Open for a single sale (from View button) */
+        window.openInvoiceForSingle=function(saleId){
             const sale=sales.find(s=>s.id===saleId);
             if(!sale)return;
-            currentInvoiceSale=sale;
+            openInvoiceModal([sale]);
+        };
 
-            // Populate modal preview
-            const disc=sale.discount||0;
-            const total=sale.total!=null?sale.total:(sale.price*sale.quantity)-disc;
-            const sub=sale.subtotal!=null?sale.subtotal:sale.price*sale.quantity;
+        /* Open for selected sales (multi-row) */
+        window.openInvoiceForSelected=function(){
+            const boxes=Array.from(document.querySelectorAll('#salesTbl tbody input[type=checkbox]:checked'));
+            if(!boxes.length){toast('Select at least one sale first.','error');return;}
+            const selectedSales=boxes.map(b=>sales.find(s=>s.id===b.dataset.id)).filter(Boolean);
+            openInvoiceModal(selectedSales);
+        };
 
-            // Generate invoice number (padded, per-branch counter)
-            const invNum='INV-'+String(invoiceCounter).padStart(5,'0');
+        let currentInvoiceSales=[];
 
-            document.getElementById('invNum').textContent=invNum;
-            document.getElementById('invDate').textContent=new Date(sale.date+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
-            document.getElementById('invProduct').textContent=sale.name;
-            document.getElementById('invCode').textContent=sale.code;
-            document.getElementById('invQty').textContent=sale.quantity;
-            document.getElementById('invUnitPrice').textContent=`ZMW ${Number(sale.price).toFixed(2)}`;
-            document.getElementById('invSubtotal').textContent=`ZMW ${Number(sub).toFixed(2)}`;
-            document.getElementById('invDiscount').textContent=disc>0?`ZMW ${disc.toFixed(2)}`:'—';
-            document.getElementById('invTotal').textContent=`ZMW ${Number(total).toFixed(2)}`;
+        function openInvoiceModal(salesArr){
+            currentInvoiceSales=salesArr;
 
-            // Uncheck all payment methods
+            // Generate invoice number
+            const invNum=(docType==='invoice'?'INV-':'RCT-')+String(invoiceCounter).padStart(5,'0');
+            document.getElementById('modalInvNum').textContent=invNum;
+
+            // Date: use the first sale's date
+            const saleDate=salesArr[0].date;
+            document.getElementById('modalInvDate').textContent=new Date(saleDate+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'long',year:'numeric'});
+
+            // Time generated (now)
+            document.getElementById('modalInvTime').textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+            // Items summary
+            const tbody=document.getElementById('modalItemsTbody');
+            tbody.innerHTML='';
+            let grandTotal=0,grandDiscount=0,grandSubtotal=0;
+            salesArr.forEach(s=>{
+                const disc=s.discount||0;
+                const total=s.total!=null?s.total:(s.price*s.quantity)-disc;
+                const sub=s.subtotal!=null?s.subtotal:s.price*s.quantity;
+                grandTotal+=total;grandDiscount+=disc;grandSubtotal+=sub;
+                const tr=document.createElement('tr');
+                tr.style.cssText='font-size:.86rem;';
+                tr.innerHTML=`
+                    <td style="padding:8px 10px;border-bottom:1px solid var(--border);">${s.name}</td>
+                    <td style="padding:8px 10px;border-bottom:1px solid var(--border);"><span class="codechip">${s.code}</span></td>
+                    <td style="padding:8px 10px;text-align:center;border-bottom:1px solid var(--border);">${s.quantity}</td>
+                    <td style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);">ZMW ${Number(s.price).toFixed(2)}</td>
+                    <td style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);">ZMW ${Number(sub).toFixed(2)}</td>`;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('modalGrandDisc').textContent=grandDiscount>0?`ZMW ${grandDiscount.toFixed(2)}`:'—';
+            document.getElementById('modalGrandTotal').textContent=`ZMW ${grandTotal.toFixed(2)}`;
+
+            // Reset customer fields
+            document.getElementById('custName').value='';
+            document.getElementById('custPhone').value='';
             document.querySelectorAll('.pay-cb').forEach(cb=>cb.checked=false);
 
             document.getElementById('invoiceModal').classList.add('open');
-        };
+        }
 
         window.closeInvoice=function(){
             document.getElementById('invoiceModal').classList.remove('open');
-            currentInvoiceSale=null;
+            currentInvoiceSales=[];
         };
 
-        window.printInvoice=function(){
-            if(!currentInvoiceSale)return;
-            const sale=currentInvoiceSale;
-            const disc=sale.discount||0;
-            const total=sale.total!=null?sale.total:(sale.price*sale.quantity)-disc;
-            const sub=sale.subtotal!=null?sale.subtotal:sale.price*sale.quantity;
-            const invNum=document.getElementById('invNum').textContent;
+        /* PRINT */
+        window.printDoc=function(){
+            if(!currentInvoiceSales.length)return;
 
-            // Payment methods chosen
+            const custName=document.getElementById('custName').value.trim();
+            const custPhone=document.getElementById('custPhone').value.trim();
+            const shopAddr=document.getElementById('shopAddrInput').value.trim();
             const cash=document.getElementById('payCash').checked;
             const airtel=document.getElementById('payAirtel').checked;
             const fnb=document.getElementById('payFNB').checked;
-
+            const invNum=document.getElementById('modalInvNum').textContent;
+            const invDate=document.getElementById('modalInvDate').textContent;
+            const invTime=document.getElementById('modalInvTime').textContent;
+            const label=docType==='invoice'?'INVOICE':'RECEIPT';
             const branchNames={master:'Master Warehouse',makeni:'Kabanana Branch',kabana:'Makeni Branch'};
 
-            // Build printable HTML
+            let itemRows='';
+            let grandTotal=0,grandDiscount=0,grandSub=0;
+            currentInvoiceSales.forEach(s=>{
+                const disc=s.discount||0;
+                const total=s.total!=null?s.total:(s.price*s.quantity)-disc;
+                const sub=s.subtotal!=null?s.subtotal:s.price*s.quantity;
+                grandTotal+=total;grandDiscount+=disc;grandSub+=sub;
+                itemRows+=`<tr>
+                    <td>${s.name}</td>
+                    <td style="font-family:monospace;">${s.code}</td>
+                    <td style="text-align:center;">${s.quantity}</td>
+                    <td style="text-align:right;">ZMW ${Number(s.price).toFixed(2)}</td>
+                    <td style="text-align:right;">ZMW ${Number(sub).toFixed(2)}</td>
+                </tr>`;
+            });
+
+            const custBlock=(custName||custPhone)?`
+                <div class="inv-customer">
+                    <div class="inv-customer-label">Bill To</div>
+                    ${custName?`<div class="inv-customer-name">${custName}</div>`:''}
+                    ${custPhone?`<div class="inv-customer-phone">📞 ${custPhone}</div>`:''}
+                </div>`:'';
+
+            const discRow=grandDiscount>0?`
+                <tr><td colspan="4" style="text-align:right;padding:5px 8px;">Discount</td>
+                    <td style="text-align:right;padding:5px 8px;color:#9c27b0;font-weight:600;">- ZMW ${grandDiscount.toFixed(2)}</td></tr>`:'';
+
             document.getElementById('printArea').innerHTML=`
                 <div class="inv-paper">
                     <div class="inv-header">
                         <div class="inv-brand">
-                            <h1>TRISMART</h1>
-                            <p>${branchNames[branchId]||branchId}</p>
-                            <p>📞 +260 771 287 206</p>
+                            <div class="inv-brand-name">TRISMART</div>
+                            <div class="inv-brand-info">
+                                ${branchNames[branchId]||branchId}<br>
+                                ${shopAddr?shopAddr+'<br>':''}
+                                📞 +260 771 287 206
+                            </div>
                         </div>
                         <div class="inv-meta">
-                            <div class="inv-label">Invoice No.</div>
-                            <div class="inv-number">${invNum}</div>
-                            <div style="margin-top:6px;">
-                                <div class="inv-label">Date</div>
-                                <div class="inv-value">${new Date(sale.date+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'})}</div>
-                            </div>
+                            <div class="inv-doc-type">${label}</div>
+                            <div class="inv-num-label">${label} No.</div>
+                            <div class="inv-num-val">${invNum}</div>
+                            <div class="inv-date-val">${invDate}</div>
+                            <div class="inv-date-val" style="font-size:8.5pt;color:#666;">Generated: ${invTime}</div>
                             <div class="paid-stamp">PAID</div>
                         </div>
                     </div>
+
+                    ${custBlock}
 
                     <table class="inv-table">
                         <thead>
@@ -610,57 +734,36 @@
                                 <th style="text-align:right;">Amount</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody>${itemRows}</tbody>
+                        <tfoot>
+                            ${discRow}
                             <tr>
-                                <td>${sale.name}</td>
-                                <td><span style="font-family:monospace;">${sale.code}</span></td>
-                                <td style="text-align:center;">${sale.quantity}</td>
-                                <td style="text-align:right;">ZMW ${Number(sale.price).toFixed(2)}</td>
-                                <td style="text-align:right;">ZMW ${Number(sub).toFixed(2)}</td>
+                                <td colspan="4" style="text-align:right;font-weight:900;">TOTAL</td>
+                                <td style="text-align:right;font-weight:900;">ZMW ${grandTotal.toFixed(2)}</td>
                             </tr>
-                        </tbody>
+                        </tfoot>
                     </table>
 
-                    <div class="inv-totals">
-                        <table>
-                            ${disc>0?`<tr><td>Subtotal</td><td style="text-align:right;">ZMW ${Number(sub).toFixed(2)}</td></tr>
-                            <tr><td>Discount</td><td style="text-align:right;color:#9c27b0;">- ZMW ${disc.toFixed(2)}</td></tr>`:''}
-                            <tr>
-                                <td><strong>TOTAL</strong></td>
-                                <td style="text-align:right;"><strong>ZMW ${Number(total).toFixed(2)}</strong></td>
-                            </tr>
-                        </table>
-                    </div>
-
                     <div class="inv-payment">
-                        <h4>Payment Method</h4>
+                        <div class="inv-payment-label">Payment Method</div>
                         <div class="inv-pay-opts">
-                            <div class="inv-pay-opt">
-                                <div class="inv-pay-box ${cash?'checked':''}"></div> Cash Sale
-                            </div>
-                            <div class="inv-pay-opt">
-                                <div class="inv-pay-box ${airtel?'checked':''}"></div> Airtel Money
-                            </div>
-                            <div class="inv-pay-opt">
-                                <div class="inv-pay-box ${fnb?'checked':''}"></div> FNB
-                            </div>
+                            <div class="inv-pay-opt"><div class="inv-pay-box ${cash?'checked':''}"></div> Cash Sale</div>
+                            <div class="inv-pay-opt"><div class="inv-pay-box ${airtel?'checked':''}"></div> Airtel Money</div>
+                            <div class="inv-pay-opt"><div class="inv-pay-box ${fnb?'checked':''}"></div> FNB</div>
                         </div>
                     </div>
 
-                    <div class="inv-footer">
-                        Thank you for shopping with Trismart! &nbsp;|&nbsp; +260 771 287 206
-                    </div>
-                </div>
-            `;
+                    <div class="inv-footer">Thank you for shopping with Trismart! &nbsp;|&nbsp; +260 771 287 206</div>
+                </div>`;
 
-            // Increment invoice counter
+            // Bump counter
             invoiceCounter++;
             localStorage.setItem(`inv_ctr_${branchId}`,invoiceCounter);
 
             window.print();
         };
 
-        /* ── CART LOCAL STORAGE ── */
+        /* CART STORAGE */
         function saveCart(){localStorage.setItem(`cart_${branchId}`,JSON.stringify({items:cart,discount:cartDiscount}));}
         function loadCartFromStorage(){
             try{
@@ -674,7 +777,7 @@
 </head>
 <body>
 
-<!-- PRINTABLE INVOICE (hidden on screen, shown only on print) -->
+<!-- PRINT AREA (hidden on screen) -->
 <div id="printArea"></div>
 
 <div class="page-wrap">
@@ -695,9 +798,15 @@
 
     <div class="main-content">
 
-        <!-- LEFT PANEL — CART -->
+        <!-- LEFT PANEL -->
         <div class="left-panel">
             <div class="left-inner">
+
+                <!-- Shop address (editable, saved) -->
+                <div class="fg">
+                    <label>Shop Address (appears on invoice)</label>
+                    <input type="text" id="shopAddrInput" placeholder="e.g. Plot 45, Cairo Road, Lusaka" oninput="saveShopAddr()">
+                </div>
 
                 <div style="display:flex;gap:8px;">
                     <button class="btn btn-success" id="togBtn" onclick="toggleForm()" style="flex:2;">
@@ -712,7 +821,7 @@
 
                 <!-- Discount panel -->
                 <div class="disc-panel" id="discPanel">
-                    <label>Fixed Discount — Applied to Entire Cart</label>
+                    <label>Fixed Discount — Entire Cart</label>
                     <div class="disc-row">
                         <input type="number" id="discInp" min="0" step="0.01" value="0" placeholder="Amount (ZMW)">
                         <button class="btn btn-discount" onclick="applyDiscount()">Apply</button>
@@ -777,21 +886,24 @@
             </div>
         </div>
 
-        <!-- RIGHT PANEL — SALES HISTORY -->
+        <!-- RIGHT PANEL -->
         <div class="right-panel">
 
-            <!-- Clean date picker — just a calendar, no chips, no jump label -->
+            <!-- Date picker only -->
             <div class="date-row">
                 <input type="date" id="dateInput" onchange="applyDateFilter()">
-                <span class="date-label" id="dateLabel"></span>
             </div>
 
-            <!-- Reverse bar -->
-            <div class="rev-bar" id="revBar">
-                <span id="revLabel">0 sales selected</span>
-                <button class="btn btn-danger" id="revBtn" onclick="reverseSales()">
+            <!-- Combined action bar (shown when rows are ticked) -->
+            <div class="action-bar" id="actionBar">
+                <span class="action-bar-label" id="actionBarLabel">0 sales selected</span>
+                <button class="btn btn-teal btn-sm" onclick="openInvoiceForSelected()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h5l5 5v11a2 2 0 01-2 2z"/></svg>
+                    Print Invoice
+                </button>
+                <button class="btn btn-danger btn-sm" id="revBtn" onclick="reverseSales()">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-                    Reverse Selected
+                    Reverse
                 </button>
             </div>
 
@@ -803,7 +915,7 @@
                             <tr>
                                 <th width="34px">
                                     <input type="checkbox" title="Select all"
-                                        onchange="document.querySelectorAll('#salesTbl tbody input[type=checkbox]').forEach(cb=>cb.checked=this.checked);updateRevBar();">
+                                        onchange="document.querySelectorAll('#salesTbl tbody input[type=checkbox]').forEach(cb=>cb.checked=this.checked);updateActionBar();">
                                 </th>
                                 <th>Date</th>
                                 <th>Code</th>
@@ -812,7 +924,7 @@
                                 <th>Qty</th>
                                 <th>Discount</th>
                                 <th>Total</th>
-                                <th>Invoice</th>
+                                <th>View</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -826,96 +938,109 @@
     </div>
 </div>
 
-<!-- TOASTS -->
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- ═══════════════════════════════════════
-     INVOICE MODAL
-═══════════════════════════════════════ -->
+<!-- ══════════════════════════════════
+     INVOICE / RECEIPT MODAL
+══════════════════════════════════ -->
 <div class="modal-overlay" id="invoiceModal">
     <div class="modal-box">
+
         <div class="modal-hdr">
-            <h3>📄 Sale Invoice</h3>
+            <div class="modal-hdr-left">
+                <h3 id="modalDocTitle">📄 Invoice</h3>
+                <!-- Invoice / Receipt toggle -->
+                <div class="doc-type-toggle">
+                    <button class="doc-type-btn active" id="btnInvoice" onclick="setDocType('invoice')">Invoice</button>
+                    <button class="doc-type-btn" id="btnReceipt" onclick="setDocType('receipt')">Receipt</button>
+                </div>
+            </div>
             <button class="modal-close" onclick="closeInvoice()">✕</button>
         </div>
+
         <div class="modal-body">
 
-            <!-- Invoice header preview -->
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--border);padding-bottom:14px;margin-bottom:14px;">
+            <!-- Doc number + date + time -->
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--border);padding-bottom:14px;">
                 <div>
-                    <div style="font-size:1.5rem;font-weight:900;color:var(--text);letter-spacing:-.5px;">TRISMART</div>
+                    <div style="font-size:1.5rem;font-weight:900;letter-spacing:-.5px;">TRISMART</div>
                     <div style="font-size:.82rem;color:var(--text-fade);margin-top:2px;">+260 771 287 206</div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);">Invoice No.</div>
-                    <div style="font-size:1.1rem;font-weight:900;color:var(--primary);" id="invNum">INV-00001</div>
-                    <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);margin-top:4px;">Date</div>
-                    <div style="font-size:.88rem;font-weight:700;" id="invDate">—</div>
+                    <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);">Number</div>
+                    <div style="font-size:1.1rem;font-weight:900;color:var(--primary);" id="modalInvNum">INV-00001</div>
+                    <div style="font-size:.85rem;font-weight:600;margin-top:3px;" id="modalInvDate">—</div>
+                    <div style="font-size:.76rem;color:var(--text-fade);margin-top:2px;">Generated: <span id="modalInvTime">—</span></div>
                 </div>
             </div>
 
-            <!-- Sale details -->
-            <table style="width:100%;border-collapse:collapse;font-size:.88rem;margin-bottom:14px;">
-                <thead>
-                    <tr style="background:var(--bg-lighter);">
-                        <th style="padding:8px 10px;text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Product</th>
-                        <th style="padding:8px 10px;text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Code</th>
-                        <th style="padding:8px 10px;text-align:center;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Qty</th>
-                        <th style="padding:8px 10px;text-align:right;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Unit Price</th>
-                        <th style="padding:8px 10px;text-align:right;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="padding:10px;border-bottom:1px solid var(--border);" id="invProduct">—</td>
-                        <td style="padding:10px;border-bottom:1px solid var(--border);"><span class="codechip" id="invCode">—</span></td>
-                        <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);" id="invQty">—</td>
-                        <td style="padding:10px;text-align:right;border-bottom:1px solid var(--border);" id="invUnitPrice">—</td>
-                        <td style="padding:10px;text-align:right;border-bottom:1px solid var(--border);" id="invSubtotal">—</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Totals -->
-            <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
-                <table style="width:200px;border-collapse:collapse;font-size:.88rem;">
-                    <tr>
-                        <td style="padding:5px 8px;color:var(--text-fade);">Discount</td>
-                        <td style="padding:5px 8px;text-align:right;color:var(--discount);font-weight:600;" id="invDiscount">—</td>
-                    </tr>
-                    <tr style="border-top:2px solid var(--border);">
-                        <td style="padding:8px;font-weight:700;font-size:.95rem;">TOTAL</td>
-                        <td style="padding:8px;text-align:right;font-weight:900;font-size:1rem;color:var(--primary);" id="invTotal">—</td>
-                    </tr>
-                </table>
+            <!-- Customer fields -->
+            <div>
+                <div class="modal-section-label">Customer Details (Optional)</div>
+                <div class="cust-row">
+                    <div class="fg" style="margin-bottom:0;">
+                        <label>Customer Name</label>
+                        <input type="text" id="custName" placeholder="e.g. John Banda">
+                    </div>
+                    <div class="fg" style="margin-bottom:0;">
+                        <label>Phone Number</label>
+                        <input type="text" id="custPhone" placeholder="e.g. +260 97 000 0000">
+                    </div>
+                </div>
             </div>
 
-            <!-- PAID stamp area -->
-            <div style="text-align:center;margin-bottom:16px;">
-                <span style="display:inline-block;border:3px solid var(--success);color:var(--success);font-size:1.2rem;font-weight:900;letter-spacing:.18em;padding:4px 18px;border-radius:5px;transform:rotate(-6deg);display:inline-block;">PAID</span>
+            <!-- Items table -->
+            <div>
+                <div class="modal-section-label">Items</div>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-size:.86rem;min-width:380px;">
+                        <thead>
+                            <tr style="background:var(--bg-lighter);">
+                                <th style="padding:7px 10px;text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Product</th>
+                                <th style="padding:7px 10px;text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Code</th>
+                                <th style="padding:7px 10px;text-align:center;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Qty</th>
+                                <th style="padding:7px 10px;text-align:right;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Unit Price</th>
+                                <th style="padding:7px 10px;text-align:right;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalItemsTbody"></tbody>
+                    </table>
+                </div>
+                <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+                    <table style="width:200px;border-collapse:collapse;font-size:.88rem;">
+                        <tr>
+                            <td style="padding:5px 8px;color:var(--text-fade);">Discount</td>
+                            <td style="padding:5px 8px;text-align:right;color:var(--discount);font-weight:600;" id="modalGrandDisc">—</td>
+                        </tr>
+                        <tr style="border-top:2px solid var(--border);">
+                            <td style="padding:8px;font-weight:700;font-size:.95rem;">TOTAL</td>
+                            <td style="padding:8px;text-align:right;font-weight:900;font-size:1rem;color:var(--primary);" id="modalGrandTotal">—</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
 
-            <!-- Payment Method -->
-            <div style="border-top:1px solid var(--border);padding-top:14px;">
-                <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);margin-bottom:10px;font-weight:700;">Payment Method</div>
+            <!-- PAID stamp -->
+            <div style="text-align:center;">
+                <span style="display:inline-block;border:3px solid var(--success);color:var(--success);font-size:1.1rem;font-weight:900;letter-spacing:.2em;padding:4px 18px;border-radius:5px;transform:rotate(-6deg);">PAID</span>
+            </div>
+
+            <!-- Payment method -->
+            <div>
+                <div class="modal-section-label">Payment Method</div>
                 <div class="pay-methods">
-                    <label class="pay-item">
-                        <input type="checkbox" class="pay-cb" id="payCash"> Cash Sale
-                    </label>
-                    <label class="pay-item">
-                        <input type="checkbox" class="pay-cb" id="payAirtel"> Airtel Money
-                    </label>
-                    <label class="pay-item">
-                        <input type="checkbox" class="pay-cb" id="payFNB"> FNB
-                    </label>
+                    <label class="pay-item"><input type="checkbox" class="pay-cb" id="payCash"> Cash Sale</label>
+                    <label class="pay-item"><input type="checkbox" class="pay-cb" id="payAirtel"> Airtel Money</label>
+                    <label class="pay-item"><input type="checkbox" class="pay-cb" id="payFNB"> FNB</label>
                 </div>
             </div>
 
         </div>
+
         <div class="modal-footer">
-            <button class="btn btn-success" onclick="printInvoice()">
+            <button class="btn btn-success" onclick="printDoc()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                Print Invoice
+                Print
             </button>
             <button class="btn btn-ghost" onclick="closeInvoice()">Close</button>
         </div>
