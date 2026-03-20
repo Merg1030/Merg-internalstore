@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Terminal</title>
     <style>
+        /* ── SAME DESIGN SYSTEM AS WAREHOUSE ── */
         :root {
-            --primary:#4361ee;--accent:#4cc9f0;--danger:#f72585;
-            --warning:#f8961e;--success:#2ecc71;--discount:#9c27b0;
-            --bg:#f4f6fb;--surface:#ffffff;--bg-lighter:#f1f3f5;
-            --border:#dee2e6;--text:#212529;--text-fade:#6c757d;
-            --radius:10px;--radius-lg:16px;
+            --primary:#4361ee; --accent:#4cc9f0; --danger:#f72585;
+            --warning:#f8961e; --success:#2ecc71; --discount:#9c27b0;
+            --bg:#f4f6fb; --surface:#ffffff; --bg-lighter:#f1f3f5;
+            --border:#dee2e6; --text:#212529; --text-fade:#6c757d;
+            --radius:10px; --radius-lg:16px;
             --shadow:0 2px 12px rgba(67,97,238,0.08);
             --shadow-lg:0 8px 32px rgba(67,97,238,0.13);
         }
@@ -18,14 +19,16 @@
         html,body{height:100%;background:var(--bg);color:var(--text);}
         body{min-height:100vh;display:flex;}
         .page-wrap{width:100vw;min-height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-        /* TOPBAR */
+
+        /* ── TOPBAR ── */
         .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;min-height:64px;box-shadow:var(--shadow);flex-shrink:0;}
         .topbar-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
         .topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
         .page-title{font-size:1.05rem;font-weight:700;color:var(--primary);white-space:nowrap;}
         .total-pill{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid #c7d2fe;color:var(--primary);font-size:.82rem;font-weight:600;padding:5px 14px;border-radius:100px;white-space:nowrap;}
         .total-pill span{font-weight:800;}
-        /* BUTTONS */
+
+        /* ── BUTTONS ── */
         .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border:none;border-radius:var(--radius);cursor:pointer;font-size:.84rem;font-weight:600;transition:all .18s;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.08);text-decoration:none;}
         .btn svg{width:15px;height:15px;flex-shrink:0;}
         .btn-primary{background:linear-gradient(135deg,var(--primary),#3a56d4);color:white;}
@@ -40,76 +43,80 @@
         .btn-danger:hover{opacity:.9;transform:translateY(-1px);}
         .btn-discount{background:linear-gradient(135deg,var(--discount),#7b1fa2);color:white;}
         .btn-discount:hover{opacity:.9;transform:translateY(-1px);}
+        .btn-teal{background:linear-gradient(135deg,#00b4d8,#0096c7);color:white;}
+        .btn-teal:hover{opacity:.9;transform:translateY(-1px);}
         .btn:disabled{opacity:.6;cursor:not-allowed;transform:none!important;}
-        /* LAYOUT */
+        .btn-sm{padding:5px 10px;font-size:.76rem;}
+
+        /* ── LAYOUT ── */
         .main-content{flex:1;overflow:hidden;display:flex;}
         .left-panel{width:400px;min-width:300px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
         .left-inner{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
-        .right-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:16px;gap:12px;}
-        /* CARDS */
+        .right-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:16px;gap:10px;}
+
+        /* ── CARDS ── */
         .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;}
         .card-hdr{padding:11px 16px;border-bottom:1px solid var(--border);background:var(--bg-lighter);display:flex;align-items:center;justify-content:space-between;}
         .card-hdr h3{font-size:.88rem;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:7px;}
         .card-body{padding:14px 16px;}
-        /* FIELDS */
+
+        /* ── FORM FIELDS ── */
         .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;}
         .fg:last-child{margin-bottom:0;}
         .fg label{font-size:.72rem;font-weight:700;color:var(--text-fade);text-transform:uppercase;letter-spacing:.07em;}
         .fg input,.fg select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:.9rem;color:var(--text);background:var(--bg);transition:border-color .2s,box-shadow .2s;}
         .fg input:focus,.fg select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(67,97,238,.1);background:white;}
-        .frow{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
         select option:disabled{color:var(--danger);}
-        /* DATE BAR */
-        .date-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-        .date-bar label{font-size:.72rem;font-weight:700;color:var(--text-fade);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;}
-        .date-bar input[type=date]{padding:7px 11px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:.88rem;color:var(--text);background:var(--bg);cursor:pointer;transition:border-color .2s;}
-        .date-bar input[type=date]:focus{outline:none;border-color:var(--primary);}
-        /* DATE CHIPS */
-        .chips-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
-        .chips-label{font-size:.72rem;font-weight:700;color:var(--text-fade);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;}
-        .chip{padding:4px 12px;border-radius:100px;font-size:.74rem;font-weight:600;border:1.5px solid var(--border);background:var(--bg-lighter);color:var(--text-fade);cursor:pointer;transition:all .15s;white-space:nowrap;}
-        .chip:hover{border-color:var(--primary);color:var(--primary);background:#eef2ff;}
-        .chip.active{background:var(--primary);color:white;border-color:var(--primary);box-shadow:0 2px 8px rgba(67,97,238,.2);}
-        /* CART TABLE */
+
+        /* ── DATE ROW (just the calendar input + button) ── */
+        .date-row{display:flex;align-items:center;gap:10px;}
+        .date-row input[type=date]{padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:.88rem;color:var(--text);background:var(--surface);cursor:pointer;transition:border-color .2s;box-shadow:var(--shadow);}
+        .date-row input[type=date]:focus{outline:none;border-color:var(--primary);}
+        .date-label{font-size:.82rem;font-weight:600;color:var(--text-fade);}
+
+        /* ── CART TABLE ── */
         .cart-wrap{overflow-x:auto;}
-        .ct{width:100%;border-collapse:collapse;font-size:.82rem;min-width:320px;}
-        .ct th{background:var(--bg-lighter);color:var(--text-fade);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;}
+        .ct{width:100%;border-collapse:collapse;font-size:.82rem;min-width:300px;}
+        .ct th{background:var(--bg-lighter);color:var(--text-fade);font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;}
         .ct td{padding:8px 10px;border-bottom:1px solid #f0f2f8;vertical-align:middle;}
         .ct tr:last-child td{border-bottom:none;}
         .ct tr:hover td{background:#f8f9ff;}
-        .cart-foot{padding:10px 16px;background:var(--bg-lighter);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+        .cart-foot{padding:10px 16px;background:var(--bg-lighter);border-top:1px solid var(--border);}
         .cart-total{font-size:.92rem;font-weight:700;color:var(--primary);}
         .cart-total.disc{color:var(--discount);}
-        .orig{text-decoration:line-through;color:var(--text-fade);font-size:.75rem;margin-right:3px;}
-        .dbadge{background:var(--discount);color:white;padding:1px 6px;border-radius:4px;font-size:.66rem;font-weight:700;margin-left:4px;}
+        .orig{text-decoration:line-through;color:var(--text-fade);font-size:.74rem;margin-right:3px;}
+        .dbadge{background:var(--discount);color:white;padding:1px 6px;border-radius:4px;font-size:.65rem;font-weight:700;margin-left:4px;}
         .cart-acts{display:flex;gap:8px;padding:10px 16px;border-top:1px solid var(--border);}
         .cart-acts .btn{flex:1;justify-content:center;}
         .rm-btn{background:none;border:1px solid var(--danger);color:var(--danger);padding:2px 7px;border-radius:5px;cursor:pointer;font-size:.72rem;font-weight:600;transition:all .15s;box-shadow:none;min-width:unset;width:auto;margin:0;}
         .rm-btn:hover{background:var(--danger);color:white;}
-        /* SALES TABLE */
+
+        /* ── SALES TABLE ── */
         .tcard{flex:1;display:flex;flex-direction:column;overflow:hidden;}
         .tscroll{flex:1;overflow-y:auto;}
-        table.st{width:100%;border-collapse:collapse;min-width:540px;}
-        table.st thead th{background:#f8f9ff;color:var(--text-fade);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:11px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;text-align:left;}
+        table.st{width:100%;border-collapse:collapse;min-width:600px;}
+        table.st thead th{background:#f8f9ff;color:var(--text-fade);font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:11px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;text-align:left;}
         table.st tbody td{padding:9px 12px;font-size:.86rem;border-bottom:1px solid #f0f2f8;transition:background .12s;}
         table.st tbody tr:last-child td{border-bottom:none;}
         table.st tbody tr:hover td{background:#f8f9ff;}
+        .codechip{font-family:monospace;font-size:.74rem;background:#eef2ff;color:var(--primary);border:1px solid #c7d2fe;border-radius:5px;padding:1px 7px;}
         input[type=checkbox]{width:15px;height:15px;accent-color:var(--primary);cursor:pointer;border:0;padding:0;margin:0;background:transparent;}
         .empty-row td{text-align:center;padding:40px 20px;color:var(--text-fade);font-size:.9rem;}
-        /* REVERSE BAR */
+
+        /* ── REVERSE BAR ── */
         .rev-bar{display:none;align-items:center;gap:10px;padding:9px 14px;background:#fff5f8;border:1px solid #f7b8d0;border-radius:var(--radius);}
         .rev-bar.show{display:flex;}
         .rev-bar span{font-size:.82rem;color:var(--danger);font-weight:600;flex:1;}
-        /* DISCOUNT PANEL */
+
+        /* ── DISCOUNT PANEL ── */
         .disc-panel{background:linear-gradient(135deg,#f9f0ff,#f3e5f5);border:1.5px solid #ce93d8;border-radius:var(--radius);padding:14px;display:none;flex-direction:column;gap:9px;}
         .disc-panel.show{display:flex;}
         .disc-panel label{font-size:.72rem;font-weight:700;color:var(--discount);text-transform:uppercase;letter-spacing:.07em;}
         .disc-row{display:flex;gap:8px;align-items:center;}
         .disc-row input{flex:1;padding:9px 12px;border:1.5px solid #ce93d8;border-radius:var(--radius);font-size:.9rem;background:white;}
         .disc-row input:focus{outline:none;border-color:var(--discount);}
-        /* CODE CHIP */
-        .codechip{font-family:monospace;font-size:.75rem;background:#eef2ff;color:var(--primary);border:1px solid #c7d2fe;border-radius:5px;padding:1px 7px;}
-        /* TOAST */
+
+        /* ── TOAST ── */
         .toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
         .toast{background:#1e2029;color:white;padding:11px 17px;border-radius:var(--radius);font-size:.85rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.3);animation:tIn .25s ease;display:flex;align-items:center;gap:9px;max-width:300px;}
         .toast.success{border-left:3px solid var(--success);}
@@ -117,103 +124,188 @@
         .toast.fade-out{animation:tOut .3s ease forwards;}
         @keyframes tIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         @keyframes tOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(12px)}}
-        /* SPINNER */
+
+        /* ── SPINNER ── */
         .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0;}
         @keyframes sp{to{transform:rotate(360deg)}}
-        /* RESPONSIVE */
-        @media(max-width:900px){.main-content{flex-direction:column;overflow-y:auto;}.left-panel{width:100%;min-width:unset;border-right:none;border-bottom:1px solid var(--border);max-height:none;}.right-panel{min-height:400px;}}
-        @media(max-width:600px){.topbar{padding:10px 12px;}.frow{grid-template-columns:1fr;}.cart-acts{flex-direction:column;}}
+
+        /* ─────────────────────────────────────────
+           INVOICE MODAL (screen view)
+        ───────────────────────────────────────── */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+        .modal-overlay.open{display:flex;}
+        .modal-box{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:min(620px,96vw);max-height:92vh;overflow-y:auto;display:flex;flex-direction:column;animation:mIn .22s ease;}
+        @keyframes mIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+        .modal-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+        .modal-hdr h3{font-size:1rem;font-weight:700;color:var(--primary);}
+        .modal-close{background:var(--bg-lighter);border:1px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:var(--text-fade);transition:all .15s;}
+        .modal-close:hover{background:var(--danger);color:white;border-color:var(--danger);}
+        .modal-body{padding:20px;}
+        .modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0;}
+        .modal-footer .btn{flex:1;justify-content:center;}
+
+        /* ── PAYMENT METHOD CHECKBOXES ── */
+        .pay-methods{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0;}
+        .pay-item{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.88rem;font-weight:600;color:var(--text);}
+        .pay-item input[type=checkbox]{width:17px;height:17px;}
+
+        /* ─────────────────────────────────────────
+           PRINTABLE INVOICE  (only shown when printing)
+        ───────────────────────────────────────── */
+        #printArea{display:none;}
+
+        @media print {
+            /* Hide everything except the invoice */
+            body > *:not(#printArea){ display:none !important; }
+            .modal-overlay{ display:none !important; }
+            #printArea{
+                display:block !important;
+                font-family:'Segoe UI',Arial,sans-serif;
+                font-size:11pt;
+                color:#000;
+                padding:0;
+                margin:0;
+                width:100%;
+            }
+
+            /* A4-ish invoice layout */
+            .inv-paper{
+                width:100%;
+                max-width:210mm;
+                margin:0 auto;
+                padding:18mm 16mm 14mm;
+                background:white;
+            }
+
+            /* Header */
+            .inv-header{
+                display:flex;
+                justify-content:space-between;
+                align-items:flex-start;
+                border-bottom:2.5px solid #000;
+                padding-bottom:10px;
+                margin-bottom:14px;
+            }
+            .inv-brand h1{font-size:22pt;font-weight:900;letter-spacing:-.5px;color:#000;margin-bottom:2px;}
+            .inv-brand p{font-size:9.5pt;color:#444;margin:1px 0;}
+
+            .inv-meta{text-align:right;}
+            .inv-meta .inv-label{font-size:8pt;text-transform:uppercase;letter-spacing:.08em;color:#666;}
+            .inv-meta .inv-value{font-size:11pt;font-weight:700;color:#000;}
+            .inv-meta .inv-number{font-size:16pt;font-weight:900;color:#000;}
+
+            /* PAID stamp */
+            .paid-stamp{
+                display:inline-block;
+                border:3px solid #2ecc71;
+                color:#2ecc71;
+                font-size:18pt;
+                font-weight:900;
+                letter-spacing:.15em;
+                padding:4px 14px;
+                border-radius:4px;
+                transform:rotate(-8deg);
+                margin-top:6px;
+                text-transform:uppercase;
+            }
+
+            /* Items table */
+            .inv-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:10pt;}
+            .inv-table th{background:#f1f3f5;border-bottom:2px solid #000;padding:7px 8px;text-align:left;font-size:8.5pt;text-transform:uppercase;letter-spacing:.07em;}
+            .inv-table td{padding:7px 8px;border-bottom:1px solid #ddd;}
+            .inv-table tr:last-child td{border-bottom:2px solid #000;}
+
+            /* Totals block */
+            .inv-totals{margin-left:auto;width:220px;margin-top:4px;}
+            .inv-totals table{width:100%;border-collapse:collapse;font-size:10pt;}
+            .inv-totals td{padding:5px 6px;}
+            .inv-totals tr:last-child{font-weight:900;font-size:12pt;border-top:2px solid #000;}
+
+            /* Payment method */
+            .inv-payment{margin-top:18px;padding-top:10px;border-top:1px solid #bbb;}
+            .inv-payment h4{font-size:8.5pt;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;color:#555;}
+            .inv-pay-opts{display:flex;gap:24px;}
+            .inv-pay-opt{display:flex;align-items:center;gap:7px;font-size:10pt;font-weight:600;}
+            .inv-pay-box{width:14px;height:14px;border:2px solid #000;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+            .inv-pay-box.checked::after{content:'✓';font-size:9pt;font-weight:900;line-height:1;}
+
+            /* Footer */
+            .inv-footer{margin-top:22px;text-align:center;font-size:8.5pt;color:#666;border-top:1px solid #ddd;padding-top:8px;}
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:900px){
+            .main-content{flex-direction:column;overflow-y:auto;}
+            .left-panel{width:100%;min-width:unset;border-right:none;border-bottom:1px solid var(--border);}
+            .right-panel{min-height:400px;}
+        }
+        @media(max-width:600px){
+            .topbar{padding:10px 12px;}
+            .cart-acts{flex-direction:column;}
+            .date-row{flex-wrap:wrap;}
+        }
     </style>
 
     <script type="module">
         import{initializeApp}from"https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import{getFirestore,collection,addDoc,deleteDoc,doc,query,where,onSnapshot,serverTimestamp,getDocs,increment,runTransaction}from"https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+        import{getFirestore,collection,doc,query,where,onSnapshot,serverTimestamp,getDocs,increment,runTransaction,deleteDoc}
+            from"https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-        const firebaseConfig={apiKey:"AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",authDomain:"trismartstores.firebaseapp.com",projectId:"trismartstores",storageBucket:"trismartstores.appspot.com",messagingSenderId:"416692703333",appId:"1:416692703333:web:d4b60292621435c748f68c",measurementId:"G-NJPQ7L3QWJ"};
+        const firebaseConfig={
+            apiKey:"AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+            authDomain:"trismartstores.firebaseapp.com",
+            projectId:"trismartstores",
+            storageBucket:"trismartstores.appspot.com",
+            messagingSenderId:"416692703333",
+            appId:"1:416692703333:web:d4b60292621435c748f68c",
+            measurementId:"G-NJPQ7L3QWJ"
+        };
         const app=initializeApp(firebaseConfig);
         const db=getFirestore(app);
 
         const branchId=localStorage.getItem('branchId');
         if(!branchId){alert('Branch not set.');window.location.href='dashboard.html';}
 
+        /* ── STATE ── */
         let inventory=[],sales=[],cart=[],cartDiscount=0;
         let currentDate=todayStr(),isProcessing=false;
-        let unsubSales=null,unsubInv=null,knownDates=[];
+        let unsubSales=null,unsubInv=null;
+        let invoiceCounter=1; // incremented each session; in production store in Firestore
 
         function todayStr(){return new Date().toISOString().split('T')[0];}
 
-        /* TOAST */
+        /* ── TOAST ── */
         function toast(msg,type='success'){
             const w=document.getElementById('toastWrap'),el=document.createElement('div');
             el.className=`toast ${type}`;
-            el.innerHTML=`<span>${type==='success'?'✓':type==='error'?'✕':'ℹ'}</span> ${msg}`;
+            el.innerHTML=`<span>${type==='error'?'✕':'✓'}</span> ${msg}`;
             w.appendChild(el);
             setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),350);},3200);
         }
 
-        /* INIT */
+        /* ── INIT ── */
         window.onload=async function(){
             const names={master:'Master Warehouse',makeni:'Kabanana Branch',kabana:'Makeni Branch'};
             document.getElementById('pageTitle').textContent='Sales Terminal — '+(names[branchId]||branchId);
             document.getElementById('dateInput').value=currentDate;
             setupInventoryListener();
-            await loadKnownDates();
             setupSalesListener(currentDate);
             loadCartFromStorage();
+
+            // Load invoice counter from localStorage (simple per-branch counter)
+            invoiceCounter=parseInt(localStorage.getItem(`inv_ctr_${branchId}`)||'1');
         };
 
-        /* KNOWN DATES — fetch all distinct dates with sales for this branch */
-        async function loadKnownDates(){
-            try{
-                const snap=await getDocs(query(collection(db,'sales'),where('branchId','==',branchId)));
-                const s=new Set([todayStr()]);
-                snap.docs.forEach(d=>{if(d.data().date)s.add(d.data().date);});
-                knownDates=Array.from(s).sort((a,b)=>b.localeCompare(a));
-            }catch(e){knownDates=[todayStr()];}
-            renderChips();
-        }
-
-        function renderChips(){
-            const c=document.getElementById('chips');
-            c.innerHTML='';
-            knownDates.slice(0,12).forEach(date=>{
-                const b=document.createElement('button');
-                b.className='chip'+(date===currentDate?' active':'');
-                b.textContent=fmtDate(date);b.dataset.date=date;
-                b.onclick=()=>selectDate(date);
-                c.appendChild(b);
-            });
-        }
-
-        function fmtDate(d){
-            const today=todayStr();
-            const yest=new Date();yest.setDate(yest.getDate()-1);
-            if(d===today)return'Today';
-            if(d===yest.toISOString().split('T')[0])return'Yesterday';
-            return new Date(d+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
-        }
-
-        function selectDate(date){
-            currentDate=date;
-            document.getElementById('dateInput').value=date;
-            renderChips();
-            setupSalesListener(date);
-        }
-
-        window.filterByDate=function(){
-            const v=document.getElementById('dateInput').value;
-            if(!v){toast('Pick a date.','error');return;}
-            if(!knownDates.includes(v)){knownDates.unshift(v);knownDates.sort((a,b)=>b.localeCompare(a));}
-            selectDate(v);
-        };
-
-        /* INVENTORY */
+        /* ── INVENTORY ── */
         function setupInventoryListener(){
             if(unsubInv)unsubInv();
-            unsubInv=onSnapshot(query(collection(db,'inventory'),where('branchId','==',branchId)),snap=>{
-                inventory=snap.docs.map(d=>({id:d.id,...d.data(),stock:Number(d.data().stock)||0,price:Number(d.data().price)||0,sold:Number(d.data().sold)||0}));
-                populateSel();
-            });
+            unsubInv=onSnapshot(
+                query(collection(db,'inventory'),where('branchId','==',branchId)),
+                snap=>{
+                    inventory=snap.docs.map(d=>({id:d.id,...d.data(),stock:Number(d.data().stock)||0,price:Number(d.data().price)||0,sold:Number(d.data().sold)||0}));
+                    populateSel();
+                }
+            );
         }
 
         function populateSel(){
@@ -229,14 +321,23 @@
             sel.value=cur;
         }
 
-        /* SALES LISTENER */
+        /* ── DATE CHANGE ── */
+        window.applyDateFilter=function(){
+            const v=document.getElementById('dateInput').value;
+            if(!v){toast('Pick a date.','error');return;}
+            currentDate=v;
+            setupSalesListener(v);
+        };
+
+        /* ── SALES LISTENER ── */
         function setupSalesListener(date){
             if(unsubSales)unsubSales();
             unsubSales=onSnapshot(
                 query(collection(db,'sales'),where('branchId','==',branchId),where('date','==',date)),
                 snap=>{
                     sales=snap.docs.map(d=>({id:d.id,...d.data()}));
-                    renderSales();updateTotal();
+                    renderSales();
+                    updateTotalPill();
                 },
                 err=>{console.error(err);toast('Error loading sales.','error');}
             );
@@ -245,7 +346,10 @@
         function renderSales(){
             const tb=document.querySelector('#salesTbl tbody');
             tb.innerHTML='';
-            if(!sales.length){tb.innerHTML='<tr class="empty-row"><td colspan="8">No sales recorded for this date.</td></tr>';updateRevBar();return;}
+            if(!sales.length){
+                tb.innerHTML='<tr class="empty-row"><td colspan="9">No sales recorded for this date.</td></tr>';
+                updateRevBar();return;
+            }
             sales.forEach(s=>{
                 const disc=s.discount||0;
                 const total=s.total!=null?s.total:(s.price*s.quantity)-disc;
@@ -258,26 +362,37 @@
                     <td>ZMW ${Number(s.price).toFixed(2)}</td>
                     <td>${s.quantity}</td>
                     <td>${disc>0?`<span style="color:var(--discount);font-weight:600;">ZMW ${disc.toFixed(2)}</span>`:'<span style="color:var(--text-fade)">—</span>'}</td>
-                    <td><strong>ZMW ${Number(total).toFixed(2)}</strong></td>`;
+                    <td><strong>ZMW ${Number(total).toFixed(2)}</strong></td>
+                    <td>
+                        <button class="btn btn-teal btn-sm" onclick="openInvoice('${s.id}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="13" height="13"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h5l5 5v11a2 2 0 01-2 2z"/></svg>
+                            Invoice
+                        </button>
+                    </td>`;
                 tb.appendChild(tr);
             });
             updateRevBar();
         }
 
-        function updateTotal(){
+        function updateTotalPill(){
             const t=sales.reduce((s,r)=>{const v=r.total!=null?r.total:(r.price*r.quantity)-(r.discount||0);return s+v;},0);
-            document.getElementById('totalPill').innerHTML=`Sales (${fmtDate(currentDate)}): <span>ZMW ${t.toFixed(2)}</span>`;
+            document.getElementById('totalPill').innerHTML=`Sales (${formatDateDisplay(currentDate)}): <span>ZMW ${t.toFixed(2)}</span>`;
         }
 
-        /* REVERSE BAR */
+        function formatDateDisplay(d){
+            const today=todayStr();
+            if(d===today)return'Today';
+            return new Date(d+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+        }
+
+        /* ── REVERSE BAR ── */
         window.updateRevBar=function(){
             const n=document.querySelectorAll('#salesTbl tbody input[type=checkbox]:checked').length;
-            const bar=document.getElementById('revBar');
-            bar.classList.toggle('show',n>0);
+            document.getElementById('revBar').classList.toggle('show',n>0);
             if(n>0)document.getElementById('revLabel').textContent=`${n} sale${n>1?'s':''} selected`;
         };
 
-        /* FORM TOGGLE */
+        /* ── FORM TOGGLES ── */
         window.toggleForm=function(){
             const f=document.getElementById('addCard');
             const show=f.style.display==='none'||f.style.display==='';
@@ -285,17 +400,13 @@
             document.getElementById('togBtn').textContent=show?'Hide Form':'+ Add Item to Cart';
             if(show){document.getElementById('discPanel').classList.remove('show');setTimeout(()=>document.getElementById('prodSel').focus(),80);}
         };
-
         window.toggleDisc=function(){
             const p=document.getElementById('discPanel');
             p.classList.toggle('show');
-            if(p.classList.contains('show')){
-                document.getElementById('addCard').style.display='none';
-                document.getElementById('togBtn').textContent='+ Add Item to Cart';
-            }
+            if(p.classList.contains('show')){document.getElementById('addCard').style.display='none';document.getElementById('togBtn').textContent='+ Add Item to Cart';}
         };
 
-        /* ADD TO CART */
+        /* ── ADD TO CART ── */
         window.addToCart=function(){
             const code=document.getElementById('prodSel').value;
             const qty=parseInt(document.getElementById('qtyInp').value);
@@ -304,20 +415,16 @@
             const prod=inventory.find(i=>i.code===code);
             if(!prod){toast('Product not found.','error');return;}
             if(prod.stock<qty){toast(`Only ${prod.stock} units available.`,'error');return;}
-
             const idx=cart.findIndex(i=>i.code===code);
             if(idx>-1){
                 const nq=cart[idx].quantity+qty;
                 if(nq>prod.stock){toast(`Cannot exceed stock (${prod.stock}).`,'error');return;}
-                cart[idx].quantity=nq;cart[idx].subtotal=nq*prod.price;
-                cart[idx].discount=0;cart[idx].total=cart[idx].subtotal;
+                cart[idx].quantity=nq;cart[idx].subtotal=nq*prod.price;cart[idx].discount=0;cart[idx].total=cart[idx].subtotal;
             }else{
                 cart.push({code:prod.code,name:prod.name,price:prod.price,quantity:qty,subtotal:qty*prod.price,discount:0,total:qty*prod.price,stock:prod.stock});
             }
             cartDiscount=0;document.getElementById('discInp').value='0';
-            toast(`${prod.name} added.`);
-            renderCart();saveCart();
-            document.getElementById('qtyInp').value=1;
+            toast(`${prod.name} added.`);renderCart();saveCart();document.getElementById('qtyInp').value=1;
         };
 
         window.removeFromCart=function(i){
@@ -329,28 +436,26 @@
         window.clearCart=function(){
             if(!cart.length)return;
             if(!confirm('Clear cart?'))return;
-            cart=[];cartDiscount=0;document.getElementById('discInp').value='0';
-            renderCart();saveCart();
+            cart=[];cartDiscount=0;document.getElementById('discInp').value='0';renderCart();saveCart();
         };
 
-        /* DISCOUNT */
+        /* ── DISCOUNT ── */
         window.applyDiscount=function(){
             const amt=parseFloat(document.getElementById('discInp').value);
             if(isNaN(amt)||amt<0){toast('Enter a valid amount.','error');return;}
             if(!cart.length){toast('Cart is empty.','error');return;}
             const sub=cart.reduce((s,i)=>s+i.subtotal,0);
-            if(amt>sub){toast(`Discount cannot exceed ZMW ${sub.toFixed(2)}.`,'error');return;}
+            if(amt>sub){toast(`Cannot exceed ZMW ${sub.toFixed(2)}.`,'error');return;}
             cartDiscount=amt;
             if(amt>0){
                 cart=cart.map(i=>({...i,discount:amt*(i.subtotal/sub),total:i.subtotal-(amt*(i.subtotal/sub))}));
                 const diff=sub-amt-cart.reduce((s,i)=>s+i.total,0);
                 if(Math.abs(diff)>0.001){const big=cart.reduce((mx,i)=>i.subtotal>mx.subtotal?i:mx,cart[0]);big.total+=diff;big.discount-=diff;}
             }else{cart=cart.map(i=>({...i,discount:0,total:i.subtotal}));}
-            toast(amt>0?`ZMW ${amt.toFixed(2)} discount applied.`:'Discount removed.');
-            renderCart();saveCart();
+            toast(amt>0?`Discount ZMW ${amt.toFixed(2)} applied.`:'Discount removed.');renderCart();saveCart();
         };
 
-        /* RENDER CART */
+        /* ── RENDER CART ── */
         function renderCart(){
             const card=document.getElementById('cartCard'),tb=document.getElementById('cartTb'),totEl=document.getElementById('cartTot');
             if(!cart.length){card.style.display='none';return;}
@@ -361,20 +466,19 @@
                 const hasD=item.discount>0;
                 const tr=document.createElement('tr');
                 tr.innerHTML=`
-                    <td><strong>${item.name}</strong><br><span style="font-size:.73rem;color:var(--text-fade)">${item.code}</span></td>
-                    <td>ZMW ${item.price.toFixed(2)}</td>
-                    <td>${item.quantity}</td>
+                    <td><strong>${item.name}</strong><br><span style="font-size:.72rem;color:var(--text-fade)">${item.code}</span></td>
+                    <td>ZMW ${item.price.toFixed(2)}</td><td>${item.quantity}</td>
                     <td>${hasD?`<span class="orig">ZMW ${item.subtotal.toFixed(2)}</span>`:''}<strong>ZMW ${item.total.toFixed(2)}</strong>${hasD?`<span class="dbadge">-${item.discount.toFixed(2)}</span>`:''}</td>
                     <td><button class="rm-btn" onclick="removeFromCart(${idx})">✕</button></td>`;
                 tb.appendChild(tr);
             });
             if(cartDiscount>0){
                 totEl.classList.add('disc');
-                totEl.innerHTML=`<span class="orig">Subtotal ZMW ${sub.toFixed(2)}</span> &nbsp;Total: <strong>ZMW ${grand.toFixed(2)}</strong><span class="dbadge">Disc -${cartDiscount.toFixed(2)}</span>`;
+                totEl.innerHTML=`<span class="orig">Subtotal ZMW ${sub.toFixed(2)}</span>&nbsp; Total: <strong>ZMW ${grand.toFixed(2)}</strong><span class="dbadge">Disc -${cartDiscount.toFixed(2)}</span>`;
             }else{totEl.classList.remove('disc');totEl.textContent=`Cart Total: ZMW ${grand.toFixed(2)}`;}
         }
 
-        /* PROCESS CART */
+        /* ── PROCESS CART ── */
         window.processCart=async function(){
             if(isProcessing)return;
             if(!cart.length){toast('Cart is empty.','error');return;}
@@ -391,15 +495,15 @@
                         tx.set(doc(collection(db,'sales')),{date:saleDate,code:item.code,name:item.name,price:item.price,quantity:item.quantity,discount:item.discount||0,subtotal:item.subtotal,total:item.total,branchId,timestamp:serverTimestamp()});
                     });
                 }
-                if(!knownDates.includes(saleDate)){knownDates.unshift(saleDate);knownDates.sort((a,b)=>b.localeCompare(a));}
-                if(currentDate!==saleDate)selectDate(saleDate);else renderChips();
                 cart=[];cartDiscount=0;document.getElementById('discInp').value='0';
-                renderCart();saveCart();toast('Sales processed successfully!');
+                renderCart();saveCart();
+                if(currentDate!==saleDate){currentDate=saleDate;document.getElementById('dateInput').value=saleDate;setupSalesListener(saleDate);}
+                toast('Sales processed successfully!');
             }catch(err){console.error(err);toast('Error: '+err.message,'error');}
             finally{btn.disabled=false;btn.innerHTML='✓ Process Sales';isProcessing=false;}
         };
 
-        /* REVERSE */
+        /* ── REVERSE ── */
         window.reverseSales=async function(){
             if(isProcessing)return;
             const boxes=Array.from(document.querySelectorAll('#salesTbl tbody input[type=checkbox]:checked'));
@@ -410,8 +514,7 @@
             btn.disabled=true;btn.innerHTML='<span class="spin"></span> Reversing…';
             try{
                 for(const box of boxes){
-                    const sale=sales.find(s=>s.id===box.dataset.id);
-                    if(!sale)continue;
+                    const sale=sales.find(s=>s.id===box.dataset.id);if(!sale)continue;
                     await runTransaction(db,async tx=>{
                         const snap=await getDocs(query(collection(db,'inventory'),where('branchId','==',branchId),where('code','==',sale.code)));
                         if(!snap.empty)tx.update(doc(db,'inventory',snap.docs[0].id),{stock:increment(sale.quantity),sold:increment(-sale.quantity)});
@@ -423,7 +526,141 @@
             finally{btn.disabled=false;btn.innerHTML='↩ Reverse Selected';isProcessing=false;}
         };
 
-        /* LOCAL STORAGE CART */
+        /* ─────────────────────────────────────────
+           INVOICE MODAL
+        ───────────────────────────────────────── */
+        let currentInvoiceSale=null;
+
+        window.openInvoice=function(saleId){
+            const sale=sales.find(s=>s.id===saleId);
+            if(!sale)return;
+            currentInvoiceSale=sale;
+
+            // Populate modal preview
+            const disc=sale.discount||0;
+            const total=sale.total!=null?sale.total:(sale.price*sale.quantity)-disc;
+            const sub=sale.subtotal!=null?sale.subtotal:sale.price*sale.quantity;
+
+            // Generate invoice number (padded, per-branch counter)
+            const invNum='INV-'+String(invoiceCounter).padStart(5,'0');
+
+            document.getElementById('invNum').textContent=invNum;
+            document.getElementById('invDate').textContent=new Date(sale.date+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+            document.getElementById('invProduct').textContent=sale.name;
+            document.getElementById('invCode').textContent=sale.code;
+            document.getElementById('invQty').textContent=sale.quantity;
+            document.getElementById('invUnitPrice').textContent=`ZMW ${Number(sale.price).toFixed(2)}`;
+            document.getElementById('invSubtotal').textContent=`ZMW ${Number(sub).toFixed(2)}`;
+            document.getElementById('invDiscount').textContent=disc>0?`ZMW ${disc.toFixed(2)}`:'—';
+            document.getElementById('invTotal').textContent=`ZMW ${Number(total).toFixed(2)}`;
+
+            // Uncheck all payment methods
+            document.querySelectorAll('.pay-cb').forEach(cb=>cb.checked=false);
+
+            document.getElementById('invoiceModal').classList.add('open');
+        };
+
+        window.closeInvoice=function(){
+            document.getElementById('invoiceModal').classList.remove('open');
+            currentInvoiceSale=null;
+        };
+
+        window.printInvoice=function(){
+            if(!currentInvoiceSale)return;
+            const sale=currentInvoiceSale;
+            const disc=sale.discount||0;
+            const total=sale.total!=null?sale.total:(sale.price*sale.quantity)-disc;
+            const sub=sale.subtotal!=null?sale.subtotal:sale.price*sale.quantity;
+            const invNum=document.getElementById('invNum').textContent;
+
+            // Payment methods chosen
+            const cash=document.getElementById('payCash').checked;
+            const airtel=document.getElementById('payAirtel').checked;
+            const fnb=document.getElementById('payFNB').checked;
+
+            const branchNames={master:'Master Warehouse',makeni:'Kabanana Branch',kabana:'Makeni Branch'};
+
+            // Build printable HTML
+            document.getElementById('printArea').innerHTML=`
+                <div class="inv-paper">
+                    <div class="inv-header">
+                        <div class="inv-brand">
+                            <h1>TRISMART</h1>
+                            <p>${branchNames[branchId]||branchId}</p>
+                            <p>📞 +260 771 287 206</p>
+                        </div>
+                        <div class="inv-meta">
+                            <div class="inv-label">Invoice No.</div>
+                            <div class="inv-number">${invNum}</div>
+                            <div style="margin-top:6px;">
+                                <div class="inv-label">Date</div>
+                                <div class="inv-value">${new Date(sale.date+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'})}</div>
+                            </div>
+                            <div class="paid-stamp">PAID</div>
+                        </div>
+                    </div>
+
+                    <table class="inv-table">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Code</th>
+                                <th style="text-align:center;">Qty</th>
+                                <th style="text-align:right;">Unit Price</th>
+                                <th style="text-align:right;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${sale.name}</td>
+                                <td><span style="font-family:monospace;">${sale.code}</span></td>
+                                <td style="text-align:center;">${sale.quantity}</td>
+                                <td style="text-align:right;">ZMW ${Number(sale.price).toFixed(2)}</td>
+                                <td style="text-align:right;">ZMW ${Number(sub).toFixed(2)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="inv-totals">
+                        <table>
+                            ${disc>0?`<tr><td>Subtotal</td><td style="text-align:right;">ZMW ${Number(sub).toFixed(2)}</td></tr>
+                            <tr><td>Discount</td><td style="text-align:right;color:#9c27b0;">- ZMW ${disc.toFixed(2)}</td></tr>`:''}
+                            <tr>
+                                <td><strong>TOTAL</strong></td>
+                                <td style="text-align:right;"><strong>ZMW ${Number(total).toFixed(2)}</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="inv-payment">
+                        <h4>Payment Method</h4>
+                        <div class="inv-pay-opts">
+                            <div class="inv-pay-opt">
+                                <div class="inv-pay-box ${cash?'checked':''}"></div> Cash Sale
+                            </div>
+                            <div class="inv-pay-opt">
+                                <div class="inv-pay-box ${airtel?'checked':''}"></div> Airtel Money
+                            </div>
+                            <div class="inv-pay-opt">
+                                <div class="inv-pay-box ${fnb?'checked':''}"></div> FNB
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="inv-footer">
+                        Thank you for shopping with Trismart! &nbsp;|&nbsp; +260 771 287 206
+                    </div>
+                </div>
+            `;
+
+            // Increment invoice counter
+            invoiceCounter++;
+            localStorage.setItem(`inv_ctr_${branchId}`,invoiceCounter);
+
+            window.print();
+        };
+
+        /* ── CART LOCAL STORAGE ── */
         function saveCart(){localStorage.setItem(`cart_${branchId}`,JSON.stringify({items:cart,discount:cartDiscount}));}
         function loadCartFromStorage(){
             try{
@@ -436,7 +673,12 @@
     </script>
 </head>
 <body>
+
+<!-- PRINTABLE INVOICE (hidden on screen, shown only on print) -->
+<div id="printArea"></div>
+
 <div class="page-wrap">
+
     <!-- TOPBAR -->
     <div class="topbar">
         <div class="topbar-left">
@@ -452,10 +694,11 @@
     </div>
 
     <div class="main-content">
-        <!-- LEFT PANEL -->
+
+        <!-- LEFT PANEL — CART -->
         <div class="left-panel">
             <div class="left-inner">
-                <!-- Action row -->
+
                 <div style="display:flex;gap:8px;">
                     <button class="btn btn-success" id="togBtn" onclick="toggleForm()" style="flex:2;">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -469,12 +712,12 @@
 
                 <!-- Discount panel -->
                 <div class="disc-panel" id="discPanel">
-                    <label>Apply Fixed Discount to Entire Cart</label>
+                    <label>Fixed Discount — Applied to Entire Cart</label>
                     <div class="disc-row">
                         <input type="number" id="discInp" min="0" step="0.01" value="0" placeholder="Amount (ZMW)">
                         <button class="btn btn-discount" onclick="applyDiscount()">Apply</button>
                     </div>
-                    <span style="font-size:.77rem;color:#7b1fa2;">Split proportionally across all items in cart.</span>
+                    <span style="font-size:.77rem;color:#7b1fa2;">Distributed proportionally across all items.</span>
                 </div>
 
                 <!-- Add item form -->
@@ -502,7 +745,7 @@
                     </div>
                 </div>
 
-                <!-- Cart card -->
+                <!-- Cart -->
                 <div class="card" id="cartCard" style="display:none;">
                     <div class="card-hdr">
                         <h3>
@@ -530,26 +773,17 @@
                         </button>
                     </div>
                 </div>
+
             </div>
         </div>
 
         <!-- RIGHT PANEL — SALES HISTORY -->
         <div class="right-panel">
 
-            <!-- Quick date chips -->
-            <div class="chips-row">
-                <span class="chips-label">History:</span>
-                <div style="display:flex;gap:5px;flex-wrap:wrap;" id="chips"></div>
-            </div>
-
-            <!-- Date picker -->
-            <div class="date-bar">
-                <label>Jump to date</label>
-                <input type="date" id="dateInput">
-                <button class="btn btn-primary" onclick="filterByDate()">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/></svg>
-                    Go
-                </button>
+            <!-- Clean date picker — just a calendar, no chips, no jump label -->
+            <div class="date-row">
+                <input type="date" id="dateInput" onchange="applyDateFilter()">
+                <span class="date-label" id="dateLabel"></span>
             </div>
 
             <!-- Reverse bar -->
@@ -568,12 +802,22 @@
                         <thead>
                             <tr>
                                 <th width="34px">
-                                    <input type="checkbox" title="Select all" onchange="document.querySelectorAll('#salesTbl tbody input[type=checkbox]').forEach(cb=>cb.checked=this.checked);updateRevBar();">
+                                    <input type="checkbox" title="Select all"
+                                        onchange="document.querySelectorAll('#salesTbl tbody input[type=checkbox]').forEach(cb=>cb.checked=this.checked);updateRevBar();">
                                 </th>
-                                <th>Date</th><th>Code</th><th>Product</th><th>Price</th><th>Qty</th><th>Discount</th><th>Total</th>
+                                <th>Date</th>
+                                <th>Code</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Discount</th>
+                                <th>Total</th>
+                                <th>Invoice</th>
                             </tr>
                         </thead>
-                        <tbody><tr class="empty-row"><td colspan="8">Loading…</td></tr></tbody>
+                        <tbody>
+                            <tr class="empty-row"><td colspan="9">Loading…</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -582,6 +826,101 @@
     </div>
 </div>
 
+<!-- TOASTS -->
 <div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ═══════════════════════════════════════
+     INVOICE MODAL
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="invoiceModal">
+    <div class="modal-box">
+        <div class="modal-hdr">
+            <h3>📄 Sale Invoice</h3>
+            <button class="modal-close" onclick="closeInvoice()">✕</button>
+        </div>
+        <div class="modal-body">
+
+            <!-- Invoice header preview -->
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--border);padding-bottom:14px;margin-bottom:14px;">
+                <div>
+                    <div style="font-size:1.5rem;font-weight:900;color:var(--text);letter-spacing:-.5px;">TRISMART</div>
+                    <div style="font-size:.82rem;color:var(--text-fade);margin-top:2px;">+260 771 287 206</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);">Invoice No.</div>
+                    <div style="font-size:1.1rem;font-weight:900;color:var(--primary);" id="invNum">INV-00001</div>
+                    <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);margin-top:4px;">Date</div>
+                    <div style="font-size:.88rem;font-weight:700;" id="invDate">—</div>
+                </div>
+            </div>
+
+            <!-- Sale details -->
+            <table style="width:100%;border-collapse:collapse;font-size:.88rem;margin-bottom:14px;">
+                <thead>
+                    <tr style="background:var(--bg-lighter);">
+                        <th style="padding:8px 10px;text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Product</th>
+                        <th style="padding:8px 10px;text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Code</th>
+                        <th style="padding:8px 10px;text-align:center;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Qty</th>
+                        <th style="padding:8px 10px;text-align:right;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Unit Price</th>
+                        <th style="padding:8px 10px;text-align:right;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);border-bottom:1px solid var(--border);">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding:10px;border-bottom:1px solid var(--border);" id="invProduct">—</td>
+                        <td style="padding:10px;border-bottom:1px solid var(--border);"><span class="codechip" id="invCode">—</span></td>
+                        <td style="padding:10px;text-align:center;border-bottom:1px solid var(--border);" id="invQty">—</td>
+                        <td style="padding:10px;text-align:right;border-bottom:1px solid var(--border);" id="invUnitPrice">—</td>
+                        <td style="padding:10px;text-align:right;border-bottom:1px solid var(--border);" id="invSubtotal">—</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Totals -->
+            <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+                <table style="width:200px;border-collapse:collapse;font-size:.88rem;">
+                    <tr>
+                        <td style="padding:5px 8px;color:var(--text-fade);">Discount</td>
+                        <td style="padding:5px 8px;text-align:right;color:var(--discount);font-weight:600;" id="invDiscount">—</td>
+                    </tr>
+                    <tr style="border-top:2px solid var(--border);">
+                        <td style="padding:8px;font-weight:700;font-size:.95rem;">TOTAL</td>
+                        <td style="padding:8px;text-align:right;font-weight:900;font-size:1rem;color:var(--primary);" id="invTotal">—</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- PAID stamp area -->
+            <div style="text-align:center;margin-bottom:16px;">
+                <span style="display:inline-block;border:3px solid var(--success);color:var(--success);font-size:1.2rem;font-weight:900;letter-spacing:.18em;padding:4px 18px;border-radius:5px;transform:rotate(-6deg);display:inline-block;">PAID</span>
+            </div>
+
+            <!-- Payment Method -->
+            <div style="border-top:1px solid var(--border);padding-top:14px;">
+                <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-fade);margin-bottom:10px;font-weight:700;">Payment Method</div>
+                <div class="pay-methods">
+                    <label class="pay-item">
+                        <input type="checkbox" class="pay-cb" id="payCash"> Cash Sale
+                    </label>
+                    <label class="pay-item">
+                        <input type="checkbox" class="pay-cb" id="payAirtel"> Airtel Money
+                    </label>
+                    <label class="pay-item">
+                        <input type="checkbox" class="pay-cb" id="payFNB"> FNB
+                    </label>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success" onclick="printInvoice()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                Print Invoice
+            </button>
+            <button class="btn btn-ghost" onclick="closeInvoice()">Close</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
