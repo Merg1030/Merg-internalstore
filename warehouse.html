@@ -286,6 +286,105 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-text { font-size: 0.88rem; color: var(--text-fade); font-weight: 500; }
 
+        /* ── TRANSFER DOC MODAL ── */
+        .tdoc-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,.5);
+            z-index: 900; display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(3px);
+        }
+        .tdoc-overlay.open { display: flex; }
+        .tdoc-box {
+            background: white; border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg); width: min(640px, 96vw);
+            max-height: 92vh; overflow-y: auto;
+            display: flex; flex-direction: column;
+            animation: tdocIn .22s ease;
+        }
+        @keyframes tdocIn { from { opacity:0; transform:scale(.96); } to { opacity:1; transform:scale(1); } }
+        .tdoc-hdr {
+            padding: 16px 20px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0; position: sticky; top: 0; background: white; z-index: 2;
+        }
+        .tdoc-hdr h3 { font-size: 1rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .tdoc-close {
+            background: var(--bg-lighter); border: 1px solid var(--border);
+            border-radius: 8px; width: 30px; height: 30px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .95rem; color: var(--text-fade); transition: all .15s;
+        }
+        .tdoc-close:hover { background: var(--danger); color: white; border-color: var(--danger); }
+        .tdoc-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+        .tdoc-footer {
+            padding: 14px 20px; border-top: 1px solid var(--border);
+            display: flex; gap: 10px; flex-shrink: 0;
+            position: sticky; bottom: 0; background: white; z-index: 2;
+        }
+        .tdoc-footer .btn { flex: 1; justify-content: center; }
+        .tdoc-section-label {
+            font-size: .7rem; font-weight: 700; color: var(--text-fade);
+            text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px;
+        }
+        .tdoc-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .tdoc-info-item { display: flex; flex-direction: column; gap: 2px; }
+        .tdoc-info-item .lbl { font-size: .68rem; color: var(--text-fade); font-weight: 600; text-transform: uppercase; }
+        .tdoc-info-item .val { font-size: .88rem; font-weight: 700; color: var(--text); }
+        .tdoc-arrow {
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--primary), #3a56d4);
+            color: white; border-radius: 8px; padding: 8px 14px; font-size: .82rem; font-weight: 700; gap: 8px;
+        }
+        .sig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .sig-box { border: 1.5px dashed var(--border); border-radius: var(--radius); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .sig-label { font-size: .72rem; font-weight: 700; color: var(--text-fade); text-transform: uppercase; }
+        .sig-line { border-bottom: 1.5px solid var(--text); height: 36px; margin-top: 4px; }
+        .sig-name-label { font-size: .7rem; color: var(--text-fade); margin-top: 4px; }
+
+        /* ── PRINT: TRANSFER DOCUMENT ── */
+        #transferPrintArea { display: none; }
+
+        @media print {
+            @page { margin: 14mm 12mm; size: A4 portrait; }
+            html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body > *:not(#transferPrintArea) { display: none !important; }
+            .tdoc-overlay { display: none !important; }
+            #transferPrintArea {
+                display: block !important;
+                font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+                font-size: 10.5pt; color: #000; background: white; width: 100%;
+            }
+            .pr-paper { width: 100%; background: white; }
+            .pr-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2.5px solid #000; padding-bottom: 10px; margin-bottom: 14px; }
+            .pr-brand { font-size: 22pt; font-weight: 900; letter-spacing: -.5px; color: #000; margin-bottom: 3px; }
+            .pr-brand-sub { font-size: 9pt; color: #444; line-height: 1.6; }
+            .pr-doc-type { font-size: 15pt; font-weight: 900; color: #000; text-align: right; margin-bottom: 3px; }
+            .pr-ref { font-size: 8pt; text-transform: uppercase; letter-spacing: .1em; color: #666; }
+            .pr-ref-val { font-size: 11pt; font-weight: 900; color: #000; }
+            .pr-date-val { font-size: 8.5pt; font-weight: 600; color: #333; margin-top: 2px; }
+            .pr-route { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; padding: 10px 14px; margin-bottom: 14px; font-size: 9.5pt; }
+            .pr-route-box { text-align: center; }
+            .pr-route-label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: .1em; color: #666; margin-bottom: 3px; }
+            .pr-route-name { font-weight: 700; font-size: 10.5pt; color: #000; }
+            .pr-route-arrow { font-size: 14pt; color: #4361ee; font-weight: 900; }
+            .pr-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9.5pt; }
+            .pr-table th { background: #f1f3f5; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 6px 8px; text-align: left; font-size: 8pt; text-transform: uppercase; letter-spacing: .07em; font-weight: 700; }
+            .pr-table td { padding: 6px 8px; border-bottom: 1px solid #ddd; }
+            .pr-table tbody tr:last-child td { border-bottom: 2px solid #000; }
+            .pr-notes { font-size: 8.5pt; color: #555; border: 1px solid #ddd; border-radius: 3px; padding: 8px 10px; margin-bottom: 18px; min-height: 40px; }
+            .pr-notes-label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: .1em; color: #666; margin-bottom: 4px; font-weight: 700; }
+            .pr-sig-section { margin-top: 20px; }
+            .pr-sig-title { font-size: 8pt; text-transform: uppercase; letter-spacing: .1em; color: #666; font-weight: 700; margin-bottom: 14px; border-top: 1px solid #ddd; padding-top: 10px; }
+            .pr-sig-row { display: flex; gap: 40px; }
+            .pr-sig-box { flex: 1; }
+            .pr-sig-role { font-size: 8pt; text-transform: uppercase; letter-spacing: .08em; color: #555; font-weight: 700; margin-bottom: 6px; }
+            .pr-sig-line { border-bottom: 1.5px solid #000; height: 44px; margin-bottom: 6px; }
+            .pr-sig-fields { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+            .pr-sig-field { display: flex; align-items: center; gap: 8px; font-size: 8.5pt; }
+            .pr-sig-field-label { color: #666; min-width: 60px; font-weight: 600; }
+            .pr-sig-field-line { flex: 1; border-bottom: 1px solid #999; height: 16px; }
+            .pr-footer { margin-top: 20px; text-align: center; font-size: 7.5pt; color: #888; border-top: 1px solid #ddd; padding-top: 7px; }
+        }
+
         @media (max-width: 700px) {
             .topbar { padding: 10px 12px; }
             .search-wrap input { width: 140px; }
@@ -764,6 +863,14 @@
 
                 toast(`✓ Transferred ${qty}× ${item.name} → ${getBranchName(destId)}`);
                 closePanelById('transferPanel');
+                // Show transfer document modal
+                openTransferDoc({
+                    code, name: item.name, qty, price: item.price,
+                    srcId, destId,
+                    date: new Date().toLocaleDateString('en-GB', {weekday:'long', day:'2-digit', month:'long', year:'numeric'}),
+                    time: new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+                    ref: 'TRF-' + Date.now().toString().slice(-6)
+                });
             } catch (err) {
                 console.error('Transfer error:', err);
                 toast('Transfer failed: ' + err.message, 'error');
@@ -855,6 +962,134 @@
                 await deleteDoc(doc(db, 'inventory', id));
                 toast('Product deleted.');
             } catch (err) { toast('Error: ' + err.message, 'error'); }
+        };
+
+        /* ─────────────────────────────────────
+           TRANSFER DOCUMENT
+        ───────────────────────────────────── */
+        function openTransferDoc(data) {
+            // Store for printing
+            window._transferDocData = data;
+
+            // Populate modal preview
+            document.getElementById('tdocRef').textContent   = data.ref;
+            document.getElementById('tdocDate').textContent  = data.date;
+            document.getElementById('tdocTime').textContent  = data.time;
+            document.getElementById('tdocFrom').textContent  = getBranchName(data.srcId);
+            document.getElementById('tdocTo').textContent    = getBranchName(data.destId);
+            document.getElementById('tdocCode').textContent  = data.code;
+            document.getElementById('tdocName').textContent  = data.name;
+            document.getElementById('tdocQty').textContent   = data.qty;
+            document.getElementById('tdocPrice').textContent = `ZMW ${Number(data.price).toFixed(2)}`;
+            document.getElementById('tdocTotal').textContent = `ZMW ${(data.qty * data.price).toFixed(2)}`;
+
+            document.getElementById('tdocOverlay').classList.add('open');
+        }
+
+        window.closeTransferDoc = function() {
+            document.getElementById('tdocOverlay').classList.remove('open');
+        };
+
+        window.printTransferDoc = function() {
+            const d = window._transferDocData;
+            if (!d) return;
+
+            const total = (d.qty * d.price).toFixed(2);
+
+            document.getElementById('transferPrintArea').innerHTML = `
+                <div class="pr-paper">
+                    <div class="pr-header">
+                        <div>
+                            <div class="pr-brand">TRISMART</div>
+                            <div class="pr-brand-sub">+260 771 287 206<br>Stock Transfer Document</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="pr-doc-type">TRANSFER NOTE</div>
+                            <div class="pr-ref">Reference No.</div>
+                            <div class="pr-ref-val">${d.ref}</div>
+                            <div class="pr-date-val">${d.date}</div>
+                            <div class="pr-date-val" style="font-size:7.5pt;color:#666">Time: ${d.time}</div>
+                        </div>
+                    </div>
+
+                    <div class="pr-route">
+                        <div class="pr-route-box">
+                            <div class="pr-route-label">Dispatched From</div>
+                            <div class="pr-route-name">${getBranchName(d.srcId)}</div>
+                        </div>
+                        <div class="pr-route-arrow">&#10132;</div>
+                        <div class="pr-route-box">
+                            <div class="pr-route-label">Received At</div>
+                            <div class="pr-route-name">${getBranchName(d.destId)}</div>
+                        </div>
+                    </div>
+
+                    <table class="pr-table">
+                        <thead>
+                            <tr>
+                                <th>Product Description</th>
+                                <th>Code</th>
+                                <th style="text-align:center">Qty</th>
+                                <th style="text-align:right">Unit Price</th>
+                                <th style="text-align:right">Total Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${d.name}</td>
+                                <td style="font-family:monospace">${d.code}</td>
+                                <td style="text-align:center;font-weight:700">${d.qty}</td>
+                                <td style="text-align:right">ZMW ${Number(d.price).toFixed(2)}</td>
+                                <td style="text-align:right;font-weight:700">ZMW ${total}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div>
+                        <div class="pr-notes-label">Notes / Remarks</div>
+                        <div class="pr-notes"></div>
+                    </div>
+
+                    <div class="pr-sig-section">
+                        <div class="pr-sig-title">Authorisation &amp; Acknowledgement</div>
+                        <div class="pr-sig-row">
+                            <div class="pr-sig-box">
+                                <div class="pr-sig-role">Sent By (Dispatcher)</div>
+                                <div class="pr-sig-line"></div>
+                                <div class="pr-sig-fields">
+                                    <div class="pr-sig-field">
+                                        <span class="pr-sig-field-label">Name:</span>
+                                        <span class="pr-sig-field-line"></span>
+                                    </div>
+                                    <div class="pr-sig-field">
+                                        <span class="pr-sig-field-label">Date:</span>
+                                        <span class="pr-sig-field-line"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pr-sig-box">
+                                <div class="pr-sig-role">Received By</div>
+                                <div class="pr-sig-line"></div>
+                                <div class="pr-sig-fields">
+                                    <div class="pr-sig-field">
+                                        <span class="pr-sig-field-label">Name:</span>
+                                        <span class="pr-sig-field-line"></span>
+                                    </div>
+                                    <div class="pr-sig-field">
+                                        <span class="pr-sig-field-label">Date:</span>
+                                        <span class="pr-sig-field-line"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pr-footer">
+                        Trismart | +260 771 287 206 &nbsp;·&nbsp; This document serves as an official record of stock transfer.
+                    </div>
+                </div>`;
+
+            window.print();
         };
 
         /* ─────────────────────────────────────
@@ -1067,6 +1302,115 @@
 
     <!-- TOAST CONTAINER -->
     <div class="toast-wrap" id="toastWrap"></div>
+
+    <!-- PRINT AREA for Transfer Doc -->
+    <div id="transferPrintArea"></div>
+
+    <!-- ── TRANSFER DOCUMENT MODAL ── -->
+    <div class="tdoc-overlay" id="tdocOverlay">
+        <div class="tdoc-box">
+            <div class="tdoc-hdr">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h5l5 5v11a2 2 0 01-2 2z"/>
+                    </svg>
+                    Transfer Document
+                </h3>
+                <button class="tdoc-close" onclick="closeTransferDoc()">✕</button>
+            </div>
+
+            <div class="tdoc-body">
+
+                <!-- Reference + Date -->
+                <div>
+                    <div class="tdoc-section-label">Transfer Details</div>
+                    <div class="tdoc-info-grid">
+                        <div class="tdoc-info-item">
+                            <span class="lbl">Reference No.</span>
+                            <span class="val" id="tdocRef">—</span>
+                        </div>
+                        <div class="tdoc-info-item">
+                            <span class="lbl">Date &amp; Time</span>
+                            <span class="val" style="font-size:.78rem;" id="tdocDate">—</span>
+                        </div>
+                    </div>
+                    <div style="font-size:.72rem;color:var(--text-fade);margin-top:2px;">Time: <span id="tdocTime">—</span></div>
+                </div>
+
+                <!-- Route arrow -->
+                <div class="tdoc-arrow">
+                    <div style="text-align:center;">
+                        <div style="font-size:.65rem;opacity:.8;text-transform:uppercase;letter-spacing:.08em;">From</div>
+                        <div id="tdocFrom">—</div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                    <div style="text-align:center;">
+                        <div style="font-size:.65rem;opacity:.8;text-transform:uppercase;letter-spacing:.08em;">To</div>
+                        <div id="tdocTo">—</div>
+                    </div>
+                </div>
+
+                <!-- Item table preview -->
+                <div>
+                    <div class="tdoc-section-label">Item Transferred</div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;border-collapse:collapse;font-size:.84rem;">
+                            <thead>
+                                <tr style="background:var(--bg-lighter);">
+                                    <th style="padding:7px 10px;text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);">Product</th>
+                                    <th style="padding:7px 10px;text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);">Code</th>
+                                    <th style="padding:7px 10px;text-align:center;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);">Qty</th>
+                                    <th style="padding:7px 10px;text-align:right;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);">Unit Price</th>
+                                    <th style="padding:7px 10px;text-align:right;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);">Total Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding:9px 10px;border-bottom:1px solid var(--border);" id="tdocName">—</td>
+                                    <td style="padding:9px 10px;border-bottom:1px solid var(--border);"><span class="code-chip" id="tdocCode">—</span></td>
+                                    <td style="padding:9px 10px;text-align:center;font-weight:700;border-bottom:1px solid var(--border);" id="tdocQty">—</td>
+                                    <td style="padding:9px 10px;text-align:right;border-bottom:1px solid var(--border);" id="tdocPrice">—</td>
+                                    <td style="padding:9px 10px;text-align:right;font-weight:700;border-bottom:1px solid var(--border);" id="tdocTotal">—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Signature preview -->
+                <div>
+                    <div class="tdoc-section-label">Signatures</div>
+                    <div class="sig-row">
+                        <div class="sig-box">
+                            <div class="sig-label">Sent By (Dispatcher)</div>
+                            <div class="sig-line"></div>
+                            <div class="sig-name-label">Name: ___________________</div>
+                            <div class="sig-name-label" style="margin-top:4px;">Date: ___________________</div>
+                        </div>
+                        <div class="sig-box">
+                            <div class="sig-label">Received By</div>
+                            <div class="sig-line"></div>
+                            <div class="sig-name-label">Name: ___________________</div>
+                            <div class="sig-name-label" style="margin-top:4px;">Date: ___________________</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="tdoc-footer">
+                <button class="btn btn-success" onclick="printTransferDoc()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    </svg>
+                    Download / Print PDF
+                </button>
+                <button class="btn btn-ghost" onclick="closeTransferDoc()">Close</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
