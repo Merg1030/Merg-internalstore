@@ -461,7 +461,8 @@
         /* ─────────────────────────────────────
            STATE
         ───────────────────────────────────── */
-        let inventory       = [];   // current branch's inventory
+        let inventory       = [];
+        let transferCart    = [];   // items staged for transfer   // current branch's inventory
         let sourceInventory = [];   // inventory of the chosen transfer-source branch
         let activeMenu      = null;
         let editUnlocked    = false;
@@ -727,13 +728,13 @@
         };
 
         /* ─────────────────────────────────────
-           TRANSFER PANEL
+           TRANSFER PANEL  (multi-item cart)
         ───────────────────────────────────── */
         window.openTransferPanel = function() {
-            document.getElementById('transferForm').reset();
-            document.getElementById('transferPreview').textContent = 'Enter a product code above to preview';
+            // Reset cart each time panel opens
+            transferCart = [];
 
-            // Build source dropdown — all branches, default = currently viewed
+            // Build source dropdown
             const sel = document.getElementById('transferSource');
             sel.innerHTML = '<option value="">— Select Source —</option>';
             Object.values(BRANCHES).forEach(b => {
@@ -743,10 +744,16 @@
                 sel.appendChild(o);
             });
 
-            // Load source inventory = current branch's inventory (already in memory)
+            // Reset form fields
+            document.getElementById('transferCode').value = '';
+            document.getElementById('transferQty').value  = 1;
+            document.getElementById('transferDest').value = '';
+            document.getElementById('transferPreview').textContent = 'Enter a product code above to preview';
+
             sourceInventory = [...inventory];
             rebuildDatalist('transferCodes', sourceInventory);
             buildDestOptions(branchId);
+            renderTransferCart();
 
             openPanel('transferPanel');
             setTimeout(() => document.getElementById('transferCode').focus(), 320);
@@ -762,14 +769,15 @@
             });
         }
 
-        // Admin picks a different source branch → fetch that branch's inventory live
+        // Source branch change → reload source inventory
         window.handleSourceChange = async function() {
             const srcId = document.getElementById('transferSource').value;
             if (!srcId) return;
-
-            document.getElementById('transferPreview').textContent = 'Loading source inventory…';
+            document.getElementById('transferPreview').textContent = 'Loading…';
             document.getElementById('transferCode').value = '';
-
+            // Clear cart when source changes
+            transferCart = [];
+            renderTransferCart();
             try {
                 if (srcId === branchId) {
                     sourceInventory = [...inventory];
@@ -791,89 +799,183 @@
             }
         };
 
-        // Live product preview as user types code
+        // Live preview as user types code
         document.getElementById('transferCode').addEventListener('input', function() {
             const code = this.value.toUpperCase();
             const item = sourceInventory.find(i => i.code === code);
             const prev = document.getElementById('transferPreview');
             if (item) {
-                prev.innerHTML = `<strong>${item.name}</strong> &mdash; Stock: <strong>${item.stock}</strong> &mdash; ZMW ${item.price.toFixed(2)}`;
+                prev.innerHTML = `<strong>${item.name}</strong> &mdash; Available: <strong>${item.stock}</strong> &mdash; ZMW ${item.price.toFixed(2)}`;
             } else {
                 prev.textContent = code ? 'Product not found in selected source' : 'Enter a product code above to preview';
             }
         });
 
+        // ADD ITEM TO TRANSFER CART
+        window.addToTransferCart = function() {
+            const code  = document.getElementById('transferCode').value.toUpperCase();
+            const qty   = parseInt(document.getElementById('transferQty').value);
+            const srcId = document.getElementById('transferSource').value;
+
+            if (!srcId)               { toast('Select a source branch first.', 'error'); return; }
+            if (!code)                { toast('Enter a product code.', 'error'); return; }
+            if (isNaN(qty) || qty < 1){ toast('Enter a valid quantity.', 'error'); return; }
+
+            const item = sourceInventory.find(i => i.code === code);
+            if (!item) { toast('Product not found in source.', 'error'); return; }
+
+            // Check total qty already staged + new qty doesn't exceed stock
+            const existing = transferCart.find(c => c.code === code);
+            const alreadyStaged = existing ? existing.qty : 0;
+            if (alreadyStaged + qty > item.stock) {
+                toast(`Not enough stock. Available: ${item.stock}, already staged: ${alreadyStaged}`, 'error'); return;
+            }
+
+            if (existing) {
+                existing.qty += qty;
+                existing.total = existing.qty * item.price;
+            } else {
+                transferCart.push({
+                    code:  item.code,
+                    name:  item.name,
+                    price: item.price,
+                    qty,
+                    total: qty * item.price,
+                    itemId: item.id
+                });
+            }
+
+            toast(`${item.name} added to transfer list.`);
+            renderTransferCart();
+
+            // Clear code + qty inputs, refocus code
+            document.getElementById('transferCode').value = '';
+            document.getElementById('transferQty').value  = 1;
+            document.getElementById('transferPreview').textContent = 'Enter a product code above to preview';
+            setTimeout(() => document.getElementById('transferCode').focus(), 80);
+        };
+
+        // REMOVE ITEM FROM CART
+        window.removeFromTransferCart = function(idx) {
+            transferCart.splice(idx, 1);
+            renderTransferCart();
+        };
+
+        // RENDER TRANSFER CART LIST
+        function renderTransferCart() {
+            const wrap = document.getElementById('transferCartWrap');
+            const tbody = document.getElementById('transferCartBody');
+            const totalEl = document.getElementById('transferCartTotal');
+            const confirmBtn = document.getElementById('confirmTransferBtn');
+
+            if (!transferCart.length) {
+                wrap.style.display = 'none';
+                confirmBtn.disabled = true;
+                return;
+            }
+
+            wrap.style.display = 'block';
+            confirmBtn.disabled = false;
+            tbody.innerHTML = '';
+            let grandTotal = 0;
+
+            transferCart.forEach((c, idx) => {
+                grandTotal += c.total;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding:7px 8px;border-bottom:1px solid var(--border);font-size:.82rem;">
+                        <strong>${c.name}</strong><br>
+                        <span style="font-family:monospace;font-size:.72rem;color:var(--text-fade);">${c.code}</span>
+                    </td>
+                    <td style="padding:7px 8px;border-bottom:1px solid var(--border);text-align:center;font-weight:700;font-size:.86rem;">${c.qty}</td>
+                    <td style="padding:7px 8px;border-bottom:1px solid var(--border);text-align:right;font-size:.82rem;">ZMW ${c.total.toFixed(2)}</td>
+                    <td style="padding:7px 8px;border-bottom:1px solid var(--border);">
+                        <button onclick="removeFromTransferCart(${idx})"
+                            style="background:none;border:1px solid var(--danger);color:var(--danger);padding:2px 6px;border-radius:5px;cursor:pointer;font-size:.7rem;font-weight:600;">✕</button>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+
+            totalEl.textContent = `Total Value: ZMW ${grandTotal.toFixed(2)} — ${transferCart.length} item${transferCart.length > 1 ? 's' : ''}`;
+        }
+
+        // CONFIRM AND PROCESS ALL TRANSFER ITEMS
         window.submitTransfer = async function(e) {
             e.preventDefault();
-            const code   = document.getElementById('transferCode').value.toUpperCase();
-            const qty    = parseInt(document.getElementById('transferQty').value);
             const destId = document.getElementById('transferDest').value;
             const srcId  = document.getElementById('transferSource').value;
 
-            if (!srcId)                          { toast('Please select a source branch.', 'error'); return; }
-            if (!code || isNaN(qty) || qty <= 0) { toast('Enter a valid product code and quantity.', 'error'); return; }
-            if (!destId)                         { toast('Please select a destination.', 'error'); return; }
-            if (srcId === destId)                { toast('Source and destination cannot be the same.', 'error'); return; }
+            if (!srcId)              { toast('Please select a source branch.', 'error'); return; }
+            if (!destId)             { toast('Please select a destination.', 'error'); return; }
+            if (srcId === destId)    { toast('Source and destination cannot be the same.', 'error'); return; }
+            if (!transferCart.length){ toast('Add at least one item to transfer.', 'error'); return; }
 
-            const item = sourceInventory.find(i => i.code === code);
-            if (!item)         { toast('Product not found in source inventory.', 'error'); return; }
-            if (item.stock < qty) { toast(`Not enough stock. Available: ${item.stock}`, 'error'); return; }
-
+            const itemList = transferCart.map(c => `${c.qty}× ${c.name}`).join(', ');
             if (!confirm(
-                `Transfer ${qty}× ${item.name}\n` +
-                `From: ${getBranchName(srcId)}\n` +
-                `To:   ${getBranchName(destId)}`
+                `Transfer ${transferCart.length} item(s):\n${itemList}\n\nFrom: ${getBranchName(srcId)}\nTo:   ${getBranchName(destId)}`
             )) return;
 
+            const btn = document.getElementById('confirmTransferBtn');
+            btn.disabled = true;
+            btn.textContent = 'Processing…';
+
             try {
-                await runTransaction(db, async tx => {
-                    // Re-read source stock inside transaction to guard against races
-                    const srcRef = doc(db, 'inventory', item.id);
-                    const srcDoc = await tx.get(srcRef);
-                    const liveStock = srcDoc.data().stock || 0;
-                    if (liveStock < qty) throw new Error(`Stock changed. Current: ${liveStock}`);
+                const transferredItems = [];
 
-                    // Deduct from source
-                    tx.update(srcRef, { stock: increment(-qty) });
+                for (const c of transferCart) {
+                    await runTransaction(db, async tx => {
+                        const srcRef = doc(db, 'inventory', c.itemId);
+                        const srcDoc = await tx.get(srcRef);
+                        const liveStock = srcDoc.data().stock || 0;
+                        if (liveStock < c.qty) throw new Error(`Stock changed for ${c.name}. Current: ${liveStock}`);
 
-                    // Find or create destination item
-                    const destSnap = await getDocs(
-                        query(collection(db, 'inventory'),
-                            where('branchId', '==', destId),
-                            where('code',     '==', code))
-                    );
-                    if (!destSnap.empty) {
-                        tx.update(doc(db, 'inventory', destSnap.docs[0].id), { stock: increment(qty) });
-                    } else {
-                        tx.set(doc(collection(db, 'inventory')), {
-                            code, name: item.name, price: item.price,
-                            stock: qty, sold: 0, branchId: destId
+                        tx.update(srcRef, { stock: increment(-c.qty) });
+
+                        const destSnap = await getDocs(
+                            query(collection(db, 'inventory'),
+                                where('branchId', '==', destId),
+                                where('code',     '==', c.code))
+                        );
+                        if (!destSnap.empty) {
+                            tx.update(doc(db, 'inventory', destSnap.docs[0].id), { stock: increment(c.qty) });
+                        } else {
+                            tx.set(doc(collection(db, 'inventory')), {
+                                code: c.code, name: c.name, price: c.price,
+                                stock: c.qty, sold: 0, branchId: destId
+                            });
+                        }
+
+                        tx.set(doc(collection(db, 'transfers')), {
+                            date: new Date().toISOString(),
+                            productCode: c.code, productName: c.name, quantity: c.qty,
+                            fromBranchId: srcId, fromBranchName: getBranchName(srcId),
+                            toBranchId:  destId, toBranchName:  getBranchName(destId),
+                            status: 'completed', timestamp: new Date()
                         });
-                    }
-
-                    // Log transfer
-                    tx.set(doc(collection(db, 'transfers')), {
-                        date: new Date().toISOString(),
-                        productCode: code, productName: item.name, quantity: qty,
-                        fromBranchId: srcId, fromBranchName: getBranchName(srcId),
-                        toBranchId:  destId, toBranchName:  getBranchName(destId),
-                        status: 'completed', timestamp: new Date()
                     });
-                });
+                    transferredItems.push({ ...c });
+                }
 
-                toast(`✓ Transferred ${qty}× ${item.name} → ${getBranchName(destId)}`);
+                toast(`✓ ${transferCart.length} item(s) transferred → ${getBranchName(destId)}`);
                 closePanelById('transferPanel');
-                // Show transfer document modal
+
+                // Show transfer document with ALL items
                 openTransferDoc({
-                    code, name: item.name, qty, price: item.price,
+                    items: transferredItems,
                     srcId, destId,
                     date: new Date().toLocaleDateString('en-GB', {weekday:'long', day:'2-digit', month:'long', year:'numeric'}),
                     time: new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
                     ref: 'TRF-' + Date.now().toString().slice(-6)
                 });
+
+                transferCart = [];
+
             } catch (err) {
                 console.error('Transfer error:', err);
                 toast('Transfer failed: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '✓ Confirm & Transfer All';
             }
         };
 
@@ -968,20 +1070,30 @@
            TRANSFER DOCUMENT
         ───────────────────────────────────── */
         function openTransferDoc(data) {
-            // Store for printing
             window._transferDocData = data;
 
-            // Populate modal preview
-            document.getElementById('tdocRef').textContent   = data.ref;
-            document.getElementById('tdocDate').textContent  = data.date;
-            document.getElementById('tdocTime').textContent  = data.time;
-            document.getElementById('tdocFrom').textContent  = getBranchName(data.srcId);
-            document.getElementById('tdocTo').textContent    = getBranchName(data.destId);
-            document.getElementById('tdocCode').textContent  = data.code;
-            document.getElementById('tdocName').textContent  = data.name;
-            document.getElementById('tdocQty').textContent   = data.qty;
-            document.getElementById('tdocPrice').textContent = `ZMW ${Number(data.price).toFixed(2)}`;
-            document.getElementById('tdocTotal').textContent = `ZMW ${(data.qty * data.price).toFixed(2)}`;
+            document.getElementById('tdocRef').textContent  = data.ref;
+            document.getElementById('tdocDate').textContent = data.date;
+            document.getElementById('tdocTime').textContent = data.time;
+            document.getElementById('tdocFrom').textContent = getBranchName(data.srcId);
+            document.getElementById('tdocTo').textContent   = getBranchName(data.destId);
+
+            // Build items table rows
+            const tbody = document.getElementById('tdocItemsTbody');
+            tbody.innerHTML = '';
+            let grandTotal = 0;
+            (data.items || [{ code: data.code, name: data.name, qty: data.qty, price: data.price, total: data.qty * data.price }]).forEach(item => {
+                grandTotal += item.total;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding:8px 10px;border-bottom:1px solid var(--border);font-size:.84rem;">${item.name}</td>
+                    <td style="padding:8px 10px;border-bottom:1px solid var(--border);"><span class="code-chip">${item.code}</span></td>
+                    <td style="padding:8px 10px;border-bottom:1px solid var(--border);text-align:center;font-weight:700;">${item.qty}</td>
+                    <td style="padding:8px 10px;border-bottom:1px solid var(--border);text-align:right;font-size:.82rem;">ZMW ${Number(item.price).toFixed(2)}</td>
+                    <td style="padding:8px 10px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;">ZMW ${Number(item.total).toFixed(2)}</td>`;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('tdocGrandTotal').textContent = `ZMW ${grandTotal.toFixed(2)}`;
 
             document.getElementById('tdocOverlay').classList.add('open');
         }
@@ -994,7 +1106,18 @@
             const d = window._transferDocData;
             if (!d) return;
 
-            const total = (d.qty * d.price).toFixed(2);
+            const items = d.items || [{ code: d.code, name: d.name, qty: d.qty, price: d.price, total: d.qty * d.price }];
+            let itemRows = '', grandTotal = 0;
+            items.forEach(item => {
+                grandTotal += item.total;
+                itemRows += `<tr>
+                    <td>${item.name}</td>
+                    <td style="font-family:monospace">${item.code}</td>
+                    <td style="text-align:center;font-weight:700">${item.qty}</td>
+                    <td style="text-align:right">ZMW ${Number(item.price).toFixed(2)}</td>
+                    <td style="text-align:right;font-weight:700">ZMW ${Number(item.total).toFixed(2)}</td>
+                </tr>`;
+            });
 
             document.getElementById('transferPrintArea').innerHTML = `
                 <div class="pr-paper">
@@ -1034,15 +1157,13 @@
                                 <th style="text-align:right">Total Value</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody>${itemRows}</tbody>
+                        <tfoot>
                             <tr>
-                                <td>${d.name}</td>
-                                <td style="font-family:monospace">${d.code}</td>
-                                <td style="text-align:center;font-weight:700">${d.qty}</td>
-                                <td style="text-align:right">ZMW ${Number(d.price).toFixed(2)}</td>
-                                <td style="text-align:right;font-weight:700">ZMW ${total}</td>
+                                <td colspan="4" style="text-align:right;font-weight:900;padding:5px 8px;">TOTAL</td>
+                                <td style="text-align:right;font-weight:900;padding:5px 8px;">ZMW ${grandTotal.toFixed(2)}</td>
                             </tr>
-                        </tbody>
+                        </tfoot>
                     </table>
 
                     <div>
@@ -1253,31 +1374,13 @@
         <form id="transferForm" onsubmit="submitTransfer(event)">
             <div class="panel-body">
 
-                <div class="field-group">
-                    <label>From (Source Branch) *</label>
-                    <select id="transferSource" onchange="handleSourceChange()">
-                        <option value="">— Select Source —</option>
-                    </select>
-                </div>
-
-                <div class="field-group">
-                    <label>Product Code *</label>
-                    <input type="text" id="transferCode" list="transferCodes"
-                           placeholder="Enter product code" required autocomplete="off">
-                    <datalist id="transferCodes"></datalist>
-                </div>
-
-                <div class="field-group">
-                    <label>Product Info</label>
-                    <div class="product-preview-box" id="transferPreview">
-                        Enter a product code above to preview
-                    </div>
-                </div>
-
+                <!-- Source & Destination — set once for all items -->
                 <div class="field-row">
                     <div class="field-group">
-                        <label>Quantity *</label>
-                        <input type="number" id="transferQty" min="1" placeholder="Units" required>
+                        <label>From (Source) *</label>
+                        <select id="transferSource" onchange="handleSourceChange()">
+                            <option value="">— Select Source —</option>
+                        </select>
                     </div>
                     <div class="field-group">
                         <label>To (Destination) *</label>
@@ -1287,13 +1390,67 @@
                     </div>
                 </div>
 
+                <!-- Divider -->
+                <div style="border-top:1px solid var(--border);padding-top:14px;">
+                    <p class="tip-text" style="margin-bottom:10px;">
+                        ➕ Add each item below then click <strong>+ Add to List</strong>. Repeat for all items, then confirm.
+                    </p>
+
+                    <div class="field-group">
+                        <label>Product Code</label>
+                        <input type="text" id="transferCode" list="transferCodes"
+                               placeholder="Enter product code" autocomplete="off">
+                        <datalist id="transferCodes"></datalist>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Product Info</label>
+                        <div class="product-preview-box" id="transferPreview">
+                            Enter a product code above to preview
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Quantity</label>
+                        <input type="number" id="transferQty" min="1" value="1" placeholder="Units">
+                    </div>
+
+                    <button type="button" class="btn btn-success" onclick="addToTransferCart()" style="width:100%;justify-content:center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        + Add to Transfer List
+                    </button>
+                </div>
+
+                <!-- Transfer cart — items staged to send -->
+                <div id="transferCartWrap" style="display:none;border-top:1px solid var(--border);padding-top:14px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                        <p style="font-size:.78rem;font-weight:700;color:var(--primary);">📦 Items to Transfer</p>
+                    </div>
+                    <div style="overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+                        <table style="width:100%;border-collapse:collapse;min-width:300px;">
+                            <thead>
+                                <tr style="background:var(--bg-lighter);">
+                                    <th style="padding:7px 9px;font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:left;">Product</th>
+                                    <th style="padding:7px 9px;font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:center;">Qty</th>
+                                    <th style="padding:7px 9px;font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:right;">Value</th>
+                                    <th style="padding:7px 9px;border-bottom:1px solid var(--border);"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="transferCartBody"></tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top:8px;font-size:.78rem;font-weight:700;color:var(--primary);text-align:right;" id="transferCartTotal"></div>
+                </div>
+
             </div>
             <div class="panel-footer">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="confirmTransferBtn" disabled>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="15" height="15">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
-                    Confirm Transfer
+                    ✓ Confirm &amp; Transfer All
                 </button>
                 <button type="button" class="btn btn-ghost" onclick="closePanelById('transferPanel')">Cancel</button>
             </div>
@@ -1352,10 +1509,10 @@
                     </div>
                 </div>
 
-                <!-- Item table preview -->
+                <!-- Items table preview — populated dynamically -->
                 <div>
-                    <div class="tdoc-section-label">Item Transferred</div>
-                    <div style="overflow-x:auto;">
+                    <div class="tdoc-section-label">Items Transferred</div>
+                    <div style="overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
                         <table style="width:100%;border-collapse:collapse;font-size:.84rem;">
                             <thead>
                                 <tr style="background:var(--bg-lighter);">
@@ -1366,17 +1523,10 @@
                                     <th style="padding:7px 10px;text-align:right;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);">Total Value</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="padding:9px 10px;border-bottom:1px solid var(--border);" id="tdocName">—</td>
-                                    <td style="padding:9px 10px;border-bottom:1px solid var(--border);"><span class="code-chip" id="tdocCode">—</span></td>
-                                    <td style="padding:9px 10px;text-align:center;font-weight:700;border-bottom:1px solid var(--border);" id="tdocQty">—</td>
-                                    <td style="padding:9px 10px;text-align:right;border-bottom:1px solid var(--border);" id="tdocPrice">—</td>
-                                    <td style="padding:9px 10px;text-align:right;font-weight:700;border-bottom:1px solid var(--border);" id="tdocTotal">—</td>
-                                </tr>
-                            </tbody>
+                            <tbody id="tdocItemsTbody"></tbody>
                         </table>
                     </div>
+                    <div style="text-align:right;margin-top:8px;font-size:.88rem;font-weight:700;color:var(--primary);" id="tdocGrandTotal"></div>
                 </div>
 
                 <!-- Signature preview -->
