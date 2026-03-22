@@ -3,491 +3,527 @@
 <head>
   <meta charset="UTF-8">
   <title>Trismart · Accounts</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --bg: #0a0a0f; --surface: #111118; --surface2: #16161f; --surface3: #1c1c28;
-      --border: #1e1e2a; --border2: #2a2a3a;
-      --accent: #6366f1; --accent2: #818cf8;
-      --text: #f0f0f8; --muted: #6b7280; --muted2: #4b5563;
-      --green: #10b981; --red: #ef4444; --amber: #fbbf24;
-      --radius: 12px; --shadow: 0 4px 24px rgba(0,0,0,0.4);
+      --bg:        #f4f6fb;
+      --bg2:       #ffffff;
+      --bg3:       #f1f3f5;
+      --border:    #e2e6ef;
+      --border2:   #cdd3e0;
+      --text:      #1a1e2e;
+      --text-fade: #6b7490;
+      --text-dim:  #a0a8c0;
+      --blue:      #4361ee;
+      --cyan:      #00b4d8;
+      --green:     #10b981;
+      --orange:    #f59e0b;
+      --pink:      #f72585;
+      --purple:    #7c3aed;
+      --danger:    #ef4444;
+      --blue-glow: rgba(67,97,238,0.15);
+      --radius:    12px;
+      --radius-lg: 18px;
+      --shadow:    0 2px 12px rgba(67,97,238,0.08);
+      --shadow-lg: 0 8px 32px rgba(67,97,238,0.13);
+      --header-h:  58px;
     }
-    * { scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
-    *::-webkit-scrollbar { width: 5px; height: 5px; }
-    *::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
-    html, body { height: 100%; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 40px 32px; }
-    @media (max-width: 600px) { body { padding: 24px 16px; } }
-    .app { max-width: 1200px; margin: 0 auto; }
 
-    /* TOPBAR */
-    .topbar { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 44px; padding-bottom: 24px; border-bottom: 1.5px solid var(--border); flex-wrap: wrap; gap: 20px; }
-    .brand-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-    .brand-title { font-family: 'Syne', sans-serif; font-size: 2.6rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; line-height: 1; }
-    .topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-    /* PILL */
-    .pill { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border2); border-radius: 40px; padding: 9px 18px; font-family: 'DM Sans', sans-serif; font-size: 0.84rem; font-weight: 700; color: var(--muted); cursor: pointer; text-decoration: none; transition: all 0.18s; box-shadow: var(--shadow); }
-    .pill:hover { background: var(--surface2); color: var(--text); border-color: var(--accent); }
-    .pill.dark { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .pill.dark:hover { background: var(--accent2); border-color: var(--accent2); }
-    .pill input[type="month"] { background: transparent; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.84rem; font-weight: 700; color: var(--text); outline: none; cursor: pointer; }
-    .pill input[type="month"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image:
+        linear-gradient(rgba(67,97,238,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(67,97,238,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
 
-    /* SECTION LABEL */
-    .sec-label { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
-    .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    /* ════════════════════════
+       TOPBAR
+    ════════════════════════ */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      height: var(--header-h);
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; gap: 12px;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .logo-mark {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 0.95rem;
+      box-shadow: 0 0 16px rgba(67,97,238,0.3);
+      flex-shrink: 0;
+    }
+    .logo-text { font-size: 1rem; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+    .logo-text span { color: var(--blue); }
 
-    /* MODULE CARDS */
-    .modules-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 40px; }
-    @media (max-width: 900px) { .modules-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 480px) { .modules-grid { grid-template-columns: 1fr; } }
-    .module-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 22px 50px; text-decoration: none; color: var(--text); display: flex; flex-direction: column; gap: 10px; transition: all 0.2s; box-shadow: var(--shadow); position: relative; }
-    .module-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); border-color: var(--accent); }
-    .mod-num { font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700; color: var(--muted2); letter-spacing: 0.1em; }
-    .module-card h3 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--text); }
-    .module-card p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
-    .mod-arrow { position: absolute; bottom: 18px; right: 18px; width: 28px; height: 28px; border: 1px solid var(--border2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--muted); transition: all 0.2s; }
-    .module-card:hover .mod-arrow { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .page-title-pill {
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 100px; padding: 4px 12px;
+      font-size: 0.7rem; font-weight: 700; color: var(--text-fade);
+      white-space: nowrap;
+    }
 
-    /* CHART PANEL */
-    .chart-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; box-shadow: var(--shadow); }
-    .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; }
-    .panel-head h2 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--text); }
-    .chart-toggles { display: flex; gap: 8px; flex-wrap: wrap; }
-    .ds-toggle { display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px; border-radius: 30px; border: 1px solid var(--border2); background: var(--surface2); font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--text); cursor: pointer; transition: all 0.18s; user-select: none; }
-    .ds-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; transition: background 0.18s; }
-    .ds-toggle.off { opacity: 0.5; color: var(--muted); }
-    .ds-toggle:hover { border-color: var(--accent); }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .month-pill {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--bg3); border: 1.5px solid var(--border2);
+      border-radius: 100px; padding: 6px 14px;
+      font-size: 0.78rem; font-weight: 700; color: var(--text-fade);
+      transition: border-color 0.18s;
+    }
+    .month-pill:focus-within { border-color: var(--blue); }
+    .month-pill i { font-size: 0.72rem; color: var(--blue); }
+    .month-pill input[type="month"] {
+      background: transparent; border: none; outline: none;
+      font-family: 'DM Sans', sans-serif; font-size: 0.78rem;
+      font-weight: 700; color: var(--text); cursor: pointer; width: 110px;
+    }
+    .month-pill input[type="month"]::-webkit-calendar-picker-indicator {
+      opacity: 0.5; cursor: pointer;
+    }
 
-    /* METRICS CARDS */
-    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
-    @media (max-width: 600px) { .metrics-grid { grid-template-columns: 1fr; } }
-    .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
-    .metric-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-    .metric-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--text); line-height: 1; }
-    .metric-sub { font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
-    .profit-positive { color: var(--green); }
-    .profit-negative { color: var(--red); }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 100px; padding: 6px 14px;
+      font-size: 0.78rem; font-weight: 700; color: var(--text-fade);
+      text-decoration: none; transition: all 0.18s; white-space: nowrap;
+    }
+    .back-btn:hover { border-color: var(--blue); color: var(--blue); background: white; }
 
-    /* TOAST */
-    .toast-wrap { position: fixed; bottom: 28px; right: 28px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-    .toast { background: var(--surface2); border: 1px solid var(--border2); color: var(--text); border-radius: 10px; padding: 12px 20px; font-size: 0.88rem; font-weight: 600; box-shadow: var(--shadow); animation: toastIn 0.22s ease; display: flex; align-items: center; gap: 10px; }
-    .toast i { font-size: 1rem; }
-    .toast.success { border-left: 4px solid var(--green); }
-    .toast.success i { color: var(--green); }
-    .toast.error { border-left: 4px solid var(--red); }
-    .toast.error i { color: var(--red); }
-    .toast.info { border-left: 4px solid var(--amber); }
-    .toast.info i { color: var(--amber); }
-    @keyframes toastIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .fadeUp { animation: fadeUp 0.35s ease both; }
+    /* ════════════════════════
+       MAIN CONTENT
+    ════════════════════════ */
+    .main { max-width: 860px; margin: 0 auto; padding: 24px 16px 40px; }
+
+    /* ── Section divider ── */
+    .section-divider {
+      display: flex; align-items: center; gap: 10px; margin: 0 0 16px;
+    }
+    .section-divider span {
+      font-size: 0.6rem; font-weight: 800; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: 0.14em; white-space: nowrap;
+    }
+    .section-divider::before, .section-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ════════════════════════
+       MODULE CARDS GRID
+    ════════════════════════ */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .module-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 18px 20px;
+      text-decoration: none; color: var(--text);
+      display: flex; flex-direction: column; gap: 12px;
+      transition: all 0.22s; box-shadow: var(--shadow);
+      position: relative; overflow: hidden;
+      animation: slideUp 0.5s ease backwards;
+    }
+    .module-card:nth-child(1) { animation-delay: 0.05s; }
+    .module-card:nth-child(2) { animation-delay: 0.12s; }
+    .module-card:nth-child(3) { animation-delay: 0.19s; }
+
+    .module-card::before {
+      content: ''; position: absolute; right: -20px; top: -20px;
+      width: 80px; height: 80px; border-radius: 50%;
+      filter: blur(24px); opacity: 0; transition: opacity 0.3s;
+    }
+    .card-blue::before   { background: var(--blue); }
+    .card-green::before  { background: var(--green); }
+    .card-purple::before { background: var(--purple); }
+
+    .module-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border2);
+      box-shadow: var(--shadow-lg);
+    }
+    .module-card:hover::before { opacity: 0.2; }
+    .card-blue:hover   { border-color: rgba(67,97,238,0.3);  box-shadow: 0 8px 28px rgba(67,97,238,0.14); }
+    .card-green:hover  { border-color: rgba(16,185,129,0.3); box-shadow: 0 8px 28px rgba(16,185,129,0.12); }
+    .card-purple:hover { border-color: rgba(124,58,237,0.3); box-shadow: 0 8px 28px rgba(124,58,237,0.12); }
+
+    .mod-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; color: white; flex-shrink: 0;
+    }
+    .card-blue   .mod-icon { background: linear-gradient(135deg, var(--blue), var(--cyan)); box-shadow: 0 4px 14px rgba(67,97,238,0.25); }
+    .card-green  .mod-icon { background: linear-gradient(135deg, var(--green), #059669); box-shadow: 0 4px 14px rgba(16,185,129,0.25); }
+    .card-purple .mod-icon { background: linear-gradient(135deg, var(--purple), #6d28d9); box-shadow: 0 4px 14px rgba(124,58,237,0.25); }
+
+    .mod-num {
+      font-size: 0.58rem; font-weight: 800; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: 0.14em;
+    }
+    .mod-body { flex: 1; }
+    .mod-body h3 { font-size: 0.95rem; font-weight: 800; color: var(--text); margin-bottom: 5px; letter-spacing: -0.2px; }
+    .mod-body p  { font-size: 0.72rem; color: var(--text-fade); line-height: 1.5; }
+
+    .mod-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 10px; border-top: 1px solid var(--border);
+    }
+    .mod-status {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.62rem; font-weight: 700; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 5px var(--green);
+      animation: pulse 2s infinite;
+    }
+    .mod-arrow {
+      width: 28px; height: 28px; border-radius: 8px;
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; color: var(--text-dim);
+      transition: all 0.2s;
+    }
+    .module-card:hover .mod-arrow {
+      background: var(--blue); border-color: var(--blue);
+      color: white; transform: translateX(2px);
+    }
+    .card-green:hover  .mod-arrow { background: var(--green);  border-color: var(--green); }
+    .card-purple:hover .mod-arrow { background: var(--purple); border-color: var(--purple); }
+
+    /* ════════════════════════
+       QUICK STATS ROW
+    ════════════════════════ */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-bottom: 28px;
+      animation: slideUp 0.5s 0.25s ease backwards;
+    }
+    .stat-chip {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 14px 12px;
+      box-shadow: var(--shadow); position: relative; overflow: hidden;
+    }
+    .stat-chip::before {
+      content: ''; position: absolute; right: -10px; top: -10px;
+      width: 50px; height: 50px; border-radius: 50%;
+      filter: blur(16px); opacity: 0.15;
+    }
+    .sc-sales::before   { background: var(--blue); }
+    .sc-profit::before  { background: var(--green); }
+    .sc-report::before  { background: var(--orange); }
+    .stat-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.2rem; font-weight: 700; line-height: 1;
+      margin-bottom: 5px;
+    }
+    .sc-sales  .stat-val { color: var(--blue); }
+    .sc-profit .stat-val { color: var(--green); }
+    .sc-report .stat-val { color: var(--orange); }
+    .stat-lbl {
+      font-size: 0.58rem; font-weight: 800; color: var(--text-fade);
+      text-transform: uppercase; letter-spacing: 0.09em;
+    }
+
+    /* ════════════════════════
+       RECENT SECTION
+    ════════════════════════ */
+    .panel {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.5s 0.3s ease backwards;
+    }
+    .panel-hdr {
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel-hdr-left { display: flex; align-items: center; gap: 8px; }
+    .hdr-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--blue); box-shadow: 0 0 7px rgba(67,97,238,0.5);
+      animation: pulse 2s infinite;
+    }
+    .panel-hdr h3 { font-size: 0.82rem; font-weight: 700; }
+    .panel-badge {
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 100px; padding: 2px 9px;
+      font-size: 0.63rem; font-weight: 700; color: var(--text-fade);
+    }
+
+    .module-list-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 18px; border-bottom: 1px solid var(--border);
+      text-decoration: none; color: var(--text);
+      transition: background 0.15s;
+    }
+    .module-list-item:last-child { border-bottom: none; }
+    .module-list-item:hover { background: var(--bg3); }
+
+    .list-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; flex-shrink: 0;
+    }
+    .li-blue   { background: rgba(67,97,238,0.1);  color: var(--blue); }
+    .li-green  { background: rgba(16,185,129,0.1); color: var(--green); }
+    .li-orange { background: rgba(245,158,11,0.1); color: var(--orange); }
+    .li-pink   { background: rgba(247,37,133,0.1); color: var(--pink); }
+
+    .list-body { flex: 1; min-width: 0; }
+    .list-title { font-size: 0.8rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .list-sub   { font-size: 0.65rem; color: var(--text-fade); }
+    .list-arrow { color: var(--text-dim); font-size: 0.72rem; flex-shrink: 0; transition: all 0.18s; }
+    .module-list-item:hover .list-arrow { color: var(--blue); transform: translateX(3px); }
+
+    /* ════════════════════════
+       ANIMATIONS
+    ════════════════════════ */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+    /* ════════════════════════
+       RESPONSIVE
+    ════════════════════════ */
+    @media (max-width: 640px) {
+      .topbar { padding: 0 14px; }
+      .page-title-pill { display: none; }
+      .main { padding: 16px 12px 32px; }
+      .modules-grid { grid-template-columns: 1fr; gap: 10px; }
+      .stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .stat-val { font-size: 0.95rem; }
+      .back-btn span { display: none; }
+    }
+    @media (max-width: 400px) {
+      .month-pill input[type="month"] { width: 90px; }
+    }
   </style>
 </head>
 <body>
-<div class="app">
 
-  <div class="topbar">
-    <div>
-      <div class="brand-eyebrow">Trismart Stores</div>
-      <div class="brand-title">Accounts</div>
+<!-- ═══════════ TOPBAR ═══════════ -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-mark"><i class="fas fa-store-alt"></i></div>
+    <div class="logo-text">Tri<span>smart</span></div>
+    <div class="page-title-pill"><i class="fas fa-chart-pie" style="margin-right:5px;color:var(--blue);font-size:0.65rem;"></i>Accounts</div>
+  </div>
+  <div class="topbar-right">
+    <div class="month-pill">
+      <i class="fas fa-calendar"></i>
+      <input type="month" id="globalMonth">
     </div>
-    <div class="topbar-right">
-      <div class="pill">
-        <i class="fas fa-calendar" style="font-size:0.75rem"></i>
-        <input type="month" id="globalMonth">
-      </div>
-      <a href="admin.html" class="pill"><i class="fas fa-arrow-left"></i> Admin</a>
+    <a href="admin.html" class="back-btn"><i class="fas fa-arrow-left"></i> <span>Back</span></a>
+  </div>
+</header>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
+
+  <!-- Quick stats -->
+  <div class="stats-row">
+    <div class="stat-chip sc-sales">
+      <div class="stat-val" id="statSales">K 0</div>
+      <div class="stat-lbl">Sales (Month)</div>
+    </div>
+    <div class="stat-chip sc-profit">
+      <div class="stat-val" id="statProfit">K 0</div>
+      <div class="stat-lbl">Profit (Month)</div>
+    </div>
+    <div class="stat-chip sc-report">
+      <div class="stat-val" id="statReports">0</div>
+      <div class="stat-lbl">Reports</div>
     </div>
   </div>
 
-  <div class="sec-label">Financial Modules</div>
+  <!-- Module cards -->
+  <div class="section-divider"><span>Financial Modules</span></div>
   <div class="modules-grid">
-    <a class="module-card fadeUp" href="total-sales.html" style="animation-delay:0s">
+
+    <a class="module-card card-blue" href="total-sales.html">
       <div class="mod-num">01</div>
-      <h3>Total Sales</h3>
-      <p>Revenue records and full sales ledger.</p>
-      <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
-    </a>
-    <a class="module-card fadeUp" href="expenses-tracker.html" style="animation-delay:0.07s">
-      <div class="mod-num">02</div>
-      <h3>Expenses</h3>
-      <p>Outgoings, debits and spending records.</p>
-      <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
-    </a>
-    <a class="module-card fadeUp" href="profit-tracker.html" style="animation-delay:0.14s">
-      <div class="mod-num">03</div>
-      <h3>Profit Tracker</h3>
-      <p>Net performance and monthly margins.</p>
-      <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
-    </a>
-    <a class="module-card fadeUp" href="cashflow-tracker.html" style="animation-delay:0.21s">
-      <div class="mod-num">04</div>
-      <h3>Cash Flow</h3>
-      <p>Cash movement and account balances.</p>
-      <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
-    </a>
-  </div>
-
-  <!-- Metrics Cards -->
-  <div class="metrics-grid fadeUp">
-    <div class="metric-card">
-      <div class="metric-label">Total Sales (YTD)</div>
-      <div class="metric-value" id="totalSalesYTD">K 0.00</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Total Expenses (YTD)</div>
-      <div class="metric-value" id="totalExpensesYTD">K 0.00</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Net Profit (YTD)</div>
-      <div class="metric-value" id="netProfitYTD">K 0.00</div>
-      <div class="metric-sub" id="profitMargin">Margin: 0%</div>
-    </div>
-  </div>
-
-  <!-- Chart -->
-  <div class="chart-panel fadeUp">
-    <div class="panel-head">
-      <h2>12-Month Overview</h2>
-      <div class="chart-toggles">
-        <button class="ds-toggle" id="tog0" onclick="toggleDS(0)">
-          <span class="ds-dot" style="background:#6366f1"></span> Sales
-        </button>
-        <button class="ds-toggle" id="tog1" onclick="toggleDS(1)">
-          <span class="ds-dot" style="background:#ef4444"></span> Expenses
-        </button>
-        <button class="ds-toggle" id="tog2" onclick="toggleDS(2)">
-          <span class="ds-dot" style="background:#10b981"></span> Profit
-        </button>
+      <div class="mod-icon"><i class="fas fa-chart-line"></i></div>
+      <div class="mod-body">
+        <h3>Total Sales</h3>
+        <p>Revenue records and full sales ledger for all branches.</p>
       </div>
+      <div class="mod-footer">
+        <div class="mod-status"><div class="status-dot"></div> Live</div>
+        <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
+      </div>
+    </a>
+
+    <a class="module-card card-green" href="profit-tracker.html">
+      <div class="mod-num">02</div>
+      <div class="mod-icon"><i class="fas fa-coins"></i></div>
+      <div class="mod-body">
+        <h3>Profit Tracker</h3>
+        <p>Net performance, monthly margins and profit breakdown.</p>
+      </div>
+      <div class="mod-footer">
+        <div class="mod-status"><div class="status-dot"></div> Live</div>
+        <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
+      </div>
+    </a>
+
+    <a class="module-card card-purple" href="cashflow-tracker.html">
+      <div class="mod-num">03</div>
+      <div class="mod-icon"><i class="fas fa-money-bill-transfer"></i></div>
+      <div class="mod-body">
+        <h3>Cash Flow</h3>
+        <p>Cash movement, account balances and flow analysis.</p>
+      </div>
+      <div class="mod-footer">
+        <div class="mod-status"><div class="status-dot"></div> Live</div>
+        <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- Quick links panel -->
+  <div class="section-divider"><span>Quick Access</span></div>
+  <div class="panel">
+    <div class="panel-hdr">
+      <div class="panel-hdr-left">
+        <div class="hdr-dot"></div>
+        <h3>All Pages</h3>
+      </div>
+      <div class="panel-badge" id="pageBadge">3 modules</div>
     </div>
-    <canvas id="overviewChart" height="130"></canvas>
+
+    <a class="module-list-item" href="total-sales.html">
+      <div class="list-icon li-blue"><i class="fas fa-chart-line"></i></div>
+      <div class="list-body">
+        <div class="list-title">Total Sales</div>
+        <div class="list-sub">Full revenue ledger and sales records</div>
+      </div>
+      <i class="fas fa-chevron-right list-arrow"></i>
+    </a>
+
+    <a class="module-list-item" href="profit-tracker.html">
+      <div class="list-icon li-green"><i class="fas fa-coins"></i></div>
+      <div class="list-body">
+        <div class="list-title">Profit Tracker</div>
+        <div class="list-sub">Monthly margins and net performance</div>
+      </div>
+      <i class="fas fa-chevron-right list-arrow"></i>
+    </a>
+
+    <a class="module-list-item" href="cashflow-tracker.html">
+      <div class="list-icon li-orange"><i class="fas fa-money-bill-transfer"></i></div>
+      <div class="list-body">
+        <div class="list-title">Cash Flow</div>
+        <div class="list-sub">Cash movement and account balances</div>
+      </div>
+      <i class="fas fa-chevron-right list-arrow"></i>
+    </a>
+
+    <a class="module-list-item" href="cashbook.html">
+      <div class="list-icon li-pink"><i class="fas fa-book-open"></i></div>
+      <div class="list-body">
+        <div class="list-title">Cash Ledger</div>
+        <div class="list-sub">Detailed cash book and transaction log</div>
+      </div>
+      <i class="fas fa-chevron-right list-arrow"></i>
+    </a>
+
   </div>
 
 </div>
 
-<!-- Toast -->
-<div class="toast-wrap" id="toastWrap"></div>
-
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
-  // ==================== FIREBASE INIT ====================
-  firebase.initializeApp({
-    apiKey: "AIzaSyB-lm7Y3r1F6Vv8PKvY8glLabZDbJsHM1k",
-    authDomain: "trismartstores.firebaseapp.com",
-    projectId: "trismartstores",
-    storageBucket: "trismartstores.firebasestorage.app",
-    messagingSenderId: "416692703333",
-    appId: "1:416692703333:web:d4b60292621435c748f68c"
-  });
-
+  /* ── Firebase ── */
+  if (!firebase.apps.length) {
+    firebase.initializeApp({
+      apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+      authDomain: "trismartstores.firebaseapp.com",
+      projectId: "trismartstores",
+      storageBucket: "trismartstores.appspot.com",
+      messagingSenderId: "416692703333",
+      appId: "1:416692703333:web:d4b60292621435c748f68c"
+    });
+  }
   const db = firebase.firestore();
-  
-  // Enable persistence
-  db.enablePersistence().catch(err => {
-    if (err.code == 'failed-precondition') {
-      console.log('Multiple tabs open - persistence disabled');
-    }
-  });
+  db.enablePersistence().catch(() => {});
 
-  // ==================== GLOBAL VARIABLES ====================
-  let salesTransactions = [];
-  let expensesTransactions = [];
-  let unsubscribeSales = null;
-  let unsubscribeExpenses = null;
-  let chart = null;
-  const dsVisible = [true, true, true];
-
-  // Month picker
+  /* ── Month picker ── */
   const monthInput = document.getElementById('globalMonth');
-  monthInput.value = localStorage.getItem('accounts_month_filter') || new Date().toISOString().substring(0, 7);
-  monthInput.addEventListener('change', () => { 
-    localStorage.setItem('accounts_month_filter', monthInput.value); 
-    updateMetrics();
-    buildChart();
+  monthInput.value = localStorage.getItem('accounts_month') || new Date().toISOString().substring(0, 7);
+  monthInput.addEventListener('change', () => {
+    localStorage.setItem('accounts_month', monthInput.value);
+    updateStats();
   });
 
-  // ==================== HELPER FUNCTIONS ====================
-  function toast(message, type = 'success') {
-    const wrap = document.getElementById('toastWrap');
-    const el = document.createElement('div');
-    el.className = `toast ${type}`;
-    
-    let icon = 'check-circle';
-    if (type === 'error') icon = 'times-circle';
-    if (type === 'info') icon = 'info-circle';
-    
-    el.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
-    wrap.appendChild(el);
-    
-    setTimeout(() => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateX(16px)';
-      setTimeout(() => el.remove(), 300);
-    }, 3500);
-  }
+  /* ── Data ── */
+  let salesData = [], reportsData = [];
 
-  function formatNumber(n) {
-    return Math.abs(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
+  /* ── Update quick stats ── */
+  function updateStats() {
+    const [year, month] = monthInput.value.split('-').map(Number);
+    let monthlySales = 0;
 
-  function formatWithK(n) {
-    return 'K ' + formatNumber(n);
-  }
-
-  // ==================== CALCULATE METRICS ====================
-  function updateMetrics() {
-    const selectedMonth = monthInput.value;
-    const [year, month] = selectedMonth.split('-').map(Number);
-    
-    // YTD calculations (Jan to selected month)
-    let ytdSales = 0;
-    let ytdExpenses = 0;
-    
-    salesTransactions.forEach(t => {
+    salesData.forEach(t => {
       if (!t.date) return;
-      const [txYear, txMonth] = t.date.split('-').map(Number);
-      
-      if (txYear === year && txMonth <= month) {
-        ytdSales += (t.amount || 0);
-      }
+      const [y, m] = t.date.split('-').map(Number);
+      if (y === year && m === month) monthlySales += (t.amount || 0);
     });
-    
-    expensesTransactions.forEach(t => {
-      if (!t.date) return;
-      const [txYear, txMonth] = t.date.split('-').map(Number);
-      
-      if (txYear === year && txMonth <= month) {
-        ytdExpenses += (t.amount || 0);
-      }
-    });
-    
-    const ytdProfit = ytdSales - ytdExpenses;
-    const profitMargin = ytdSales > 0 ? ((ytdProfit / ytdSales) * 100).toFixed(1) : 0;
-    
-    // Update DOM
-    document.getElementById('totalSalesYTD').textContent = formatWithK(ytdSales);
-    document.getElementById('totalExpensesYTD').textContent = formatWithK(ytdExpenses);
-    
-    const profitEl = document.getElementById('netProfitYTD');
-    profitEl.textContent = formatWithK(ytdProfit);
-    profitEl.className = ytdProfit >= 0 ? 'metric-value profit-positive' : 'metric-value profit-negative';
-    
-    document.getElementById('profitMargin').innerHTML = `Margin: ${profitMargin}%`;
+
+    const reportCount = reportsData.filter(r => {
+      if (!r.date) return false;
+      const [y, m] = r.date.split('-').map(Number);
+      return y === year && m === month;
+    }).length;
+
+    document.getElementById('statSales').textContent   = 'K ' + monthlySales.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+    document.getElementById('statProfit').textContent  = 'K ' + monthlySales.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+    document.getElementById('statReports').textContent = reportCount;
   }
 
-  // ==================== BUILD CHART ====================
-  function buildChart() {
-    const now = new Date();
-    const labels = [];
-    const salesData = [];
-    const expensesData = [];
-    const profitData = [];
-    
-    // Get last 12 months
-    for (let i = 11; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const key = d.toISOString().substring(0, 7);
-      labels.push(d.toLocaleString('default', { month: 'short', year: '2-digit' }));
-      
-      // Calculate monthly sales
-      const monthlySales = salesTransactions
-        .filter(t => t.date && t.date.substring(0, 7) === key)
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
-      
-      // Calculate monthly expenses
-      const monthlyExpenses = expensesTransactions
-        .filter(t => t.date && t.date.substring(0, 7) === key)
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
-      
-      salesData.push(monthlySales);
-      expensesData.push(monthlyExpenses);
-      profitData.push(monthlySales - monthlyExpenses);
-    }
+  /* ── Listeners ── */
+  db.collection('Sales transactions').onSnapshot(snap => {
+    salesData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateStats();
+  }, err => console.error('Sales err:', err));
 
-    const ctx = document.getElementById('overviewChart').getContext('2d');
-    
-    if (chart) {
-      chart.data.labels = labels;
-      chart.data.datasets[0].data = salesData;
-      chart.data.datasets[1].data = expensesData;
-      chart.data.datasets[2].data = profitData;
-      chart.update();
-      return;
-    }
-
-    chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          { 
-            label: 'Sales', 
-            data: salesData, 
-            backgroundColor: '#6366f1', 
-            borderRadius: 6, 
-            borderSkipped: false,
-            yAxisID: 'y'
-          },
-          { 
-            label: 'Expenses', 
-            data: expensesData, 
-            backgroundColor: '#ef4444', 
-            borderRadius: 6, 
-            borderSkipped: false,
-            yAxisID: 'y'
-          },
-          { 
-            label: 'Profit', 
-            data: profitData, 
-            type: 'line',
-            borderColor: '#10b981',
-            backgroundColor: 'transparent',
-            borderWidth: 3,
-            pointBackgroundColor: (ctx) => {
-              const value = ctx.dataset.data[ctx.dataIndex];
-              return value >= 0 ? '#10b981' : '#ef4444';
-            },
-            pointBorderColor: (ctx) => {
-              const value = ctx.dataset.data[ctx.dataIndex];
-              return value >= 0 ? '#10b981' : '#ef4444';
-            },
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            tension: 0.1,
-            yAxisID: 'y1'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        interaction: {
-          mode: 'index',
-          intersect: false,
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: { 
-            callbacks: { 
-              label: (context) => {
-                let label = context.dataset.label || '';
-                if (label) {
-                  label += ': ';
-                }
-                if (context.parsed.y !== null) {
-                  label += 'K ' + context.parsed.y.toLocaleString(undefined, { minimumFractionDigits: 2 });
-                }
-                return label;
-              }
-            } 
-          }
-        },
-        scales: {
-          x: { 
-            ticks: { color: '#6b7280', font: { family: 'DM Sans', size: 11 } }, 
-            grid: { display: false, color: '#1e1e2a' }, 
-            border: { display: false } 
-          },
-          y: { 
-            position: 'left',
-            ticks: { 
-              color: '#6b7280', 
-              font: { family: 'DM Sans', size: 11 }, 
-              callback: v => 'K' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v) 
-            }, 
-            grid: { color: '#1e1e2a' }, 
-            border: { display: false }
-          },
-          y1: {
-            position: 'right',
-            ticks: { 
-              color: '#6b7280', 
-              font: { family: 'DM Sans', size: 11 },
-              callback: v => 'K' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v)
-            },
-            grid: { display: false },
-            border: { display: false }
-          }
-        }
-      }
-    });
-  }
-
-  // ==================== TOGGLE DATASET ====================
-  window.toggleDS = function(idx) {
-    if (!chart) return;
-    dsVisible[idx] = !dsVisible[idx];
-    chart.data.datasets[idx].hidden = !dsVisible[idx];
-    chart.update();
-    document.getElementById('tog' + idx).classList.toggle('off', !dsVisible[idx]);
-  };
-
-  // ==================== SETUP FIREBASE LISTENERS ====================
-  function setupListeners() {
-    
-    // Listen to Sales transactions
-    unsubscribeSales = db.collection('Sales transactions')
-      .onSnapshot(snapshot => {
-        salesTransactions = [];
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          salesTransactions.push({
-            id: doc.id,
-            ...data
-          });
-        });
-        updateMetrics();
-        buildChart();
-      }, error => {
-        console.error('Sales listener error:', error);
-        toast('Error loading sales data: ' + error.message, 'error');
-      });
-
-    // Listen to Expenses transactions
-    unsubscribeExpenses = db.collection('Transactions')
-      .onSnapshot(snapshot => {
-        expensesTransactions = [];
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          expensesTransactions.push({
-            id: doc.id,
-            ...data
-          });
-        });
-        updateMetrics();
-        buildChart();
-      }, error => {
-        console.error('Expenses listener error:', error);
-        toast('Error loading expenses data: ' + error.message, 'error');
-      });
-  }
-
-  // ==================== INITIAL SETUP ====================
-  document.addEventListener('DOMContentLoaded', () => {
-    setupListeners();
-  });
-
-  // ==================== CLEANUP ====================
-  window.addEventListener('beforeunload', () => {
-    if (unsubscribeSales) {
-      unsubscribeSales();
-    }
-    if (unsubscribeExpenses) {
-      unsubscribeExpenses();
-    }
-    if (chart) {
-      chart.destroy();
-    }
-  });
+  db.collection('dailyCashReports').onSnapshot(snap => {
+    reportsData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateStats();
+  }, err => console.error('Reports err:', err));
 </script>
 </body>
 </html>
