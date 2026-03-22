@@ -106,9 +106,10 @@
       backdrop-filter: blur(20px);
       border-right: 1px solid var(--border);
       z-index: 1000;
-      padding: 14px 10px;
+      padding: 14px 10px 16px;
       transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
       overflow-y: auto;
+      display: flex; flex-direction: column;
     }
     .sidebar.hidden { transform: translateX(-100%); }
 
@@ -412,14 +413,44 @@
        RESPONSIVE
     ════════════════════════════ */
     @media (max-width: 600px) {
-      :root { --sidebar-w: 240px; }
+      :root { --sidebar-w: 240px; --header-h: 50px; }
       .sidebar { transform: translateX(-100%); }
       .sidebar.visible { transform: translateX(0) !important; }
       .main { margin-left: 0 !important; }
       .time-badge { display: none; }
-      .entry-form { grid-template-columns: 1fr; }
+      .branch-pill { font-size: 0.6rem; padding: 3px 9px; }
+
+      /* form goes single column */
+      .entry-form { grid-template-columns: 1fr; margin: 8px 10px; padding: 10px 10px 8px; gap: 6px 0; }
       .entry-form .full { grid-column: 1; }
       .entry-form .btn-row { grid-column: 1; }
+      .entry-form input, .entry-form textarea { padding: 6px 8px; font-size: 0.78rem; }
+      .entry-form label { font-size: 0.58rem; }
+      .entry-form textarea { min-height: 28px; }
+
+      /* controls bar tighter */
+      .controls-bar { padding: 7px 10px; gap: 6px; }
+      .ctrl-btn { padding: 5px 11px; font-size: 0.7rem; }
+      .dropdown-btn { padding: 5px 10px; font-size: 0.7rem; }
+      .search-wrap input { font-size: 0.72rem; padding: 5px 8px 5px 28px; }
+
+      /* table very compact */
+      .table-area { padding: 8px 10px 20px; }
+      thead th { padding: 7px 8px; font-size: 0.55rem; letter-spacing: 0.06em; }
+      tbody td { padding: 7px 8px; font-size: 0.72rem; }
+      .ref-chip { font-size: 0.6rem; padding: 1px 5px; }
+      .dr, .cr, .bl { font-size: 0.68rem; }
+      table { min-width: 300px; }
+
+      /* topbar */
+      .logo-text { font-size: 0.88rem; }
+      .logo-mark { width: 28px; height: 28px; font-size: 0.78rem; }
+      .menu-btn { width: 32px; height: 32px; font-size: 0.88rem; }
+    }
+    @media (max-width: 380px) {
+      /* very small phones — hide ref column text, shrink further */
+      thead th:nth-child(3), tbody td:nth-child(3) { display: none; }
+      table { min-width: 260px; }
     }
     @media (min-width: 601px) {
       .sidebar { transform: translateX(0); }
@@ -447,7 +478,7 @@
 <!-- ═══════════ SIDEBAR ═══════════ -->
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-label">Main</div>
-  <a href="cashbook.html" class="active"><i class="fas fa-book-open"></i> Accounts</a>
+ 
   <a href="Airtel.html"><i class="fas fa-mobile-alt"></i> Airtel Money</a>
   <a href="warehouse.html"><i class="fas fa-warehouse"></i> Warehouse</a>
   <a href="sale.html"><i class="fas fa-chart-line"></i> Sales</a>
@@ -455,6 +486,7 @@
   <a href="Todo.html"><i class="fas fa-tasks"></i> To-Do</a>
   <a href="lowstock.html"><i class="fas fa-exclamation-triangle"></i> Low Stock</a>
   <a href="Report.html"><i class="fas fa-file-alt"></i> Daily Report</a>
+  <a href="index.html" id="logoutLink" style="margin-top:auto;color:var(--danger);border:1px solid rgba(239,68,68,0.15);background:rgba(239,68,68,0.04);"><i class="fas fa-sign-out-alt" style="color:var(--danger);"></i> Logout</a>
 </nav>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -970,6 +1002,14 @@
 
   /* ── Close all on outside click ── */
   document.addEventListener('click', () => { closeMenu(); optMenu.classList.remove('show'); });
+
+  /* ── Logout ── */
+  document.getElementById('logoutLink').addEventListener('click', e => {
+    e.preventDefault();
+    localStorage.removeItem('userName');
+    localStorage.removeItem('branchId');
+    window.location.href = 'index.html';
+  });
 
   /* ── Init ── */
   fDate.value = new Date().toISOString().split('T')[0];
