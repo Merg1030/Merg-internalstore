@@ -1,197 +1,350 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Login | Trismart Stores</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
-            --primary: #4361ee;
-            --accent: #4cc9f0;
-            --bg: #141726;
-            --card-bg: #232447cc;
-            --border: #35377a;
-            --text: #e0e0e0;
-            --fade: #b0b0b0;
-            --radius: 18px;
-            --shadow: 0 8px 32px #0004;
+            --blue:   #4361ee;
+            --cyan:   #00b4d8;
+            --green:  #10b981;
+            --danger: #ef4444;
+            --bg:     #f4f6fb;
+            --bg2:    #ffffff;
+            --bg3:    #f1f3f5;
+            --border: #e2e6ef;
+            --text:   #1a1e2e;
+            --fade:   #6b7490;
+            --dim:    #a0a8c0;
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         html, body {
-            margin: 0; padding: 0;
-            background: var(--bg);
+            min-height: 100vh; width: 100%;
+            font-family: 'DM Sans', sans-serif;
             color: var(--text);
-            font-family: 'Poppins', Arial, sans-serif;
-            min-height: 100vh;
-            width: 100vw;
+            overflow-x: hidden;
         }
+
         body {
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: linear-gradient(115deg, #4361ee 0%, #4cc9f022 100%), var(--bg);
+            background: var(--bg);
+            /* subtle grid texture like the dark dashboard */
+            background-image:
+                linear-gradient(rgba(67,97,238,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(67,97,238,0.04) 1px, transparent 1px);
+            background-size: 36px 36px;
+            padding: 20px;
         }
-        .login-container {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            width: 340px;
-            padding: 36px 30px 26px 30px;
-            margin: 0 auto;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            border: 1.5px solid var(--border);
-            animation: fadeIn .7s cubic-bezier(.7,.15,.3,.85) backwards;
+
+        /* ── BIG BLUE BLOB ── */
+        body::before {
+            content: '';
+            position: fixed; top: -120px; right: -120px;
+            width: 420px; height: 420px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(67,97,238,0.12) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
         }
-        .login-container:before {
-            content: "";
-            position: absolute;
-            right: -40px; top: -45px;
-            width: 110px; height: 110px;
-            background: radial-gradient(circle at 55% 40%, #4cc9f055 0%, transparent 80%);
-            z-index: 0;
+        body::after {
+            content: '';
+            position: fixed; bottom: -100px; left: -80px;
+            width: 340px; height: 340px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,180,216,0.09) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
         }
-        .login-container h1 {
-            margin-bottom: 18px;
-            color: var(--primary);
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            z-index: 1;
-            position: relative;
+
+        /* ── CARD ── */
+        .card {
+            position: relative; z-index: 1;
+            background: var(--bg2);
+            border-radius: 24px;
+            box-shadow: 0 8px 40px rgba(67,97,238,0.12), 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid var(--border);
+            width: 100%; max-width: 380px;
+            padding: 36px 32px 28px;
+            animation: popUp 0.55s cubic-bezier(0.22,1,0.36,1) backwards;
         }
-        .login-container form {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            z-index: 1;
-            position: relative;
+
+        /* ── BRAND TOP ── */
+        .brand {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 10px;
+            margin-bottom: 28px;
         }
-        .login-container label {
-            text-align: left;
-            color: var(--fade);
-            font-size: 0.97em;
-            margin-bottom: 3px;
+        .logo-wrap {
+            width: 56px; height: 56px; border-radius: 16px;
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.5rem;
+            box-shadow: 0 6px 20px rgba(67,97,238,0.3);
         }
-        .login-container input {
-            padding: 10px 12px;
-            border: 1.5px solid var(--border);
-            border-radius: 7px;
-            background: #191c2b;
-            color: var(--text);
-            font-size: 1.02em;
-            transition: border .18s;
+        .brand-name {
+            font-size: 1.5rem; font-weight: 800; color: var(--text);
+            letter-spacing: -0.5px; line-height: 1;
         }
-        .login-container input:focus {
-            border: 1.5px solid var(--primary);
-            outline: none;
+        .brand-name span { color: var(--blue); }
+        .brand-sub {
+            font-size: 0.72rem; font-weight: 600; color: var(--dim);
+            text-transform: uppercase; letter-spacing: 0.14em;
         }
-        .login-container button {
+
+        /* ── DIVIDER ── */
+        .divider {
+            height: 1px; background: var(--border);
+            margin: 0 0 24px; border-radius: 1px;
+        }
+
+        /* ── FORM ── */
+        .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .field label {
+            font-size: 0.68rem; font-weight: 800; color: var(--fade);
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+
+        .input-wrap { position: relative; }
+        .input-wrap i {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            color: var(--dim); font-size: 0.88rem; pointer-events: none;
+        }
+        .input-wrap input {
+            width: 100%; padding: 11px 12px 11px 36px;
+            border: 1.5px solid var(--border); border-radius: 10px;
+            background: var(--bg3); color: var(--text);
+            font-size: 0.9rem; font-family: 'DM Sans', sans-serif;
+            outline: none; transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+        }
+        .input-wrap input:focus {
+            border-color: var(--blue); background: white;
+            box-shadow: 0 0 0 3px rgba(67,97,238,0.12);
+        }
+        .input-wrap input::placeholder { color: var(--dim); }
+
+        /* password toggle */
+        .pw-toggle {
+            position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+            color: var(--dim); cursor: pointer; font-size: 0.88rem; padding: 4px;
+            background: none; border: none; transition: color 0.15s;
+        }
+        .pw-toggle:hover { color: var(--blue); }
+
+        /* ── SUBMIT BTN ── */
+        .login-btn {
+            width: 100%; margin-top: 6px;
+            padding: 13px;
+            border: none; border-radius: 12px;
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            color: white; font-weight: 800; font-size: 0.95rem;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer; letter-spacing: 0.02em;
+            box-shadow: 0 4px 16px rgba(67,97,238,0.28);
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(67,97,238,0.35); }
+        .login-btn:active { transform: translateY(0); }
+        .login-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+        /* ── ERROR ── */
+        .error-box {
+            display: none; align-items: center; gap: 8px;
+            background: rgba(239,68,68,0.07);
+            border: 1px solid rgba(239,68,68,0.25);
+            border-radius: 10px; padding: 9px 12px;
             margin-top: 12px;
-            padding: 12px 0;
-            border: none;
-            border-radius: 8px;
-            background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.1em;
-            cursor: pointer;
-            box-shadow: 0 2px 8px #4361ee30;
-            letter-spacing: 0.5px;
-            transition: background 0.2s;
+            font-size: 0.78rem; font-weight: 700; color: var(--danger);
+            animation: shake 0.35s ease;
         }
-        .login-container button:hover {
-            background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
+        .error-box.show { display: flex; }
+        .error-box i { font-size: 0.88rem; flex-shrink: 0; }
+
+        /* ── FOOTER ── */
+        .card-foot {
+            margin-top: 22px; text-align: center;
+            font-size: 0.65rem; color: var(--dim); font-weight: 600;
+            letter-spacing: 0.06em;
         }
-        #error-message {
-          color: #ff5e5e;
-          margin-top: 10px;
-          font-weight: 600;
-          letter-spacing: .5px;
-          min-height: 22px;
+
+        /* ── ANIMATIONS ── */
+        @keyframes popUp {
+            from { opacity: 0; transform: translateY(24px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .trismart-logo {
-            margin: 0 auto 18px auto;
-            width: 54px;
-            height: 54px;
-            border-radius: 12px;
-            background: linear-gradient(120deg, #4361ee 30%, #4cc9f0 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 3px 8px #4361ee28;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%       { transform: translateX(-6px); }
+            40%       { transform: translateX(6px); }
+            60%       { transform: translateX(-4px); }
+            80%       { transform: translateX(4px); }
         }
-        .trismart-logo img {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            filter: drop-shadow(0 0 4px #4cc9f0aa);
-        }
-        @media (max-width: 500px) {
-            .login-container { width: 97vw; padding: 18px 6vw;}
-            .login-container h1 { font-size: 1.2rem;}
-        }
-        @keyframes fadeIn {
-            from { opacity:0; transform: translateY(35px) scale(0.97);}
-            to   { opacity:1; transform: none;}
+
+        @media (max-width: 420px) {
+            .card { padding: 28px 20px 22px; border-radius: 20px; }
+            .brand-name { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="trismart-logo">
-            <!-- Use your logo here if you want -->
-            <img src="https://cdn-icons-png.flaticon.com/512/3076/3076927.png" alt="Trismart Logo" />
+    <div class="card">
+
+        <!-- Brand -->
+        <div class="brand">
+            <div class="logo-wrap">
+                <i class="fas fa-store-alt"></i>
+            </div>
+            <div class="brand-name">Tri<span>smart</span></div>
+            <div class="brand-sub">Store Management System</div>
         </div>
-        <h1>Trismart Login</h1>
-        <form id="login-form" autocomplete="off">
-            <div>
+
+        <div class="divider"></div>
+
+        <!-- Form -->
+        <form id="loginForm" autocomplete="off">
+
+            <div class="field">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" maxlength="30" required autofocus>
+                <div class="input-wrap">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Enter your username" maxlength="30" required autofocus>
+                </div>
             </div>
-            <div>
+
+            <div class="field">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" maxlength="30" required>
+                <div class="input-wrap">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Enter your password" maxlength="30" required>
+                    <button type="button" class="pw-toggle" id="pwToggle" tabindex="-1">
+                        <i class="fas fa-eye" id="pwIcon"></i>
+                    </button>
+                </div>
             </div>
-            <button type="submit">Sign In</button>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+
+            <div class="error-box" id="errorBox">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="errorText">Invalid username or password</span>
+            </div>
         </form>
-        <div id="error-message"></div>
+
+        <div class="card-foot">© 2025 Trismart Stores · All rights reserved</div>
     </div>
+
     <script>
-      // Predefined users
-      const users = [
-        { username: 'Fridah', password: 'Fridah10' },
-        { username: 'Doro', password: 'Dorothy.' },
-        { username: 'Chris', password: 'chishela10' }
-      ];
+        /* ══════════════════════════════════════
+           BLOCK BACK BUTTON — both on this page
+           and after redirecting to dashboard
+        ══════════════════════════════════════ */
 
-      // Handle login form submission
-      const loginForm = document.getElementById('login-form');
-      loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const username = loginForm.username.value.trim();
-        const password = loginForm.password.value;
-        const user = users.find(user => user.username === username && user.password === password);
-        
-        if (user) {
-          localStorage.setItem('userName', user.username);
-          window.location.href = 'Dashboard.html';
-        } else {
-          const errorMessage = 'Invalid username or password';
-          document.getElementById('error-message').innerText = errorMessage;
-        }
-      });
-
-      // Enter key triggers login on both fields
-      document.querySelectorAll('#username,#password').forEach(input=>{
-        input.addEventListener('keypress',function(e){
-          if(e.key==="Enter"){loginForm.dispatchEvent(new Event('submit'));}
+        // Push a dummy state so back button has nowhere to go
+        history.pushState(null, '', window.location.href);
+        window.addEventListener('popstate', () => {
+            // User pressed back — push state again to trap them
+            history.pushState(null, '', window.location.href);
         });
-      });
+
+        /* ══════════════════════════════════════
+           USERS
+        ══════════════════════════════════════ */
+        const USERS = [
+            { username: 'Fridah', password: 'Fridah10',   branch: 'makeni' },
+            { username: 'Doro',   password: 'Dorothy.',    branch: 'kabana' },
+            { username: 'Chris',  password: 'chishela10',  branch: 'master' }
+        ];
+
+        /* ══════════════════════════════════════
+           If already logged in, redirect away
+           (and block back to login)
+        ══════════════════════════════════════ */
+        if (localStorage.getItem('userName')) {
+            // Replace current history entry so back won't return here
+            window.location.replace('dashboard.html');
+        }
+
+        /* ══════════════════════════════════════
+           PASSWORD TOGGLE
+        ══════════════════════════════════════ */
+        const pwInput  = document.getElementById('password');
+        const pwToggle = document.getElementById('pwToggle');
+        const pwIcon   = document.getElementById('pwIcon');
+
+        pwToggle.addEventListener('click', () => {
+            const isHidden = pwInput.type === 'password';
+            pwInput.type   = isHidden ? 'text' : 'password';
+            pwIcon.className = isHidden ? 'fas fa-eye-slash' : 'fas fa-eye';
+        });
+
+        /* ══════════════════════════════════════
+           LOGIN FORM
+        ══════════════════════════════════════ */
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn  = document.getElementById('loginBtn');
+        const errorBox  = document.getElementById('errorBox');
+        const errorText = document.getElementById('errorText');
+
+        function showError(msg) {
+            errorText.textContent = msg;
+            errorBox.classList.add('show');
+            // Reset animation
+            errorBox.style.animation = 'none';
+            requestAnimationFrame(() => { errorBox.style.animation = ''; });
+        }
+        function hideError() { errorBox.classList.remove('show'); }
+
+        loginForm.addEventListener('submit', e => {
+            e.preventDefault();
+            hideError();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                showError('Please enter your username and password.');
+                return;
+            }
+
+            // Loading state
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
+
+            // Small delay for UX feel
+            setTimeout(() => {
+                const user = USERS.find(u =>
+                    u.username.toLowerCase() === username.toLowerCase() &&
+                    u.password === password
+                );
+
+                if (user) {
+                    // Save session
+                    localStorage.setItem('userName', user.username.toLowerCase());
+                    localStorage.setItem('branchId', user.branch);
+
+                    loginBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
+
+                    // Use replace so back button on dashboard won't come back to login
+                    setTimeout(() => {
+                        window.location.replace('dashboard.html');
+                    }, 500);
+                } else {
+                    showError('Invalid username or password. Please try again.');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                    // Shake the password field
+                    pwInput.style.borderColor = 'var(--danger)';
+                    setTimeout(() => { pwInput.style.borderColor = ''; }, 1400);
+                }
+            }, 600);
+        });
     </script>
 </body>
 </html>
