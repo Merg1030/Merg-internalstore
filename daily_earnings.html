@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trismart · Profit Analysis</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
@@ -25,40 +25,38 @@
             --pink:      #f72585;
             --purple:    #7c3aed;
             --danger:    #ef4444;
-            --blue-glow: rgba(67,97,238,0.15);
             --radius:    10px;
-            --radius-lg: 16px;
+            --radius-lg: 14px;
             --shadow:    0 2px 12px rgba(67,97,238,0.08);
-            --shadow-lg: 0 8px 32px rgba(67,97,238,0.13);
-            --header-h:  54px;
+            --shadow-lg: 0 6px 24px rgba(67,97,238,0.13);
+            --header-h:  52px;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         html, body {
+            width: 100%; height: 100%;
+            overflow: hidden;
             font-family: 'DM Sans', sans-serif;
             background: var(--bg); color: var(--text);
-            min-height: 100vh; overflow-x: hidden;
             background-image:
                 linear-gradient(rgba(67,97,238,0.025) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(67,97,238,0.025) 1px, transparent 1px);
             background-size: 40px 40px;
         }
 
-        /* ════════════════════════
-           TOPBAR
-        ════════════════════════ */
+        /* ════════ FULL SCREEN SHELL ════════ */
+        .shell { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+
+        /* ════════ TOPBAR ════════ */
         .topbar {
-            position: sticky; top: 0; z-index: 200;
-            height: var(--header-h);
-            background: rgba(255,255,255,0.94);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            box-shadow: var(--shadow);
+            height: var(--header-h); flex-shrink: 0;
+            background: rgba(255,255,255,0.96);
+            border-bottom: 1px solid var(--border); box-shadow: var(--shadow);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; gap: 12px;
+            padding: 0 18px; gap: 10px;
         }
-        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .topbar-left { display: flex; align-items: center; gap: 10px; }
         .logo-mark {
             width: 32px; height: 32px;
             background: linear-gradient(135deg, var(--blue), var(--cyan));
@@ -66,208 +64,265 @@
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 0 12px rgba(67,97,238,0.25); flex-shrink: 0;
         }
-        .logo-text { font-size: 0.95rem; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+        .logo-text { font-size: 0.95rem; font-weight: 800; color: var(--text); }
         .logo-text span { color: var(--blue); }
         .page-pill {
             background: var(--bg3); border: 1px solid var(--border2);
             border-radius: 100px; padding: 3px 11px;
-            font-size: 0.65rem; font-weight: 700; color: var(--text-fade);
+            font-size: 0.62rem; font-weight: 700; color: var(--text-fade);
         }
-        .topbar-right { display: flex; align-items: center; gap: 8px; }
-
-        /* Topbar buttons */
+        .topbar-right { display: flex; align-items: center; gap: 7px; }
         .tbtn {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 14px; border: none; border-radius: 100px;
-            font-size: 0.75rem; font-weight: 700; cursor: pointer;
-            font-family: 'DM Sans', sans-serif; transition: all 0.18s;
-            white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 5px 13px; border: none; border-radius: 100px;
+            font-size: 0.72rem; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif; transition: all 0.18s; white-space: nowrap;
         }
-        .tbtn-primary {
-            background: linear-gradient(135deg, var(--blue), var(--cyan));
-            color: white; box-shadow: 0 3px 10px rgba(67,97,238,0.2);
-        }
-        .tbtn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(67,97,238,0.3); }
-        .tbtn-ghost {
-            background: var(--bg3); border: 1px solid var(--border2); color: var(--text-fade);
-        }
+        .tbtn-primary { background: linear-gradient(135deg, var(--blue), var(--cyan)); color: white; box-shadow: 0 3px 10px rgba(67,97,238,0.2); }
+        .tbtn-primary:hover { transform: translateY(-1px); }
+        .tbtn-ghost { background: var(--bg3); border: 1px solid var(--border2); color: var(--text-fade); }
         .tbtn-ghost:hover { border-color: var(--blue); color: var(--blue); background: white; }
         .back-link {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 13px; background: var(--bg3); border: 1px solid var(--border2);
-            border-radius: 100px; font-size: 0.75rem; font-weight: 700; color: var(--text-fade);
-            text-decoration: none; transition: all 0.18s;
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 5px 12px; background: var(--bg3); border: 1px solid var(--border2);
+            border-radius: 100px; font-size: 0.72rem; font-weight: 700; color: var(--text-fade); text-decoration: none; transition: all 0.18s;
         }
         .back-link:hover { border-color: var(--blue); color: var(--blue); background: white; }
 
-        /* ════════════════════════
-           MAIN
-        ════════════════════════ */
-        .main { padding: 18px 18px 30px; max-width: 1400px; margin: 0 auto; }
-
-        /* ── KPI CARDS ── */
-        .kpi-row {
+        /* ════════ CONTENT ════════ */
+        .content {
+            flex: 1; min-height: 0;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px; margin-bottom: 16px;
+            grid-template-columns: 1fr 320px;
+            grid-template-rows: auto 1fr;
+            gap: 0;
+            overflow: hidden;
+        }
+
+        /* ── LEFT PANEL ── */
+        .left-panel {
+            grid-column: 1; grid-row: 1 / 3;
+            display: flex; flex-direction: column;
+            min-height: 0; overflow: hidden;
+            border-right: 1px solid var(--border);
+        }
+
+        /* ── CONTROL BAR ── */
+        .control-bar {
+            flex-shrink: 0;
+            background: var(--bg2); border-bottom: 1px solid var(--border);
+            padding: 10px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        }
+
+        /* Month picker */
+        .month-group {
+            display: flex; align-items: center; gap: 6px;
+            background: var(--bg3); border: 1.5px solid var(--border2);
+            border-radius: 8px; padding: 5px 10px;
+            transition: border-color 0.18s;
+        }
+        .month-group:focus-within { border-color: var(--blue); }
+        .month-group i { font-size: 0.72rem; color: var(--blue); }
+        .month-group input[type="month"] {
+            background: transparent; border: none; outline: none;
+            font-family: 'DM Sans', sans-serif; font-size: 0.76rem;
+            font-weight: 700; color: var(--text); cursor: pointer; width: 120px;
+        }
+        .month-group input[type="month"]::-webkit-calendar-picker-indicator { opacity: 0.5; cursor: pointer; }
+
+        /* Branch select */
+        .ctrl-select {
+            background: var(--bg3); border: 1.5px solid var(--border2);
+            border-radius: 8px; color: var(--text);
+            padding: 7px 10px; font-size: 0.76rem;
+            font-family: 'DM Sans', sans-serif; font-weight: 600; cursor: pointer; outline: none;
+            transition: border-color 0.18s;
+        }
+        .ctrl-select:focus { border-color: var(--blue); }
+
+        /* Search */
+        .search-wrap { position: relative; flex: 1; min-width: 140px; }
+        .search-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 0.72rem; pointer-events: none; }
+        .search-wrap input {
+            width: 100%; padding: 7px 10px 7px 28px;
+            border: 1.5px solid var(--border); border-radius: 8px;
+            font-size: 0.76rem; background: var(--bg3); color: var(--text);
+            font-family: 'DM Sans', sans-serif; outline: none;
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        .search-wrap input:focus { border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(67,97,238,0.1); }
+
+        /* Filter btns */
+        .fbtn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 7px 14px; border: none; border-radius: 8px;
+            font-size: 0.72rem; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif; transition: all 0.18s; white-space: nowrap;
+        }
+        .fbtn-primary { background: linear-gradient(135deg, var(--blue), var(--cyan)); color: white; box-shadow: 0 2px 8px rgba(67,97,238,0.2); }
+        .fbtn-primary:hover { transform: translateY(-1px); }
+        .fbtn-reset { background: rgba(239,68,68,0.07); color: var(--danger); border: 1.5px solid rgba(239,68,68,0.2); }
+        .fbtn-reset:hover { background: rgba(239,68,68,0.14); border-color: var(--danger); }
+
+        /* ── KPI ROW ── */
+        .kpi-row {
+            flex-shrink: 0;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 10px; padding: 10px 16px;
+            background: var(--bg); border-bottom: 1px solid var(--border);
         }
         .kpi-card {
             background: var(--bg2); border: 1px solid var(--border);
-            border-radius: var(--radius-lg); padding: 16px 16px 14px;
-            box-shadow: var(--shadow); position: relative; overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-        .kpi-card::before {
-            content: ''; position: absolute; right: -12px; top: -12px;
-            width: 60px; height: 60px; border-radius: 50%;
-            filter: blur(18px); opacity: 0.2;
-        }
-        .kpi-card.k1::before { background: var(--blue); }
-        .kpi-card.k2::before { background: var(--green); }
-        .kpi-card.k3::before { background: var(--orange); }
-        .kpi-card.k4::before { background: var(--purple); }
-        .kpi-card.k1 { border-top: 3px solid var(--blue); }
-        .kpi-card.k2 { border-top: 3px solid var(--green); }
-        .kpi-card.k3 { border-top: 3px solid var(--orange); }
-        .kpi-card.k4 { border-top: 3px solid var(--purple); }
-
-        .kpi-label { font-size: 0.62rem; font-weight: 800; color: var(--text-fade); text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 6px; }
-        .kpi-value { font-size: 1.5rem; font-weight: 800; color: var(--text); font-family: 'DM Mono', monospace; letter-spacing: -0.5px; margin-bottom: 5px; line-height: 1; }
-        .kpi-change { font-size: 0.68rem; font-weight: 700; display: flex; align-items: center; gap: 4px; }
-        .positive { color: var(--green); } .negative { color: var(--danger); }
-
-        /* ── SECTION DIVIDER ── */
-        .section-divider {
-            display: flex; align-items: center; gap: 10px; margin: 16px 0 12px;
-        }
-        .section-divider span {
-            font-size: 0.58rem; font-weight: 800; color: var(--text-dim);
-            text-transform: uppercase; letter-spacing: 0.14em; white-space: nowrap;
-        }
-        .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-        /* ── CHARTS ── */
-        .charts-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 12px; margin-bottom: 16px;
-        }
-        .chart-card {
-            background: var(--bg2); border: 1px solid var(--border);
-            border-radius: var(--radius-lg); padding: 16px;
+            border-radius: var(--radius-lg); padding: 11px 14px;
+            position: relative; overflow: hidden;
             box-shadow: var(--shadow);
         }
-        .chart-hdr {
-            display: flex; align-items: center; gap: 7px;
-            font-size: 0.78rem; font-weight: 800; color: var(--text);
-            margin-bottom: 12px;
+        .kpi-card::before {
+            content: ''; position: absolute; right: -8px; top: -8px;
+            width: 44px; height: 44px; border-radius: 50%;
+            filter: blur(14px); opacity: 0.18;
         }
-        .chart-hdr i { color: var(--blue); font-size: 0.78rem; }
-        .chart-wrap { position: relative; height: 200px; }
-
-        /* ── FILTER BAR ── */
-        .filter-bar {
-            background: var(--bg2); border: 1px solid var(--border);
-            border-radius: var(--radius-lg); padding: 14px 16px;
-            box-shadow: var(--shadow); margin-bottom: 14px;
-            display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap;
-        }
-        .filter-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 130px; }
-        .filter-group label {
-            font-size: 0.6rem; font-weight: 800; color: var(--text-fade);
-            text-transform: uppercase; letter-spacing: 0.09em;
-        }
-        .filter-group input[type="date"],
-        .filter-group select {
-            background: var(--bg3); border: 1.5px solid var(--border);
-            border-radius: 8px; color: var(--text);
-            padding: 7px 10px; font-size: 0.78rem;
-            font-family: 'DM Sans', sans-serif; outline: none;
-            transition: border-color 0.18s;
-        }
-        .filter-group input[type="date"]:focus,
-        .filter-group select:focus { border-color: var(--blue); background: white; }
-
-        .filter-actions { display: flex; gap: 7px; align-items: flex-end; flex-shrink: 0; }
-
-        .fbtn {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: 8px 16px; border: none; border-radius: 8px;
-            font-size: 0.76rem; font-weight: 700; cursor: pointer;
-            font-family: 'DM Sans', sans-serif; transition: all 0.18s;
-        }
-        .fbtn-primary {
-            background: linear-gradient(135deg, var(--blue), var(--cyan));
-            color: white; box-shadow: 0 3px 10px rgba(67,97,238,0.2);
-        }
-        .fbtn-primary:hover { transform: translateY(-1px); }
-        .fbtn-danger {
-            background: rgba(239,68,68,0.08); color: var(--danger);
-            border: 1.5px solid rgba(239,68,68,0.25);
-        }
-        .fbtn-danger:hover { background: rgba(239,68,68,0.14); border-color: var(--danger); }
+        .k1 { border-top: 2px solid var(--blue); }   .k1::before { background: var(--blue); }
+        .k2 { border-top: 2px solid var(--green); }  .k2::before { background: var(--green); }
+        .k3 { border-top: 2px solid var(--orange); } .k3::before { background: var(--orange); }
+        .k4 { border-top: 2px solid var(--purple); } .k4::before { background: var(--purple); }
+        .kpi-lbl { font-size: 0.58rem; font-weight: 800; color: var(--text-fade); text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 4px; }
+        .kpi-val { font-size: 1.1rem; font-weight: 800; color: var(--text); font-family: 'DM Mono', monospace; letter-spacing: -0.3px; line-height: 1; }
+        .k1 .kpi-val { color: var(--blue); }
+        .k2 .kpi-val { color: var(--green); }
+        .k3 .kpi-val { color: var(--orange); }
+        .k4 .kpi-val { color: var(--purple); }
 
         /* ── TABLE ── */
-        .table-card {
-            background: var(--bg2); border: 1px solid var(--border);
-            border-radius: var(--radius-lg); overflow: hidden;
-            box-shadow: var(--shadow);
+        .table-panel {
+            flex: 1; min-height: 0; overflow: hidden;
+            display: flex; flex-direction: column;
         }
         .table-hdr {
-            padding: 12px 16px; border-bottom: 1px solid var(--border);
+            flex-shrink: 0; padding: 8px 16px;
+            background: var(--bg2); border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: space-between;
         }
-        .table-hdr-left { display: flex; align-items: center; gap: 8px; }
-        .table-hdr-dot {
-            width: 7px; height: 7px; border-radius: 50%;
-            background: var(--blue); box-shadow: 0 0 6px rgba(67,97,238,0.5);
+        .table-hdr-left { display: flex; align-items: center; gap: 7px; }
+        .hdr-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--blue); box-shadow: 0 0 5px rgba(67,97,238,0.5);
             animation: pulse 2s infinite;
         }
-        .table-hdr h3 { font-size: 0.8rem; font-weight: 700; }
-        .row-count {
+        .table-hdr h3 { font-size: 0.76rem; font-weight: 700; }
+        .row-badge {
             background: var(--bg3); border: 1px solid var(--border2);
-            border-radius: 100px; padding: 2px 9px;
-            font-size: 0.62rem; font-weight: 700; color: var(--text-fade);
+            border-radius: 100px; padding: 2px 8px;
+            font-size: 0.6rem; font-weight: 700; color: var(--text-fade);
         }
 
-        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-scroll { flex: 1; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-        table { width: 100%; border-collapse: collapse; min-width: 750px; }
+        table { width: 100%; border-collapse: collapse; min-width: 680px; }
         thead th {
             background: #f8f9ff; color: var(--text-fade);
-            font-size: 0.6rem; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 0.09em; padding: 10px 12px;
+            font-size: 0.58rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.09em; padding: 9px 12px;
             border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 5; text-align: left; white-space: nowrap;
         }
-        tbody td {
-            padding: 9px 12px; font-size: 0.78rem;
-            border-bottom: 1px solid #f0f2f8; transition: background 0.12s;
-        }
+        tbody td { padding: 8px 12px; font-size: 0.76rem; border-bottom: 1px solid #f0f2f8; }
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover td { background: #f8f9ff; }
-
         .totals-row td {
-            background: linear-gradient(90deg, rgba(67,97,238,0.07), rgba(0,180,216,0.04)) !important;
+            background: rgba(67,97,238,0.05) !important;
             font-weight: 800; color: var(--blue) !important;
-            font-family: 'DM Mono', monospace; font-size: 0.78rem;
+            font-family: 'DM Mono', monospace; font-size: 0.76rem;
             border-top: 2px solid rgba(67,97,238,0.15);
         }
-        .no-data { text-align: center; padding: 40px 20px; color: var(--text-dim); font-size: 0.82rem; }
-        .no-data i { font-size: 1.8rem; display: block; margin-bottom: 10px; color: var(--border2); }
-
-        .profit-pos { color: var(--green); font-weight: 700; font-family: 'DM Mono', monospace; }
-        .profit-neg { color: var(--danger); font-weight: 700; font-family: 'DM Mono', monospace; }
-        .mono { font-family: 'DM Mono', monospace; font-size: 0.75rem; }
-
+        .no-data { text-align: center; padding: 36px 16px; color: var(--text-dim); font-size: 0.78rem; }
+        .no-data i { font-size: 1.5rem; display: block; margin-bottom: 8px; color: var(--border2); }
+        .mono { font-family: 'DM Mono', monospace; font-size: 0.72rem; }
+        .profit-pos { color: var(--green); font-weight: 700; font-family: 'DM Mono', monospace; font-size: 0.72rem; }
+        .profit-neg { color: var(--danger); font-weight: 700; font-family: 'DM Mono', monospace; font-size: 0.72rem; }
         .code-chip {
-            font-family: 'DM Mono', monospace; font-size: 0.65rem;
+            font-family: 'DM Mono', monospace; font-size: 0.62rem;
             background: rgba(67,97,238,0.07); color: var(--blue);
-            border: 1px solid rgba(67,97,238,0.15); border-radius: 5px; padding: 1px 6px;
+            border: 1px solid rgba(67,97,238,0.14); border-radius: 4px; padding: 1px 5px;
         }
 
-        /* ── PRINT ── */
+        /* ════════ RIGHT PANEL ════════ */
+        .right-panel {
+            grid-column: 2; grid-row: 1 / 3;
+            display: flex; flex-direction: column; min-height: 0;
+            overflow: hidden; background: var(--bg2);
+        }
+
+        /* ── Charts ── */
+        .charts-wrap {
+            flex-shrink: 0; padding: 12px;
+            display: flex; flex-direction: column; gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .chart-card {
+            background: var(--bg3); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 10px;
+        }
+        .chart-hdr { font-size: 0.65rem; font-weight: 800; color: var(--text-fade); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .chart-hdr i { color: var(--blue); }
+        .chart-wrap { position: relative; height: 130px; }
+
+        /* ── AI Comments ── */
+        .comments-panel {
+            flex: 1; min-height: 0; overflow-y: auto;
+            padding: 12px;
+        }
+        .comments-hdr {
+            font-size: 0.65rem; font-weight: 800; color: var(--text-fade);
+            text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+        }
+        .comments-hdr i { color: var(--purple); }
+
+        .comment-card {
+            background: var(--bg3); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 10px 12px;
+            margin-bottom: 8px; display: flex; gap: 10px;
+            animation: fadeIn 0.3s ease backwards;
+        }
+        .comment-card:nth-child(2) { animation-delay: 0.05s; }
+        .comment-card:nth-child(3) { animation-delay: 0.1s; }
+        .comment-card:nth-child(4) { animation-delay: 0.15s; }
+        .comment-card:nth-child(5) { animation-delay: 0.2s; }
+
+        .comment-icon {
+            width: 28px; height: 28px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.78rem; flex-shrink: 0;
+        }
+        .ci-good    { background: rgba(16,185,129,0.12); color: var(--green); }
+        .ci-warn    { background: rgba(245,158,11,0.12); color: var(--orange); }
+        .ci-bad     { background: rgba(239,68,68,0.1);   color: var(--danger); }
+        .ci-info    { background: rgba(67,97,238,0.1);   color: var(--blue); }
+        .ci-great   { background: rgba(124,58,237,0.1);  color: var(--purple); }
+
+        .comment-body .ctag {
+            font-size: 0.58rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.1em; margin-bottom: 3px;
+        }
+        .tag-good  { color: var(--green); }
+        .tag-warn  { color: var(--orange); }
+        .tag-bad   { color: var(--danger); }
+        .tag-info  { color: var(--blue); }
+        .tag-great { color: var(--purple); }
+
+        .comment-body p {
+            font-size: 0.72rem; color: var(--text-fade); line-height: 1.5;
+        }
+        .comment-body strong { color: var(--text); }
+
+        .no-comments {
+            text-align: center; padding: 20px 8px;
+            color: var(--text-dim); font-size: 0.72rem;
+        }
+        .no-comments i { font-size: 1.4rem; display: block; margin-bottom: 8px; color: var(--border2); }
+
+        /* ════════ PRINT ════════ */
         .print-section { display: none; }
         @media print {
             body * { visibility: hidden; }
@@ -275,150 +330,138 @@
             .print-section { position: absolute; left: 0; top: 0; width: 100%; background: white; color: black; padding: 20px; display: block; }
         }
 
-        /* ── ANIMATIONS ── */
+        /* ════════ ANIMATIONS ════════ */
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
-
-        @media (max-width: 900px) {
-            .kpi-row { grid-template-columns: repeat(2, 1fr); }
-            .charts-row { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 600px) {
-            .main { padding: 12px 10px 24px; }
-            .kpi-row { grid-template-columns: 1fr 1fr; gap: 8px; }
-            .kpi-value { font-size: 1.15rem; }
-            .filter-bar { flex-direction: column; gap: 8px; }
-            .filter-group { min-width: 100%; }
-            .topbar { padding: 0 12px; }
-            .page-pill { display: none; }
-        }
     </style>
 </head>
 <body>
+<div class="shell">
 
-<!-- ═══════════ TOPBAR ═══════════ -->
-<header class="topbar">
-    <div class="topbar-left">
-        <div class="logo-mark"><i class="fas fa-store-alt"></i></div>
-        <div class="logo-text">Tri<span>smart</span></div>
-        <div class="page-pill"><i class="fas fa-chart-pie" style="margin-right:4px;color:var(--blue);font-size:0.6rem;"></i>Profit Analysis</div>
-    </div>
-    <div class="topbar-right">
-        <button class="tbtn tbtn-primary" onclick="generateReport()"><i class="fas fa-file-pdf"></i> Report</button>
-        <button class="tbtn tbtn-ghost" onclick="printDashboard()"><i class="fas fa-print"></i> Print</button>
-        <a href="cashbook.html" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
-    </div>
-</header>
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="logo-mark"><i class="fas fa-store-alt"></i></div>
+            <div class="logo-text">Tri<span>smart</span></div>
+            <div class="page-pill"><i class="fas fa-chart-line" style="margin-right:4px;color:var(--blue);font-size:0.58rem;"></i>Profit Analysis</div>
+        </div>
+        <div class="topbar-right">
+            <button class="tbtn tbtn-primary" onclick="generateReport()"><i class="fas fa-file-pdf"></i> Export</button>
+            <button class="tbtn tbtn-ghost" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+            <a href="cashbook.html" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
+    </header>
 
-<!-- ═══════════ MAIN ═══════════ -->
-<div class="main">
+    <!-- CONTENT GRID -->
+    <div class="content">
 
-    <!-- KPI Cards -->
-    <div class="kpi-row">
-        <div class="kpi-card k1">
-            <div class="kpi-label">Total Sales</div>
-            <div class="kpi-value" id="kpiSales">K 0.00</div>
-            <div class="kpi-change positive" id="kpiSalesChange"><i class="fas fa-arrow-up"></i> 0%</div>
-        </div>
-        <div class="kpi-card k2">
-            <div class="kpi-label">Total Profit</div>
-            <div class="kpi-value" id="kpiProfit">K 0.00</div>
-            <div class="kpi-change positive" id="kpiProfitChange"><i class="fas fa-arrow-up"></i> 0%</div>
-        </div>
-        <div class="kpi-card k3">
-            <div class="kpi-label">Qty Sold</div>
-            <div class="kpi-value" id="kpiQuantity">0</div>
-            <div class="kpi-change positive"><i class="fas fa-boxes"></i> Units</div>
-        </div>
-        <div class="kpi-card k4">
-            <div class="kpi-label">Profit Margin</div>
-            <div class="kpi-value" id="kpiMargin">0%</div>
-            <div class="kpi-change positive"><i class="fas fa-percent"></i> Of Sales</div>
-        </div>
-    </div>
+        <!-- ════ LEFT PANEL ════ -->
+        <div class="left-panel">
 
-    <!-- Charts -->
-    <div class="section-divider"><span>Charts</span></div>
-    <div class="charts-row">
-        <div class="chart-card">
-            <div class="chart-hdr"><i class="fas fa-chart-bar"></i> Sales by Product</div>
-            <div class="chart-wrap"><canvas id="salesChart"></canvas></div>
-        </div>
-        <div class="chart-card">
-            <div class="chart-hdr"><i class="fas fa-chart-pie"></i> Profit Split</div>
-            <div class="chart-wrap"><canvas id="profitChart"></canvas></div>
-        </div>
-        <div class="chart-card">
-            <div class="chart-hdr"><i class="fas fa-store"></i> By Branch</div>
-            <div class="chart-wrap"><canvas id="branchChart"></canvas></div>
-        </div>
-    </div>
+            <!-- Control bar -->
+            <div class="control-bar">
+                <!-- Month filter -->
+                <div class="month-group">
+                    <i class="fas fa-calendar"></i>
+                    <input type="month" id="monthFilter" title="Filter by month">
+                </div>
 
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-        <div class="filter-group">
-            <label>Time Period</label>
-            <select id="periodSelect"></select>
-        </div>
-        <div class="filter-group">
-            <label>From Date</label>
-            <input type="date" id="startDate">
-        </div>
-        <div class="filter-group">
-            <label>To Date</label>
-            <input type="date" id="endDate">
-        </div>
-        <div class="filter-group">
-            <label>Branch</label>
-            <select id="branchSelect"></select>
-        </div>
-        <div class="filter-actions">
-            <button class="fbtn fbtn-primary" id="filterBtn"><i class="fas fa-filter"></i> Filter</button>
-            <button class="fbtn fbtn-danger" id="resetBtn"><i class="fas fa-rotate-left"></i> Reset</button>
-        </div>
-    </div>
+                <!-- Branch -->
+                <select class="ctrl-select" id="branchSelect">
+                    <option value="">All Branches</option>
+                </select>
 
-    <!-- Table -->
-    <div class="table-card">
-        <div class="table-hdr">
-            <div class="table-hdr-left">
-                <div class="table-hdr-dot"></div>
-                <h3>Profit Details</h3>
+                <!-- Search -->
+                <div class="search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search product, code, branch…">
+                </div>
+
+                <!-- Buttons -->
+                <button class="fbtn fbtn-primary" id="filterBtn"><i class="fas fa-filter"></i> Filter</button>
+                <button class="fbtn fbtn-reset" id="resetBtn"><i class="fas fa-rotate-left"></i> Reset</button>
             </div>
-            <div class="row-count" id="rowCount">0 rows</div>
-        </div>
-        <div class="table-scroll">
-            <table id="profitTable">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Branch</th>
-                        <th>Code</th>
-                        <th>Product</th>
-                        <th>Order Price</th>
-                        <th>Qty</th>
-                        <th>Total Sales</th>
-                        <th>Total Profit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="8" class="no-data"><i class="fas fa-spinner fa-spin"></i>Loading data…</td></tr>
-                </tbody>
-                <tfoot></tfoot>
-            </table>
-        </div>
-    </div>
 
-</div><!-- end main -->
+            <!-- KPI row -->
+            <div class="kpi-row">
+                <div class="kpi-card k1"><div class="kpi-lbl">Total Sales</div><div class="kpi-val" id="kpiSales">K 0.00</div></div>
+                <div class="kpi-card k2"><div class="kpi-lbl">Total Profit</div><div class="kpi-val" id="kpiProfit">K 0.00</div></div>
+                <div class="kpi-card k3"><div class="kpi-lbl">Qty Sold</div><div class="kpi-val" id="kpiQty">0</div></div>
+                <div class="kpi-card k4"><div class="kpi-lbl">Margin</div><div class="kpi-val" id="kpiMargin">0%</div></div>
+            </div>
 
-<!-- Print Section -->
+            <!-- Table -->
+            <div class="table-panel">
+                <div class="table-hdr">
+                    <div class="table-hdr-left">
+                        <div class="hdr-dot"></div>
+                        <h3>Profit Details</h3>
+                    </div>
+                    <div class="row-badge" id="rowBadge">0 rows</div>
+                </div>
+                <div class="table-scroll">
+                    <table id="profitTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Branch</th>
+                                <th>Code</th>
+                                <th>Product</th>
+                                <th>Order Price</th>
+                                <th>Qty</th>
+                                <th>Total Sales</th>
+                                <th>Total Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="8" class="no-data"><i class="fas fa-spinner fa-spin"></i>Loading…</td></tr>
+                        </tbody>
+                        <tfoot></tfoot>
+                    </table>
+                </div>
+            </div>
+
+        </div><!-- end left-panel -->
+
+        <!-- ════ RIGHT PANEL ════ -->
+        <div class="right-panel">
+
+            <!-- Charts -->
+            <div class="charts-wrap">
+                <div class="chart-card">
+                    <div class="chart-hdr"><i class="fas fa-chart-bar"></i> Sales by Product</div>
+                    <div class="chart-wrap"><canvas id="salesChart"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-hdr"><i class="fas fa-chart-pie"></i> Profit by Branch</div>
+                    <div class="chart-wrap"><canvas id="branchChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- AI Comments -->
+            <div class="comments-panel">
+                <div class="comments-hdr">
+                    <i class="fas fa-lightbulb"></i> Performance Insights
+                </div>
+                <div id="commentsWrap">
+                    <div class="no-comments"><i class="fas fa-chart-line"></i>Insights will appear after filtering</div>
+                </div>
+            </div>
+
+        </div><!-- end right-panel -->
+
+    </div><!-- end content -->
+
+</div><!-- end shell -->
+
+<!-- Print area -->
 <div class="print-section" id="printSection">
     <div id="printMetrics"></div>
     <div id="printTable"></div>
-    <p>Report generated by Trismart Profit Analysis System</p>
 </div>
 
 <script type="module">
@@ -438,104 +481,129 @@
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
 
-    /* Chart.js light theme defaults */
-    Chart.defaults.color = '#6b7490';
-    Chart.defaults.borderColor = '#e2e6ef';
-    Chart.defaults.font.family = 'DM Sans';
+    Chart.defaults.color        = '#6b7490';
+    Chart.defaults.borderColor  = '#e2e6ef';
+    Chart.defaults.font.family  = 'DM Sans';
+    Chart.defaults.font.size    = 10;
 
-    let allProfitData = [];
-    let branches = new Set();
-    let salesChart, profitChart, branchChart;
-
-    function findOrderPriceAtTime(saleDate, productCode, restockHistory) {
-        const productRestocks = restockHistory
-            .filter(entry => entry.code === productCode && entry.date <= saleDate)
-            .sort((a, b) => new Date(b.date) - new Date(a.date));
-        return productRestocks.length > 0 ? parseFloat(productRestocks[0].price) : null;
-    }
+    let allData = [], displayedData = [];
+    let salesChart, branchChart;
+    const PALETTE = [
+        'rgba(67,97,238,0.75)', 'rgba(0,180,216,0.75)', 'rgba(16,185,129,0.75)',
+        'rgba(245,158,11,0.75)', 'rgba(124,58,237,0.75)', 'rgba(247,37,133,0.75)',
+        'rgba(239,68,68,0.75)', 'rgba(14,165,233,0.75)'
+    ];
 
     function fmt(n) {
-        return 'K ' + Math.abs(Number(n)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return 'K ' + Math.abs(Number(n)).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 });
+    }
+    function fmtRaw(n) {
+        return Number(n).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 });
     }
 
-    async function fetchProfitData() {
+    /* ── Find order price at time of sale ── */
+    function findOrderPrice(saleDate, code, history) {
+        const matches = history
+            .filter(e => e.code === code && e.date <= saleDate)
+            .sort((a,b) => new Date(b.date) - new Date(a.date));
+        return matches.length ? parseFloat(matches[0].price) : null;
+    }
+
+    /* ── Load data ── */
+    async function loadData() {
         try {
             const [salesSnap, restockSnap] = await Promise.all([
                 getDocs(collection(db, 'sales')),
                 getDocs(collection(db, 'restockHistory'))
             ]);
-
-            const restockHistory = restockSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-            const profits = [];
+            const history = restockSnap.docs.map(d => ({ id:d.id, ...d.data() }));
+            const rows = [];
+            const branchSet = new Set();
 
             salesSnap.forEach(doc => {
-                const sale = doc.data();
-                const { code, name, price, quantity, date, branchId } = sale;
-                const costPrice = findOrderPriceAtTime(date, code, restockHistory);
-                if (costPrice !== null) {
-                    const profit = (price - costPrice) * quantity;
-                    profits.push({
-                        date: date || 'No date',
-                        branch: branchId || 'Unknown',
-                        code, name,
-                        orderPrice: costPrice,
-                        quantity,
-                        totalSales: price * quantity,
-                        totalProfit: profit
+                const s = doc.data();
+                const cost = findOrderPrice(s.date, s.code, history);
+                if (cost !== null) {
+                    rows.push({
+                        date:       s.date || '',
+                        branch:     s.branchId || 'Unknown',
+                        code:       s.code || '',
+                        name:       s.name || '',
+                        orderPrice: cost,
+                        quantity:   s.quantity || 0,
+                        totalSales: s.price * s.quantity,
+                        totalProfit:(s.price - cost) * s.quantity,
+                        salePrice:  s.price
                     });
-                    branches.add(branchId || 'Unknown');
+                    branchSet.add(s.branchId || 'Unknown');
                 }
             });
 
-            allProfitData = profits.sort((a, b) => new Date(a.date) - new Date(b.date));
-            populateBranchFilter();
-            displayData(allProfitData);
-            setupFilters();
-            updateKPIs(allProfitData);
-            buildCharts(allProfitData);
-        } catch (err) {
+            allData = rows.sort((a,b) => new Date(a.date) - new Date(b.date));
+            buildBranchFilter(branchSet);
+            apply(); // show this month by default
+        } catch(err) {
             console.error(err);
             document.querySelector('#profitTable tbody').innerHTML =
-                `<tr><td colspan="8" class="no-data"><i class="fas fa-exclamation-circle" style="color:var(--danger);"></i> Error loading data. Please refresh.</td></tr>`;
+                `<tr><td colspan="8" class="no-data"><i class="fas fa-exclamation-circle" style="color:var(--danger);"></i> Error loading. Please refresh.</td></tr>`;
         }
     }
 
-    function populateBranchFilter() {
+    /* ── Branch filter ── */
+    function buildBranchFilter(set) {
         const sel = document.getElementById('branchSelect');
         sel.innerHTML = '<option value="">All Branches</option>';
-        branches.forEach(b => {
-            const o = document.createElement('option');
-            o.value = b; o.textContent = b; sel.appendChild(o);
+        set.forEach(b => {
+            const o = document.createElement('option'); o.value = b; o.textContent = b; sel.appendChild(o);
         });
     }
 
-    function updateKPIs(data) {
-        let qty = 0, sales = 0, profit = 0;
-        data.forEach(d => { qty += d.quantity; sales += d.totalSales; profit += d.totalProfit; });
-        const margin = sales > 0 ? (profit / sales * 100).toFixed(1) : 0;
-        document.getElementById('kpiSales').textContent    = fmt(sales);
-        document.getElementById('kpiProfit').textContent   = fmt(profit);
-        document.getElementById('kpiQuantity').textContent = qty.toLocaleString();
-        document.getElementById('kpiMargin').textContent   = `${margin}%`;
-        document.getElementById('kpiProfitChange').className = `kpi-change ${profit >= 0 ? 'positive' : 'negative'}`;
-        document.getElementById('kpiProfitChange').innerHTML = `<i class="fas fa-arrow-${profit >= 0 ? 'up' : 'down'}"></i> ${margin}% margin`;
+    /* ── APPLY FILTERS ── */
+    function apply() {
+        const month  = document.getElementById('monthFilter').value; // "YYYY-MM"
+        const branch = document.getElementById('branchSelect').value;
+        const search = document.getElementById('searchInput').value.trim().toLowerCase();
+
+        let d = [...allData];
+
+        // Month filter
+        if (month) {
+            d = d.filter(r => r.date && r.date.startsWith(month));
+        }
+
+        // Branch filter
+        if (branch) d = d.filter(r => r.branch === branch);
+
+        // Search
+        if (search) {
+            d = d.filter(r =>
+                r.name.toLowerCase().includes(search) ||
+                r.code.toLowerCase().includes(search) ||
+                r.branch.toLowerCase().includes(search)
+            );
+        }
+
+        displayedData = d;
+        renderTable(d);
+        updateKPIs(d);
+        buildCharts(d);
+        generateComments(d, month);
     }
 
-    function displayData(data) {
+    /* ── RENDER TABLE ── */
+    function renderTable(data) {
         const tbody = document.querySelector('#profitTable tbody');
         const tfoot = document.querySelector('#profitTable tfoot');
-        const rc    = document.getElementById('rowCount');
-        tbody.innerHTML = '';
+        document.getElementById('rowBadge').textContent = `${data.length} row${data.length !== 1 ? 's' : ''}`;
 
         if (!data.length) {
             tbody.innerHTML = `<tr><td colspan="8" class="no-data"><i class="fas fa-inbox"></i> No data for selected filters</td></tr>`;
             tfoot.innerHTML = '';
-            rc.textContent = '0 rows';
-            updateKPIs([]);
             return;
         }
 
         let qty = 0, sales = 0, profit = 0;
+        tbody.innerHTML = '';
         data.forEach(d => {
             qty += d.quantity; sales += d.totalSales; profit += d.totalProfit;
             const cls = d.totalProfit >= 0 ? 'profit-pos' : 'profit-neg';
@@ -544,185 +612,209 @@
                 <td class="mono">${d.date}</td>
                 <td>${d.branch}</td>
                 <td><span class="code-chip">${d.code}</span></td>
-                <td style="font-weight:600;">${d.name}</td>
+                <td style="font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.name}</td>
                 <td class="mono">${fmt(d.orderPrice)}</td>
                 <td class="mono">${d.quantity}</td>
                 <td class="mono">${fmt(d.totalSales)}</td>
-                <td class="${cls}">${fmt(d.totalProfit)}</td>
-            `;
+                <td class="${cls}">${fmt(d.totalProfit)}</td>`;
             tbody.appendChild(tr);
         });
-
         tfoot.innerHTML = `
             <tr class="totals-row">
-                <td colspan="5" style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;">TOTALS</td>
-                <td>${qty}</td>
-                <td>${fmt(sales)}</td>
-                <td>${fmt(profit)}</td>
+                <td colspan="5" style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;">Totals</td>
+                <td>${qty}</td><td>${fmt(sales)}</td><td>${fmt(profit)}</td>
             </tr>`;
-
-        rc.textContent = `${data.length} row${data.length !== 1 ? 's' : ''}`;
-        updateKPIs(data);
     }
 
+    /* ── UPDATE KPIs ── */
+    function updateKPIs(data) {
+        let qty = 0, sales = 0, profit = 0;
+        data.forEach(d => { qty += d.quantity; sales += d.totalSales; profit += d.totalProfit; });
+        const margin = sales > 0 ? (profit / sales * 100).toFixed(1) : 0;
+        document.getElementById('kpiSales').textContent  = fmt(sales);
+        document.getElementById('kpiProfit').textContent = fmt(profit);
+        document.getElementById('kpiQty').textContent    = qty.toLocaleString();
+        document.getElementById('kpiMargin').textContent = `${margin}%`;
+    }
+
+    /* ── BUILD CHARTS ── */
     function buildCharts(data) {
         if (salesChart)  { salesChart.destroy();  salesChart  = null; }
-        if (profitChart) { profitChart.destroy(); profitChart = null; }
         if (branchChart) { branchChart.destroy(); branchChart = null; }
 
-        const palette = [
-            'rgba(67,97,238,0.75)',   'rgba(0,180,216,0.75)',
-            'rgba(16,185,129,0.75)',  'rgba(245,158,11,0.75)',
-            'rgba(124,58,237,0.75)',  'rgba(247,37,133,0.75)',
-            'rgba(239,68,68,0.75)',   'rgba(14,165,233,0.75)'
-        ];
+        const byProd = {}, byBranch = {};
+        data.forEach(d => {
+            byProd[d.name]     = (byProd[d.name]     || 0) + d.totalSales;
+            byBranch[d.branch] = (byBranch[d.branch] || 0) + d.totalSales;
+        });
 
-        /* Sales by Product — bar */
-        const byProd = {};
-        data.forEach(d => { byProd[d.name] = (byProd[d.name] || 0) + d.totalSales; });
         salesChart = new Chart(document.getElementById('salesChart').getContext('2d'), {
             type: 'bar',
             data: {
                 labels: Object.keys(byProd),
-                datasets: [{ label: 'Sales (K)', data: Object.values(byProd), backgroundColor: palette, borderRadius: 6, borderSkipped: false }]
+                datasets: [{ data: Object.values(byProd), backgroundColor: PALETTE, borderRadius: 5, borderSkipped: false }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { ticks: { font: { size: 10 }, maxRotation: 30 }, grid: { display: false } },
-                    y: { ticks: { callback: v => 'K' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v), font: { size: 10 } } }
+                    x: { ticks: { font:{size:9}, maxRotation:30, maxTicksLimit:6 }, grid: { display:false } },
+                    y: { ticks: { callback: v => 'K'+(v>=1000?(v/1000).toFixed(0)+'k':v), font:{size:9} } }
                 }
             }
         });
 
-        /* Profit by Product — doughnut */
-        const byProfit = {};
-        data.forEach(d => { byProfit[d.name] = (byProfit[d.name] || 0) + d.totalProfit; });
-        profitChart = new Chart(document.getElementById('profitChart').getContext('2d'), {
+        branchChart = new Chart(document.getElementById('branchChart').getContext('2d'), {
             type: 'doughnut',
             data: {
-                labels: Object.keys(byProfit),
-                datasets: [{ data: Object.values(byProfit), backgroundColor: palette, borderColor: '#ffffff', borderWidth: 2 }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8, boxWidth: 10 } } },
-                cutout: '60%'
-            }
-        });
-
-        /* Sales by Branch — pie */
-        const byBranch = {};
-        data.forEach(d => { byBranch[d.branch] = (byBranch[d.branch] || 0) + d.totalSales; });
-        branchChart = new Chart(document.getElementById('branchChart').getContext('2d'), {
-            type: 'pie',
-            data: {
                 labels: Object.keys(byBranch),
-                datasets: [{ data: Object.values(byBranch), backgroundColor: palette, borderColor: '#ffffff', borderWidth: 2 }]
+                datasets: [{ data: Object.values(byBranch), backgroundColor: PALETTE, borderColor:'#fff', borderWidth:2 }]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8, boxWidth: 10 } } }
+                responsive: true, maintainAspectRatio: false, cutout: '58%',
+                plugins: { legend: { position:'bottom', labels:{ font:{size:9}, padding:6, boxWidth:8 } } }
             }
         });
     }
 
-    function setupFilters() {
-        const periodSel    = document.getElementById('periodSelect');
-        const startDate    = document.getElementById('startDate');
-        const endDate      = document.getElementById('endDate');
-        const branchSelect = document.getElementById('branchSelect');
-        const filterBtn    = document.getElementById('filterBtn');
-        const resetBtn     = document.getElementById('resetBtn');
+    /* ══════════════════════════════════════
+       GENERATE PERFORMANCE COMMENTS
+    ══════════════════════════════════════ */
+    function generateComments(data, monthStr) {
+        const wrap = document.getElementById('commentsWrap');
 
-        periodSel.innerHTML = `
-            <option value="custom">Custom Range</option>
-            <option value="today">Today</option>
-            <option value="yesterday">Yesterday</option>
-            <option value="thisWeek">This Week</option>
-            <option value="lastWeek">Last Week</option>
-            <option value="thisMonth">This Month</option>
-            <option value="lastMonth">Last Month</option>
-            <option value="thisYear">This Year</option>
-            <option value="lastYear">Last Year</option>
-        `;
-
-        periodSel.addEventListener('change', function() {
-            const t = new Date();
-            let s, e;
-            switch (this.value) {
-                case 'today':     s = e = t; break;
-                case 'yesterday': s = e = new Date(t); s.setDate(t.getDate()-1); break;
-                case 'thisWeek':  s = new Date(t); s.setDate(t.getDate()-t.getDay()); e = new Date(t); e.setDate(t.getDate()+(6-t.getDay())); break;
-                case 'lastWeek':  s = new Date(t); s.setDate(t.getDate()-t.getDay()-7); e = new Date(t); e.setDate(t.getDate()-t.getDay()-1); break;
-                case 'thisMonth': s = new Date(t.getFullYear(),t.getMonth(),1); e = new Date(t.getFullYear(),t.getMonth()+1,0); break;
-                case 'lastMonth': s = new Date(t.getFullYear(),t.getMonth()-1,1); e = new Date(t.getFullYear(),t.getMonth(),0); break;
-                case 'thisYear':  s = new Date(t.getFullYear(),0,1); e = new Date(t.getFullYear(),11,31); break;
-                case 'lastYear':  s = new Date(t.getFullYear()-1,0,1); e = new Date(t.getFullYear()-1,11,31); break;
-                default: return;
-            }
-            startDate.valueAsDate = s; endDate.valueAsDate = e; applyFilters();
-        });
-
-        /* Default: last 30 days */
-        const ed = new Date(), sd = new Date();
-        sd.setDate(sd.getDate() - 30);
-        startDate.valueAsDate = sd; endDate.valueAsDate = ed;
-
-        filterBtn.addEventListener('click', applyFilters);
-        resetBtn.addEventListener('click', () => {
-            startDate.value = ''; endDate.value = '';
-            branchSelect.value = ''; periodSel.value = 'custom';
-            displayData(allProfitData); buildCharts(allProfitData);
-        });
-    }
-
-    function applyFilters() {
-        const s  = document.getElementById('startDate').value;
-        const e  = document.getElementById('endDate').value;
-        const br = document.getElementById('branchSelect').value;
-        let d    = allProfitData;
-        if (s && e) {
-            const fs = new Date(s), fe = new Date(e); fe.setDate(fe.getDate()+1);
-            d = d.filter(i => { const dt = new Date(i.date); return dt >= fs && dt < fe; });
+        if (!data.length) {
+            wrap.innerHTML = `<div class="no-comments"><i class="fas fa-chart-line"></i>No data — filter to see insights</div>`;
+            return;
         }
-        if (br) d = d.filter(i => i.branch === br);
-        displayData(d); buildCharts(d);
+
+        const comments = [];
+        let totalSales = 0, totalProfit = 0, totalQty = 0;
+        const byProd = {}, byBranch = {};
+
+        data.forEach(d => {
+            totalSales  += d.totalSales;
+            totalProfit += d.totalProfit;
+            totalQty    += d.quantity;
+            if (!byProd[d.name])   byProd[d.name]   = { sales:0, profit:0, qty:0, code:d.code };
+            if (!byBranch[d.branch]) byBranch[d.branch] = { sales:0, profit:0 };
+            byProd[d.name].sales   += d.totalSales;
+            byProd[d.name].profit  += d.totalProfit;
+            byProd[d.name].qty     += d.quantity;
+            byBranch[d.branch].sales  += d.totalSales;
+            byBranch[d.branch].profit += d.totalProfit;
+        });
+
+        const margin = totalSales > 0 ? (totalProfit / totalSales * 100) : 0;
+        const monthLabel = monthStr
+            ? new Date(monthStr + '-01').toLocaleString('en-GB', { month:'long', year:'numeric' })
+            : 'selected period';
+
+        // 1. Overall margin comment
+        if (margin >= 30) {
+            comments.push({ icon:'ci-great', tag:'tag-great', tagText:'🏆 Excellent', text:`Profit margin is <strong>${margin.toFixed(1)}%</strong> for ${monthLabel} — outstanding performance! Keep it up.` });
+        } else if (margin >= 15) {
+            comments.push({ icon:'ci-good', tag:'tag-good', tagText:'✅ Good', text:`Profit margin is <strong>${margin.toFixed(1)}%</strong> for ${monthLabel} — solid results. Aim to push above 30%.` });
+        } else if (margin >= 5) {
+            comments.push({ icon:'ci-warn', tag:'tag-warn', tagText:'⚠️ Average', text:`Margin is only <strong>${margin.toFixed(1)}%</strong> for ${monthLabel}. Review pricing or reduce costs to improve.` });
+        } else {
+            comments.push({ icon:'ci-bad', tag:'tag-bad', tagText:'🔴 Critical', text:`Margin is very low at <strong>${margin.toFixed(1)}%</strong> for ${monthLabel}. Urgent review of costs and selling prices needed.` });
+        }
+
+        // 2. Top performing product
+        const prodArr  = Object.entries(byProd).sort((a,b) => b[1].profit - a[1].profit);
+        if (prodArr.length) {
+            const [topName, topData] = prodArr[0];
+            comments.push({ icon:'ci-info', tag:'tag-info', tagText:'⭐ Top Product', text:`<strong>${topName}</strong> is your best performer with <strong>${fmt(topData.profit)}</strong> profit and <strong>${topData.qty}</strong> units sold.` });
+        }
+
+        // 3. Worst performing product
+        const negProds = prodArr.filter(([,v]) => v.profit < 0);
+        if (negProds.length) {
+            const [worstName, worstData] = negProds[negProds.length - 1];
+            comments.push({ icon:'ci-bad', tag:'tag-bad', tagText:'📉 Losing Product', text:`<strong>${worstName}</strong> is losing money — <strong>${fmt(worstData.profit)}</strong> loss. Consider removing or repricing this product.` });
+        } else if (prodArr.length > 1) {
+            const [lowName, lowData] = prodArr[prodArr.length - 1];
+            comments.push({ icon:'ci-warn', tag:'tag-warn', tagText:'📊 Needs Attention', text:`<strong>${lowName}</strong> has the lowest profit at <strong>${fmt(lowData.profit)}</strong>. Consider boosting price or pushing more sales volume.` });
+        }
+
+        // 4. Branch comparison
+        const branchArr = Object.entries(byBranch).sort((a,b) => b[1].sales - a[1].sales);
+        if (branchArr.length > 1) {
+            const [topBranch]  = branchArr[0];
+            const [lowBranch]  = branchArr[branchArr.length - 1];
+            const topBSales    = byBranch[topBranch].sales;
+            const lowBSales    = byBranch[lowBranch].sales;
+            const diff = topBSales > 0 ? ((topBSales - lowBSales) / topBSales * 100).toFixed(0) : 0;
+            comments.push({ icon:'ci-info', tag:'tag-info', tagText:'🏬 Branch Comparison', text:`<strong>${topBranch}</strong> leads in sales. <strong>${lowBranch}</strong> is ${diff}% behind — investigate what's driving the gap.` });
+        } else if (branchArr.length === 1) {
+            const [br, brData] = branchArr[0];
+            const bMargin = brData.sales > 0 ? (brData.profit / brData.sales * 100).toFixed(1) : 0;
+            comments.push({ icon:'ci-info', tag:'tag-info', tagText:'🏬 Branch', text:`<strong>${br}</strong> — Total sales <strong>${fmt(brData.sales)}</strong> with <strong>${bMargin}%</strong> margin.` });
+        }
+
+        // 5. Volume advice
+        if (totalQty < 10) {
+            comments.push({ icon:'ci-warn', tag:'tag-warn', tagText:'📦 Low Volume', text:`Only <strong>${totalQty} units</strong> sold in this period. Push sales activities and promotions to increase volume.` });
+        } else if (totalQty > 200) {
+            comments.push({ icon:'ci-good', tag:'tag-good', tagText:'📦 Strong Volume', text:`<strong>${totalQty} units</strong> sold — great sales volume! Make sure stock levels can keep up with demand.` });
+        }
+
+        // Render
+        wrap.innerHTML = comments.map(c => `
+            <div class="comment-card">
+                <div class="comment-icon ${c.icon}"><i class="fas fa-${c.icon === 'ci-good'?'check':'ci-great'==='ci-great'?'trophy':c.icon==='ci-warn'?'triangle-exclamation':c.icon==='ci-bad'?'circle-exclamation':'circle-info'}"></i></div>
+                <div class="comment-body">
+                    <div class="ctag ${c.tag}">${c.tagText}</div>
+                    <p>${c.text}</p>
+                </div>
+            </div>`).join('');
     }
 
-    function generateReport() {
+    /* ── Generate Report for Print ── */
+    window.generateReport = function() {
         let qty = 0, sales = 0, profit = 0;
-        allProfitData.forEach(d => { qty += d.quantity; sales += d.totalSales; profit += d.totalProfit; });
+        displayedData.forEach(d => { qty += d.quantity; sales += d.totalSales; profit += d.totalProfit; });
+        const margin = sales > 0 ? (profit / sales * 100).toFixed(1) : 0;
         document.getElementById('printMetrics').innerHTML = `
-            <h2 style="margin-bottom:8px;">Profit Analysis Report</h2>
-            <p style="font-size:0.85rem;color:#555;">Generated: ${new Date().toLocaleDateString()}</p>
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:16px 0;">
-                <div style="border:1px solid #ccc;padding:12px;border-radius:6px;"><h4>Total Sales</h4><p style="font-size:1.3em;font-weight:800;">K ${sales.toFixed(2)}</p></div>
-                <div style="border:1px solid #ccc;padding:12px;border-radius:6px;"><h4>Total Profit</h4><p style="font-size:1.3em;font-weight:800;">K ${profit.toFixed(2)}</p></div>
+            <h2>Profit Analysis Report</h2>
+            <p style="margin:6px 0 16px;font-size:0.9rem;color:#555;">Generated: ${new Date().toLocaleDateString('en-GB', {weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;">
+                <div style="border:1px solid #ccc;padding:10px;border-radius:6px;"><h4>Total Sales</h4><p style="font-size:1.2em;font-weight:800;">K ${fmtRaw(sales)}</p></div>
+                <div style="border:1px solid #ccc;padding:10px;border-radius:6px;"><h4>Total Profit</h4><p style="font-size:1.2em;font-weight:800;">K ${fmtRaw(profit)}</p></div>
+                <div style="border:1px solid #ccc;padding:10px;border-radius:6px;"><h4>Qty Sold</h4><p style="font-size:1.2em;font-weight:800;">${qty}</p></div>
+                <div style="border:1px solid #ccc;padding:10px;border-radius:6px;"><h4>Margin</h4><p style="font-size:1.2em;font-weight:800;">${margin}%</p></div>
             </div>`;
         let rows = '';
-        allProfitData.forEach(d => {
-            rows += `<tr><td>${d.date}</td><td>${d.branch}</td><td>${d.name}</td><td>${d.quantity}</td><td>K ${d.totalSales.toFixed(2)}</td><td>K ${d.totalProfit.toFixed(2)}</td></tr>`;
+        displayedData.forEach(d => {
+            rows += `<tr><td>${d.date}</td><td>${d.branch}</td><td>${d.code}</td><td>${d.name}</td><td>K ${fmtRaw(d.orderPrice)}</td><td>${d.quantity}</td><td>K ${fmtRaw(d.totalSales)}</td><td>K ${fmtRaw(d.totalProfit)}</td></tr>`;
         });
         document.getElementById('printTable').innerHTML = `
-            <h3 style="margin-bottom:8px;">Detailed Records</h3>
-            <table border="1" style="width:100%;border-collapse:collapse;font-size:0.85rem;">
-                <thead style="background:#f0f0f0;"><tr><th>Date</th><th>Branch</th><th>Product</th><th>Qty</th><th>Sales</th><th>Profit</th></tr></thead>
+            <table border="1" style="width:100%;border-collapse:collapse;font-size:0.82rem;margin-top:10px;">
+                <thead style="background:#f0f0f0;"><tr><th>Date</th><th>Branch</th><th>Code</th><th>Product</th><th>Order Price</th><th>Qty</th><th>Sales</th><th>Profit</th></tr></thead>
                 <tbody>${rows}</tbody>
-                <tfoot><tr style="font-weight:800;background:#e8e8e8;"><td colspan="3">TOTALS</td><td>${qty}</td><td>K ${sales.toFixed(2)}</td><td>K ${profit.toFixed(2)}</td></tr></tfoot>
-            </table>`;
+                <tfoot><tr style="font-weight:800;background:#e8e8e8;"><td colspan="5">TOTALS</td><td>${qty}</td><td>K ${fmtRaw(sales)}</td><td>K ${fmtRaw(profit)}</td></tr></tfoot>
+            </table>
+            <p style="margin-top:16px;font-size:0.78rem;color:#888;">Trismart Profit Analysis System</p>`;
         window.print();
-    }
+    };
 
-    function printDashboard() { generateReport(); }
+    /* ── Event listeners ── */
+    document.getElementById('filterBtn').addEventListener('click', apply);
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        document.getElementById('monthFilter').value = new Date().toISOString().substring(0,7);
+        document.getElementById('branchSelect').value = '';
+        document.getElementById('searchInput').value = '';
+        apply();
+    });
+    document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') apply(); });
+    document.getElementById('monthFilter').addEventListener('change', apply);
+    document.getElementById('branchSelect').addEventListener('change', apply);
 
-    /* Expose globally */
-    window.generateReport  = generateReport;
-    window.printDashboard  = printDashboard;
-    window.applyFilters    = applyFilters;
-
-    window.onload = fetchProfitData;
+    /* ── Init ── */
+    // Default to current month
+    document.getElementById('monthFilter').value = new Date().toISOString().substring(0,7);
+    loadData();
 </script>
 </body>
 </html>
