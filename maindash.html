@@ -114,16 +114,6 @@ body{min-height:100dvh;display:flex;flex-direction:column;}
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .pg-hdr-l .greet{font-size:.72rem;color:var(--fade);}
 
-/* branch tabs */
-.br-tabs{display:flex;align-items:center;gap:3px;
-  background:var(--lite);border:1px solid var(--bdr);
-  border-radius:100px;padding:2px 3px;}
-.br-btn{padding:4px 12px;border-radius:100px;
-  font-size:.72rem;font-weight:600;
-  cursor:pointer;border:none;background:transparent;
-  color:var(--fade);transition:all .13s;white-space:nowrap;}
-.br-btn.on{background:var(--p);color:white;
-  box-shadow:0 2px 7px rgba(67,97,238,.25);}
 
 /* ── STAT TILES — 2×2 compact grid ── */
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
@@ -286,7 +276,7 @@ body{min-height:100dvh;display:flex;flex-direction:column;}
         <h2>Dashboard</h2>
         <span class="greet" id="greet">Good day</span>
       </div>
-      <div class="br-tabs" id="brTabs"></div>
+
     </div>
 
     <!-- ── STAT TILES 2×2 ── -->
@@ -330,7 +320,6 @@ body{min-height:100dvh;display:flex;flex-direction:column;}
     <div class="ql-grid">
       <a href="sale.html"      class="ql"><i class="fas fa-cash-register"></i>Sales</a>
       <a href="warehouse.html" class="ql"><i class="fas fa-warehouse"></i>Warehouse</a>
-      <a href="Restock.html"   class="ql"><i class="fas fa-file-invoice"></i>GRV</a>
       <a href="Report.html"    class="ql"><i class="fas fa-calendar-day"></i>Report</a>
       <a href="lowstock.html"  class="ql"><i class="fas fa-exclamation-triangle"></i>Low Stock</a>
       <a href="cashbook.html"  class="ql"><i class="fas fa-wallet"></i>Accounts</a>
@@ -371,20 +360,12 @@ const cfg={
 const app=initializeApp(cfg);
 const db=getFirestore(app);
 
-/* ── BRANCHES — add ts3, ts4 etc here as needed ── */
-const BRANCHES={
-  ts1:{id:'ts1',label:'TS-1'},
-  ts2:{id:'ts2',label:'TS-2'},
-};
-
 /* ── SESSION ── */
 const userName=(localStorage.getItem('userName')||'').trim();
 if(!userName){alert('Please log in.');window.location.href='index.html';}
 document.getElementById('uName').textContent=userName;
 
-let activeBranch=localStorage.getItem('branchId');
-if(!activeBranch||!BRANCHES[activeBranch])activeBranch='ts1';
-localStorage.setItem('branchId',activeBranch);
+const activeBranch=localStorage.getItem('branchId')||'makeni';
 
 /* ── TOAST ── */
 function toast(m,t='success'){
@@ -434,28 +415,6 @@ function tick(){
   document.getElementById('greet').textContent=`Good ${g}, ${userName} 👋`;
 }
 tick();setInterval(tick,30000);
-
-/* ── BRANCH TABS ── */
-function buildTabs(){
-  const wrap=document.getElementById('brTabs');
-  wrap.innerHTML='';
-  Object.values(BRANCHES).forEach(b=>{
-    const btn=document.createElement('button');
-    btn.className='br-btn'+(b.id===activeBranch?' on':'');
-    btn.textContent=b.label;
-    btn.onclick=()=>switchBranch(b.id);
-    wrap.appendChild(btn);
-  });
-}
-function switchBranch(id){
-  if(id===activeBranch)return;
-  activeBranch=id;
-  localStorage.setItem('branchId',id);
-  document.querySelectorAll('.br-btn').forEach(b=>b.classList.toggle('on',b.textContent===BRANCHES[id].label));
-  stopListeners();resetDisplay();startListeners();
-  toast(`Switched to ${BRANCHES[id].label}`);
-}
-buildTabs();
 
 /* ── DISPLAY RESET ── */
 function resetDisplay(){
