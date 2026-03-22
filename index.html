@@ -27,57 +27,45 @@
         html, body {
             min-height: 100vh; width: 100%;
             font-family: 'DM Sans', sans-serif;
-            color: var(--text);
-            overflow-x: hidden;
+            color: var(--text); overflow-x: hidden;
         }
 
         body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 20px;
             background: var(--bg);
-            /* subtle grid texture like the dark dashboard */
             background-image:
                 linear-gradient(rgba(67,97,238,0.04) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(67,97,238,0.04) 1px, transparent 1px);
             background-size: 36px 36px;
-            padding: 20px;
         }
 
-        /* ── BIG BLUE BLOB ── */
         body::before {
-            content: '';
-            position: fixed; top: -120px; right: -120px;
+            content: ''; position: fixed; top: -120px; right: -120px;
             width: 420px; height: 420px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(67,97,238,0.12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(67,97,238,0.12), transparent 70%);
             pointer-events: none; z-index: 0;
         }
         body::after {
-            content: '';
-            position: fixed; bottom: -100px; left: -80px;
+            content: ''; position: fixed; bottom: -100px; left: -80px;
             width: 340px; height: 340px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(0,180,216,0.09) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(0,180,216,0.09), transparent 70%);
             pointer-events: none; z-index: 0;
         }
 
-        /* ── CARD ── */
         .card {
             position: relative; z-index: 1;
-            background: var(--bg2);
-            border-radius: 24px;
+            background: var(--bg2); border-radius: 24px;
             box-shadow: 0 8px 40px rgba(67,97,238,0.12), 0 2px 8px rgba(0,0,0,0.06);
             border: 1px solid var(--border);
             width: 100%; max-width: 380px;
             padding: 36px 32px 28px;
-            animation: popUp 0.55s cubic-bezier(0.22,1,0.36,1) backwards;
+            animation: popUp 0.5s cubic-bezier(0.22,1,0.36,1) backwards;
         }
 
-        /* ── BRAND TOP ── */
         .brand {
             display: flex; flex-direction: column;
-            align-items: center; gap: 10px;
-            margin-bottom: 28px;
+            align-items: center; gap: 8px; margin-bottom: 26px;
         }
         .logo-wrap {
             width: 56px; height: 56px; border-radius: 16px;
@@ -86,33 +74,19 @@
             color: white; font-size: 1.5rem;
             box-shadow: 0 6px 20px rgba(67,97,238,0.3);
         }
-        .brand-name {
-            font-size: 1.5rem; font-weight: 800; color: var(--text);
-            letter-spacing: -0.5px; line-height: 1;
-        }
+        .brand-name { font-size: 1.5rem; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
         .brand-name span { color: var(--blue); }
-        .brand-sub {
-            font-size: 0.72rem; font-weight: 600; color: var(--dim);
-            text-transform: uppercase; letter-spacing: 0.14em;
-        }
+        .brand-sub { font-size: 0.68rem; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 0.14em; }
 
-        /* ── DIVIDER ── */
-        .divider {
-            height: 1px; background: var(--border);
-            margin: 0 0 24px; border-radius: 1px;
-        }
+        .divider { height: 1px; background: var(--border); margin: 0 0 22px; }
 
-        /* ── FORM ── */
         .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
-        .field label {
-            font-size: 0.68rem; font-weight: 800; color: var(--fade);
-            text-transform: uppercase; letter-spacing: 0.1em;
-        }
+        .field label { font-size: 0.65rem; font-weight: 800; color: var(--fade); text-transform: uppercase; letter-spacing: 0.1em; }
 
         .input-wrap { position: relative; }
-        .input-wrap i {
+        .input-wrap .ico {
             position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-            color: var(--dim); font-size: 0.88rem; pointer-events: none;
+            color: var(--dim); font-size: 0.85rem; pointer-events: none;
         }
         .input-wrap input {
             width: 100%; padding: 11px 12px 11px 36px;
@@ -127,224 +101,183 @@
         }
         .input-wrap input::placeholder { color: var(--dim); }
 
-        /* password toggle */
         .pw-toggle {
             position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
-            color: var(--dim); cursor: pointer; font-size: 0.88rem; padding: 4px;
-            background: none; border: none; transition: color 0.15s;
+            color: var(--dim); cursor: pointer; font-size: 0.85rem;
+            background: none; border: none; padding: 4px; transition: color 0.15s;
         }
         .pw-toggle:hover { color: var(--blue); }
 
-        /* ── SUBMIT BTN ── */
         .login-btn {
-            width: 100%; margin-top: 6px;
-            padding: 13px;
+            width: 100%; margin-top: 8px; padding: 13px;
             border: none; border-radius: 12px;
             background: linear-gradient(135deg, var(--blue), var(--cyan));
             color: white; font-weight: 800; font-size: 0.95rem;
-            font-family: 'DM Sans', sans-serif;
-            cursor: pointer; letter-spacing: 0.02em;
+            font-family: 'DM Sans', sans-serif; cursor: pointer;
             box-shadow: 0 4px 16px rgba(67,97,238,0.28);
             transition: all 0.2s;
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(67,97,238,0.35); }
-        .login-btn:active { transform: translateY(0); }
+        .login-btn:hover   { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(67,97,238,0.35); }
+        .login-btn:active  { transform: translateY(0); }
         .login-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
 
-        /* ── ERROR ── */
         .error-box {
             display: none; align-items: center; gap: 8px;
             background: rgba(239,68,68,0.07);
             border: 1px solid rgba(239,68,68,0.25);
-            border-radius: 10px; padding: 9px 12px;
-            margin-top: 12px;
+            border-radius: 10px; padding: 9px 12px; margin-top: 12px;
             font-size: 0.78rem; font-weight: 700; color: var(--danger);
-            animation: shake 0.35s ease;
         }
-        .error-box.show { display: flex; }
+        .error-box.show { display: flex; animation: shake 0.35s ease; }
         .error-box i { font-size: 0.88rem; flex-shrink: 0; }
 
-        /* ── FOOTER ── */
-        .card-foot {
-            margin-top: 22px; text-align: center;
-            font-size: 0.65rem; color: var(--dim); font-weight: 600;
-            letter-spacing: 0.06em;
-        }
+        .card-foot { margin-top: 20px; text-align: center; font-size: 0.62rem; color: var(--dim); font-weight: 600; letter-spacing: 0.06em; }
 
-        /* ── ANIMATIONS ── */
         @keyframes popUp {
-            from { opacity: 0; transform: translateY(24px) scale(0.97); }
+            from { opacity: 0; transform: translateY(22px) scale(0.97); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%       { transform: translateX(-6px); }
-            40%       { transform: translateX(6px); }
-            60%       { transform: translateX(-4px); }
-            80%       { transform: translateX(4px); }
+            0%,100% { transform: translateX(0); }
+            20%     { transform: translateX(-6px); }
+            40%     { transform: translateX(6px); }
+            60%     { transform: translateX(-4px); }
+            80%     { transform: translateX(4px); }
         }
 
         @media (max-width: 420px) {
-            .card { padding: 28px 20px 22px; border-radius: 20px; }
+            .card { padding: 26px 18px 20px; border-radius: 20px; }
             .brand-name { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
-    <div class="card">
+<div class="card">
 
-        <!-- Brand -->
-        <div class="brand">
-            <div class="logo-wrap">
-                <i class="fas fa-store-alt"></i>
-            </div>
-            <div class="brand-name">Tri<span>smart</span></div>
-            <div class="brand-sub">Store Management System</div>
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- Form -->
-        <form id="loginForm" autocomplete="off">
-
-            <div class="field">
-                <label for="username">Username</label>
-                <div class="input-wrap">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="username" placeholder="Enter your username" maxlength="30" required autofocus>
-                </div>
-            </div>
-
-            <div class="field">
-                <label for="password">Password</label>
-                <div class="input-wrap">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="password" placeholder="Enter your password" maxlength="30" required>
-                    <button type="button" class="pw-toggle" id="pwToggle" tabindex="-1">
-                        <i class="fas fa-eye" id="pwIcon"></i>
-                    </button>
-                </div>
-            </div>
-
-            <button type="submit" class="login-btn" id="loginBtn">
-                <i class="fas fa-sign-in-alt"></i> Sign In
-            </button>
-
-            <div class="error-box" id="errorBox">
-                <i class="fas fa-exclamation-circle"></i>
-                <span id="errorText">Invalid username or password</span>
-            </div>
-        </form>
-
-        <div class="card-foot">© 2025 Trismart Stores · All rights reserved</div>
+    <div class="brand">
+        <div class="logo-wrap"><i class="fas fa-store-alt"></i></div>
+        <div class="brand-name">Tri<span>smart</span></div>
+        <div class="brand-sub">Store Management System</div>
     </div>
 
-    <script>
-        /* ══════════════════════════════════════
-           BLOCK BACK BUTTON — both on this page
-           and after redirecting to dashboard
-        ══════════════════════════════════════ */
+    <div class="divider"></div>
 
-        // Push a dummy state so back button has nowhere to go
+    <form id="loginForm" autocomplete="off">
+
+        <div class="field">
+            <label>Username</label>
+            <div class="input-wrap">
+                <i class="fas fa-user ico"></i>
+                <input type="text" id="username" placeholder="Enter your username" maxlength="30" required autofocus>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Password</label>
+            <div class="input-wrap">
+                <i class="fas fa-lock ico"></i>
+                <input type="password" id="password" placeholder="Enter your password" maxlength="30" required>
+                <button type="button" class="pw-toggle" id="pwToggle" tabindex="-1">
+                    <i class="fas fa-eye" id="pwIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+
+        <div class="error-box" id="errorBox">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText">Invalid username or password</span>
+        </div>
+    </form>
+
+    <div class="card-foot">© 2025 Trismart Stores · All rights reserved</div>
+</div>
+
+<script>
+    /* ── ALWAYS clear session when landing on login ── */
+    localStorage.removeItem('userName');
+    localStorage.removeItem('branchId');
+
+    /* ── Block browser back button ── */
+    history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', () => {
         history.pushState(null, '', window.location.href);
-        window.addEventListener('popstate', () => {
-            // User pressed back — push state again to trap them
-            history.pushState(null, '', window.location.href);
-        });
+    });
 
-        /* ══════════════════════════════════════
-           USERS
-        ══════════════════════════════════════ */
-        const USERS = [
-            { username: 'Fridah', password: 'Fridah10',   branch: 'makeni' },
-            { username: 'Doro',   password: 'Dorothy.',    branch: 'kabana' },
-            { username: 'Chris',  password: 'chishela10',  branch: 'master' }
-        ];
+    /* ── Users ── */
+    const USERS = [
+        { username: 'Fridah', password: 'Fridah10',  branch: 'makeni' },
+        { username: 'Doro',   password: 'Dorothy.',   branch: 'kabana' },
+        { username: 'Chris',  password: 'chishela10', branch: 'master' }
+    ];
 
-        /* ══════════════════════════════════════
-           If already logged in, redirect away
-           (and block back to login)
-        ══════════════════════════════════════ */
-        if (localStorage.getItem('userName')) {
-            // Replace current history entry so back won't return here
-            window.location.replace('dashboard.html');
+    /* ── Password toggle ── */
+    const pwInput  = document.getElementById('password');
+    const pwToggle = document.getElementById('pwToggle');
+    const pwIcon   = document.getElementById('pwIcon');
+    pwToggle.addEventListener('click', () => {
+        const show = pwInput.type === 'password';
+        pwInput.type     = show ? 'text' : 'password';
+        pwIcon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+    });
+
+    /* ── Login ── */
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn  = document.getElementById('loginBtn');
+    const errorBox  = document.getElementById('errorBox');
+    const errorText = document.getElementById('errorText');
+
+    function showError(msg) {
+        errorText.textContent = msg;
+        errorBox.classList.remove('show');
+        void errorBox.offsetWidth; // force reflow to restart animation
+        errorBox.classList.add('show');
+        pwInput.style.borderColor = 'var(--danger)';
+        setTimeout(() => { pwInput.style.borderColor = ''; }, 1400);
+    }
+
+    loginForm.addEventListener('submit', e => {
+        e.preventDefault();
+        errorBox.classList.remove('show');
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!username || !password) {
+            showError('Please enter your username and password.');
+            return;
         }
 
-        /* ══════════════════════════════════════
-           PASSWORD TOGGLE
-        ══════════════════════════════════════ */
-        const pwInput  = document.getElementById('password');
-        const pwToggle = document.getElementById('pwToggle');
-        const pwIcon   = document.getElementById('pwIcon');
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
 
-        pwToggle.addEventListener('click', () => {
-            const isHidden = pwInput.type === 'password';
-            pwInput.type   = isHidden ? 'text' : 'password';
-            pwIcon.className = isHidden ? 'fas fa-eye-slash' : 'fas fa-eye';
-        });
+        setTimeout(() => {
+            const user = USERS.find(u =>
+                u.username.toLowerCase() === username.toLowerCase() &&
+                u.password === password
+            );
 
-        /* ══════════════════════════════════════
-           LOGIN FORM
-        ══════════════════════════════════════ */
-        const loginForm = document.getElementById('loginForm');
-        const loginBtn  = document.getElementById('loginBtn');
-        const errorBox  = document.getElementById('errorBox');
-        const errorText = document.getElementById('errorText');
+            if (user) {
+                localStorage.setItem('userName', user.username.toLowerCase());
+                localStorage.setItem('branchId', user.branch);
 
-        function showError(msg) {
-            errorText.textContent = msg;
-            errorBox.classList.add('show');
-            // Reset animation
-            errorBox.style.animation = 'none';
-            requestAnimationFrame(() => { errorBox.style.animation = ''; });
-        }
-        function hideError() { errorBox.classList.remove('show'); }
+                loginBtn.innerHTML = '<i class="fas fa-check"></i> Welcome!';
 
-        loginForm.addEventListener('submit', e => {
-            e.preventDefault();
-            hideError();
-
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-
-            if (!username || !password) {
-                showError('Please enter your username and password.');
-                return;
+                /* use replace() so back button on dashboard can't return to login */
+                setTimeout(() => {
+                    window.location.replace('dashboard.html');
+                }, 500);
+            } else {
+                showError('Wrong username or password. Try again.');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
             }
-
-            // Loading state
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
-
-            // Small delay for UX feel
-            setTimeout(() => {
-                const user = USERS.find(u =>
-                    u.username.toLowerCase() === username.toLowerCase() &&
-                    u.password === password
-                );
-
-                if (user) {
-                    // Save session
-                    localStorage.setItem('userName', user.username.toLowerCase());
-                    localStorage.setItem('branchId', user.branch);
-
-                    loginBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
-
-                    // Use replace so back button on dashboard won't come back to login
-                    setTimeout(() => {
-                        window.location.replace('dashboard.html');
-                    }, 500);
-                } else {
-                    showError('Invalid username or password. Please try again.');
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
-                    // Shake the password field
-                    pwInput.style.borderColor = 'var(--danger)';
-                    setTimeout(() => { pwInput.style.borderColor = ''; }, 1400);
-                }
-            }, 600);
-        });
-    </script>
+        }, 600);
+    });
+</script>
 </body>
 </html>
