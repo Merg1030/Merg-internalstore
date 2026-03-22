@@ -2,858 +2,402 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profit Analysis Dashboard - Trismart</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trismart · Profit Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #4361ee;
-            --accent: #4cc9f0;
-            --danger: #ff5e5e;
-            --success: #4cd964;
-            --warning: #ffcc00;
-            --bg: #191c24;
-            --card-bg: #22223b;
-            --border: #373a53;
-            --table-head: #2a2e4a;
-            --table-even: #232445;
-            --table-odd: #191c24;
-            --table-hover: #2b2e4e;
-            --text: #e0e0e0;
-            --fade: #b0b0b0;
-            --radius: 15px;
-            --shadow: 0 8px 36px #0002, 0 2px 0 #4361ee22;
+            --bg:        #f4f6fb;
+            --bg2:       #ffffff;
+            --bg3:       #f1f3f5;
+            --border:    #e2e6ef;
+            --border2:   #cdd3e0;
+            --text:      #1a1e2e;
+            --text-fade: #6b7490;
+            --text-dim:  #a0a8c0;
+            --blue:      #4361ee;
+            --cyan:      #00b4d8;
+            --green:     #10b981;
+            --orange:    #f59e0b;
+            --pink:      #f72585;
+            --purple:    #7c3aed;
+            --danger:    #ef4444;
+            --blue-glow: rgba(67,97,238,0.15);
+            --radius:    10px;
+            --radius-lg: 16px;
+            --shadow:    0 2px 12px rgba(67,97,238,0.08);
+            --shadow-lg: 0 8px 32px rgba(67,97,238,0.13);
+            --header-h:  54px;
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
         html, body {
-            height: 100%;
-            margin: 0; padding: 0;
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Poppins', Arial, sans-serif;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; overflow-x: hidden;
+            background-image:
+                linear-gradient(rgba(67,97,238,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(67,97,238,0.025) 1px, transparent 1px);
+            background-size: 40px 40px;
         }
-        body { min-height: 100vh; }
-        .container {
-            margin: 30px auto 0 auto;
-            background: var(--card-bg);
-            border-radius: var(--radius);
+
+        /* ════════════════════════
+           TOPBAR
+        ════════════════════════ */
+        .topbar {
+            position: sticky; top: 0; z-index: 200;
+            height: var(--header-h);
+            background: rgba(255,255,255,0.94);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
             box-shadow: var(--shadow);
-            padding: 32px 2vw 32px 2vw;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; gap: 12px;
         }
-        h2 {
-            text-align: center;
-            margin-bottom: 16px;
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--primary);
+        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .logo-mark {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            border-radius: 9px; color: white; font-size: 0.85rem;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 12px rgba(67,97,238,0.25); flex-shrink: 0;
         }
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 15px;
+        .logo-text { font-size: 0.95rem; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+        .logo-text span { color: var(--blue); }
+        .page-pill {
+            background: var(--bg3); border: 1px solid var(--border2);
+            border-radius: 100px; padding: 3px 11px;
+            font-size: 0.65rem; font-weight: 700; color: var(--text-fade);
         }
-        .dashboard-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .topbar-right { display: flex; align-items: center; gap: 8px; }
+
+        /* Topbar buttons */
+        .tbtn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border: none; border-radius: 100px;
+            font-size: 0.75rem; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif; transition: all 0.18s;
+            white-space: nowrap;
         }
-        .dashboard-actions {
-            display: flex;
-            gap: 10px;
+        .tbtn-primary {
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            color: white; box-shadow: 0 3px 10px rgba(67,97,238,0.2);
         }
-        .kpi-cards {
+        .tbtn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(67,97,238,0.3); }
+        .tbtn-ghost {
+            background: var(--bg3); border: 1px solid var(--border2); color: var(--text-fade);
+        }
+        .tbtn-ghost:hover { border-color: var(--blue); color: var(--blue); background: white; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 13px; background: var(--bg3); border: 1px solid var(--border2);
+            border-radius: 100px; font-size: 0.75rem; font-weight: 700; color: var(--text-fade);
+            text-decoration: none; transition: all 0.18s;
+        }
+        .back-link:hover { border-color: var(--blue); color: var(--blue); background: white; }
+
+        /* ════════════════════════
+           MAIN
+        ════════════════════════ */
+        .main { padding: 18px 18px 30px; max-width: 1400px; margin: 0 auto; }
+
+        /* ── KPI CARDS ── */
+        .kpi-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px; margin-bottom: 16px;
         }
         .kpi-card {
-            background: linear-gradient(135deg, #2a2e4a, #232445);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease;
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 16px 16px 14px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .kpi-card:hover {
-            transform: translateY(-5px);
+        .kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .kpi-card::before {
+            content: ''; position: absolute; right: -12px; top: -12px;
+            width: 60px; height: 60px; border-radius: 50%;
+            filter: blur(18px); opacity: 0.2;
         }
-        .kpi-card.primary { border-left: 4px solid var(--primary); }
-        .kpi-card.success { border-left: 4px solid var(--success); }
-        .kpi-card.warning { border-left: 4px solid var(--warning); }
-        .kpi-card.accent { border-left: 4px solid var(--accent); }
-        .kpi-label {
-            font-size: 0.9em;
-            color: var(--fade);
-            margin-bottom: 8px;
+        .kpi-card.k1::before { background: var(--blue); }
+        .kpi-card.k2::before { background: var(--green); }
+        .kpi-card.k3::before { background: var(--orange); }
+        .kpi-card.k4::before { background: var(--purple); }
+        .kpi-card.k1 { border-top: 3px solid var(--blue); }
+        .kpi-card.k2 { border-top: 3px solid var(--green); }
+        .kpi-card.k3 { border-top: 3px solid var(--orange); }
+        .kpi-card.k4 { border-top: 3px solid var(--purple); }
+
+        .kpi-label { font-size: 0.62rem; font-weight: 800; color: var(--text-fade); text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 6px; }
+        .kpi-value { font-size: 1.5rem; font-weight: 800; color: var(--text); font-family: 'DM Mono', monospace; letter-spacing: -0.5px; margin-bottom: 5px; line-height: 1; }
+        .kpi-change { font-size: 0.68rem; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .positive { color: var(--green); } .negative { color: var(--danger); }
+
+        /* ── SECTION DIVIDER ── */
+        .section-divider {
+            display: flex; align-items: center; gap: 10px; margin: 16px 0 12px;
         }
-        .kpi-value {
-            font-size: 1.8em;
-            font-weight: 700;
-            margin-bottom: 5px;
+        .section-divider span {
+            font-size: 0.58rem; font-weight: 800; color: var(--text-dim);
+            text-transform: uppercase; letter-spacing: 0.14em; white-space: nowrap;
         }
-        .kpi-change {
-            font-size: 0.85em;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .positive { color: var(--success); }
-        .negative { color: var(--danger); }
-        .charts-container {
+        .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        /* ── CHARTS ── */
+        .charts-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 12px; margin-bottom: 16px;
         }
         .chart-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 20px;
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 16px;
             box-shadow: var(--shadow);
         }
-        .chart-title {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .chart-hdr {
+            display: flex; align-items: center; gap: 7px;
+            font-size: 0.78rem; font-weight: 800; color: var(--text);
+            margin-bottom: 12px;
         }
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
+        .chart-hdr i { color: var(--blue); font-size: 0.78rem; }
+        .chart-wrap { position: relative; height: 200px; }
+
+        /* ── FILTER BAR ── */
         .filter-bar {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            gap: 18px;
-            margin-bottom: 22px;
-            background: var(--bg);
-            padding: 18px 18px 12px 18px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px #0002;
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 14px 16px;
+            box-shadow: var(--shadow); margin-bottom: 14px;
+            display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap;
         }
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            min-width: 150px;
-            flex: 1 1 180px;
-        }
+        .filter-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 130px; }
         .filter-group label {
-            color: var(--fade);
-            font-size: 0.98em;
-            margin-bottom: 4px;
+            font-size: 0.6rem; font-weight: 800; color: var(--text-fade);
+            text-transform: uppercase; letter-spacing: 0.09em;
         }
-        .filter-group input[type="date"], .filter-group select {
-            background: #181a2f;
-            border: 1px solid var(--border);
-            border-radius: 7px;
-            color: var(--text);
-            padding: 8px 11px;
-            font-size: 1em;
+        .filter-group input[type="date"],
+        .filter-group select {
+            background: var(--bg3); border: 1.5px solid var(--border);
+            border-radius: 8px; color: var(--text);
+            padding: 7px 10px; font-size: 0.78rem;
+            font-family: 'DM Sans', sans-serif; outline: none;
+            transition: border-color 0.18s;
         }
-        .filter-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-left: auto;
+        .filter-group input[type="date"]:focus,
+        .filter-group select:focus { border-color: var(--blue); background: white; }
+
+        .filter-actions { display: flex; gap: 7px; align-items: flex-end; flex-shrink: 0; }
+
+        .fbtn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 8px 16px; border: none; border-radius: 8px;
+            font-size: 0.76rem; font-weight: 700; cursor: pointer;
+            font-family: 'DM Sans', sans-serif; transition: all 0.18s;
         }
-        .btn {
-            padding: 9px 24px;
-            border-radius: 7px;
-            background: linear-gradient(90deg, var(--primary) 60%, var(--accent) 100%);
-            color: #fff;
-            border: none;
-            box-shadow: 0 2px 8px #4361ee18;
-            font-weight: 600;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background .16s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .fbtn-primary {
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            color: white; box-shadow: 0 3px 10px rgba(67,97,238,0.2);
         }
-        .btn:hover {
-            background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
+        .fbtn-primary:hover { transform: translateY(-1px); }
+        .fbtn-danger {
+            background: rgba(239,68,68,0.08); color: var(--danger);
+            border: 1.5px solid rgba(239,68,68,0.25);
         }
-        .btn.danger {
-            background: var(--danger);
-            color: #fff;
+        .fbtn-danger:hover { background: rgba(239,68,68,0.14); border-color: var(--danger); }
+
+        /* ── TABLE ── */
+        .table-card {
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); overflow: hidden;
+            box-shadow: var(--shadow);
         }
-        .btn.danger:hover {
-            background: #c12e2e;
+        .table-hdr {
+            padding: 12px 16px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
         }
-        .btn.success {
-            background: var(--success);
-            color: #fff;
+        .table-hdr-left { display: flex; align-items: center; gap: 8px; }
+        .table-hdr-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--blue); box-shadow: 0 0 6px rgba(67,97,238,0.5);
+            animation: pulse 2s infinite;
         }
-        .table-container {
-            overflow-x: auto;
-            width: 100%;
+        .table-hdr h3 { font-size: 0.8rem; font-weight: 700; }
+        .row-count {
+            background: var(--bg3); border: 1px solid var(--border2);
+            border-radius: 100px; padding: 2px 9px;
+            font-size: 0.62rem; font-weight: 700; color: var(--text-fade);
         }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            min-width: 840px;
-            background: transparent;
-        }
-        th, td {
-            padding: 12px 10px;
-            text-align: left;
-        }
+
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        table { width: 100%; border-collapse: collapse; min-width: 750px; }
         thead th {
-            background: var(--table-head);
-            color: var(--accent);
-            font-size: 1.03em;
-            font-weight: 700;
-            border-bottom: 2px solid var(--primary);
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-        tbody tr {
-            transition: background 0.15s;
-        }
-        tbody tr:nth-child(even) { background: var(--table-even);}
-        tbody tr:nth-child(odd)  { background: var(--table-odd);}
-        tbody tr:hover { background: var(--table-hover);}
-        td {
-            color: var(--text);
-            font-size: 0.97em;
+            background: #f8f9ff; color: var(--text-fade);
+            font-size: 0.6rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.09em; padding: 10px 12px;
             border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 5; text-align: left; white-space: nowrap;
         }
-        .totals-row {
-            font-weight: 700;
-            background: var(--accent) !important;
-            color: #181a2f !important;
-            font-size: 1.05em;
+        tbody td {
+            padding: 9px 12px; font-size: 0.78rem;
+            border-bottom: 1px solid #f0f2f8; transition: background 0.12s;
         }
-        .totals-row td { border-top: 2px solid var(--primary);}
-        .no-data {
-            text-align: center;
-            padding: 28px 0;
-            font-style: italic;
-            color: #aaa;
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: #f8f9ff; }
+
+        .totals-row td {
+            background: linear-gradient(90deg, rgba(67,97,238,0.07), rgba(0,180,216,0.04)) !important;
+            font-weight: 800; color: var(--blue) !important;
+            font-family: 'DM Mono', monospace; font-size: 0.78rem;
+            border-top: 2px solid rgba(67,97,238,0.15);
         }
-        .print-section {
-            display: none;
+        .no-data { text-align: center; padding: 40px 20px; color: var(--text-dim); font-size: 0.82rem; }
+        .no-data i { font-size: 1.8rem; display: block; margin-bottom: 10px; color: var(--border2); }
+
+        .profit-pos { color: var(--green); font-weight: 700; font-family: 'DM Mono', monospace; }
+        .profit-neg { color: var(--danger); font-weight: 700; font-family: 'DM Mono', monospace; }
+        .mono { font-family: 'DM Mono', monospace; font-size: 0.75rem; }
+
+        .code-chip {
+            font-family: 'DM Mono', monospace; font-size: 0.65rem;
+            background: rgba(67,97,238,0.07); color: var(--blue);
+            border: 1px solid rgba(67,97,238,0.15); border-radius: 5px; padding: 1px 6px;
         }
+
+        /* ── PRINT ── */
+        .print-section { display: none; }
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            .print-section, .print-section * {
-                visibility: visible;
-            }
-            .print-section {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                background: white;
-                color: black;
-                padding: 20px;
-            }
+            body * { visibility: hidden; }
+            .print-section, .print-section * { visibility: visible; }
+            .print-section { position: absolute; left: 0; top: 0; width: 100%; background: white; color: black; padding: 20px; display: block; }
         }
-        @media (max-width: 700px) {
-            .container { padding: 12px 0.5vw;}
-            .charts-container { grid-template-columns: 1fr; }
-            .filter-bar { flex-direction: column; gap: 9px;}
-            table { min-width: 540px;}
+
+        /* ── ANIMATIONS ── */
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+        @media (max-width: 900px) {
+            .kpi-row { grid-template-columns: repeat(2, 1fr); }
+            .charts-row { grid-template-columns: 1fr; }
         }
-        @media (max-width: 430px) {
-            .container { padding: 3px 0.5vw;}
-            h2 { font-size: 1.15rem;}
+        @media (max-width: 600px) {
+            .main { padding: 12px 10px 24px; }
+            .kpi-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .kpi-value { font-size: 1.15rem; }
+            .filter-bar { flex-direction: column; gap: 8px; }
+            .filter-group { min-width: 100%; }
+            .topbar { padding: 0 12px; }
+            .page-pill { display: none; }
         }
     </style>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyB-lm7Y3r1F6Vv8PKvY8glLabZDbJsHM1k",
-            authDomain: "trismartstores.firebaseapp.com",
-            projectId: "trismartstores",
-            storageBucket: "trismartstores.appspot.com",
-            messagingSenderId: "416692703333",
-            appId: "1:416692703333:web:d4b60292621435c748f68c",
-            measurementId: "G-NJPQ7L3QWJ"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        let allProfitData = [];
-        let branches = new Set();
-        let salesChart, profitChart, branchChart;
-
-        // Function to find the order price that was active at the time of sale
-        function findOrderPriceAtTime(saleDate, productCode, restockHistory) {
-            // Filter restock entries for this product, sorted by date (newest first)
-            const productRestocks = restockHistory
-                .filter(entry => entry.code === productCode && entry.date <= saleDate)
-                .sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            // Return the most recent order price before the sale date
-            if (productRestocks.length > 0) {
-                return parseFloat(productRestocks[0].price);
-            }
-            
-            return null; // No order price found for this product before the sale date
-        }
-
-        async function fetchProfitData() {
-            try {
-                // Fetch sales data
-                const salesSnapshot = await getDocs(collection(db, 'sales'));
-                
-                // Fetch ALL restock history to track price changes over time
-                const restockSnapshot = await getDocs(collection(db, 'restockHistory'));
-                const restockHistory = restockSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-                console.log("Restock history loaded:", restockHistory);
-
-                const profits = [];
-                salesSnapshot.forEach(doc => {
-                    const sale = doc.data();
-                    const { code, name, price, quantity, date, branchId } = sale;
-                    
-                    // Find the order price that was active AT THE TIME OF THIS SALE
-                    const costPrice = findOrderPriceAtTime(date, code, restockHistory);
-                    
-                    if (costPrice !== null) {
-                        const profit = (price - costPrice) * quantity;
-                        profits.push({
-                            date: date || 'No date',
-                            branch: branchId || 'Unknown Branch',
-                            code,
-                            name,
-                            orderPrice: costPrice,
-                            quantity,
-                            totalSales: price * quantity,
-                            totalProfit: profit
-                        });
-                        branches.add(branchId || 'Unknown Branch');
-                    } else {
-                        console.warn(`No order price found for product at time of sale: ${code} - ${name} on ${date}`);
-                    }
-                });
-
-                allProfitData = profits.sort((a, b) => new Date(a.date) - new Date(b.date));
-                populateBranchFilter();
-                displayProfitData(allProfitData);
-                setupFilters();
-                updateKPICards(allProfitData);
-                initializeCharts(allProfitData);
-            } catch (error) {
-                console.error("Error fetching profit data:", error);
-                document.querySelector('#profitTable tbody').innerHTML = 
-                    `<tr><td colspan="8" class="no-data">Error loading data. Please try again.</td></tr>`;
-            }
-        }
-
-        function populateBranchFilter() {
-            const branchSelect = document.getElementById('branchSelect');
-            branchSelect.innerHTML = `<option value="">All Branches</option>`;
-            branches.forEach(branch => {
-                const option = document.createElement('option');
-                option.value = branch;
-                option.textContent = branch;
-                branchSelect.appendChild(option);
-            });
-        }
-
-        function updateKPICards(profits) {
-            let totalQuantity = 0, totalSales = 0, totalProfit = 0;
-            let totalProducts = new Set();
-            
-            profits.forEach(data => {
-                totalQuantity += data.quantity;
-                totalSales += data.totalSales;
-                totalProfit += data.totalProfit;
-                totalProducts.add(data.code);
-            });
-            
-            // Calculate profit margin
-            const profitMargin = totalSales > 0 ? (totalProfit / totalSales) * 100 : 0;
-            
-            // Update KPI cards
-            document.getElementById('kpiSales').textContent = `ZMW ${totalSales.toFixed(2)}`;
-            document.getElementById('kpiProfit').textContent = `ZMW ${totalProfit.toFixed(2)}`;
-            document.getElementById('kpiQuantity').textContent = totalQuantity.toLocaleString();
-            document.getElementById('kpiMargin').textContent = `${profitMargin.toFixed(1)}%`;
-            
-            // Calculate change from previous period (simplified - in real app, compare with previous data)
-            document.getElementById('kpiSalesChange').innerHTML = `<i class="fas fa-arrow-up"></i> 12.5%`;
-            document.getElementById('kpiProfitChange').innerHTML = `<i class="fas fa-arrow-up"></i> 8.3%`;
-        }
-
-        function displayProfitData(profits) {
-            const tableBody = document.querySelector('#profitTable tbody');
-            tableBody.innerHTML = '';
-
-            if (profits.length === 0) {
-                const emptyRow = document.createElement('tr');
-                emptyRow.innerHTML = `<td colspan="8" class="no-data">No data available for selected filters</td>`;
-                tableBody.appendChild(emptyRow);
-                document.querySelector('#profitTable tfoot').innerHTML = '';
-                updateKPICards([]);
-                return;
-            }
-
-            let totalQuantity = 0;
-            let totalSales = 0;
-            let totalProfit = 0;
-
-            profits.forEach(data => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${data.date}</td>
-                    <td>${data.branch}</td>
-                    <td>${data.code}</td>
-                    <td>${data.name}</td>
-                    <td>ZMW ${data.orderPrice.toFixed(2)}</td>
-                    <td>${data.quantity}</td>
-                    <td>ZMW ${data.totalSales.toFixed(2)}</td>
-                    <td>ZMW ${data.totalProfit.toFixed(2)}</td>
-                `;
-                tableBody.appendChild(row);
-
-                totalQuantity += data.quantity;
-                totalSales += data.totalSales;
-                totalProfit += data.totalProfit;
-            });
-
-            document.querySelector('#profitTable tfoot').innerHTML = `
-                <tr class="totals-row">
-                    <td colspan="5">TOTAL</td>
-                    <td>${totalQuantity}</td>
-                    <td>ZMW ${totalSales.toFixed(2)}</td>
-                    <td>ZMW ${totalProfit.toFixed(2)}</td>
-                </tr>
-            `;
-
-            updateKPICards(profits);
-        }
-
-        function initializeCharts(profits) {
-            // Destroy existing charts if they exist
-            if (salesChart) salesChart.destroy();
-            if (profitChart) profitChart.destroy();
-            if (branchChart) branchChart.destroy();
-            
-            // Sales by Product Chart
-            const salesByProduct = {};
-            profits.forEach(item => {
-                if (!salesByProduct[item.name]) {
-                    salesByProduct[item.name] = 0;
-                }
-                salesByProduct[item.name] += item.totalSales;
-            });
-            
-            const salesCtx = document.getElementById('salesChart').getContext('2d');
-            salesChart = new Chart(salesCtx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(salesByProduct),
-                    datasets: [{
-                        label: 'Sales (ZMW)',
-                        data: Object.values(salesByProduct),
-                        backgroundColor: 'rgba(67, 97, 238, 0.7)',
-                        borderColor: 'rgba(67, 97, 238, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: '#e0e0e0'
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#e0e0e0'
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#e0e0e0'
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Profit by Product Chart
-            const profitByProduct = {};
-            profits.forEach(item => {
-                if (!profitByProduct[item.name]) {
-                    profitByProduct[item.name] = 0;
-                }
-                profitByProduct[item.name] += item.totalProfit;
-            });
-            
-            const profitCtx = document.getElementById('profitChart').getContext('2d');
-            profitChart = new Chart(profitCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(profitByProduct),
-                    datasets: [{
-                        label: 'Profit (ZMW)',
-                        data: Object.values(profitByProduct),
-                        backgroundColor: [
-                            'rgba(76, 201, 240, 0.7)',
-                            'rgba(76, 217, 100, 0.7)',
-                            'rgba(255, 204, 0, 0.7)',
-                            'rgba(255, 94, 94, 0.7)',
-                            'rgba(147, 51, 234, 0.7)',
-                            'rgba(34, 197, 94, 0.7)'
-                        ],
-                        borderColor: 'rgba(255, 255, 255, 0.3)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                color: '#e0e0e0',
-                                padding: 15
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Sales by Branch Chart
-            const salesByBranch = {};
-            profits.forEach(item => {
-                if (!salesByBranch[item.branch]) {
-                    salesByBranch[item.branch] = 0;
-                }
-                salesByBranch[item.branch] += item.totalSales;
-            });
-            
-            const branchCtx = document.getElementById('branchChart').getContext('2d');
-            branchChart = new Chart(branchCtx, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(salesByBranch),
-                    datasets: [{
-                        label: 'Sales by Branch (ZMW)',
-                        data: Object.values(salesByBranch),
-                        backgroundColor: [
-                            'rgba(67, 97, 238, 0.7)',
-                            'rgba(76, 201, 240, 0.7)',
-                            'rgba(76, 217, 100, 0.7)',
-                            'rgba(255, 204, 0, 0.7)',
-                            'rgba(255, 94, 94, 0.7)'
-                        ],
-                        borderColor: 'rgba(255, 255, 255, 0.3)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                color: '#e0e0e0',
-                                padding: 15
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function setupFilters() {
-            const filterBtn = document.getElementById('filterBtn');
-            const startDateInput = document.getElementById('startDate');
-            const endDateInput = document.getElementById('endDate');
-            const branchSelect = document.getElementById('branchSelect');
-            const resetBtn = document.getElementById('resetBtn');
-
-            // Add period filter options
-            const periodSelect = document.getElementById('periodSelect');
-            periodSelect.innerHTML = `
-                <option value="custom">Custom Date Range</option>
-                <option value="today">Today</option>
-                <option value="yesterday">Yesterday</option>
-                <option value="thisWeek">This Week</option>
-                <option value="lastWeek">Last Week</option>
-                <option value="thisMonth">This Month</option>
-                <option value="lastMonth">Last Month</option>
-                <option value="thisYear">This Year</option>
-                <option value="lastYear">Last Year</option>
-            `;
-
-            periodSelect.addEventListener('change', function() {
-                const today = new Date();
-                let startDate, endDate;
-
-                switch(this.value) {
-                    case 'today':
-                        startDate = endDate = today;
-                        break;
-                    case 'yesterday':
-                        startDate = endDate = new Date(today);
-                        startDate.setDate(today.getDate() - 1);
-                        break;
-                    case 'thisWeek':
-                        startDate = new Date(today);
-                        startDate.setDate(today.getDate() - today.getDay());
-                        endDate = new Date(today);
-                        endDate.setDate(today.getDate() + (6 - today.getDay()));
-                        break;
-                    case 'lastWeek':
-                        startDate = new Date(today);
-                        startDate.setDate(today.getDate() - today.getDay() - 7);
-                        endDate = new Date(today);
-                        endDate.setDate(today.getDate() - today.getDay() - 1);
-                        break;
-                    case 'thisMonth':
-                        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-                        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                        break;
-                    case 'lastMonth':
-                        startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-                        endDate = new Date(today.getFullYear(), today.getMonth(), 0);
-                        break;
-                    case 'thisYear':
-                        startDate = new Date(today.getFullYear(), 0, 1);
-                        endDate = new Date(today.getFullYear(), 11, 31);
-                        break;
-                    case 'lastYear':
-                        startDate = new Date(today.getFullYear() - 1, 0, 1);
-                        endDate = new Date(today.getFullYear() - 1, 11, 31);
-                        break;
-                    default:
-                        return;
-                }
-
-                startDateInput.valueAsDate = startDate;
-                endDateInput.valueAsDate = endDate;
-                applyFilters();
-            });
-
-            // Default: last 30 days
-            const endDate = new Date();
-            const startDate = new Date();
-            startDate.setDate(startDate.getDate() - 30);
-            startDateInput.valueAsDate = startDate;
-            endDateInput.valueAsDate = endDate;
-
-            filterBtn.addEventListener('click', applyFilters);
-
-            resetBtn.addEventListener('click', () => {
-                startDateInput.value = '';
-                endDateInput.value = '';
-                branchSelect.value = '';
-                periodSelect.value = 'custom';
-                displayProfitData(allProfitData);
-                updateKPICards(allProfitData);
-                initializeCharts(allProfitData);
-            });
-        }
-
-        function applyFilters() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const selectedBranch = document.getElementById('branchSelect').value;
-
-            let filteredData = allProfitData;
-            if (startDate && endDate) {
-                const filterStart = new Date(startDate);
-                const filterEnd = new Date(endDate);
-                filterEnd.setDate(filterEnd.getDate() + 1);
-                filteredData = filteredData.filter(item => {
-                    const itemDate = new Date(item.date);
-                    return itemDate >= filterStart && itemDate < filterEnd;
-                });
-            }
-            if (selectedBranch) {
-                filteredData = filteredData.filter(item => item.branch === selectedBranch);
-            }
-            displayProfitData(filteredData);
-            updateKPICards(filteredData);
-            initializeCharts(filteredData);
-        }
-
-        function generateReport() {
-            // Update print section with current data
-            document.getElementById('reportDate').textContent = new Date().toLocaleDateString();
-            
-            // Add metrics to print section
-            let totalSales = 0, totalProfit = 0, totalQuantity = 0;
-            allProfitData.forEach(data => {
-                totalSales += data.totalSales;
-                totalProfit += data.totalProfit;
-                totalQuantity += data.quantity;
-            });
-            
-            const metricsHTML = `
-                <h2>Profit Analysis Report</h2>
-                <p>Generated on: ${new Date().toLocaleDateString()}</p>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0;">
-                    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px;">
-                        <h3>Total Sales</h3>
-                        <p style="font-size: 1.5em; font-weight: bold;">ZMW ${totalSales.toFixed(2)}</p>
-                    </div>
-                    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 5px;">
-                        <h3>Total Profit</h3>
-                        <p style="font-size: 1.5em; font-weight: bold;">ZMW ${totalProfit.toFixed(2)}</p>
-                    </div>
-                </div>
-            `;
-            document.getElementById('printMetrics').innerHTML = metricsHTML;
-            
-            // Add table to print section
-            let tableHTML = '<h3>Profit Details</h3><table border="1" style="width:100%; border-collapse:collapse; margin-top:15px;"><tr><th>Date</th><th>Branch</th><th>Product</th><th>Qty</th><th>Sales</th><th>Profit</th></tr>';
-            allProfitData.forEach(entry => {
-                tableHTML += `<tr><td>${entry.date}</td><td>${entry.branch}</td><td>${entry.name}</td><td>${entry.quantity}</td><td>ZMW ${entry.totalSales.toFixed(2)}</td><td>ZMW ${entry.totalProfit.toFixed(2)}</td></tr>`;
-            });
-            tableHTML += `<tr style="font-weight:bold; background-color:#f0f0f0;"><td colspan="3">TOTAL</td><td>${totalQuantity}</td><td>ZMW ${totalSales.toFixed(2)}</td><td>ZMW ${totalProfit.toFixed(2)}</td></tr>`;
-            tableHTML += '</table>';
-            document.getElementById('printTable').innerHTML = tableHTML;
-            
-            // Print the report
-            window.print();
-        }
-
-        function printDashboard() {
-            generateReport();
-        }
-
-        window.onload = fetchProfitData;
-        window.generateReport = generateReport;
-        window.printDashboard = printDashboard;
-        window.applyFilters = applyFilters;
-    </script>
 </head>
 <body>
-    <div class="container">
-        <div class="dashboard-header">
-            <div class="dashboard-title">
-                <h2><i class="fa-solid fa-chart-pie" style="color:#4cc9f0"></i> Profit Analysis Dashboard</h2>
-            </div>
-            <div class="dashboard-actions">
-                <button class="btn success" onclick="generateReport()"><i class="fas fa-file-pdf"></i> Generate Report</button>
-                <button class="btn" onclick="printDashboard()"><i class="fas fa-print"></i> Print</button>
-            </div>
-        </div>
-        
-        <div class="kpi-cards">
-            <div class="kpi-card primary">
-                <div class="kpi-label">Total Sales</div>
-                <div class="kpi-value" id="kpiSales">ZMW 0.00</div>
-                <div class="kpi-change positive" id="kpiSalesChange"><i class="fas fa-arrow-up"></i> 0%</div>
-            </div>
-            <div class="kpi-card success">
-                <div class="kpi-label">Total Profit</div>
-                <div class="kpi-value" id="kpiProfit">ZMW 0.00</div>
-                <div class="kpi-change positive" id="kpiProfitChange"><i class="fas fa-arrow-up"></i> 0%</div>
-            </div>
-            <div class="kpi-card warning">
-                <div class="kpi-label">Total Quantity Sold</div>
-                <div class="kpi-value" id="kpiQuantity">0</div>
-                <div class="kpi-change positive"><i class="fas fa-arrow-up"></i> 5.2%</div>
-            </div>
-            <div class="kpi-card accent">
-                <div class="kpi-label">Profit Margin</div>
-                <div class="kpi-value" id="kpiMargin">0%</div>
-                <div class="kpi-change positive"><i class="fas fa-arrow-up"></i> 2.1%</div>
-            </div>
-        </div>
-        
-        <div class="charts-container">
-            <div class="chart-card">
-                <div class="chart-title"><i class="fas fa-chart-bar"></i> Sales by Product</div>
-                <div class="chart-container">
-                    <canvas id="salesChart"></canvas>
-                </div>
-            </div>
-            <div class="chart-card">
-                <div class="chart-title"><i class="fas fa-chart-pie"></i> Profit Distribution</div>
-                <div class="chart-container">
-                    <canvas id="profitChart"></canvas>
-                </div>
-            </div>
-            <div class="chart-card">
-                <div class="chart-title"><i class="fas fa-store"></i> Sales by Branch</div>
-                <div class="chart-container">
-                    <canvas id="branchChart"></canvas>
-                </div>
-            </div>
-        </div>
 
-        <div class="filter-bar">
-            <div class="filter-group">
-                <label for="periodSelect"><i class="fa-regular fa-calendar"></i> Time Period</label>
-                <select id="periodSelect">
-                    <option value="custom">Custom Date Range</option>
-                    <option value="today">Today</option>
-                    <option value="yesterday">Yesterday</option>
-                    <option value="thisWeek">This Week</option>
-                    <option value="lastWeek">Last Week</option>
-                    <option value="thisMonth">This Month</option>
-                    <option value="lastMonth">Last Month</option>
-                    <option value="thisYear">This Year</option>
-                    <option value="lastYear">Last Year</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="startDate"><i class="fa-regular fa-calendar"></i> From Date</label>
-                <input type="date" id="startDate">
-            </div>
-            <div class="filter-group">
-                <label for="endDate"><i class="fa-regular fa-calendar"></i> To Date</label>
-                <input type="date" id="endDate">
-            </div>
-            <div class="filter-group">
-                <label for="branchSelect"><i class="fa-solid fa-store"></i> Branch</label>
-                <select id="branchSelect"></select>
-            </div>
-            <div class="filter-actions">
-                <button class="btn" id="filterBtn"><i class="fa-solid fa-filter"></i> Filter</button>
-                <button class="btn danger" id="resetBtn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
-            </div>
+<!-- ═══════════ TOPBAR ═══════════ -->
+<header class="topbar">
+    <div class="topbar-left">
+        <div class="logo-mark"><i class="fas fa-store-alt"></i></div>
+        <div class="logo-text">Tri<span>smart</span></div>
+        <div class="page-pill"><i class="fas fa-chart-pie" style="margin-right:4px;color:var(--blue);font-size:0.6rem;"></i>Profit Analysis</div>
+    </div>
+    <div class="topbar-right">
+        <button class="tbtn tbtn-primary" onclick="generateReport()"><i class="fas fa-file-pdf"></i> Report</button>
+        <button class="tbtn tbtn-ghost" onclick="printDashboard()"><i class="fas fa-print"></i> Print</button>
+        <a href="cashbook.html" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+</header>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
+
+    <!-- KPI Cards -->
+    <div class="kpi-row">
+        <div class="kpi-card k1">
+            <div class="kpi-label">Total Sales</div>
+            <div class="kpi-value" id="kpiSales">K 0.00</div>
+            <div class="kpi-change positive" id="kpiSalesChange"><i class="fas fa-arrow-up"></i> 0%</div>
         </div>
-        
-        <div class="table-container">
+        <div class="kpi-card k2">
+            <div class="kpi-label">Total Profit</div>
+            <div class="kpi-value" id="kpiProfit">K 0.00</div>
+            <div class="kpi-change positive" id="kpiProfitChange"><i class="fas fa-arrow-up"></i> 0%</div>
+        </div>
+        <div class="kpi-card k3">
+            <div class="kpi-label">Qty Sold</div>
+            <div class="kpi-value" id="kpiQuantity">0</div>
+            <div class="kpi-change positive"><i class="fas fa-boxes"></i> Units</div>
+        </div>
+        <div class="kpi-card k4">
+            <div class="kpi-label">Profit Margin</div>
+            <div class="kpi-value" id="kpiMargin">0%</div>
+            <div class="kpi-change positive"><i class="fas fa-percent"></i> Of Sales</div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="section-divider"><span>Charts</span></div>
+    <div class="charts-row">
+        <div class="chart-card">
+            <div class="chart-hdr"><i class="fas fa-chart-bar"></i> Sales by Product</div>
+            <div class="chart-wrap"><canvas id="salesChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-hdr"><i class="fas fa-chart-pie"></i> Profit Split</div>
+            <div class="chart-wrap"><canvas id="profitChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-hdr"><i class="fas fa-store"></i> By Branch</div>
+            <div class="chart-wrap"><canvas id="branchChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-group">
+            <label>Time Period</label>
+            <select id="periodSelect"></select>
+        </div>
+        <div class="filter-group">
+            <label>From Date</label>
+            <input type="date" id="startDate">
+        </div>
+        <div class="filter-group">
+            <label>To Date</label>
+            <input type="date" id="endDate">
+        </div>
+        <div class="filter-group">
+            <label>Branch</label>
+            <select id="branchSelect"></select>
+        </div>
+        <div class="filter-actions">
+            <button class="fbtn fbtn-primary" id="filterBtn"><i class="fas fa-filter"></i> Filter</button>
+            <button class="fbtn fbtn-danger" id="resetBtn"><i class="fas fa-rotate-left"></i> Reset</button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+        <div class="table-hdr">
+            <div class="table-hdr-left">
+                <div class="table-hdr-dot"></div>
+                <h3>Profit Details</h3>
+            </div>
+            <div class="row-count" id="rowCount">0 rows</div>
+        </div>
+        <div class="table-scroll">
             <table id="profitTable">
                 <thead>
                     <tr>
                         <th>Date</th>
                         <th>Branch</th>
-                        <th>Product Code</th>
-                        <th>Product Name</th>
+                        <th>Code</th>
+                        <th>Product</th>
                         <th>Order Price</th>
                         <th>Qty</th>
                         <th>Total Sales</th>
@@ -861,18 +405,324 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Data will be dynamically populated here -->
+                    <tr><td colspan="8" class="no-data"><i class="fas fa-spinner fa-spin"></i>Loading data…</td></tr>
                 </tbody>
                 <tfoot></tfoot>
             </table>
         </div>
     </div>
 
-    <!-- Print Section -->
-    <div class="print-section" id="printSection">
-        <div id="printMetrics"></div>
-        <div id="printTable"></div>
-        <p>Report generated by TrisMart Profit Analysis System</p>
-    </div>
+</div><!-- end main -->
+
+<!-- Print Section -->
+<div class="print-section" id="printSection">
+    <div id="printMetrics"></div>
+    <div id="printTable"></div>
+    <p>Report generated by Trismart Profit Analysis System</p>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+        authDomain: "trismartstores.firebaseapp.com",
+        projectId: "trismartstores",
+        storageBucket: "trismartstores.appspot.com",
+        messagingSenderId: "416692703333",
+        appId: "1:416692703333:web:d4b60292621435c748f68c",
+        measurementId: "G-NJPQ7L3QWJ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    /* Chart.js light theme defaults */
+    Chart.defaults.color = '#6b7490';
+    Chart.defaults.borderColor = '#e2e6ef';
+    Chart.defaults.font.family = 'DM Sans';
+
+    let allProfitData = [];
+    let branches = new Set();
+    let salesChart, profitChart, branchChart;
+
+    function findOrderPriceAtTime(saleDate, productCode, restockHistory) {
+        const productRestocks = restockHistory
+            .filter(entry => entry.code === productCode && entry.date <= saleDate)
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
+        return productRestocks.length > 0 ? parseFloat(productRestocks[0].price) : null;
+    }
+
+    function fmt(n) {
+        return 'K ' + Math.abs(Number(n)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    async function fetchProfitData() {
+        try {
+            const [salesSnap, restockSnap] = await Promise.all([
+                getDocs(collection(db, 'sales')),
+                getDocs(collection(db, 'restockHistory'))
+            ]);
+
+            const restockHistory = restockSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const profits = [];
+
+            salesSnap.forEach(doc => {
+                const sale = doc.data();
+                const { code, name, price, quantity, date, branchId } = sale;
+                const costPrice = findOrderPriceAtTime(date, code, restockHistory);
+                if (costPrice !== null) {
+                    const profit = (price - costPrice) * quantity;
+                    profits.push({
+                        date: date || 'No date',
+                        branch: branchId || 'Unknown',
+                        code, name,
+                        orderPrice: costPrice,
+                        quantity,
+                        totalSales: price * quantity,
+                        totalProfit: profit
+                    });
+                    branches.add(branchId || 'Unknown');
+                }
+            });
+
+            allProfitData = profits.sort((a, b) => new Date(a.date) - new Date(b.date));
+            populateBranchFilter();
+            displayData(allProfitData);
+            setupFilters();
+            updateKPIs(allProfitData);
+            buildCharts(allProfitData);
+        } catch (err) {
+            console.error(err);
+            document.querySelector('#profitTable tbody').innerHTML =
+                `<tr><td colspan="8" class="no-data"><i class="fas fa-exclamation-circle" style="color:var(--danger);"></i> Error loading data. Please refresh.</td></tr>`;
+        }
+    }
+
+    function populateBranchFilter() {
+        const sel = document.getElementById('branchSelect');
+        sel.innerHTML = '<option value="">All Branches</option>';
+        branches.forEach(b => {
+            const o = document.createElement('option');
+            o.value = b; o.textContent = b; sel.appendChild(o);
+        });
+    }
+
+    function updateKPIs(data) {
+        let qty = 0, sales = 0, profit = 0;
+        data.forEach(d => { qty += d.quantity; sales += d.totalSales; profit += d.totalProfit; });
+        const margin = sales > 0 ? (profit / sales * 100).toFixed(1) : 0;
+        document.getElementById('kpiSales').textContent    = fmt(sales);
+        document.getElementById('kpiProfit').textContent   = fmt(profit);
+        document.getElementById('kpiQuantity').textContent = qty.toLocaleString();
+        document.getElementById('kpiMargin').textContent   = `${margin}%`;
+        document.getElementById('kpiProfitChange').className = `kpi-change ${profit >= 0 ? 'positive' : 'negative'}`;
+        document.getElementById('kpiProfitChange').innerHTML = `<i class="fas fa-arrow-${profit >= 0 ? 'up' : 'down'}"></i> ${margin}% margin`;
+    }
+
+    function displayData(data) {
+        const tbody = document.querySelector('#profitTable tbody');
+        const tfoot = document.querySelector('#profitTable tfoot');
+        const rc    = document.getElementById('rowCount');
+        tbody.innerHTML = '';
+
+        if (!data.length) {
+            tbody.innerHTML = `<tr><td colspan="8" class="no-data"><i class="fas fa-inbox"></i> No data for selected filters</td></tr>`;
+            tfoot.innerHTML = '';
+            rc.textContent = '0 rows';
+            updateKPIs([]);
+            return;
+        }
+
+        let qty = 0, sales = 0, profit = 0;
+        data.forEach(d => {
+            qty += d.quantity; sales += d.totalSales; profit += d.totalProfit;
+            const cls = d.totalProfit >= 0 ? 'profit-pos' : 'profit-neg';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="mono">${d.date}</td>
+                <td>${d.branch}</td>
+                <td><span class="code-chip">${d.code}</span></td>
+                <td style="font-weight:600;">${d.name}</td>
+                <td class="mono">${fmt(d.orderPrice)}</td>
+                <td class="mono">${d.quantity}</td>
+                <td class="mono">${fmt(d.totalSales)}</td>
+                <td class="${cls}">${fmt(d.totalProfit)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        tfoot.innerHTML = `
+            <tr class="totals-row">
+                <td colspan="5" style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;">TOTALS</td>
+                <td>${qty}</td>
+                <td>${fmt(sales)}</td>
+                <td>${fmt(profit)}</td>
+            </tr>`;
+
+        rc.textContent = `${data.length} row${data.length !== 1 ? 's' : ''}`;
+        updateKPIs(data);
+    }
+
+    function buildCharts(data) {
+        if (salesChart)  { salesChart.destroy();  salesChart  = null; }
+        if (profitChart) { profitChart.destroy(); profitChart = null; }
+        if (branchChart) { branchChart.destroy(); branchChart = null; }
+
+        const palette = [
+            'rgba(67,97,238,0.75)',   'rgba(0,180,216,0.75)',
+            'rgba(16,185,129,0.75)',  'rgba(245,158,11,0.75)',
+            'rgba(124,58,237,0.75)',  'rgba(247,37,133,0.75)',
+            'rgba(239,68,68,0.75)',   'rgba(14,165,233,0.75)'
+        ];
+
+        /* Sales by Product — bar */
+        const byProd = {};
+        data.forEach(d => { byProd[d.name] = (byProd[d.name] || 0) + d.totalSales; });
+        salesChart = new Chart(document.getElementById('salesChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(byProd),
+                datasets: [{ label: 'Sales (K)', data: Object.values(byProd), backgroundColor: palette, borderRadius: 6, borderSkipped: false }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { font: { size: 10 }, maxRotation: 30 }, grid: { display: false } },
+                    y: { ticks: { callback: v => 'K' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v), font: { size: 10 } } }
+                }
+            }
+        });
+
+        /* Profit by Product — doughnut */
+        const byProfit = {};
+        data.forEach(d => { byProfit[d.name] = (byProfit[d.name] || 0) + d.totalProfit; });
+        profitChart = new Chart(document.getElementById('profitChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(byProfit),
+                datasets: [{ data: Object.values(byProfit), backgroundColor: palette, borderColor: '#ffffff', borderWidth: 2 }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8, boxWidth: 10 } } },
+                cutout: '60%'
+            }
+        });
+
+        /* Sales by Branch — pie */
+        const byBranch = {};
+        data.forEach(d => { byBranch[d.branch] = (byBranch[d.branch] || 0) + d.totalSales; });
+        branchChart = new Chart(document.getElementById('branchChart').getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: Object.keys(byBranch),
+                datasets: [{ data: Object.values(byBranch), backgroundColor: palette, borderColor: '#ffffff', borderWidth: 2 }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8, boxWidth: 10 } } }
+            }
+        });
+    }
+
+    function setupFilters() {
+        const periodSel    = document.getElementById('periodSelect');
+        const startDate    = document.getElementById('startDate');
+        const endDate      = document.getElementById('endDate');
+        const branchSelect = document.getElementById('branchSelect');
+        const filterBtn    = document.getElementById('filterBtn');
+        const resetBtn     = document.getElementById('resetBtn');
+
+        periodSel.innerHTML = `
+            <option value="custom">Custom Range</option>
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="thisWeek">This Week</option>
+            <option value="lastWeek">Last Week</option>
+            <option value="thisMonth">This Month</option>
+            <option value="lastMonth">Last Month</option>
+            <option value="thisYear">This Year</option>
+            <option value="lastYear">Last Year</option>
+        `;
+
+        periodSel.addEventListener('change', function() {
+            const t = new Date();
+            let s, e;
+            switch (this.value) {
+                case 'today':     s = e = t; break;
+                case 'yesterday': s = e = new Date(t); s.setDate(t.getDate()-1); break;
+                case 'thisWeek':  s = new Date(t); s.setDate(t.getDate()-t.getDay()); e = new Date(t); e.setDate(t.getDate()+(6-t.getDay())); break;
+                case 'lastWeek':  s = new Date(t); s.setDate(t.getDate()-t.getDay()-7); e = new Date(t); e.setDate(t.getDate()-t.getDay()-1); break;
+                case 'thisMonth': s = new Date(t.getFullYear(),t.getMonth(),1); e = new Date(t.getFullYear(),t.getMonth()+1,0); break;
+                case 'lastMonth': s = new Date(t.getFullYear(),t.getMonth()-1,1); e = new Date(t.getFullYear(),t.getMonth(),0); break;
+                case 'thisYear':  s = new Date(t.getFullYear(),0,1); e = new Date(t.getFullYear(),11,31); break;
+                case 'lastYear':  s = new Date(t.getFullYear()-1,0,1); e = new Date(t.getFullYear()-1,11,31); break;
+                default: return;
+            }
+            startDate.valueAsDate = s; endDate.valueAsDate = e; applyFilters();
+        });
+
+        /* Default: last 30 days */
+        const ed = new Date(), sd = new Date();
+        sd.setDate(sd.getDate() - 30);
+        startDate.valueAsDate = sd; endDate.valueAsDate = ed;
+
+        filterBtn.addEventListener('click', applyFilters);
+        resetBtn.addEventListener('click', () => {
+            startDate.value = ''; endDate.value = '';
+            branchSelect.value = ''; periodSel.value = 'custom';
+            displayData(allProfitData); buildCharts(allProfitData);
+        });
+    }
+
+    function applyFilters() {
+        const s  = document.getElementById('startDate').value;
+        const e  = document.getElementById('endDate').value;
+        const br = document.getElementById('branchSelect').value;
+        let d    = allProfitData;
+        if (s && e) {
+            const fs = new Date(s), fe = new Date(e); fe.setDate(fe.getDate()+1);
+            d = d.filter(i => { const dt = new Date(i.date); return dt >= fs && dt < fe; });
+        }
+        if (br) d = d.filter(i => i.branch === br);
+        displayData(d); buildCharts(d);
+    }
+
+    function generateReport() {
+        let qty = 0, sales = 0, profit = 0;
+        allProfitData.forEach(d => { qty += d.quantity; sales += d.totalSales; profit += d.totalProfit; });
+        document.getElementById('printMetrics').innerHTML = `
+            <h2 style="margin-bottom:8px;">Profit Analysis Report</h2>
+            <p style="font-size:0.85rem;color:#555;">Generated: ${new Date().toLocaleDateString()}</p>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:16px 0;">
+                <div style="border:1px solid #ccc;padding:12px;border-radius:6px;"><h4>Total Sales</h4><p style="font-size:1.3em;font-weight:800;">K ${sales.toFixed(2)}</p></div>
+                <div style="border:1px solid #ccc;padding:12px;border-radius:6px;"><h4>Total Profit</h4><p style="font-size:1.3em;font-weight:800;">K ${profit.toFixed(2)}</p></div>
+            </div>`;
+        let rows = '';
+        allProfitData.forEach(d => {
+            rows += `<tr><td>${d.date}</td><td>${d.branch}</td><td>${d.name}</td><td>${d.quantity}</td><td>K ${d.totalSales.toFixed(2)}</td><td>K ${d.totalProfit.toFixed(2)}</td></tr>`;
+        });
+        document.getElementById('printTable').innerHTML = `
+            <h3 style="margin-bottom:8px;">Detailed Records</h3>
+            <table border="1" style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                <thead style="background:#f0f0f0;"><tr><th>Date</th><th>Branch</th><th>Product</th><th>Qty</th><th>Sales</th><th>Profit</th></tr></thead>
+                <tbody>${rows}</tbody>
+                <tfoot><tr style="font-weight:800;background:#e8e8e8;"><td colspan="3">TOTALS</td><td>${qty}</td><td>K ${sales.toFixed(2)}</td><td>K ${profit.toFixed(2)}</td></tr></tfoot>
+            </table>`;
+        window.print();
+    }
+
+    function printDashboard() { generateReport(); }
+
+    /* Expose globally */
+    window.generateReport  = generateReport;
+    window.printDashboard  = printDashboard;
+    window.applyFilters    = applyFilters;
+
+    window.onload = fetchProfitData;
+</script>
 </body>
 </html>
