@@ -110,23 +110,6 @@ body{min-height:100vh;display:flex;flex-direction:column;}
 /* ── MAIN ── */
 .main{flex:1;padding:16px 18px;display:flex;flex-direction:column;gap:12px;}
 
-/* summary bar */
-.summary-bar{
-  display:flex;gap:10px;flex-wrap:wrap;
-}
-.sum-pill{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);padding:10px 16px;
-  display:flex;flex-direction:column;gap:3px;
-  box-shadow:var(--shadow);flex:1;min-width:130px;
-}
-.sum-pill .slbl{font-size:.62rem;font-weight:700;color:var(--text-fade);
-  text-transform:uppercase;letter-spacing:.07em;}
-.sum-pill .sval{font-size:.96rem;font-weight:800;color:var(--text);}
-.sum-pill .sval.green{color:var(--success);}
-.sum-pill .sval.red  {color:var(--danger);}
-.sum-pill .sval.blue {color:var(--primary);}
-
 /* ── TABLE ── */
 .table-card{
   background:var(--surface);border:1px solid var(--border);
@@ -280,7 +263,6 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
   .main{padding:12px;}
   .acc-bar{padding:0 12px;}
   .field-row{grid-template-columns:1fr;}
-  .summary-bar .sum-pill{min-width:100px;}
 }
 </style>
 </head>
@@ -314,26 +296,6 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
 
 <!-- MAIN -->
 <div class="main">
-
-  <!-- Summary pills -->
-  <div class="summary-bar">
-    <div class="sum-pill">
-      <span class="slbl">Opening Bal</span>
-      <span class="sval blue" id="sumOpen">ZMW 0.00</span>
-    </div>
-    <div class="sum-pill">
-      <span class="slbl">Total Credits</span>
-      <span class="sval green" id="sumCredits">ZMW 0.00</span>
-    </div>
-    <div class="sum-pill">
-      <span class="slbl">Total Debits</span>
-      <span class="sval red" id="sumDebits">ZMW 0.00</span>
-    </div>
-    <div class="sum-pill">
-      <span class="slbl">Closing Bal</span>
-      <span class="sval" id="sumClose">ZMW 0.00</span>
-    </div>
-  </div>
 
   <div class="table-card">
     <div class="table-scroll">
@@ -712,11 +674,10 @@ function renderTable(){
 
   const openBal=getOpeningBalance(selAcc,month);
   let runBal=openBal;
-  let totalCredits=0,totalDebits=0;
 
   if(!rows.length&&openBal===0){
     tbody.innerHTML='<tr class="empty-row"><td colspan="7">No transactions for this period.</td></tr>';
-    updateSummary(0,0,0,0);return;
+    return;
   }
 
   const html=[];
@@ -773,17 +734,10 @@ function renderTable(){
   });
 
   tbody.innerHTML=html.join('');
-  updateSummary(openBal,totalCredits,totalDebits,runBal);
+
 }
 
-function updateSummary(open,credits,debits,close){
-  document.getElementById('sumOpen').textContent=fmtK(open);
-  document.getElementById('sumCredits').textContent=fmtK(credits);
-  document.getElementById('sumDebits').textContent=fmtK(debits);
-  const closeEl=document.getElementById('sumClose');
-  closeEl.textContent=fmtK(close);
-  closeEl.className='sval '+(close<0?'red':close>0?'green':'blue');
-}
+
 
 // ── FIREBASE LISTENER ──
 function setupListener(){
@@ -839,30 +793,6 @@ document.getElementById('pdfBtn').addEventListener('click',()=>{
     doc.text('Generated: '+new Date().toLocaleDateString('en-GB'),PW-MR,46,{align:'right'});
 
     let y=MT+54+14;
-
-    // ── SUMMARY ROW ──
-    const sumW=CW/4;
-    const sumLabels=['Opening Balance','Total Credits','Total Debits','Closing Balance'];
-    const sumVals=[
-      document.getElementById('sumOpen').textContent,
-      document.getElementById('sumCredits').textContent,
-      document.getElementById('sumDebits').textContent,
-      document.getElementById('sumClose').textContent
-    ];
-    const sumColors=[[67,97,238],[46,204,113],[247,37,133],[67,97,238]];
-
-    sumLabels.forEach((lbl,i)=>{
-      const sx=ML+i*sumW;
-      doc.setFillColor(248,249,251);
-      doc.roundedRect(sx,y,sumW-8,38,4,4,'F');
-      doc.setFontSize(7);doc.setFont('helvetica','bold');
-      doc.setTextColor(107,117,128);
-      doc.text(lbl.toUpperCase(),sx+10,y+13);
-      doc.setFontSize(11);doc.setFont('helvetica','bold');
-      doc.setTextColor(...sumColors[i]);
-      doc.text(sumVals[i],sx+10,y+30);
-    });
-    y+=54;
 
     // ── TABLE ──
     // Column definitions: fill full width
