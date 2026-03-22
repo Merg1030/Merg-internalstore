@@ -1,974 +1,607 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trismart Stores - Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --accent: #4cc9f0;
-            --bg: #ffffff;
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --sidebar-bg: rgba(255, 255, 255, 0.98);
-            --border: #e1e5e9;
-            --text: #2d3748;
-            --text-fade: #718096;
-            --header-h: 70px;
-            --sidebar-w: 260px;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Trismart — Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+:root{
+  --p:#4361ee;--p2:#3a56d4;--acc:#4cc9f0;
+  --ok:#2ecc71;--warn:#f8961e;--err:#f72585;
+  --bg:#f4f6fb;--sur:#fff;--lite:#f1f3f5;
+  --bdr:#dee2e6;--txt:#212529;--fade:#6c757d;
+  --r:10px;--rl:14px;
+  --sh:0 2px 10px rgba(67,97,238,.08);
+  --shl:0 6px 24px rgba(67,97,238,.13);
+  --tb:52px; /* topbar height */
+  --sb:220px; /* sidebar width */
+}
+*{margin:0;padding:0;box-sizing:border-box;
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  -webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--txt);}
+body{min-height:100dvh;display:flex;flex-direction:column;}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #ffffff;
-            min-height: 100vh;
-            color: var(--text);
-            overflow-x: hidden;
-            width: 100%;
-        }
-        header {
-            height: var(--header-h);
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            box-shadow: var(--shadow-sm);
-            border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 2rem;
-            position: fixed; 
-            width: 100%; 
-            top: 0; 
-            z-index: 1100;
-            transition: width 0.3s ease, padding-left 0.3s ease;
-        }
-        
-        /* When sidebar is hidden, header expands to full width */
-        .sidebar.hidden + main + .sidebar-toggle + header {
-            width: 100%;
-        }
-        
-        .logo {
-            display: flex; align-items: center; gap: 12px;
-        }
-        .logo i { color: var(--primary); font-size: 1.8rem; }
-        .logo h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px; color: var(--text); }
+/* ── TOPBAR ── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:var(--tb);background:var(--sur);
+  border-bottom:1px solid var(--bdr);box-shadow:var(--sh);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;gap:8px;
+}
+.tb-l{display:flex;align-items:center;gap:9px;}
+.tb-r{display:flex;align-items:center;gap:7px;}
 
-        .menu-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--text);
-            cursor: pointer;
-            background: rgba(67, 97, 238, 0.1);
-            border-radius: 8px;
-            padding: 8px 12px;
-            transition: all 0.3s ease;
-        }
-        .menu-toggle:hover {
-            background: rgba(67, 97, 238, 0.2);
-            transform: scale(1.05);
-        }
-        
-        /* Sidebar Styles */
-        .sidebar {
-            position: fixed;
-            top: var(--header-h); 
-            left: 0;
-            width: var(--sidebar-w); 
-            height: calc(100vh - var(--header-h));
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--border);
-            box-shadow: var(--shadow-md);
-            display: flex; 
-            flex-direction: column;
-            z-index: 1000;
-            transition: transform .35s cubic-bezier(.7,.15,.3,.85);
-            padding: 1.5rem 0;
-            overflow-y: auto;
-        }
-        
-        /* Sidebar hidden state */
-        .sidebar.hidden {
-            transform: translateX(-100%);
-        }
-        
-        /* Sidebar visible state */
-        .sidebar.visible {
-            transform: translateX(0);
-        }
-        
-        .sidebar a {
-            color: var(--text-fade);
-            text-decoration: none;
-            padding: 1rem 2rem 1rem 1.8rem;
-            display: flex; align-items: center;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-            margin: 0.15rem 0.5rem;
-            gap: 14px;
-            border-radius: 0 12px 12px 0;
-        }
-        .sidebar a:hover, .sidebar a.active {
-            background: linear-gradient(90deg, rgba(67, 97, 238, 0.1) 0%, rgba(76, 201, 240, 0.05) 100%);
-            color: var(--primary);
-            border-left: 4px solid var(--primary);
-            font-weight: 600;
-            transform: translateX(5px);
-        }
-        .sidebar a i {
-            width: 20px;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-        
-        /* Main content area - EXPANDS TO FULL WIDTH WHEN SIDEBAR HIDES */
-        main {
-            margin-left: var(--sidebar-w);
-            margin-top: var(--header-h);
-            padding: 2.2rem 2.5vw 2rem 2.5vw;
-            min-height: calc(100vh - var(--header-h));
-            transition: margin-left 0.3s ease, width 0.3s ease;
-            background: #ffffff;
-            width: calc(100% - var(--sidebar-w));
-        }
-        
-        /* When sidebar is hidden - MAIN TAKES UP ENTIRE SCREEN */
-        .sidebar.hidden + main {
-            margin-left: 0;
-            width: 100%;
-            padding: 2.2rem 2.5vw 2rem 2.5vw;
-        }
-        
-        /* Dashboard content expands to use full width when sidebar hidden */
-        .sidebar.hidden + main .dashboard-header,
-        .sidebar.hidden + main .stats-grid,
-        .sidebar.hidden + main .welcome-banner,
-        .sidebar.hidden + main .recent-activity {
-            max-width: 100%;
-        }
-        
-        /* Stats grid expands to use more columns when sidebar hidden */
-        .sidebar.hidden + main .stats-grid {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        }
-        
-        /* Welcome banner text can be wider */
-        .sidebar.hidden + main .welcome-content p {
-            max-width: 900px;
-        }
-        
-        .dashboard-header {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            margin-bottom: 2.2rem;
-            width: 100%;
-        }
-        .dashboard-header h2 {
-            font-size: 2rem; 
-            letter-spacing: 0.5px; 
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .date-display {
-            color: var(--text-fade);
-            font-size: 1.09rem;
-            background: rgba(67, 97, 238, 0.05);
-            padding: 0.6em 1.4em;
-            border-radius: 100px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(67, 97, 238, 0.1);
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.8rem;
-            margin-bottom: 2rem;
-            width: 100%;
-        }
-        .stat-card {
-            background: var(--glass-bg);
-            border-radius: 18px;
-            padding: 1.8rem 1.7rem 1.5rem 1.7rem;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(12px);
-            transition: transform .3s, box-shadow .3s;
-            overflow: hidden;
-            position: relative;
-            animation: fadeInCard .7s cubic-bezier(.7,.15,.3,.85) backwards;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-            border-color: rgba(67, 97, 238, 0.3);
-        }
-        .stat-card:before {
-            content: "";
-            position: absolute; right: -40px; top: -45px;
-            width: 110px; height: 110px;
-            background: radial-gradient(circle at 50% 40%, rgba(67,97,238,0.1) 0%, transparent 80%);
-            z-index: 0;
-        }
-        .stat-card .card-header {
-            display: flex; justify-content: space-between; align-items: flex-start;
-            margin-bottom: 1.2rem;
-            position: relative;
-            z-index: 1;
-        }
-        .stat-card .card-icon {
-            font-size: 2.2rem; color: white;
-            width: 60px; height: 60px; border-radius: 15px;
-            display: flex; align-items: center; justify-content: center;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            box-shadow: 0 4px 15px rgba(67,97,238,0.2);
-        }
-        .stat-card h3 {
-            font-size: 1.1rem;
-            color: var(--text-fade);
-            font-weight: 500;
-            margin-bottom: 0.2em;
-        }
-        .stat-card .value {
-            font-size: 2.3rem;
-            font-weight: 700;
-            color: var(--text);
-            margin: 0.5rem 0 0.1rem 0;
-            letter-spacing: 1px;
-        }
-        .stat-card .change {
-            font-size: .95rem;
-            display: flex;
-            align-items: center;
-            margin-top: .4em;
-            font-weight: 500;
-        }
-        .stat-card .change.positive { color: var(--success); }
-        .stat-card .change.negative { color: var(--danger); }
-        .stat-card .change.neutral { color: var(--warning); }
-        
-        .live-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            margin-right: 8px;
-            animation: pulse 2s infinite;
-        }
-        
-        .welcome-banner {
-            background: linear-gradient(90deg, rgba(67,97,238,0.1) 0%, rgba(76,201,240,0.05) 100%);
-            color: var(--text);
-            border-radius: 18px;
-            padding: 2.2rem 2rem 1.8rem 2rem;
-            margin: 2.2rem 0 0 0;
-            box-shadow: var(--shadow-md);
-            border: 1px solid rgba(67,97,238,0.1);
-            animation: fadeInCard .9s cubic-bezier(.7,.15,.3,.85) backwards;
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-        }
-        .welcome-banner:before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSg2NywgOTcsIDIzOCwgMC4wMykiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IGZpbGw9InVybCgjcGF0dGVybikiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiLz48L3N2Zz4=');
-        }
-        .welcome-content {
-            position: relative;
-            z-index: 1;
-        }
-        .welcome-content h2 {
-            font-size: 2.1rem; margin-bottom: .5rem; font-weight: 700;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .welcome-content p {
-            opacity: 0.9; 
-            max-width: 700px; 
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: var(--text-fade);
-        }
-        
-        .recent-activity {
-            margin-top: 2.5rem;
-            background: var(--glass-bg);
-            border-radius: 18px;
-            padding: 1.8rem;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
-            backdrop-filter: blur(12px);
-            width: 100%;
-        }
-        
-        .recent-activity h3 {
-            font-size: 1.4rem;
-            margin-bottom: 1.5rem;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .activity-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: rgba(67, 97, 238, 0.03);
-            border-radius: 12px;
-            transition: all 0.3s;
-            border: 1px solid transparent;
-        }
-        
-        .activity-item:hover {
-            background: rgba(67, 97, 238, 0.08);
-            transform: translateX(5px);
-            border-color: rgba(67, 97, 238, 0.1);
-        }
-        
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-        }
-        
-        .activity-details {
-            flex: 1;
-        }
-        
-        .activity-title {
-            font-weight: 600;
-            margin-bottom: 0.2rem;
-            color: var(--text);
-        }
-        
-        .activity-time {
-            font-size: 0.85rem;
-            color: var(--text-fade);
-        }
-        
-        .low-stock-alert {
-            background: rgba(239, 68, 68, 0.05);
-            border: 1px solid var(--danger);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-top: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .low-stock-alert i {
-            color: var(--danger);
-            font-size: 1.2rem;
-        }
-        
-        .low-stock-alert span {
-            font-weight: 600;
-            color: var(--danger);
-        }
-        
-        /* Floating toggle button */
-        .sidebar-toggle {
-            position: fixed;
-            top: calc(var(--header-h) + 20px);
-            left: 20px;
-            z-index: 1001;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s ease;
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .sidebar-toggle:hover {
-            transform: scale(1.1);
-            background: var(--secondary);
-        }
-        
-        /* Show toggle button when sidebar is hidden */
-        .sidebar.hidden + main + .sidebar-toggle {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 1100px) {
-            main { padding-left: 2vw; padding-right: 2vw;}
-            .sidebar.hidden + main { padding-left: 2vw; padding-right: 2vw;}
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 280px;
-            }
-            
-            .sidebar.visible {
-                transform: translateX(0);
-                box-shadow: var(--shadow-lg);
-            }
-            
-            main { 
-                margin-left: 0;
-                width: 100% !important;
-                padding: 1.5rem;
-                margin-top: var(--header-h);
-            }
-            
-            .sidebar.hidden + main {
-                margin-left: 0;
-                width: 100% !important;
-            }
-            
-            .menu-toggle { 
-                display: flex; 
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .dashboard-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-            
-            .date-display {
-                align-self: flex-start;
-            }
-            
-            .sidebar-toggle {
-                display: none; /* Hide floating toggle on mobile */
-            }
-            
-            header {
-                width: 100%;
-            }
-        }
-        
-        /* Desktop: Always show sidebar by default, allow hiding */
-        @media (min-width: 769px) {
-            .menu-toggle {
-                display: flex; /* Show toggle button on all devices */
-            }
-            
-            .sidebar {
-                transform: translateX(0);
-            }
-            
-            .sidebar.hidden {
-                transform: translateX(-100%);
-            }
-            
-            .sidebar-toggle {
-                display: flex; /* Show floating toggle on desktop */
-            }
-            
-            /* When sidebar hidden on desktop, make cards wider */
-            .sidebar.hidden + main .stats-grid {
-                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            }
-            
-            /* When sidebar hidden on desktop, make welcome banner text wider */
-            .sidebar.hidden + main .welcome-content p {
-                max-width: 1000px;
-            }
-        }
-        
-        /* Large screens - when sidebar hidden, use more space */
-        @media (min-width: 1200px) {
-            .sidebar.hidden + main .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .sidebar.hidden + main {
-                padding: 2.2rem 3vw 2rem 3vw;
-            }
-        }
-        
-        /* Extra large screens */
-        @media (min-width: 1600px) {
-            .sidebar.hidden + main {
-                padding: 2.2rem 5vw 2rem 5vw;
-            }
-            
-            .sidebar.hidden + main .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.5);
-            z-index: 998;
-            backdrop-filter: blur(4px);
-        }
-        
-        /* Show overlay on mobile when sidebar is visible */
-        @media (max-width: 768px) {
-            .sidebar.visible + .sidebar-overlay {
-                display: block;
-            }
-        }
-        
-        @keyframes fadeInCard {
-            from { opacity:0; transform: translateY(35px) scale(0.97);}
-            to   { opacity:1; transform: none;}
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        .card-1 { animation-delay: 0.1s; }
-        .card-2 { animation-delay: 0.2s; }
-        .card-3 { animation-delay: 0.3s; }
-    </style>
+.ham{width:34px;height:34px;border-radius:var(--r);
+  background:var(--lite);border:1px solid var(--bdr);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:.88rem;color:var(--fade);transition:all .13s;flex-shrink:0;}
+.ham:active{background:var(--p);color:white;border-color:var(--p);}
+
+.logo{display:flex;align-items:center;gap:7px;}
+.logo-ic{width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--p),var(--acc));
+  display:flex;align-items:center;justify-content:center;
+  color:white;font-size:.82rem;flex-shrink:0;}
+.logo-tx{font-size:.88rem;font-weight:700;color:var(--txt);white-space:nowrap;}
+
+.dt-pill{background:linear-gradient(135deg,#eef2ff,#e0e7ff);
+  border:1px solid #c7d2fe;color:var(--p);
+  font-size:.64rem;font-weight:600;padding:3px 9px;
+  border-radius:100px;white-space:nowrap;}
+
+.user-pill{background:var(--lite);border:1px solid var(--bdr);
+  color:var(--fade);font-size:.64rem;font-weight:600;
+  padding:3px 9px;border-radius:100px;
+  display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.user-pill i{color:var(--p);}
+
+/* ── LAYOUT ── */
+.app{display:flex;padding-top:var(--tb);min-height:100dvh;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sb);flex-shrink:0;background:var(--sur);
+  border-right:1px solid var(--bdr);box-shadow:var(--sh);
+  position:fixed;top:var(--tb);left:0;bottom:0;
+  overflow-y:auto;z-index:150;
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;padding:8px 0;
+}
+.sidebar.closed{transform:translateX(-100%);}
+
+.sec-lbl{font-size:.58rem;font-weight:700;color:var(--fade);
+  text-transform:uppercase;letter-spacing:.1em;
+  padding:9px 14px 3px;margin-top:3px;}
+.nav-a{display:flex;align-items:center;gap:9px;
+  padding:9px 14px;margin:1px 7px;border-radius:var(--r);
+  text-decoration:none;color:var(--fade);
+  font-size:.8rem;font-weight:500;transition:all .13s;
+  border:1px solid transparent;}
+.nav-a i{width:16px;text-align:center;font-size:.82rem;flex-shrink:0;}
+.nav-a:hover{background:var(--lite);color:var(--p);}
+.nav-a.on{background:linear-gradient(135deg,#eef2ff,#e0e7ff);
+  color:var(--p);font-weight:700;border-color:#c7d2fe;}
+.nav-a .bdg{margin-left:auto;background:var(--err);color:white;
+  font-size:.56rem;font-weight:700;padding:1px 5px;border-radius:100px;}
+
+.sb-foot{margin-top:auto;padding:10px 7px 7px;border-top:1px solid var(--bdr);}
+.logout{display:flex;align-items:center;gap:9px;width:100%;
+  padding:9px 14px;border-radius:var(--r);
+  background:none;border:1px solid var(--bdr);
+  color:var(--fade);font-size:.8rem;font-weight:500;
+  cursor:pointer;transition:all .13s;}
+.logout:active{background:#fff5f8;color:var(--err);border-color:var(--err);}
+.logout i{font-size:.82rem;}
+
+/* ── MAIN ── */
+.main{flex:1;margin-left:var(--sb);min-width:0;
+  padding:14px;transition:margin-left .25s cubic-bezier(.4,0,.2,1);}
+.main.full{margin-left:0;}
+
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);
+  z-index:140;backdrop-filter:blur(2px);}
+.ov.show{display:block;}
+
+/* ── PAGE HEADER ── */
+.pg-hdr{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.pg-hdr-l{display:flex;flex-direction:column;gap:2px;}
+.pg-hdr-l h2{font-size:1.1rem;font-weight:700;
+  background:linear-gradient(90deg,var(--p),var(--acc));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.pg-hdr-l .greet{font-size:.72rem;color:var(--fade);}
+
+/* branch tabs */
+.br-tabs{display:flex;align-items:center;gap:3px;
+  background:var(--lite);border:1px solid var(--bdr);
+  border-radius:100px;padding:2px 3px;}
+.br-btn{padding:4px 12px;border-radius:100px;
+  font-size:.72rem;font-weight:600;
+  cursor:pointer;border:none;background:transparent;
+  color:var(--fade);transition:all .13s;white-space:nowrap;}
+.br-btn.on{background:var(--p);color:white;
+  box-shadow:0 2px 7px rgba(67,97,238,.25);}
+
+/* ── STAT TILES — 2×2 compact grid ── */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+
+.tile{
+  background:var(--sur);border:1px solid var(--bdr);
+  border-radius:var(--rl);box-shadow:var(--sh);
+  padding:14px 14px 12px;display:flex;flex-direction:column;gap:6px;
+  position:relative;overflow:hidden;
+  animation:tileIn .35s ease backwards;
+}
+.tile::after{content:'';position:absolute;
+  right:-18px;top:-18px;width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle,rgba(67,97,238,.06),transparent 70%);
+  pointer-events:none;}
+
+.tile-icon{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.84rem;color:white;margin-bottom:2px;
+}
+.t-blue  {background:linear-gradient(135deg,var(--p),var(--p2));}
+.t-green {background:linear-gradient(135deg,var(--ok),#27ae60);}
+.t-orange{background:linear-gradient(135deg,var(--warn),#e07b0a);}
+.t-teal  {background:linear-gradient(135deg,var(--acc),#0096c7);}
+
+.tile-lbl{font-size:.62rem;font-weight:700;color:var(--fade);
+  text-transform:uppercase;letter-spacing:.07em;}
+.tile-val{font-size:1.3rem;font-weight:800;color:var(--txt);line-height:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tile-sub{font-size:.64rem;font-weight:600;color:var(--fade);
+  display:flex;align-items:center;gap:3px;}
+.tile-sub.up{color:var(--ok);}
+.tile-sub.dn{color:var(--err);}
+.tile-sub.nt{color:var(--warn);}
+
+.live{width:6px;height:6px;border-radius:50%;background:var(--ok);
+  display:inline-block;animation:lp 2s infinite;flex-shrink:0;}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* low stock alert row */
+.low-row{display:none;align-items:center;gap:5px;
+  margin-top:4px;padding:4px 8px;
+  background:#fff5f8;border:1px solid #f7b8d0;
+  border-radius:6px;font-size:.62rem;font-weight:700;color:var(--err);}
+.low-row.show{display:flex;}
+
+/* tile animations */
+@keyframes tileIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.t1{animation-delay:.04s}.t2{animation-delay:.08s}
+.t3{animation-delay:.12s}.t4{animation-delay:.16s}
+
+/* ── QUICK LINKS ROW ── */
+.ql-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.ql{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;padding:12px 6px;border-radius:var(--r);
+  text-decoration:none;border:1px solid var(--bdr);
+  background:var(--sur);transition:all .13s;
+  font-size:.68rem;font-weight:600;color:var(--fade);text-align:center;
+  box-shadow:var(--sh);}
+.ql i{font-size:1.1rem;color:var(--p);}
+.ql:active{background:linear-gradient(135deg,#eef2ff,#e0e7ff);
+  border-color:#c7d2fe;color:var(--p);}
+
+/* ── ACTIVITY ── */
+.section{background:var(--sur);border:1px solid var(--bdr);
+  border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden;}
+.s-hdr{padding:11px 14px;border-bottom:1px solid var(--bdr);
+  background:var(--lite);display:flex;align-items:center;gap:6px;}
+.s-hdr h3{font-size:.8rem;font-weight:700;color:var(--txt);}
+.s-body{padding:8px;}
+
+.act-list{display:flex;flex-direction:column;gap:4px;}
+.act{display:flex;align-items:center;gap:8px;
+  padding:8px 9px;border-radius:var(--r);
+  transition:background .1s;border:1px solid transparent;}
+.act:hover{background:var(--lite);border-color:var(--bdr);}
+.act-ic{width:30px;height:30px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;color:white;}
+.ic-sale{background:linear-gradient(135deg,var(--p),var(--p2));}
+.ic-alrt{background:linear-gradient(135deg,var(--err),#c82333);}
+.act-info{flex:1;min-width:0;}
+.act-name{font-size:.75rem;font-weight:600;color:var(--txt);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.act-when{font-size:.64rem;color:var(--fade);margin-top:1px;}
+.act-amt{font-size:.72rem;font-weight:700;color:var(--p);white-space:nowrap;}
+
+/* ── TOAST ── */
+.tw{position:fixed;bottom:16px;right:12px;z-index:9999;
+  display:flex;flex-direction:column;gap:5px;pointer-events:none;
+  max-width:calc(100vw - 24px);}
+.toast{background:#1e2029;color:white;padding:9px 13px;
+  border-radius:var(--r);font-size:.75rem;font-weight:500;
+  box-shadow:0 3px 14px rgba(0,0,0,.28);animation:tIn .2s ease;
+  display:flex;align-items:center;gap:7px;}
+.toast.success{border-left:3px solid var(--ok);}
+.toast.error  {border-left:3px solid var(--err);}
+.toast.fade-out{animation:tOut .25s ease forwards;}
+@keyframes tIn {from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tOut{from{opacity:1}to{opacity:0;transform:translateY(7px)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .main.full{margin-left:0;}
+}
+@media(max-width:400px){
+  .ql-grid{grid-template-columns:repeat(3,1fr);}
+  .tile-val{font-size:1.1rem;}
+  .dt-pill{display:none;}
+}
+</style>
 </head>
 <body>
-    <nav class="sidebar visible" id="sidebar">
-        <a href="cashbook.html" class="active"><i class="fas fa-user"></i> Accounts</a>
-        <a href="Airtel.html"><i class="fab fa-cc-visa"></i> Airtel Money</a>
-        <a href="warehouse.html"><i class="fas fa-warehouse"></i> Warehouse</a>
-        <a href="sale.html"><i class="fas fa-chart-line"></i> Sales</a>
-        <a href="Todo.html"><i class="fas fa-list-check"></i> To-Do</a>
-        <a href="lowstock.html"><i class="fas fa-exclamation-triangle"></i> Low Stock</a>
-        <a href="Report.html"><i class="fas fa-calendar-day"></i> Daily Report</a>
-    </nav>
-    
-    <main>
-        <div class="dashboard-header">
-            <h2>Dashboard Overview</h2>
-            <div class="date-display" id="greetDate"></div>
-        </div>
-        
-        <div class="stats-grid">
-            <div class="stat-card card-1">
-                <div class="card-header">
-                    <div>
-                        <h3>Total Revenue</h3>
-                        <div class="value" id="revenueValue">K0</div>
-                        <div class="change positive"><span class="live-indicator"></span> <i class="fas fa-arrow-up"></i> <span id="revenueChange">+0%</span> today</div>
-                    </div>
-                    <div class="card-icon"><i class="fas fa-dollar-sign"></i></div>
-                </div>
-            </div>
-            
-            <div class="stat-card card-2">
-                <div class="card-header">
-                    <div>
-                        <h3>Inventory Items</h3>
-                        <div class="value" id="inventoryValue">0</div>
-                        <div class="change neutral"><i class="fas fa-box"></i> <span id="inventoryChange">0</span> total items</div>
-                    </div>
-                    <div class="card-icon"><i class="fas fa-box"></i></div>
-                </div>
-                <div class="low-stock-alert" id="lowStockAlert" style="display: none;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span id="lowStockCount">0</span> items urgently need restock
-                </div>
-            </div>
-            
-            <div class="stat-card card-3">
-                <div class="card-header">
-                    <div>
-                        <h3>Today's Sales</h3>
-                        <div class="value" id="salesValue">K0</div>
-                        <div class="change positive"><span class="live-indicator"></span> <i class="fas fa-arrow-up"></i> <span id="salesChange">+0%</span> from yesterday</div>
-                    </div>
-                    <div class="card-icon"><i class="fas fa-shopping-cart"></i></div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="welcome-banner">
-            <div class="welcome-content">
-                <h2>Welcome to Trismart Stores</h2>
-                <p>Run your daily operations with a fast, modern dashboard. All your sales, inventory, and cashbook data in one place. Stay up-to-date and manage smarter!</p>
-            </div>
-        </div>
-        
-        <div class="recent-activity">
-            <h3><i class="fas fa-bolt"></i> Recent Activity</h3>
-            <div class="activity-list" id="activityList">
-                <!-- Activity items will be populated by JavaScript -->
-            </div>
-        </div>
-    </main>
-    
-    <!-- Floating toggle button for desktop -->
-    <button class="sidebar-toggle" id="floatingToggle">
-        <i class="fas fa-bars"></i>
-    </button>
-    
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    
-    <header>
-        <div class="menu-toggle" id="menuToggle">
-            <i class="fas fa-bars"></i>
-        </div>
-        <div class="logo">
-            <i class="fas fa-store-alt"></i>
-            <h1>Trismart Stores</h1>
-        </div>
-        <div class="date-display" id="currentDateTime"></div>
-    </header>
-    
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { 
-            getFirestore, 
-            collection, 
-            query, 
-            where, 
-            onSnapshot,
-            getDocs
-        } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
-            authDomain: "trismartstores.firebaseapp.com",
-            projectId: "trismartstores",
-            storageBucket: "trismartstores.appspot.com",
-            messagingSenderId: "416692703333",
-            appId: "1:416692703333:web:d4b60292621435c748f68c",
-            measurementId: "G-NJPQ7L3QWJ"
-        };
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-l">
+    <button class="ham" id="ham"><i class="fas fa-bars"></i></button>
+    <div class="logo">
+      <div class="logo-ic"><i class="fas fa-store-alt"></i></div>
+      <span class="logo-tx">Trismart</span>
+    </div>
+  </div>
+  <div class="tb-r">
+    <div class="user-pill"><i class="fas fa-user-circle"></i><span id="uName">—</span></div>
+    <div class="dt-pill" id="dtPill">—</div>
+  </div>
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+<div class="app">
 
-        // Global variables
-        const branchId = localStorage.getItem('branchId') || 'makeni'; // Default branch
-        let salesData = [];
-        let inventoryData = [];
-        let todaySales = 0;
-        let yesterdaySales = 0;
-        let totalRevenue = 0;
-        let lowStockItems = 0;
+  <!-- SIDEBAR -->
+  <nav class="sidebar closed" id="sidebar">
+    <div class="sec-lbl">Navigation</div>
+    <a href="cashbook.html"  class="nav-a" data-p="cashbook.html" ><i class="fas fa-wallet"></i> Accounts</a>
+    <a href="Airtel.html"    class="nav-a" data-p="Airtel.html"   ><i class="fas fa-mobile-alt"></i> Airtel Money</a>
+    <a href="warehouse.html" class="nav-a" data-p="warehouse.html"><i class="fas fa-warehouse"></i> Warehouse</a>
+    <a href="sale.html"      class="nav-a" data-p="sale.html"     ><i class="fas fa-cash-register"></i> Sales</a>
+    <a href="Restock.html"   class="nav-a" data-p="Restock.html"  ><i class="fas fa-file-invoice"></i> GRV / Restock</a>
+    <a href="Todo.html"      class="nav-a" data-p="Todo.html"     ><i class="fas fa-list-check"></i> To-Do</a>
+    <a href="lowstock.html"  class="nav-a" data-p="lowstock.html" ><i class="fas fa-exclamation-triangle"></i> Low Stock <span class="bdg" id="sbBadge" style="display:none">0</span></a>
+    <a href="Report.html"    class="nav-a" data-p="Report.html"   ><i class="fas fa-calendar-day"></i> Daily Report</a>
+    <div class="sb-foot">
+      <button class="logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+    </div>
+  </nav>
 
-        // Sidebar state management
-        const sidebar = document.getElementById('sidebar');
-        const menuToggle = document.getElementById('menuToggle');
-        const floatingToggle = document.getElementById('floatingToggle');
-        const overlay = document.getElementById('sidebarOverlay');
-        const mainContent = document.querySelector('main');
-        const header = document.querySelector('header');
-        
-        // Check if user has a sidebar preference in localStorage
-        let sidebarHidden = localStorage.getItem('sidebarHidden') === 'true';
-        
-        // Initialize sidebar state
-        if (sidebarHidden) {
-            sidebar.classList.remove('visible');
-            sidebar.classList.add('hidden');
-            // Immediately expand main content to full width
-            mainContent.style.width = '100%';
-            mainContent.style.marginLeft = '0';
-        } else {
-            sidebar.classList.remove('hidden');
-            sidebar.classList.add('visible');
-        }
-        
-        // Toggle sidebar function
-        function toggleSidebar() {
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('visible');
-            
-            // Update localStorage
-            sidebarHidden = sidebar.classList.contains('hidden');
-            localStorage.setItem('sidebarHidden', sidebarHidden);
-            
-            // Handle overlay for mobile
-            if (window.innerWidth <= 768) {
-                if (sidebar.classList.contains('visible')) {
-                    overlay.style.display = 'block';
-                } else {
-                    overlay.style.display = 'none';
-                }
-            }
-            
-            // Force update of main content width
-            updateMainContentWidth();
-        }
-        
-        // Update main content width based on sidebar state
-        function updateMainContentWidth() {
-            if (sidebar.classList.contains('hidden')) {
-                mainContent.style.width = '100%';
-                mainContent.style.marginLeft = '0';
-                header.style.width = '100%';
-            } else {
-                mainContent.style.width = `calc(100% - ${sidebar.offsetWidth}px)`;
-                mainContent.style.marginLeft = `${sidebar.offsetWidth}px`;
-                header.style.width = '100%';
-            }
-        }
-        
-        // Event listeners for toggling sidebar
-        menuToggle.addEventListener('click', toggleSidebar);
-        floatingToggle.addEventListener('click', toggleSidebar);
-        
-        // Close sidebar when clicking overlay (mobile)
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('visible');
-            sidebar.classList.add('hidden');
-            overlay.style.display = 'none';
-            localStorage.setItem('sidebarHidden', true);
-            updateMainContentWidth();
-        });
-        
-        // Close sidebar on link click (mobile)
-        document.querySelectorAll('.sidebar a').forEach(link => {
-            link.addEventListener('click', () => {
-                if(window.innerWidth <= 768) {
-                    sidebar.classList.remove('visible');
-                    sidebar.classList.add('hidden');
-                    overlay.style.display = 'none';
-                    localStorage.setItem('sidebarHidden', true);
-                    updateMainContentWidth();
-                }
-            });
-        });
+  <div class="ov" id="ov"></div>
 
-        // Highlight active link
-        const currentPage = window.location.pathname.split('/').pop();
-        if (currentPage) {
-            document.querySelectorAll('.sidebar a').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') && link.getAttribute('href').includes(currentPage)) {
-                    link.classList.add('active');
-                }
-            });
-        }
-        
-        // Update date and time
-        function updateDateTime() {
-            const now = new Date();
-            const dateTimeStr = now.toLocaleDateString('en-GB', {
-                weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
-            }) + ' • ' + now.toLocaleTimeString('en-GB', { 
-                hour: '2-digit', minute: '2-digit' 
-            });
-            document.getElementById('currentDateTime').textContent = dateTimeStr;
-            
-            // Update greeting with time of day
-            const hour = now.getHours();
-            let greeting = "Good ";
-            if (hour < 12) greeting += "Morning";
-            else if (hour < 18) greeting += "Afternoon";
-            else greeting += "Evening";
-            
-            document.getElementById('greetDate').textContent = `${greeting}, Salome`;
-        }
-        
-        // Initialize date/time
-        updateDateTime();
-        setInterval(updateDateTime, 60000); // Update every minute
-        
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            updateMainContentWidth();
-        });
-        
-        // Setup Firebase listeners
-        function setupFirebaseListeners() {
-            // Sales listener
-            const today = new Date().toISOString().split('T')[0];
-            const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-            
-            const salesQuery = query(
-                collection(db, 'sales'), 
-                where('branchId', '==', branchId)
-            );
-            
-            onSnapshot(salesQuery, (snapshot) => {
-                salesData = [];
-                todaySales = 0;
-                yesterdaySales = 0;
-                totalRevenue = 0;
-                
-                snapshot.forEach((doc) => {
-                    const sale = { id: doc.id, ...doc.data() };
-                    salesData.push(sale);
-                    
-                    // Calculate totals
-                    const saleTotal = sale.price * sale.quantity;
-                    totalRevenue += saleTotal;
-                    
-                    if (sale.date === today) {
-                        todaySales += saleTotal;
-                    } else if (sale.date === yesterday) {
-                        yesterdaySales += saleTotal;
-                    }
-                });
-                
-                updateDashboardData();
-                updateRecentActivity();
-            });
-            
-            // Inventory listener
-            const inventoryQuery = query(
-                collection(db, 'inventory'), 
-                where('branchId', '==', branchId)
-            );
-            
-            onSnapshot(inventoryQuery, (snapshot) => {
-                inventoryData = [];
-                lowStockItems = 0;
-                
-                snapshot.forEach((doc) => {
-                    const item = { id: doc.id, ...doc.data() };
-                    inventoryData.push(item);
-                    
-                    // Check for low stock (less than 10 items)
-                    if (item.stock < 10) {
-                        lowStockItems++;
-                    }
-                });
-                
-                updateDashboardData();
-            });
-        }
-        
-        // Update dashboard with live data
-        function updateDashboardData() {
-            // Update revenue
-            document.getElementById('revenueValue').textContent = `K${totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            
-            // Calculate revenue change percentage
-            const revenueChange = yesterdaySales > 0 ? ((todaySales - yesterdaySales) / yesterdaySales * 100).toFixed(1) : 100;
-            document.getElementById('revenueChange').textContent = `${revenueChange > 0 ? '+' : ''}${revenueChange}%`;
-            
-            // Update inventory
-            document.getElementById('inventoryValue').textContent = inventoryData.length;
-            document.getElementById('inventoryChange').textContent = `${inventoryData.length} total items`;
-            
-            // Update low stock alert
-            if (lowStockItems > 0) {
-                document.getElementById('lowStockAlert').style.display = 'flex';
-                document.getElementById('lowStockCount').textContent = lowStockItems;
-            } else {
-                document.getElementById('lowStockAlert').style.display = 'none';
-            }
-            
-            // Update sales
-            document.getElementById('salesValue').textContent = `K${todaySales.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            
-            // Calculate sales change percentage
-            const salesChange = yesterdaySales > 0 ? ((todaySales - yesterdaySales) / yesterdaySales * 100).toFixed(1) : 100;
-            document.getElementById('salesChange').textContent = `${salesChange > 0 ? '+' : ''}${salesChange}%`;
-        }
-        
-        // Update recent activity
-        function updateRecentActivity() {
-            const activityList = document.getElementById('activityList');
-            activityList.innerHTML = '';
-            
-            // Get recent sales (last 5)
-            const recentSales = [...salesData]
-                .sort((a, b) => new Date(b.timestamp?.toDate() || b.date) - new Date(a.timestamp?.toDate() || a.date))
-                .slice(0, 5);
-            
-            if (recentSales.length === 0) {
-                activityList.innerHTML = '<div class="activity-item"><div class="activity-details"><div class="activity-title">No recent activity</div><div class="activity-time">Sales will appear here</div></div></div>';
-                return;
-            }
-            
-            recentSales.forEach(sale => {
-                const activityItem = document.createElement('div');
-                activityItem.className = 'activity-item';
-                
-                const saleTime = sale.timestamp ? 
-                    new Date(sale.timestamp.toDate()).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) :
-                    'Recently';
-                
-                activityItem.innerHTML = `
-                    <div class="activity-icon">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <div class="activity-details">
-                        <div class="activity-title">Sale: ${sale.name} (${sale.quantity} units)</div>
-                        <div class="activity-time">${saleTime} • ZMW ${(sale.price * sale.quantity).toFixed(2)}</div>
-                    </div>
-                `;
-                
-                activityList.appendChild(activityItem);
-            });
-            
-            // Add inventory alerts if there are low stock items
-            if (lowStockItems > 0) {
-                const alertItem = document.createElement('div');
-                alertItem.className = 'activity-item';
-                alertItem.innerHTML = `
-                    <div class="activity-icon" style="background: linear-gradient(135deg, var(--danger) 0%, #ff8a8a 100%);">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="activity-details">
-                        <div class="activity-title">Low Stock Alert</div>
-                        <div class="activity-time">${lowStockItems} items need immediate restocking</div>
-                    </div>
-                `;
-                activityList.insertBefore(alertItem, activityList.firstChild);
-            }
-        }
-        
-        // Initialize dashboard
-        function initializeDashboard() {
-            setupFirebaseListeners();
-            updateDateTime();
-            updateMainContentWidth(); // Ensure correct width on load
-        }
-        
-        // Start the dashboard when page loads
-        document.addEventListener('DOMContentLoaded', initializeDashboard);
-    </script>
+  <!-- MAIN -->
+  <main class="main full" id="main">
+
+    <!-- Header -->
+    <div class="pg-hdr">
+      <div class="pg-hdr-l">
+        <h2>Dashboard</h2>
+        <span class="greet" id="greet">Good day</span>
+      </div>
+      <div class="br-tabs" id="brTabs"></div>
+    </div>
+
+    <!-- ── STAT TILES 2×2 ── -->
+    <div class="tiles">
+
+      <div class="tile t1">
+        <div class="tile-icon t-green"><i class="fas fa-shopping-cart"></i></div>
+        <div class="tile-lbl">Today's Sales</div>
+        <div class="tile-val" id="tToday">ZMW 0</div>
+        <div class="tile-sub nt" id="tTodaySub"><span class="live"></span> Live</div>
+      </div>
+
+      <div class="tile t2">
+        <div class="tile-icon t-blue"><i class="fas fa-dollar-sign"></i></div>
+        <div class="tile-lbl">Total Revenue</div>
+        <div class="tile-val" id="tRevenue">ZMW 0</div>
+        <div class="tile-sub nt" id="tRevSub"><span class="live"></span> All time</div>
+      </div>
+
+      <div class="tile t3">
+        <div class="tile-icon t-orange"><i class="fas fa-boxes-stacked"></i></div>
+        <div class="tile-lbl">Products</div>
+        <div class="tile-val" id="tProducts">0</div>
+        <div class="tile-sub nt" id="tProdSub">in inventory</div>
+        <div class="low-row" id="lowRow">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span id="lowNum">0</span> low stock
+        </div>
+      </div>
+
+      <div class="tile t4">
+        <div class="tile-icon t-teal"><i class="fas fa-chart-bar"></i></div>
+        <div class="tile-lbl">Stock Value</div>
+        <div class="tile-val" id="tStockVal">ZMW 0</div>
+        <div class="tile-sub nt">current branch</div>
+      </div>
+
+    </div>
+
+    <!-- ── QUICK LINKS ── -->
+    <div class="ql-grid">
+      <a href="sale.html"      class="ql"><i class="fas fa-cash-register"></i>Sales</a>
+      <a href="warehouse.html" class="ql"><i class="fas fa-warehouse"></i>Warehouse</a>
+      <a href="Restock.html"   class="ql"><i class="fas fa-file-invoice"></i>GRV</a>
+      <a href="Report.html"    class="ql"><i class="fas fa-calendar-day"></i>Report</a>
+      <a href="lowstock.html"  class="ql"><i class="fas fa-exclamation-triangle"></i>Low Stock</a>
+      <a href="cashbook.html"  class="ql"><i class="fas fa-wallet"></i>Accounts</a>
+    </div>
+
+    <!-- ── RECENT ACTIVITY ── -->
+    <div class="section">
+      <div class="s-hdr">
+        <i class="fas fa-bolt" style="color:var(--warn);font-size:.84rem;"></i>
+        <h3>Recent Activity</h3>
+      </div>
+      <div class="s-body">
+        <div class="act-list" id="actList">
+          <div class="act"><div class="act-info"><div class="act-name" style="color:var(--fade)">Loading…</div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="tw" id="tw"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+import{getFirestore,collection,query,where,onSnapshot}
+  from"https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+const cfg={
+  apiKey:"AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+  authDomain:"trismartstores.firebaseapp.com",
+  projectId:"trismartstores",
+  storageBucket:"trismartstores.appspot.com",
+  messagingSenderId:"416692703333",
+  appId:"1:416692703333:web:d4b60292621435c748f68c",
+  measurementId:"G-NJPQ7L3QWJ"
+};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+
+/* ── BRANCHES — add ts3, ts4 etc here as needed ── */
+const BRANCHES={
+  ts1:{id:'ts1',label:'TS-1'},
+  ts2:{id:'ts2',label:'TS-2'},
+};
+
+/* ── SESSION ── */
+const userName=(localStorage.getItem('userName')||'').trim();
+if(!userName){alert('Please log in.');window.location.href='index.html';}
+document.getElementById('uName').textContent=userName;
+
+let activeBranch=localStorage.getItem('branchId');
+if(!activeBranch||!BRANCHES[activeBranch])activeBranch='ts1';
+localStorage.setItem('branchId',activeBranch);
+
+/* ── TOAST ── */
+function toast(m,t='success'){
+  const w=document.getElementById('tw'),el=document.createElement('div');
+  el.className=`toast ${t}`;el.innerHTML=`<span>${t==='error'?'✕':'✓'}</span>${m}`;
+  w.appendChild(el);
+  setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),280);},2800);
+}
+
+/* ── SIDEBAR ── */
+const sb=document.getElementById('sidebar');
+const ov=document.getElementById('ov');
+const mn=document.getElementById('main');
+const ham=document.getElementById('ham');
+let sbOpen=localStorage.getItem('sbOpen')==='true';
+
+function applyBars(){
+  const mob=window.innerWidth<=768;
+  if(mob){
+    sb.classList.toggle('open',sbOpen);
+    ov.classList.toggle('show',sbOpen);
+    mn.classList.add('full');
+  }else{
+    sb.classList.remove('open');
+    ov.classList.remove('show');
+    sb.classList.toggle('closed',!sbOpen);
+    mn.classList.toggle('full',!sbOpen);
+  }
+}
+ham.addEventListener('click',()=>{sbOpen=!sbOpen;localStorage.setItem('sbOpen',sbOpen);applyBars();});
+ov.addEventListener('click',()=>{sbOpen=false;localStorage.setItem('sbOpen',false);applyBars();});
+window.addEventListener('resize',applyBars);
+applyBars();
+
+// Active nav
+const pg=window.location.pathname.split('/').pop();
+document.querySelectorAll('.nav-a').forEach(a=>a.classList.toggle('on',a.dataset.p===pg));
+
+/* ── DATE / GREETING ── */
+function tick(){
+  const n=new Date();
+  document.getElementById('dtPill').textContent=
+    n.toLocaleDateString('en-GB',{weekday:'short',day:'2-digit',month:'short'})+
+    ' · '+n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  const h=n.getHours();
+  const g=h<12?'Morning':h<18?'Afternoon':'Evening';
+  document.getElementById('greet').textContent=`Good ${g}, ${userName} 👋`;
+}
+tick();setInterval(tick,30000);
+
+/* ── BRANCH TABS ── */
+function buildTabs(){
+  const wrap=document.getElementById('brTabs');
+  wrap.innerHTML='';
+  Object.values(BRANCHES).forEach(b=>{
+    const btn=document.createElement('button');
+    btn.className='br-btn'+(b.id===activeBranch?' on':'');
+    btn.textContent=b.label;
+    btn.onclick=()=>switchBranch(b.id);
+    wrap.appendChild(btn);
+  });
+}
+function switchBranch(id){
+  if(id===activeBranch)return;
+  activeBranch=id;
+  localStorage.setItem('branchId',id);
+  document.querySelectorAll('.br-btn').forEach(b=>b.classList.toggle('on',b.textContent===BRANCHES[id].label));
+  stopListeners();resetDisplay();startListeners();
+  toast(`Switched to ${BRANCHES[id].label}`);
+}
+buildTabs();
+
+/* ── DISPLAY RESET ── */
+function resetDisplay(){
+  ['tToday','tRevenue','tStockVal'].forEach(id=>document.getElementById(id).textContent='ZMW 0');
+  document.getElementById('tProducts').textContent='0';
+  document.getElementById('lowRow').classList.remove('show');
+  document.getElementById('actList').innerHTML='<div class="act"><div class="act-info"><div class="act-name" style="color:var(--fade)">Loading…</div></div></div>';
+}
+
+/* ── FORMAT ── */
+const fmt=n=>'ZMW '+n.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pct=(a,b)=>{
+  if(b<=0)return'+100%';
+  const v=((a-b)/b*100).toFixed(1);
+  return(v>0?'+':'')+v+'%';
+};
+
+/* ── FIREBASE ── */
+let unsubS=null,unsubI=null;
+let salesData=[],invData=[];
+let todaySales=0,yestSales=0,totalRev=0,lowCnt=0,stockVal=0;
+
+function stopListeners(){if(unsubS)unsubS();if(unsubI)unsubI();unsubS=null;unsubI=null;}
+
+function startListeners(){
+  const today=new Date().toISOString().split('T')[0];
+  const yest=new Date(Date.now()-86400000).toISOString().split('T')[0];
+
+  unsubS=onSnapshot(
+    query(collection(db,'sales'),where('branchId','==',activeBranch)),
+    snap=>{
+      salesData=[];todaySales=0;yestSales=0;totalRev=0;
+      snap.forEach(d=>{
+        const s={id:d.id,...d.data()};
+        salesData.push(s);
+        const v=s.total!=null?s.total:(s.price*s.quantity)-(s.discount||0);
+        totalRev+=v;
+        if(s.date===today)todaySales+=v;
+        if(s.date===yest)yestSales+=v;
+      });
+      updateTiles();updateActivity();
+    },
+    err=>console.error(err)
+  );
+
+  unsubI=onSnapshot(
+    query(collection(db,'inventory'),where('branchId','==',activeBranch)),
+    snap=>{
+      invData=[];lowCnt=0;stockVal=0;
+      snap.forEach(d=>{
+        const i={id:d.id,...d.data(),
+          stock:Number(d.data().stock)||0,
+          price:Number(d.data().price)||0};
+        invData.push(i);
+        stockVal+=i.stock*i.price;
+        if(i.stock<10)lowCnt++;
+      });
+      updateTiles();
+    },
+    err=>console.error(err)
+  );
+}
+
+function updateTiles(){
+  /* Today's Sales */
+  document.getElementById('tToday').textContent=fmt(todaySales);
+  const sub1=document.getElementById('tTodaySub');
+  if(yestSales>0){
+    const p=pct(todaySales,yestSales);
+    const up=todaySales>=yestSales;
+    sub1.className='tile-sub '+(up?'up':'dn');
+    sub1.innerHTML=`<span class="live"></span> ${p} vs yesterday`;
+  }else{
+    sub1.className='tile-sub nt';
+    sub1.innerHTML=`<span class="live"></span> Live`;
+  }
+
+  /* Revenue */
+  document.getElementById('tRevenue').textContent=fmt(totalRev);
+
+  /* Products */
+  document.getElementById('tProducts').textContent=invData.length;
+  document.getElementById('tProdSub').textContent=`${invData.length} product${invData.length!==1?'s':''} tracked`;
+
+  /* Low stock */
+  const lr=document.getElementById('lowRow');
+  lr.classList.toggle('show',lowCnt>0);
+  document.getElementById('lowNum').textContent=lowCnt;
+
+  /* Sidebar badge */
+  const bd=document.getElementById('sbBadge');
+  bd.style.display=lowCnt>0?'inline-block':'none';
+  bd.textContent=lowCnt;
+
+  /* Stock value */
+  document.getElementById('tStockVal').textContent=fmt(stockVal);
+}
+
+function updateActivity(){
+  const list=document.getElementById('actList');
+  list.innerHTML='';
+
+  if(lowCnt>0){
+    const el=document.createElement('div');el.className='act';
+    el.innerHTML=`
+      <div class="act-ic ic-alrt"><i class="fas fa-exclamation-triangle"></i></div>
+      <div class="act-info">
+        <div class="act-name">Low Stock Alert</div>
+        <div class="act-when">${lowCnt} item${lowCnt!==1?'s':''} need restocking</div>
+      </div>`;
+    list.appendChild(el);
+  }
+
+  if(!salesData.length&&lowCnt===0){
+    list.innerHTML='<div class="act"><div class="act-info"><div class="act-name" style="color:var(--fade)">No activity yet for this branch.</div></div></div>';
+    return;
+  }
+
+  const recent=[...salesData]
+    .sort((a,b)=>(b.timestamp?.toDate?.()?.getTime()||0)-(a.timestamp?.toDate?.()?.getTime()||0))
+    .slice(0,7);
+
+  recent.forEach(s=>{
+    const v=s.total!=null?s.total:(s.price*s.quantity)-(s.discount||0);
+    const t=s.timestamp
+      ?new Date(s.timestamp.toDate()).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
+      :s.date||'';
+    const el=document.createElement('div');el.className='act';
+    el.innerHTML=`
+      <div class="act-ic ic-sale"><i class="fas fa-shopping-cart"></i></div>
+      <div class="act-info">
+        <div class="act-name">${s.name||'Sale'} ×${s.quantity}</div>
+        <div class="act-when">${t}</div>
+      </div>
+      <div class="act-amt">${fmt(v)}</div>`;
+    list.appendChild(el);
+  });
+}
+
+startListeners();
+
+window.doLogout=function(){
+  if(!confirm('Log out?'))return;
+  localStorage.removeItem('userName');
+  window.location.href='index.html';
+};
+</script>
 </body>
 </html>
