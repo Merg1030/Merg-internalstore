@@ -7,7 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --bg:#f4f6fb; --bg2:#ffffff; --bg3:#f1f3f5;
@@ -15,7 +14,6 @@
             --text:#1a1e2e; --text-fade:#6b7490; --text-dim:#a0a8c0;
             --blue:#4361ee; --cyan:#00b4d8; --green:#10b981;
             --orange:#f59e0b; --pink:#f72585; --danger:#ef4444;
-            --blue-glow:rgba(67,97,238,0.15);
             --radius:10px; --radius-lg:16px;
             --header-h:56px; --sidebar-w:230px;
             --shadow:0 2px 12px rgba(67,97,238,0.08);
@@ -24,10 +22,9 @@
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
         body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-        /* ── TOPBAR ── */
+        /* TOPBAR */
         .topbar{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:1100;gap:10px;}
-        .topbar-left{display:flex;align-items:center;gap:10px;min-width:0;flex-shrink:0;}
-        .topbar-right{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;}
+        .topbar-left{display:flex;align-items:center;gap:10px;}
         .menu-btn{width:36px;height:36px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-fade);font-size:0.95rem;transition:all 0.2s;flex-shrink:0;}
         .menu-btn:hover{background:var(--blue);color:white;border-color:var(--blue);}
         .logo{display:flex;align-items:center;gap:9px;}
@@ -36,28 +33,28 @@
         .logo-text span{color:var(--blue);}
         .time-badge{background:var(--bg3);border:1px solid var(--border2);border-radius:100px;padding:4px 11px;font-size:0.68rem;font-family:'DM Mono',monospace;color:var(--text-fade);white-space:nowrap;}
 
-        /* ── SIDEBAR ── */
-        .sidebar{position:fixed;top:var(--header-h);left:0;width:var(--sidebar-w);height:calc(100vh - var(--header-h));background:rgba(255,255,255,0.98);backdrop-filter:blur(20px);border-right:1px solid var(--border);z-index:1000;padding:14px 10px 16px;transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);overflow-y:auto;display:flex;flex-direction:column;}
+        /* SIDEBAR */
+        .sidebar{position:fixed;top:var(--header-h);left:0;width:var(--sidebar-w);height:calc(100vh - var(--header-h));background:rgba(255,255,255,0.98);border-right:1px solid var(--border);z-index:1000;padding:14px 10px 16px;transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);overflow-y:auto;display:flex;flex-direction:column;}
         .sidebar.hidden{transform:translateX(-100%);}
         .sidebar-label{font-size:0.58rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.14em;padding:0 10px;margin:12px 0 6px;}
         .sidebar a{display:flex;align-items:center;gap:10px;padding:9px 12px;color:var(--text-fade);text-decoration:none;font-size:0.82rem;font-weight:500;border-radius:var(--radius);margin-bottom:2px;transition:all 0.18s;}
         .sidebar a i{width:16px;text-align:center;font-size:0.85rem;}
         .sidebar a:hover{background:rgba(67,97,238,0.08);color:var(--blue);}
-        .sidebar a.active{background:rgba(67,97,238,0.12);color:var(--blue);font-weight:700;box-shadow:inset 0 0 0 1px rgba(67,97,238,0.2);}
+        .sidebar a.active{background:rgba(67,97,238,0.12);color:var(--blue);font-weight:700;}
         .logout-link{margin-top:auto;display:flex;align-items:center;gap:10px;padding:9px 12px;color:var(--danger);text-decoration:none;font-size:0.82rem;font-weight:700;border-radius:var(--radius);border:1px solid rgba(239,68,68,0.15);background:rgba(239,68,68,0.04);transition:all 0.18s;cursor:pointer;}
         .logout-link:hover{background:rgba(239,68,68,0.1);border-color:var(--danger);}
-        .logout-link i{width:16px;text-align:center;font-size:0.85rem;color:var(--danger);}
-        .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;backdrop-filter:blur(4px);}
+        .logout-link i{width:16px;text-align:center;color:var(--danger);}
+        .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;}
         .sidebar-overlay.show{display:block;}
 
-        /* ── MAIN ── */
+        /* MAIN */
         .main{margin-top:var(--header-h);margin-left:var(--sidebar-w);min-height:calc(100vh - var(--header-h));display:flex;flex-direction:column;transition:margin-left 0.32s cubic-bezier(0.4,0,0.2,1);}
         .main.expanded{margin-left:0;}
 
-        /* ── CONTENT BAR ── */
-        .content-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;box-shadow:var(--shadow);flex-shrink:0;}
-        .content-bar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;}
-        .content-bar-right{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;}
+        /* CONTENT BAR */
+        .content-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;box-shadow:var(--shadow);}
+        .content-bar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+        .content-bar-right{display:flex;align-items:center;gap:6px;}
         .page-title-text{font-size:0.9rem;font-weight:700;color:var(--blue);white-space:nowrap;}
         .branch-switcher{display:none;align-items:center;gap:3px;background:var(--bg3);border:1px solid var(--border);border-radius:100px;padding:3px 4px;}
         .branch-tab{padding:4px 11px;border-radius:100px;font-size:0.72rem;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--text-fade);transition:all 0.18s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
@@ -67,37 +64,27 @@
         .master-pill{display:none;background:linear-gradient(90deg,#f59e0b,#f97316);color:white;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
         .total-pill{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid rgba(67,97,238,0.2);color:var(--blue);font-size:0.75rem;font-weight:700;padding:4px 12px;border-radius:100px;white-space:nowrap;}
 
-        /* ── TABS ── */
-        .tab-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 14px;display:flex;gap:0;flex-shrink:0;}
-        .tab-btn{padding:10px 16px;font-size:0.78rem;font-weight:700;color:var(--text-fade);border:none;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;transition:all 0.18s;display:flex;align-items:center;gap:6px;}
-        .tab-btn:hover{color:var(--blue);}
-        .tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
-        .tab-content{display:none;flex:1;flex-direction:column;}
-        .tab-content.active{display:flex;}
-
-        /* ── BUTTONS ── */
-        .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border:none;border-radius:var(--radius);cursor:pointer;font-size:0.78rem;font-weight:700;transition:all 0.18s;white-space:nowrap;font-family:'DM Sans',sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
-        .btn i{font-size:0.78rem;}
+        /* BUTTONS */
+        .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border:none;border-radius:var(--radius);cursor:pointer;font-size:0.78rem;font-weight:700;transition:all 0.18s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
         .btn-primary{background:linear-gradient(135deg,var(--blue),#3451d1);color:white;}
         .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(67,97,238,0.3);}
         .btn-success{background:linear-gradient(135deg,var(--green),#059669);color:white;}
-        .btn-success:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,0.3);}
+        .btn-success:hover{transform:translateY(-1px);}
         .btn-warning{background:linear-gradient(135deg,var(--orange),#d97706);color:white;}
         .btn-warning:hover{transform:translateY(-1px);}
         .btn-ghost{background:var(--bg3);color:var(--blue);border:1px solid var(--border);}
         .btn-ghost:hover{background:var(--border);}
         .btn-danger{background:linear-gradient(135deg,var(--danger),#dc2626);color:white;}
-        .btn-danger:hover{transform:translateY(-1px);}
         .btn-sm{padding:5px 10px;font-size:0.72rem;}
 
-        /* ── SEARCH ── */
+        /* SEARCH */
         .search-wrap{position:relative;}
-        .search-wrap input{padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:var(--radius);font-size:0.78rem;background:var(--bg3);color:var(--text);width:160px;font-family:'DM Sans',sans-serif;transition:border-color 0.2s,box-shadow 0.2s;}
-        .search-wrap input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(67,97,238,0.1);background:white;}
+        .search-wrap input{padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:var(--radius);font-size:0.78rem;background:var(--bg3);color:var(--text);width:160px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+        .search-wrap input:focus{border-color:var(--blue);background:white;}
         .search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:0.75rem;pointer-events:none;}
 
-        /* ── TABLE ── */
-        .table-area{flex:1;padding:12px 14px 20px;overflow-x:auto;}
+        /* TABLE */
+        .table-area{flex:1;padding:12px 14px 20px;}
         .table-card{background:var(--bg2);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;}
         .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
         table{width:100%;border-collapse:collapse;min-width:320px;}
@@ -112,7 +99,7 @@
         .stock-zero{background:rgba(239,68,68,0.1);color:#991b1b;}
         .empty-row td{text-align:center;padding:48px 20px;color:var(--text-dim);font-size:0.82rem;}
 
-        /* ── THREE DOTS ── */
+        /* THREE DOTS */
         .menu-container{position:relative;display:inline-block;}
         .three-dots-btn{background:none;border:none;cursor:pointer;width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2.5px;transition:background 0.15s;}
         .three-dots-btn:hover{background:var(--bg3);}
@@ -125,29 +112,7 @@
         .menu-item.edit{color:var(--blue);}
         .menu-item.delete{color:var(--danger);}
 
-        /* ── TRANSFER HISTORY ── */
-        .history-area{flex:1;padding:12px 14px 20px;}
-        .history-card{background:var(--bg2);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;}
-        .history-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-        .history-hdr-left{display:flex;align-items:center;gap:8px;}
-        .hdr-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 6px rgba(67,97,238,0.5);animation:pulse 2s infinite;}
-        .history-hdr h3{font-size:0.8rem;font-weight:700;}
-        .hist-count{background:var(--bg3);border:1px solid var(--border2);border-radius:100px;padding:2px 9px;font-size:0.62rem;font-weight:700;color:var(--text-fade);}
-
-        .hist-item{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;}
-        .hist-item:last-child{border-bottom:none;}
-        .hist-item:hover{background:var(--bg3);}
-        .hist-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;color:white;font-size:0.78rem;flex-shrink:0;}
-        .hist-body{flex:1;min-width:0;}
-        .hist-ref{font-size:0.78rem;font-weight:700;color:var(--text);margin-bottom:2px;}
-        .hist-sub{font-size:0.65rem;color:var(--text-fade);}
-        .hist-actions{display:flex;gap:6px;flex-shrink:0;}
-        .dl-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;background:linear-gradient(135deg,var(--green),#059669);color:white;border:none;border-radius:8px;font-size:0.7rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.18s;}
-        .dl-btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(16,185,129,0.25);}
-        .no-history{text-align:center;padding:40px 20px;color:var(--text-dim);font-size:0.8rem;}
-        .no-history i{font-size:1.8rem;display:block;margin-bottom:10px;color:var(--border2);}
-
-        /* ── SLIDE PANEL ── */
+        /* SLIDE PANEL */
         .panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:2000;opacity:0;pointer-events:none;transition:opacity 0.25s;}
         .panel-overlay.open{opacity:1;pointer-events:all;}
         .slide-panel{position:fixed;top:0;right:0;width:min(440px,100vw);height:100vh;background:var(--bg2);box-shadow:-8px 0 40px rgba(0,0,0,0.15);z-index:2001;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;overflow:hidden;}
@@ -162,24 +127,24 @@
         .panel-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;}
         .field-group{display:flex;flex-direction:column;gap:5px;}
         .field-group label{font-size:0.65rem;font-weight:800;color:var(--text-fade);text-transform:uppercase;letter-spacing:0.08em;}
-        .field-group input,.field-group select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:0.85rem;color:var(--text);background:var(--bg3);font-family:'DM Sans',sans-serif;transition:border-color 0.2s,box-shadow 0.2s;}
-        .field-group input:focus,.field-group select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(67,97,238,0.1);background:white;}
+        .field-group input,.field-group select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:0.85rem;color:var(--text);background:var(--bg3);font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+        .field-group input:focus,.field-group select:focus{border-color:var(--blue);background:white;}
         .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
         .preview-box{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid rgba(67,97,238,0.2);border-radius:var(--radius);padding:10px 12px;font-size:0.78rem;color:var(--blue);min-height:42px;display:flex;align-items:center;gap:7px;}
         .tip-text{font-size:0.7rem;color:var(--text-dim);}
         .panel-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;}
         .panel-footer .btn{flex:1;justify-content:center;padding:10px;}
 
-        /* ── TOAST ── */
+        /* TOAST */
         .toast-wrap{position:fixed;bottom:20px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none;}
-        .toast{background:#1e2029;color:white;padding:10px 16px;border-radius:var(--radius);font-size:0.8rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,0.3);animation:toastIn 0.25s ease;display:flex;align-items:center;gap:9px;max-width:300px;font-family:'DM Sans',sans-serif;}
+        .toast{background:#1e2029;color:white;padding:10px 16px;border-radius:var(--radius);font-size:0.8rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,0.3);animation:toastIn 0.25s ease;display:flex;align-items:center;gap:9px;max-width:300px;}
         .toast.success{border-left:3px solid var(--green);}
         .toast.error{border-left:3px solid var(--danger);}
         .toast.fade-out{animation:toastOut 0.3s ease forwards;}
         @keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
         @keyframes toastOut{from{opacity:1;}to{opacity:0;transform:translateY(10px);}}
 
-        /* ── EDIT MODAL ── */
+        /* EDIT MODAL */
         .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:3000;backdrop-filter:blur(3px);}
         .modal{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:24px 20px 18px;width:min(400px,94vw);animation:modalIn 0.2s ease;}
         @keyframes modalIn{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
@@ -188,53 +153,11 @@
         .modal .form-actions{display:flex;gap:8px;margin-top:16px;}
         .modal .form-actions .btn{flex:1;justify-content:center;}
 
-        /* ── LOADING ── */
+        /* LOADING */
         #loadingOverlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9998;flex-direction:column;gap:12px;}
         .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;}
         @keyframes spin{to{transform:rotate(360deg);}}
         .loading-text{font-size:0.82rem;color:var(--text-fade);font-weight:500;}
-
-        /* ── PRINT ── */
-        #transferPrintArea{display:none;}
-        @media print{
-            @page{margin:14mm 12mm;size:A4 portrait;}
-            html{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-            body>*:not(#transferPrintArea){display:none!important;}
-            #transferPrintArea{display:block!important;font-family:'Segoe UI',Arial,sans-serif;font-size:10.5pt;color:#000;background:white;width:100%;}
-            .pr-paper{width:100%;background:white;}
-            .pr-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid #000;padding-bottom:10px;margin-bottom:14px;}
-            .pr-brand{font-size:22pt;font-weight:900;color:#000;margin-bottom:3px;}
-            .pr-brand-sub{font-size:9pt;color:#444;line-height:1.6;}
-            .pr-doc-type{font-size:15pt;font-weight:900;color:#000;text-align:right;margin-bottom:3px;}
-            .pr-ref{font-size:8pt;text-transform:uppercase;letter-spacing:.1em;color:#666;}
-            .pr-ref-val{font-size:11pt;font-weight:900;color:#000;}
-            .pr-date-val{font-size:8.5pt;font-weight:600;color:#333;margin-top:2px;}
-            .pr-route{display:flex;justify-content:space-between;align-items:center;background:#f8f9fa;border:1px solid #ddd;border-radius:4px;padding:10px 14px;margin-bottom:14px;}
-            .pr-route-box{text-align:center;}
-            .pr-route-label{font-size:7.5pt;text-transform:uppercase;color:#666;margin-bottom:3px;}
-            .pr-route-name{font-weight:700;font-size:10.5pt;}
-            .pr-route-arrow{font-size:14pt;color:#4361ee;font-weight:900;}
-            .pr-table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:9.5pt;}
-            .pr-table th{background:#f1f3f5;border-top:1.5px solid #000;border-bottom:1.5px solid #000;padding:6px 8px;text-align:left;font-size:8pt;text-transform:uppercase;font-weight:700;}
-            .pr-table td{padding:6px 8px;border-bottom:1px solid #ddd;}
-            .pr-table tbody tr:last-child td{border-bottom:2px solid #000;}
-            .pr-notes{font-size:8.5pt;color:#555;border:1px solid #ddd;border-radius:3px;padding:8px 10px;margin-bottom:18px;min-height:40px;}
-            .pr-notes-label{font-size:7.5pt;text-transform:uppercase;color:#666;margin-bottom:4px;font-weight:700;}
-            .pr-sig-section{margin-top:20px;}
-            .pr-sig-title{font-size:8pt;text-transform:uppercase;color:#666;font-weight:700;margin-bottom:14px;border-top:1px solid #ddd;padding-top:10px;}
-            .pr-sig-row{display:flex;gap:40px;}
-            .pr-sig-box{flex:1;}
-            .pr-sig-role{font-size:8pt;text-transform:uppercase;color:#555;font-weight:700;margin-bottom:6px;}
-            .pr-sig-line{border-bottom:1.5px solid #000;height:44px;margin-bottom:6px;}
-            .pr-sig-fields{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
-            .pr-sig-field{display:flex;align-items:center;gap:8px;font-size:8.5pt;}
-            .pr-sig-field-label{color:#666;min-width:60px;font-weight:600;}
-            .pr-sig-field-line{flex:1;border-bottom:1px solid #999;height:16px;}
-            .pr-footer{margin-top:20px;text-align:center;font-size:7.5pt;color:#888;border-top:1px solid #ddd;padding-top:7px;}
-        }
-
-        /* ── ANIMATIONS ── */
-        @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
 
         ::-webkit-scrollbar{width:4px;height:4px;}
         ::-webkit-scrollbar-track{background:transparent;}
@@ -247,437 +170,12 @@
             .main{margin-left:0!important;}
             .time-badge{display:none;}
             .field-row{grid-template-columns:1fr;}
-            .table-area,.history-area{padding:10px 10px 20px;}
+            .table-area{padding:10px 10px 20px;}
             .content-bar{padding:8px 10px;}
         }
-        @media(max-width:400px){
-            .btn{padding:6px 9px;font-size:0.72rem;}
-            .search-wrap input{width:120px;}
-        }
-        @media(min-width:601px){
-            .sidebar{transform:translateX(0);}
-            .sidebar.hidden{transform:translateX(-100%);}
-        }
+        @media(max-width:400px){.btn{padding:6px 9px;font-size:0.72rem;}.search-wrap input{width:120px;}}
+        @media(min-width:601px){.sidebar{transform:translateX(0);}.sidebar.hidden{transform:translateX(-100%);}}
     </style>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import {
-            getFirestore, collection, query, where,
-            getDocs, addDoc, updateDoc, deleteDoc,
-            doc, increment, onSnapshot, runTransaction, orderBy
-        } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey:"AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
-            authDomain:"trismartstores.firebaseapp.com",
-            projectId:"trismartstores",
-            storageBucket:"trismartstores.appspot.com",
-            messagingSenderId:"416692703333",
-            appId:"1:416692703333:web:d4b60292621435c748f68c",
-            measurementId:"G-NJPQ7L3QWJ"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db  = getFirestore(app);
-
-        /* ── SESSION ── */
-        const userName = (localStorage.getItem('userName') || '').toLowerCase().trim();
-        const isAdmin  = userName === 'chris';
-        if (!userName) window.location.href = 'index.html';
-
-        let branchId = localStorage.getItem('branchId') || '';
-        if (!branchId) {
-            if (isAdmin) { branchId = 'master'; localStorage.setItem('branchId','master'); }
-            else { alert('Branch not set.'); window.location.href = 'dashboard.html'; }
-        }
-
-        const BRANCHES = {
-            master:{id:'master',name:'Master Warehouse'},
-            makeni:{id:'makeni',name:'Kabanana Branch'},
-            kabana:{id:'kabana',name:'Makeni Branch'}
-        };
-        const getBranchName = id => BRANCHES[id]?.name || id;
-
-        let inventory=[], transferCart=[], sourceInventory=[];
-        let activeMenu=null, editUnlocked=false, unsubscribe=null;
-
-        /* ── SIDEBAR ── */
-        const sidebar  = document.getElementById('sidebar');
-        const overlay  = document.getElementById('sidebarOverlay');
-        const menuBtn  = document.getElementById('menuBtn');
-        const mainEl   = document.getElementById('mainContent');
-        const isMobile = () => window.innerWidth <= 600;
-
-        function initSidebar() {
-            if (isMobile()) { sidebar.classList.remove('visible'); mainEl.classList.add('expanded'); }
-            else { sidebar.classList.remove('hidden'); mainEl.classList.remove('expanded'); mainEl.style.marginLeft='230px'; }
-        }
-        initSidebar();
-        window.addEventListener('resize', initSidebar);
-        menuBtn.addEventListener('click', () => {
-            if (isMobile()) {
-                const open=sidebar.classList.contains('visible');
-                open?(sidebar.classList.remove('visible'),overlay.classList.remove('show')):(sidebar.classList.add('visible'),overlay.classList.add('show'));
-            } else {
-                const hidden=sidebar.classList.contains('hidden');
-                if(hidden){sidebar.classList.remove('hidden');mainEl.style.marginLeft='230px';}
-                else{sidebar.classList.add('hidden');mainEl.style.marginLeft='0';}
-            }
-        });
-        overlay.addEventListener('click',()=>{sidebar.classList.remove('visible');overlay.classList.remove('show');});
-
-        /* ── LOGOUT ── */
-        document.getElementById('logoutLink').addEventListener('click', e => {
-            e.preventDefault();
-            localStorage.removeItem('userName'); localStorage.removeItem('branchId');
-            window.location.replace('index.html');
-        });
-
-        /* ── CLOCK ── */
-        function tick(){document.getElementById('timeBadge').textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
-        tick(); setInterval(tick,30000);
-
-        /* ── TABS ── */
-        document.querySelectorAll('.tab-btn').forEach(btn=>{
-            btn.addEventListener('click',()=>{
-                document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.tab).classList.add('active');
-                if(btn.dataset.tab==='historyTab') loadTransferHistory();
-            });
-        });
-
-        /* ── TOAST ── */
-        function toast(msg,type='success'){
-            const wrap=document.getElementById('toastWrap');
-            const el=document.createElement('div');
-            el.className=`toast ${type}`;
-            el.innerHTML=`<i class="fas fa-${type==='success'?'check':'times'}"></i> ${msg}`;
-            wrap.appendChild(el);
-            setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),350);},3200);
-        }
-
-        /* ── PANELS ── */
-        function openPanel(id){document.getElementById('panelOverlay').classList.add('open');document.getElementById(id).classList.add('open');}
-        window.closePanelById=id=>{document.getElementById('panelOverlay').classList.remove('open');document.getElementById(id).classList.remove('open');};
-        document.getElementById('panelOverlay').addEventListener('click',()=>{closePanelById('addPanel');closePanelById('transferPanel');});
-
-        /* ── BRANCH SWITCHER ── */
-        function setupBranchSwitcher(){
-            if(!isAdmin)return;
-            const sw=document.getElementById('branchSwitcher');
-            sw.style.display='flex';sw.innerHTML='';
-            Object.values(BRANCHES).forEach(b=>{
-                const btn=document.createElement('button');
-                btn.className='branch-tab';btn.textContent=b.id==='master'?'⭐ Master':b.name;btn.dataset.bid=b.id;
-                btn.onclick=()=>switchBranch(b.id);sw.appendChild(btn);
-            });
-            updateSwitcherActive();
-        }
-        function updateSwitcherActive(){
-            document.querySelectorAll('.branch-tab').forEach(btn=>{
-                btn.classList.remove('active','active-master');
-                if(btn.dataset.bid===branchId)btn.classList.add(branchId==='master'?'active-master':'active');
-            });
-        }
-        function switchBranch(newId){
-            if(newId===branchId)return;
-            branchId=newId;localStorage.setItem('branchId',branchId);
-            document.getElementById('pageTitle').textContent=`Warehouse — ${getBranchName(branchId)}`;
-            document.getElementById('masterPill').style.display=branchId==='master'?'inline-flex':'none';
-            updateSwitcherActive();closePanelById('addPanel');closePanelById('transferPanel');
-            if(unsubscribe)unsubscribe();setupListener();
-        }
-
-        /* ── ROLE UI ── */
-        function setupRoleUI(){
-            setupBranchSwitcher();
-            const adminCtrl=document.getElementById('adminControls');
-            const restockBtn=document.getElementById('restockBtn');
-            const masterPill=document.getElementById('masterPill');
-            const actHdr=document.getElementById('actionsHeader');
-            if(isAdmin){
-                adminCtrl.style.display='flex';restockBtn.style.display='inline-flex';
-                masterPill.style.display=branchId==='master'?'inline-flex':'none';
-                if(actHdr)actHdr.style.display='';
-            }else{
-                adminCtrl.style.display='none';restockBtn.style.display='none';
-                masterPill.style.display='none';
-                if(actHdr)actHdr.style.display='none';
-            }
-        }
-
-        /* ── LISTENER ── */
-        function setupListener(){
-            if(unsubscribe){unsubscribe();unsubscribe=null;}
-            document.getElementById('pageTitle').textContent=`Warehouse — ${getBranchName(branchId)}`;
-            const q=query(collection(db,'inventory'),where('branchId','==',branchId));
-            unsubscribe=onSnapshot(q,snap=>{
-                inventory=snap.docs.map(d=>({id:d.id,...d.data(),stock:Number(d.data().stock)||0,price:Number(d.data().price)||0}));
-                inventory.sort((a,b)=>a.code.localeCompare(b.code));
-                sourceInventory=[...inventory];
-                rebuildDatalist('addProductCodes',inventory);rebuildDatalist('transferCodes',inventory);
-                renderTable(inventory);hideLoading();
-            },err=>{toast('Error: '+err.message,'error');hideLoading();});
-        }
-        function rebuildDatalist(id,items){
-            const dl=document.getElementById(id);if(!dl)return;dl.innerHTML='';
-            items.forEach(i=>{const o=document.createElement('option');o.value=i.code;dl.appendChild(o);});
-        }
-        function hideLoading(){const ov=document.getElementById('loadingOverlay');if(ov){ov.style.opacity='0';setTimeout(()=>ov.remove(),300);}}
-
-        /* ── RENDER TABLE ── */
-        function renderTable(items){
-            const tbody=document.querySelector('#inventoryTable tbody');tbody.innerHTML='';let total=0;
-            if(!items.length){
-                const cols=isAdmin?5:4;
-                tbody.innerHTML=`<tr class="empty-row"><td colspan="${cols}">No items found in this warehouse.</td></tr>`;
-                document.getElementById('totalVal').textContent='0.00';return;
-            }
-            items.forEach(item=>{
-                total+=item.price*item.stock;
-                const sc=item.stock===0?'stock-zero':item.stock<10?'stock-low':'stock-ok';
-                const tr=document.createElement('tr');
-                const actCell=isAdmin?`<td><div class="menu-container"><button class="three-dots-btn" onclick="toggleMenu(event,'${item.id}')"><div class="dot"></div><div class="dot"></div><div class="dot"></div></button><div class="menu-dropdown" id="menu-${item.id}"><div class="menu-item edit" onclick="handleEdit('${item.id}')"><i class="fas fa-pen"></i> Edit</div><div class="menu-item delete" onclick="handleDelete('${item.id}')"><i class="fas fa-trash"></i> Delete</div></div></div></td>`:'';
-                tr.innerHTML=`<td><span class="code-chip">${item.code}</span></td><td style="font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.name}</td><td style="font-family:'DM Mono',monospace;font-size:0.75rem;">K${item.price.toFixed(2)}</td><td><span class="stock-chip ${sc}">${item.stock}</span></td>${actCell}`;
-                tbody.appendChild(tr);
-            });
-            document.getElementById('totalVal').textContent=total.toFixed(2);
-        }
-
-        window.searchInventory=()=>{
-            const q=document.getElementById('searchInput').value.toLowerCase();
-            renderTable(q?inventory.filter(i=>i.name.toLowerCase().includes(q)||i.code.toLowerCase().includes(q)):inventory);
-        };
-
-        /* ── ADD PANEL ── */
-        window.openAddPanel=()=>{document.getElementById('addForm').reset();openPanel('addPanel');setTimeout(()=>document.getElementById('addItemCode').focus(),320);};
-        document.getElementById('addItemCode').addEventListener('input',function(){
-            const found=inventory.find(i=>i.code===this.value.toUpperCase());
-            if(found){document.getElementById('addItemName').value=found.name;document.getElementById('addItemPrice').value=found.price.toFixed(2);}
-        });
-        window.submitAddItem=async e=>{
-            e.preventDefault();
-            const code=document.getElementById('addItemCode').value.trim().toUpperCase();
-            const name=document.getElementById('addItemName').value.trim();
-            const price=parseFloat(document.getElementById('addItemPrice').value);
-            const stock=parseInt(document.getElementById('addItemStock').value);
-            if(!code||!name||isNaN(price)||price<0||isNaN(stock)||stock<0){toast('Fill all fields.','error');return;}
-            if(inventory.find(i=>i.code===code)){toast('Code exists.','error');return;}
-            try{await addDoc(collection(db,'inventory'),{code,name,price,stock,sold:0,branchId});toast(`"${name}" added!`);closePanelById('addPanel');}
-            catch(err){toast('Error: '+err.message,'error');}
-        };
-
-        /* ── TRANSFER PANEL ── */
-        window.openTransferPanel=()=>{
-            transferCart=[];
-            const sel=document.getElementById('transferSource');sel.innerHTML='<option value="">— Select Source —</option>';
-            Object.values(BRANCHES).forEach(b=>{const o=document.createElement('option');o.value=b.id;o.textContent=getBranchName(b.id);if(b.id===branchId)o.selected=true;sel.appendChild(o);});
-            document.getElementById('transferCode').value='';document.getElementById('transferQty').value=1;document.getElementById('transferDest').value='';
-            document.getElementById('transferPreview').textContent='Enter a product code above to preview';
-            sourceInventory=[...inventory];rebuildDatalist('transferCodes',sourceInventory);buildDestOptions(branchId);renderTransferCart();
-            openPanel('transferPanel');setTimeout(()=>document.getElementById('transferCode').focus(),320);
-        };
-        function buildDestOptions(srcId){
-            const sel=document.getElementById('transferDest');sel.innerHTML='<option value="">— Select Destination —</option>';
-            Object.keys(BRANCHES).filter(id=>id!==srcId).forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent=getBranchName(id);sel.appendChild(o);});
-        }
-        window.handleSourceChange=async()=>{
-            const srcId=document.getElementById('transferSource').value;if(!srcId)return;
-            document.getElementById('transferPreview').textContent='Loading…';document.getElementById('transferCode').value='';
-            transferCart=[];renderTransferCart();
-            try{
-                sourceInventory=srcId===branchId?[...inventory]:(await getDocs(query(collection(db,'inventory'),where('branchId','==',srcId)))).docs.map(d=>({id:d.id,...d.data(),stock:Number(d.data().stock)||0,price:Number(d.data().price)||0}));
-                rebuildDatalist('transferCodes',sourceInventory);buildDestOptions(srcId);
-                document.getElementById('transferPreview').textContent='Enter a product code above to preview';
-            }catch(err){toast('Failed: '+err.message,'error');}
-        };
-        document.getElementById('transferCode').addEventListener('input',function(){
-            const code=this.value.toUpperCase();const item=sourceInventory.find(i=>i.code===code);const prev=document.getElementById('transferPreview');
-            prev.innerHTML=item?`<strong>${item.name}</strong> &mdash; Stock: <strong>${item.stock}</strong> &mdash; K${item.price.toFixed(2)}`:(code?'Not found in source':'Enter a product code above to preview');
-        });
-        window.addToTransferCart=()=>{
-            const code=document.getElementById('transferCode').value.toUpperCase();const qty=parseInt(document.getElementById('transferQty').value);const srcId=document.getElementById('transferSource').value;
-            if(!srcId){toast('Select source first.','error');return;}if(!code){toast('Enter a product code.','error');return;}if(isNaN(qty)||qty<1){toast('Enter valid quantity.','error');return;}
-            const item=sourceInventory.find(i=>i.code===code);if(!item){toast('Product not found.','error');return;}
-            const existing=transferCart.find(c=>c.code===code);const staged=existing?existing.qty:0;
-            if(staged+qty>item.stock){toast(`Not enough stock. Available: ${item.stock}`,'error');return;}
-            if(existing){existing.qty+=qty;existing.total=existing.qty*item.price;}
-            else transferCart.push({code:item.code,name:item.name,price:item.price,qty,total:qty*item.price,itemId:item.id});
-            toast(`${item.name} added.`);renderTransferCart();
-            document.getElementById('transferCode').value='';document.getElementById('transferQty').value=1;
-            document.getElementById('transferPreview').textContent='Enter a product code above to preview';
-            setTimeout(()=>document.getElementById('transferCode').focus(),80);
-        };
-        window.removeFromTransferCart=idx=>{transferCart.splice(idx,1);renderTransferCart();};
-        function renderTransferCart(){
-            const wrap=document.getElementById('transferCartWrap');const tbody=document.getElementById('transferCartBody');const confirmBtn=document.getElementById('confirmTransferBtn');
-            if(!transferCart.length){wrap.style.display='none';confirmBtn.disabled=true;return;}
-            wrap.style.display='block';confirmBtn.disabled=false;tbody.innerHTML='';let grand=0;
-            transferCart.forEach((c,idx)=>{
-                grand+=c.total;const tr=document.createElement('tr');
-                tr.innerHTML=`<td style="padding:6px 8px;border-bottom:1px solid var(--border);font-size:.78rem;"><strong>${c.name}</strong><br><span style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--text-fade);">${c.code}</span></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:center;font-weight:700;font-size:.82rem;">${c.qty}</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:right;font-size:.78rem;">K${c.total.toFixed(2)}</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);"><button onclick="removeFromTransferCart(${idx})" style="background:none;border:1px solid var(--danger);color:var(--danger);padding:2px 6px;border-radius:5px;cursor:pointer;font-size:.66rem;font-weight:700;">✕</button></td>`;
-                tbody.appendChild(tr);
-            });
-            document.getElementById('transferCartTotal').textContent=`Total: K${grand.toFixed(2)} — ${transferCart.length} item${transferCart.length>1?'s':''}`;
-        }
-
-        /* ══════════════════════════════════
-           SUBMIT TRANSFER — saves full data to Firestore
-        ══════════════════════════════════ */
-        window.submitTransfer=async e=>{
-            e.preventDefault();
-            const destId=document.getElementById('transferDest').value;const srcId=document.getElementById('transferSource').value;
-            if(!srcId){toast('Select source.','error');return;}if(!destId){toast('Select destination.','error');return;}
-            if(srcId===destId){toast('Source and destination must differ.','error');return;}if(!transferCart.length){toast('Add items first.','error');return;}
-            const itemList=transferCart.map(c=>`${c.qty}× ${c.name}`).join(', ');
-            if(!confirm(`Transfer:\n${itemList}\n\nFrom: ${getBranchName(srcId)}\nTo:   ${getBranchName(destId)}`))return;
-            const btn=document.getElementById('confirmTransferBtn');btn.disabled=true;btn.textContent='Processing…';
-            try{
-                const done=[];const ref='TRF-'+Date.now().toString().slice(-6);
-                const now=new Date();
-                const dateStr=now.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-                const timeStr=now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-
-                for(const c of transferCart){
-                    await runTransaction(db,async tx=>{
-                        const srcRef=doc(db,'inventory',c.itemId);const srcDoc=await tx.get(srcRef);const live=srcDoc.data().stock||0;
-                        if(live<c.qty)throw new Error(`Stock changed for ${c.name}. Live: ${live}`);
-                        tx.update(srcRef,{stock:increment(-c.qty)});
-                        const destSnap=await getDocs(query(collection(db,'inventory'),where('branchId','==',destId),where('code','==',c.code)));
-                        if(!destSnap.empty)tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(c.qty)});
-                        else tx.set(doc(collection(db,'inventory')),{code:c.code,name:c.name,price:c.price,stock:c.qty,sold:0,branchId:destId});
-                    });
-                    done.push({...c});
-                }
-
-                /* ── Save full transfer record to Firestore for history ── */
-                await addDoc(collection(db,'transferRecords'),{
-                    ref, date:dateStr, time:timeStr,
-                    srcId, srcName:getBranchName(srcId),
-                    destId, destName:getBranchName(destId),
-                    items:done.map(c=>({code:c.code,name:c.name,qty:c.qty,price:c.price,total:c.total})),
-                    totalValue:done.reduce((s,c)=>s+c.total,0),
-                    createdAt:now.toISOString(), branchId
-                });
-
-                toast(`✓ ${done.length} item(s) transferred → ${getBranchName(destId)}`);
-                closePanelById('transferPanel');
-                openTransferDoc({items:done,srcId,destId,date:dateStr,time:timeStr,ref});
-                transferCart=[];
-            }catch(err){toast('Transfer failed: '+err.message,'error');}
-            finally{btn.disabled=false;btn.textContent='✓ Confirm & Transfer All';}
-        };
-
-        /* ══════════════════════════════════
-           LOAD TRANSFER HISTORY
-        ══════════════════════════════════ */
-        async function loadTransferHistory(){
-            const wrap=document.getElementById('historyListWrap');
-            wrap.innerHTML=`<div class="no-history"><i class="fas fa-spinner fa-spin"></i>Loading history…</div>`;
-            try{
-                const q=query(collection(db,'transferRecords'),orderBy('createdAt','desc'));
-                const snap=await getDocs(q);
-                document.getElementById('histCount').textContent=snap.size;
-                if(snap.empty){wrap.innerHTML=`<div class="no-history"><i class="fas fa-box-open"></i>No transfers recorded yet.</div>`;return;}
-                wrap.innerHTML='';
-                snap.forEach(d=>{
-                    const r={id:d.id,...d.data()};
-                    const el=document.createElement('div');el.className='hist-item';
-                    el.innerHTML=`
-                        <div class="hist-icon"><i class="fas fa-exchange-alt"></i></div>
-                        <div class="hist-body">
-                            <div class="hist-ref">${r.ref} — ${r.srcName} → ${r.destName}</div>
-                            <div class="hist-sub">${r.date} · ${r.time} · ${r.items?.length||0} item(s) · K${(r.totalValue||0).toFixed(2)}</div>
-                        </div>
-                        <div class="hist-actions">
-                            <button class="dl-btn" onclick="redownloadTransfer('${d.id}')"><i class="fas fa-download"></i> PDF</button>
-                        </div>`;
-                    wrap.appendChild(el);
-                });
-            }catch(err){wrap.innerHTML=`<div class="no-history" style="color:var(--danger)"><i class="fas fa-exclamation-circle"></i>Error loading history.</div>`;}
-        }
-
-        /* ── Re-download PDF from saved record ── */
-        window.redownloadTransfer=async(docId)=>{
-            try{
-                const snap=await getDocs(query(collection(db,'transferRecords')));
-                let record=null;
-                snap.forEach(d=>{if(d.id===docId)record={id:d.id,...d.data()};});
-                if(!record){toast('Record not found.','error');return;}
-                openTransferDoc({
-                    items:record.items||[],srcId:record.srcId,destId:record.destId,
-                    date:record.date,time:record.time,ref:record.ref
-                });
-            }catch(err){toast('Failed to load: '+err.message,'error');}
-        };
-
-        /* ── MENUS ── */
-        function closeAllMenus(){if(activeMenu){activeMenu.classList.remove('show');activeMenu=null;}}
-        window.toggleMenu=(e,id)=>{
-            e.stopPropagation();const menu=document.getElementById(`menu-${id}`);
-            if(activeMenu&&activeMenu!==menu)activeMenu.classList.remove('show');
-            menu.classList.toggle('show');activeMenu=menu.classList.contains('show')?menu:null;
-        };
-        document.addEventListener('click',closeAllMenus);
-
-        /* ── EDIT ── */
-        window.handleEdit=async id=>{
-            closeAllMenus();
-            if(!editUnlocked){const pass=prompt('Enter password to edit:');if(pass!=='1030'){toast('Incorrect password.','error');return;}editUnlocked=true;}
-            const item=inventory.find(i=>i.id===id);if(!item)return;
-            const bg=document.createElement('div');bg.className='modal-bg';bg.id='modal-bg';
-            bg.innerHTML=`<div class="modal"><h3><i class="fas fa-pen" style="margin-right:8px;"></i>Edit Product</h3><form id="editForm"><div class="field-group"><label>Product Code</label><input type="text" name="code" required value="${item.code}"></div><div class="field-group" style="margin-top:10px;"><label>Product Name</label><input type="text" name="name" required value="${item.name}"></div><div class="field-group" style="margin-top:10px;"><label>Price (ZMW)</label><input type="number" name="price" min="0" step="0.01" required value="${item.price}"></div><div class="field-group" style="margin-top:10px;"><label>Stock</label><input type="number" name="stock" min="0" required value="${item.stock}"></div><div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button><button type="button" class="btn btn-danger" id="cancelEdit"><i class="fas fa-times"></i> Cancel</button></div></form></div>`;
-            document.body.appendChild(bg);
-            document.getElementById('editForm').onsubmit=async ev=>{
-                ev.preventDefault();const f=ev.target;const code=f.code.value.trim().toUpperCase();const name=f.name.value.trim();const price=parseFloat(f.price.value);const stock=parseInt(f.stock.value);
-                if(!code||!name||isNaN(price)||price<0||isNaN(stock)||stock<0){toast('Invalid values.','error');return;}
-                if(code!==item.code&&inventory.some(i=>i.code===code)){toast('Code exists!','error');return;}
-                try{await updateDoc(doc(db,'inventory',item.id),{code,name,price,stock});bg.remove();toast('Updated!');}
-                catch(err){toast('Error: '+err.message,'error');}
-            };
-            document.getElementById('cancelEdit').onclick=()=>bg.remove();bg.onclick=ev=>{if(ev.target===bg)bg.remove();};
-        };
-
-        /* ── DELETE ── */
-        window.handleDelete=async id=>{
-            closeAllMenus();const item=inventory.find(i=>i.id===id);if(!item)return;
-            if(!confirm(`Delete "${item.name}" (${item.code})?`))return;
-            try{await deleteDoc(doc(db,'inventory',id));toast('Deleted.');}catch(err){toast('Error: '+err.message,'error');}
-        };
-
-        /* ── TRANSFER DOC ── */
-        function openTransferDoc(data){
-            window._tdata=data;
-            document.getElementById('tdocRef').textContent=data.ref;
-            document.getElementById('tdocDate').textContent=data.date;
-            document.getElementById('tdocTime').textContent=data.time;
-            document.getElementById('tdocFrom').textContent=getBranchName(data.srcId);
-            document.getElementById('tdocTo').textContent=getBranchName(data.destId);
-            const tbody=document.getElementById('tdocItemsTbody');tbody.innerHTML='';let grand=0;
-            (data.items||[]).forEach(item=>{
-                grand+=item.total;const tr=document.createElement('tr');
-                tr.innerHTML=`<td style="padding:7px 10px;border-bottom:1px solid var(--border);font-size:.8rem;">${item.name}</td><td style="padding:7px 10px;border-bottom:1px solid var(--border);"><span class="code-chip">${item.code}</span></td><td style="padding:7px 10px;border-bottom:1px solid var(--border);text-align:center;font-weight:700;">${item.qty}</td><td style="padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;font-size:.78rem;">K${Number(item.price).toFixed(2)}</td><td style="padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;">K${Number(item.total).toFixed(2)}</td>`;
-                tbody.appendChild(tr);
-            });
-            document.getElementById('tdocGrandTotal').textContent=`ZMW ${grand.toFixed(2)}`;
-            document.getElementById('tdocOverlay').classList.add('open');
-        }
-        window.closeTransferDoc=()=>document.getElementById('tdocOverlay').classList.remove('open');
-
-        window.printTransferDoc=()=>{
-            const d=window._tdata;if(!d)return;
-            let rows='',grand=0;
-            d.items.forEach(i=>{grand+=i.total;rows+=`<tr><td>${i.name}</td><td style="font-family:monospace">${i.code}</td><td style="text-align:center;font-weight:700">${i.qty}</td><td style="text-align:right">ZMW ${Number(i.price).toFixed(2)}</td><td style="text-align:right;font-weight:700">ZMW ${Number(i.total).toFixed(2)}</td></tr>`;});
-            document.getElementById('transferPrintArea').innerHTML=`<div class="pr-paper"><div class="pr-header"><div><div class="pr-brand">TRISMART</div><div class="pr-brand-sub">+260 771 287 206<br>Stock Transfer Document</div></div><div style="text-align:right"><div class="pr-doc-type">TRANSFER NOTE</div><div class="pr-ref">Reference No.</div><div class="pr-ref-val">${d.ref}</div><div class="pr-date-val">${d.date}</div><div class="pr-date-val" style="font-size:7.5pt;color:#666">Time: ${d.time}</div></div></div><div class="pr-route"><div class="pr-route-box"><div class="pr-route-label">Dispatched From</div><div class="pr-route-name">${getBranchName(d.srcId)}</div></div><div class="pr-route-arrow">&#10132;</div><div class="pr-route-box"><div class="pr-route-label">Received At</div><div class="pr-route-name">${getBranchName(d.destId)}</div></div></div><table class="pr-table"><thead><tr><th>Product</th><th>Code</th><th style="text-align:center">Qty</th><th style="text-align:right">Unit Price</th><th style="text-align:right">Total</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="4" style="text-align:right;font-weight:900;padding:5px 8px;">TOTAL</td><td style="text-align:right;font-weight:900;padding:5px 8px;">ZMW ${grand.toFixed(2)}</td></tr></tfoot></table><div><div class="pr-notes-label">Notes / Remarks</div><div class="pr-notes"></div></div><div class="pr-sig-section"><div class="pr-sig-title">Authorisation &amp; Acknowledgement</div><div class="pr-sig-row"><div class="pr-sig-box"><div class="pr-sig-role">Sent By (Dispatcher)</div><div class="pr-sig-line"></div><div class="pr-sig-fields"><div class="pr-sig-field"><span class="pr-sig-field-label">Name:</span><span class="pr-sig-field-line"></span></div><div class="pr-sig-field"><span class="pr-sig-field-label">Date:</span><span class="pr-sig-field-line"></span></div></div></div><div class="pr-sig-box"><div class="pr-sig-role">Received By</div><div class="pr-sig-line"></div><div class="pr-sig-fields"><div class="pr-sig-field"><span class="pr-sig-field-label">Name:</span><span class="pr-sig-field-line"></span></div><div class="pr-sig-field"><span class="pr-sig-field-label">Date:</span><span class="pr-sig-field-line"></span></div></div></div></div></div><div class="pr-footer">Trismart | +260 771 287 206 &nbsp;·&nbsp; Official stock transfer record.</div></div>`;
-            window.print();
-        };
-
-        /* ── INIT ── */
-        window.onload=()=>{setupRoleUI();setupListener();};
-    </script>
 </head>
 <body>
 
@@ -729,54 +227,31 @@
                 <button class="btn btn-success btn-sm" onclick="openAddPanel()"><i class="fas fa-plus"></i> Add</button>
                 <button class="btn btn-primary btn-sm" onclick="openTransferPanel()"><i class="fas fa-exchange-alt"></i> Transfer</button>
             </div>
-            <a href="Restock.html" id="restockBtn" class="btn btn-warning btn-sm" style="display:none;"><i class="fas fa-file-alt"></i> GRV</a>
+            <a href="Restock.html" id="restockBtn" class="btn btn-warning btn-sm" style="display:none;text-decoration:none;"><i class="fas fa-file-alt"></i> GRV</a>
         </div>
     </div>
 
-    <!-- TABS -->
-    <div class="tab-bar">
-        <button class="tab-btn active" data-tab="inventoryTab"><i class="fas fa-boxes"></i> Inventory</button>
-        <button class="tab-btn" data-tab="historyTab"><i class="fas fa-history"></i> Transfer History</button>
-    </div>
-
-    <!-- INVENTORY TAB -->
-    <div class="tab-content active" id="inventoryTab">
-        <div class="table-area">
-            <div class="table-card">
-                <div class="table-scroll">
-                    <table id="inventoryTable">
-                        <thead>
-                            <tr>
-                                <th>Code</th><th>Product</th><th>Price</th><th>Stock</th>
-                                <th id="actionsHeader">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+    <!-- Table -->
+    <div class="table-area">
+        <div class="table-card">
+            <div class="table-scroll">
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th id="actionsHeader">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- HISTORY TAB -->
-    <div class="tab-content" id="historyTab">
-        <div class="history-area">
-            <div class="history-card">
-                <div class="history-hdr">
-                    <div class="history-hdr-left">
-                        <div class="hdr-dot"></div>
-                        <h3>Transfer Records</h3>
-                    </div>
-                    <div class="hist-count" id="histCount">0</div>
-                </div>
-                <div id="historyListWrap">
-                    <div class="no-history"><i class="fas fa-box-open"></i>Click the Transfer History tab to load records.</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div><!-- end .main -->
+</div>
 
 <!-- Panel overlay -->
 <div class="panel-overlay" id="panelOverlay"></div>
@@ -790,12 +265,25 @@
     <form id="addForm" onsubmit="submitAddItem(event)">
         <div class="panel-body">
             <div class="field-row">
-                <div class="field-group"><label>Product Code *</label><input type="text" id="addItemCode" list="addProductCodes" placeholder="e.g. PROD001" required autocomplete="off"><datalist id="addProductCodes"></datalist></div>
-                <div class="field-group"><label>Product Name *</label><input type="text" id="addItemName" placeholder="e.g. Sugar 2kg" required></div>
+                <div class="field-group">
+                    <label>Product Code *</label>
+                    <input type="text" id="addItemCode" list="addProductCodes" placeholder="e.g. PROD001" required autocomplete="off">
+                    <datalist id="addProductCodes"></datalist>
+                </div>
+                <div class="field-group">
+                    <label>Product Name *</label>
+                    <input type="text" id="addItemName" placeholder="e.g. Sugar 2kg" required>
+                </div>
             </div>
             <div class="field-row">
-                <div class="field-group"><label>Price (ZMW) *</label><input type="number" id="addItemPrice" min="0" step="0.01" placeholder="0.00" required></div>
-                <div class="field-group"><label>Initial Stock *</label><input type="number" id="addItemStock" min="0" placeholder="0" required></div>
+                <div class="field-group">
+                    <label>Price (ZMW) *</label>
+                    <input type="number" id="addItemPrice" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="field-group">
+                    <label>Initial Stock *</label>
+                    <input type="number" id="addItemStock" min="0" placeholder="0" required>
+                </div>
             </div>
             <p class="tip-text">💡 Typing an existing code auto-fills name and price.</p>
         </div>
@@ -815,21 +303,46 @@
     <form id="transferForm" onsubmit="submitTransfer(event)">
         <div class="panel-body">
             <div class="field-row">
-                <div class="field-group"><label>From *</label><select id="transferSource" onchange="handleSourceChange()"><option value="">— Source —</option></select></div>
-                <div class="field-group"><label>To *</label><select id="transferDest" required><option value="">— Dest —</option></select></div>
+                <div class="field-group">
+                    <label>From *</label>
+                    <select id="transferSource" onchange="handleSourceChange()"><option value="">— Source —</option></select>
+                </div>
+                <div class="field-group">
+                    <label>To *</label>
+                    <select id="transferDest" required><option value="">— Dest —</option></select>
+                </div>
             </div>
             <div style="border-top:1px solid var(--border);padding-top:12px;">
                 <p class="tip-text" style="margin-bottom:8px;">Add each item then click <strong>+ Add to List</strong>.</p>
-                <div class="field-group"><label>Product Code</label><input type="text" id="transferCode" list="transferCodes" placeholder="Enter code" autocomplete="off"><datalist id="transferCodes"></datalist></div>
-                <div class="field-group"><label>Preview</label><div class="preview-box" id="transferPreview">Enter a product code above to preview</div></div>
-                <div class="field-group"><label>Quantity</label><input type="number" id="transferQty" min="1" value="1"></div>
-                <button type="button" class="btn btn-success" onclick="addToTransferCart()" style="width:100%;justify-content:center;margin-top:4px;"><i class="fas fa-plus"></i> + Add to Transfer List</button>
+                <div class="field-group">
+                    <label>Product Code</label>
+                    <input type="text" id="transferCode" list="transferCodes" placeholder="Enter code" autocomplete="off">
+                    <datalist id="transferCodes"></datalist>
+                </div>
+                <div class="field-group">
+                    <label>Preview</label>
+                    <div class="preview-box" id="transferPreview">Enter a product code above to preview</div>
+                </div>
+                <div class="field-group">
+                    <label>Quantity</label>
+                    <input type="number" id="transferQty" min="1" value="1">
+                </div>
+                <button type="button" class="btn btn-success" onclick="addToTransferCart()" style="width:100%;justify-content:center;margin-top:4px;">
+                    <i class="fas fa-plus"></i> + Add to Transfer List
+                </button>
             </div>
             <div id="transferCartWrap" style="display:none;border-top:1px solid var(--border);padding-top:12px;">
                 <p style="font-size:.72rem;font-weight:800;color:var(--blue);margin-bottom:7px;">📦 Items to Transfer</p>
                 <div style="overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
                     <table style="width:100%;border-collapse:collapse;min-width:260px;">
-                        <thead><tr style="background:var(--bg3);"><th style="padding:6px 8px;font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:left;">Product</th><th style="padding:6px 8px;font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:center;">Qty</th><th style="padding:6px 8px;font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:right;">Value</th><th style="padding:6px 8px;border-bottom:1px solid var(--border);"></th></tr></thead>
+                        <thead>
+                            <tr style="background:var(--bg3);">
+                                <th style="padding:6px 8px;font-size:.6rem;text-transform:uppercase;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:left;">Product</th>
+                                <th style="padding:6px 8px;font-size:.6rem;text-transform:uppercase;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:center;">Qty</th>
+                                <th style="padding:6px 8px;font-size:.6rem;text-transform:uppercase;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:right;">Value</th>
+                                <th style="padding:6px 8px;border-bottom:1px solid var(--border);"></th>
+                            </tr>
+                        </thead>
                         <tbody id="transferCartBody"></tbody>
                     </table>
                 </div>
@@ -837,60 +350,323 @@
             </div>
         </div>
         <div class="panel-footer">
-            <button type="submit" class="btn btn-primary" id="confirmTransferBtn" disabled><i class="fas fa-check"></i> Confirm & Transfer All</button>
+            <button type="submit" class="btn btn-primary" id="confirmTransferBtn" disabled>
+                <i class="fas fa-check"></i> Confirm & Transfer All
+            </button>
             <button type="button" class="btn btn-ghost" onclick="closePanelById('transferPanel')">Cancel</button>
         </div>
     </form>
 </div>
 
 <div class="toast-wrap" id="toastWrap"></div>
-<div id="transferPrintArea"></div>
 
-<!-- TRANSFER DOC MODAL -->
-<div class="tdoc-overlay" id="tdocOverlay">
-    <div class="tdoc-box">
-        <div class="tdoc-hdr">
-            <h3><i class="fas fa-file-alt"></i> Transfer Document</h3>
-            <button class="tdoc-close" onclick="closeTransferDoc()">✕</button>
-        </div>
-        <div class="tdoc-body">
-            <div>
-                <div class="tdoc-label">Transfer Details</div>
-                <div class="tdoc-info-grid">
-                    <div class="tdoc-info-item"><span class="lbl">Reference</span><span class="val" id="tdocRef">—</span></div>
-                    <div class="tdoc-info-item"><span class="lbl">Date</span><span class="val" style="font-size:.76rem;" id="tdocDate">—</span></div>
-                </div>
-                <div style="font-size:.68rem;color:var(--text-fade);margin-top:3px;">Time: <span id="tdocTime">—</span></div>
-            </div>
-            <div class="tdoc-arrow">
-                <div style="text-align:center;"><div style="font-size:.6rem;opacity:.8;text-transform:uppercase;letter-spacing:.08em;">From</div><div id="tdocFrom">—</div></div>
-                <i class="fas fa-arrow-right"></i>
-                <div style="text-align:center;"><div style="font-size:.6rem;opacity:.8;text-transform:uppercase;letter-spacing:.08em;">To</div><div id="tdocTo">—</div></div>
-            </div>
-            <div>
-                <div class="tdoc-label">Items Transferred</div>
-                <div style="overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
-                    <table style="width:100%;border-collapse:collapse;font-size:.8rem;min-width:320px;">
-                        <thead><tr style="background:var(--bg3);"><th style="padding:6px 9px;text-align:left;font-size:.62rem;text-transform:uppercase;color:var(--text-fade);border-bottom:1px solid var(--border);">Product</th><th style="padding:6px 9px;text-align:left;font-size:.62rem;text-transform:uppercase;color:var(--text-fade);border-bottom:1px solid var(--border);">Code</th><th style="padding:6px 9px;text-align:center;font-size:.62rem;text-transform:uppercase;color:var(--text-fade);border-bottom:1px solid var(--border);">Qty</th><th style="padding:6px 9px;text-align:right;font-size:.62rem;text-transform:uppercase;color:var(--text-fade);border-bottom:1px solid var(--border);">Price</th><th style="padding:6px 9px;text-align:right;font-size:.62rem;text-transform:uppercase;color:var(--text-fade);border-bottom:1px solid var(--border);">Total</th></tr></thead>
-                        <tbody id="tdocItemsTbody"></tbody>
-                    </table>
-                </div>
-                <div style="text-align:right;margin-top:6px;font-size:.82rem;font-weight:800;color:var(--blue);" id="tdocGrandTotal"></div>
-            </div>
-            <div>
-                <div class="tdoc-label">Signatures</div>
-                <div class="sig-row">
-                    <div class="sig-box"><div class="sig-label">Sent By</div><div class="sig-line"></div><div class="sig-note">Name: ________________</div><div class="sig-note" style="margin-top:3px;">Date: ________________</div></div>
-                    <div class="sig-box"><div class="sig-label">Received By</div><div class="sig-line"></div><div class="sig-note">Name: ________________</div><div class="sig-note" style="margin-top:3px;">Date: ________________</div></div>
-                </div>
-            </div>
-        </div>
-        <div class="tdoc-footer">
-            <button class="btn btn-success" onclick="printTransferDoc()"><i class="fas fa-print"></i> Print / PDF</button>
-            <button class="btn btn-ghost" onclick="closeTransferDoc()">Close</button>
-        </div>
-    </div>
-</div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+    import {
+        getFirestore, collection, query, where,
+        getDocs, addDoc, updateDoc, deleteDoc,
+        doc, increment, onSnapshot, runTransaction
+    } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
+    const db = getFirestore(initializeApp({
+        apiKey:"AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+        authDomain:"trismartstores.firebaseapp.com",
+        projectId:"trismartstores",
+        storageBucket:"trismartstores.appspot.com",
+        messagingSenderId:"416692703333",
+        appId:"1:416692703333:web:d4b60292621435c748f68c"
+    }));
+
+    const userName = (localStorage.getItem('userName')||'').toLowerCase().trim();
+    const isAdmin  = userName === 'chris';
+    if (!userName) window.location.href = 'index.html';
+
+    let branchId = localStorage.getItem('branchId') || '';
+    if (!branchId) {
+        if (isAdmin) { branchId='master'; localStorage.setItem('branchId','master'); }
+        else { alert('Branch not set.'); window.location.href='dashboard.html'; }
+    }
+
+    const BRANCHES = {
+        master:{id:'master',name:'Master Warehouse'},
+        makeni:{id:'makeni',name:'Kabanana Branch'},
+        kabana:{id:'kabana',name:'Makeni Branch'}
+    };
+    const getBranchName = id => BRANCHES[id]?.name || id;
+
+    let inventory=[], transferCart=[], sourceInventory=[];
+    let activeMenu=null, editUnlocked=false, unsubscribe=null;
+
+    /* SIDEBAR */
+    const sidebar=document.getElementById('sidebar');
+    const overlay=document.getElementById('sidebarOverlay');
+    const mainEl=document.getElementById('mainContent');
+    const isMobile=()=>window.innerWidth<=600;
+
+    function initSidebar(){
+        if(isMobile()){sidebar.classList.remove('visible');mainEl.classList.add('expanded');}
+        else{sidebar.classList.remove('hidden');mainEl.classList.remove('expanded');mainEl.style.marginLeft='230px';}
+    }
+    initSidebar(); window.addEventListener('resize',initSidebar);
+
+    document.getElementById('menuBtn').addEventListener('click',()=>{
+        if(isMobile()){
+            sidebar.classList.contains('visible')?(sidebar.classList.remove('visible'),overlay.classList.remove('show')):(sidebar.classList.add('visible'),overlay.classList.add('show'));
+        } else {
+            sidebar.classList.contains('hidden')?(sidebar.classList.remove('hidden'),mainEl.style.marginLeft='230px'):(sidebar.classList.add('hidden'),mainEl.style.marginLeft='0');
+        }
+    });
+    overlay.addEventListener('click',()=>{sidebar.classList.remove('visible');overlay.classList.remove('show');});
+
+    document.getElementById('logoutLink').addEventListener('click',e=>{
+        e.preventDefault(); localStorage.removeItem('userName'); localStorage.removeItem('branchId'); window.location.replace('index.html');
+    });
+
+    /* CLOCK */
+    function tick(){document.getElementById('timeBadge').textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+    tick(); setInterval(tick,30000);
+
+    /* TOAST */
+    function toast(msg,type='success'){
+        const wrap=document.getElementById('toastWrap');
+        const el=document.createElement('div'); el.className=`toast ${type}`;
+        el.innerHTML=`<i class="fas fa-${type==='success'?'check':'times'}"></i> ${msg}`;
+        wrap.appendChild(el);
+        setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),350);},3200);
+    }
+
+    /* PANELS */
+    function openPanel(id){document.getElementById('panelOverlay').classList.add('open');document.getElementById(id).classList.add('open');}
+    window.closePanelById=id=>{document.getElementById('panelOverlay').classList.remove('open');document.getElementById(id).classList.remove('open');};
+    document.getElementById('panelOverlay').addEventListener('click',()=>{closePanelById('addPanel');closePanelById('transferPanel');});
+
+    /* BRANCH SWITCHER */
+    function setupBranchSwitcher(){
+        if(!isAdmin)return;
+        const sw=document.getElementById('branchSwitcher'); sw.style.display='flex'; sw.innerHTML='';
+        Object.values(BRANCHES).forEach(b=>{
+            const btn=document.createElement('button'); btn.className='branch-tab';
+            btn.textContent=b.id==='master'?'⭐ Master':b.name; btn.dataset.bid=b.id;
+            btn.onclick=()=>switchBranch(b.id); sw.appendChild(btn);
+        });
+        updateSwitcherActive();
+    }
+    function updateSwitcherActive(){
+        document.querySelectorAll('.branch-tab').forEach(btn=>{
+            btn.classList.remove('active','active-master');
+            if(btn.dataset.bid===branchId) btn.classList.add(branchId==='master'?'active-master':'active');
+        });
+    }
+    function switchBranch(newId){
+        if(newId===branchId)return;
+        branchId=newId; localStorage.setItem('branchId',branchId);
+        document.getElementById('pageTitle').textContent=`Warehouse — ${getBranchName(branchId)}`;
+        document.getElementById('masterPill').style.display=branchId==='master'?'inline-flex':'none';
+        updateSwitcherActive(); closePanelById('addPanel'); closePanelById('transferPanel');
+        if(unsubscribe)unsubscribe(); setupListener();
+    }
+
+    /* ROLE UI */
+    function setupRoleUI(){
+        setupBranchSwitcher();
+        const adminCtrl=document.getElementById('adminControls');
+        const restockBtn=document.getElementById('restockBtn');
+        const masterPill=document.getElementById('masterPill');
+        const actHdr=document.getElementById('actionsHeader');
+        if(isAdmin){
+            adminCtrl.style.display='flex'; restockBtn.style.display='inline-flex';
+            masterPill.style.display=branchId==='master'?'inline-flex':'none';
+            if(actHdr)actHdr.style.display='';
+        } else {
+            adminCtrl.style.display='none'; restockBtn.style.display='none';
+            masterPill.style.display='none';
+            if(actHdr)actHdr.style.display='none';
+        }
+    }
+
+    /* LISTENER */
+    function setupListener(){
+        if(unsubscribe){unsubscribe();unsubscribe=null;}
+        document.getElementById('pageTitle').textContent=`Warehouse — ${getBranchName(branchId)}`;
+        unsubscribe=onSnapshot(query(collection(db,'inventory'),where('branchId','==',branchId)),snap=>{
+            inventory=snap.docs.map(d=>({id:d.id,...d.data(),stock:Number(d.data().stock)||0,price:Number(d.data().price)||0}));
+            inventory.sort((a,b)=>a.code.localeCompare(b.code));
+            sourceInventory=[...inventory];
+            rebuildDatalist('addProductCodes',inventory); rebuildDatalist('transferCodes',inventory);
+            renderTable(inventory); hideLoading();
+        },err=>{toast('Error: '+err.message,'error');hideLoading();});
+    }
+    function rebuildDatalist(id,items){
+        const dl=document.getElementById(id); if(!dl)return; dl.innerHTML='';
+        items.forEach(i=>{const o=document.createElement('option');o.value=i.code;dl.appendChild(o);});
+    }
+    function hideLoading(){const ov=document.getElementById('loadingOverlay');if(ov){ov.style.opacity='0';setTimeout(()=>ov.remove(),300);}}
+
+    /* RENDER TABLE */
+    function renderTable(items){
+        const tbody=document.querySelector('#inventoryTable tbody'); tbody.innerHTML=''; let total=0;
+        if(!items.length){
+            tbody.innerHTML=`<tr class="empty-row"><td colspan="${isAdmin?5:4}">No items found.</td></tr>`;
+            document.getElementById('totalVal').textContent='0.00'; return;
+        }
+        items.forEach(item=>{
+            total+=item.price*item.stock;
+            const sc=item.stock===0?'stock-zero':item.stock<10?'stock-low':'stock-ok';
+            const tr=document.createElement('tr');
+            const act=isAdmin?`<td><div class="menu-container"><button class="three-dots-btn" onclick="toggleMenu(event,'${item.id}')"><div class="dot"></div><div class="dot"></div><div class="dot"></div></button><div class="menu-dropdown" id="menu-${item.id}"><div class="menu-item edit" onclick="handleEdit('${item.id}')"><i class="fas fa-pen"></i> Edit</div><div class="menu-item delete" onclick="handleDelete('${item.id}')"><i class="fas fa-trash"></i> Delete</div></div></div></td>`:'';
+            tr.innerHTML=`<td><span class="code-chip">${item.code}</span></td><td style="font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.name}</td><td style="font-family:'DM Mono',monospace;font-size:0.75rem;">K${item.price.toFixed(2)}</td><td><span class="stock-chip ${sc}">${item.stock}</span></td>${act}`;
+            tbody.appendChild(tr);
+        });
+        document.getElementById('totalVal').textContent=total.toFixed(2);
+    }
+
+    window.searchInventory=()=>{
+        const q=document.getElementById('searchInput').value.toLowerCase();
+        renderTable(q?inventory.filter(i=>i.name.toLowerCase().includes(q)||i.code.toLowerCase().includes(q)):inventory);
+    };
+
+    /* ADD PANEL */
+    window.openAddPanel=()=>{document.getElementById('addForm').reset();openPanel('addPanel');setTimeout(()=>document.getElementById('addItemCode').focus(),320);};
+    document.getElementById('addItemCode').addEventListener('input',function(){
+        const found=inventory.find(i=>i.code===this.value.toUpperCase());
+        if(found){document.getElementById('addItemName').value=found.name;document.getElementById('addItemPrice').value=found.price.toFixed(2);}
+    });
+    window.submitAddItem=async e=>{
+        e.preventDefault();
+        const code=document.getElementById('addItemCode').value.trim().toUpperCase();
+        const name=document.getElementById('addItemName').value.trim();
+        const price=parseFloat(document.getElementById('addItemPrice').value);
+        const stock=parseInt(document.getElementById('addItemStock').value);
+        if(!code||!name||isNaN(price)||price<0||isNaN(stock)||stock<0){toast('Fill all fields.','error');return;}
+        if(inventory.find(i=>i.code===code)){toast('Code already exists.','error');return;}
+        try{await addDoc(collection(db,'inventory'),{code,name,price,stock,sold:0,branchId});toast(`"${name}" added!`);closePanelById('addPanel');}
+        catch(err){toast('Error: '+err.message,'error');}
+    };
+
+    /* TRANSFER PANEL */
+    window.openTransferPanel=()=>{
+        transferCart=[];
+        const sel=document.getElementById('transferSource'); sel.innerHTML='<option value="">— Select Source —</option>';
+        Object.values(BRANCHES).forEach(b=>{const o=document.createElement('option');o.value=b.id;o.textContent=getBranchName(b.id);if(b.id===branchId)o.selected=true;sel.appendChild(o);});
+        document.getElementById('transferCode').value=''; document.getElementById('transferQty').value=1; document.getElementById('transferDest').value='';
+        document.getElementById('transferPreview').textContent='Enter a product code above to preview';
+        sourceInventory=[...inventory]; rebuildDatalist('transferCodes',sourceInventory); buildDestOptions(branchId); renderTransferCart();
+        openPanel('transferPanel'); setTimeout(()=>document.getElementById('transferCode').focus(),320);
+    };
+    function buildDestOptions(srcId){
+        const sel=document.getElementById('transferDest'); sel.innerHTML='<option value="">— Select Destination —</option>';
+        Object.keys(BRANCHES).filter(id=>id!==srcId).forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent=getBranchName(id);sel.appendChild(o);});
+    }
+    window.handleSourceChange=async()=>{
+        const srcId=document.getElementById('transferSource').value; if(!srcId)return;
+        document.getElementById('transferPreview').textContent='Loading…'; document.getElementById('transferCode').value='';
+        transferCart=[]; renderTransferCart();
+        try{
+            sourceInventory=srcId===branchId?[...inventory]:(await getDocs(query(collection(db,'inventory'),where('branchId','==',srcId)))).docs.map(d=>({id:d.id,...d.data(),stock:Number(d.data().stock)||0,price:Number(d.data().price)||0}));
+            rebuildDatalist('transferCodes',sourceInventory); buildDestOptions(srcId);
+            document.getElementById('transferPreview').textContent='Enter a product code above to preview';
+        }catch(err){toast('Failed: '+err.message,'error');}
+    };
+    document.getElementById('transferCode').addEventListener('input',function(){
+        const code=this.value.toUpperCase(); const item=sourceInventory.find(i=>i.code===code); const prev=document.getElementById('transferPreview');
+        prev.innerHTML=item?`<strong>${item.name}</strong> &mdash; Stock: <strong>${item.stock}</strong> &mdash; K${item.price.toFixed(2)}`:(code?'Not found in source':'Enter a product code above to preview');
+    });
+    window.addToTransferCart=()=>{
+        const code=document.getElementById('transferCode').value.toUpperCase();
+        const qty=parseInt(document.getElementById('transferQty').value);
+        const srcId=document.getElementById('transferSource').value;
+        if(!srcId){toast('Select source first.','error');return;}
+        if(!code){toast('Enter a product code.','error');return;}
+        if(isNaN(qty)||qty<1){toast('Enter valid quantity.','error');return;}
+        const item=sourceInventory.find(i=>i.code===code); if(!item){toast('Product not found.','error');return;}
+        const existing=transferCart.find(c=>c.code===code); const staged=existing?existing.qty:0;
+        if(staged+qty>item.stock){toast(`Not enough stock. Available: ${item.stock}`,'error');return;}
+        if(existing){existing.qty+=qty;existing.total=existing.qty*item.price;}
+        else transferCart.push({code:item.code,name:item.name,price:item.price,qty,total:qty*item.price,itemId:item.id});
+        toast(`${item.name} added.`); renderTransferCart();
+        document.getElementById('transferCode').value=''; document.getElementById('transferQty').value=1;
+        document.getElementById('transferPreview').textContent='Enter a product code above to preview';
+        setTimeout(()=>document.getElementById('transferCode').focus(),80);
+    };
+    window.removeFromTransferCart=idx=>{transferCart.splice(idx,1);renderTransferCart();};
+    function renderTransferCart(){
+        const wrap=document.getElementById('transferCartWrap'); const tbody=document.getElementById('transferCartBody'); const confirmBtn=document.getElementById('confirmTransferBtn');
+        if(!transferCart.length){wrap.style.display='none';confirmBtn.disabled=true;return;}
+        wrap.style.display='block'; confirmBtn.disabled=false; tbody.innerHTML=''; let grand=0;
+        transferCart.forEach((c,idx)=>{
+            grand+=c.total; const tr=document.createElement('tr');
+            tr.innerHTML=`<td style="padding:6px 8px;border-bottom:1px solid var(--border);font-size:.78rem;"><strong>${c.name}</strong><br><span style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--text-fade);">${c.code}</span></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:center;font-weight:700;">${c.qty}</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:right;font-size:.78rem;">K${c.total.toFixed(2)}</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);"><button onclick="removeFromTransferCart(${idx})" style="background:none;border:1px solid var(--danger);color:var(--danger);padding:2px 6px;border-radius:5px;cursor:pointer;font-size:.66rem;font-weight:700;">✕</button></td>`;
+            tbody.appendChild(tr);
+        });
+        document.getElementById('transferCartTotal').textContent=`Total: K${grand.toFixed(2)} — ${transferCart.length} item${transferCart.length>1?'s':''}`;
+    }
+
+    /* SUBMIT TRANSFER */
+    window.submitTransfer=async e=>{
+        e.preventDefault();
+        const destId=document.getElementById('transferDest').value; const srcId=document.getElementById('transferSource').value;
+        if(!srcId){toast('Select source.','error');return;} if(!destId){toast('Select destination.','error');return;}
+        if(srcId===destId){toast('Source and destination must differ.','error');return;} if(!transferCart.length){toast('Add items first.','error');return;}
+        const itemList=transferCart.map(c=>`${c.qty}× ${c.name}`).join(', ');
+        if(!confirm(`Transfer:\n${itemList}\n\nFrom: ${getBranchName(srcId)}\nTo:   ${getBranchName(destId)}`))return;
+        const btn=document.getElementById('confirmTransferBtn'); btn.disabled=true; btn.textContent='Processing…';
+        try{
+            for(const c of transferCart){
+                await runTransaction(db,async tx=>{
+                    const srcRef=doc(db,'inventory',c.itemId); const srcDoc=await tx.get(srcRef); const live=srcDoc.data().stock||0;
+                    if(live<c.qty)throw new Error(`Stock changed for ${c.name}. Live: ${live}`);
+                    tx.update(srcRef,{stock:increment(-c.qty)});
+                    const destSnap=await getDocs(query(collection(db,'inventory'),where('branchId','==',destId),where('code','==',c.code)));
+                    if(!destSnap.empty)tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(c.qty)});
+                    else tx.set(doc(collection(db,'inventory')),{code:c.code,name:c.name,price:c.price,stock:c.qty,sold:0,branchId:destId});
+                });
+            }
+            toast(`✓ ${transferCart.length} item(s) transferred → ${getBranchName(destId)}`);
+            closePanelById('transferPanel'); transferCart=[];
+        }catch(err){toast('Transfer failed: '+err.message,'error');}
+        finally{btn.disabled=false; btn.textContent='✓ Confirm & Transfer All';}
+    };
+
+    /* MENUS */
+    function closeAllMenus(){if(activeMenu){activeMenu.classList.remove('show');activeMenu=null;}}
+    window.toggleMenu=(e,id)=>{
+        e.stopPropagation(); const menu=document.getElementById(`menu-${id}`);
+        if(activeMenu&&activeMenu!==menu)activeMenu.classList.remove('show');
+        menu.classList.toggle('show'); activeMenu=menu.classList.contains('show')?menu:null;
+    };
+    document.addEventListener('click',closeAllMenus);
+
+    /* EDIT */
+    window.handleEdit=async id=>{
+        closeAllMenus();
+        if(!editUnlocked){const pass=prompt('Enter password to edit:');if(pass!=='1030'){toast('Incorrect password.','error');return;}editUnlocked=true;}
+        const item=inventory.find(i=>i.id===id); if(!item)return;
+        const bg=document.createElement('div'); bg.className='modal-bg';
+        bg.innerHTML=`<div class="modal"><h3><i class="fas fa-pen" style="margin-right:8px;"></i>Edit Product</h3><form id="editForm"><div class="field-group"><label>Product Code</label><input type="text" name="code" required value="${item.code}"></div><div class="field-group" style="margin-top:10px;"><label>Product Name</label><input type="text" name="name" required value="${item.name}"></div><div class="field-group" style="margin-top:10px;"><label>Price (ZMW)</label><input type="number" name="price" min="0" step="0.01" required value="${item.price}"></div><div class="field-group" style="margin-top:10px;"><label>Stock</label><input type="number" name="stock" min="0" required value="${item.stock}"></div><div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button><button type="button" class="btn btn-danger" id="cancelEdit"><i class="fas fa-times"></i> Cancel</button></div></form></div>`;
+        document.body.appendChild(bg);
+        document.getElementById('editForm').onsubmit=async ev=>{
+            ev.preventDefault(); const f=ev.target;
+            const code=f.code.value.trim().toUpperCase(); const name=f.name.value.trim();
+            const price=parseFloat(f.price.value); const stock=parseInt(f.stock.value);
+            if(!code||!name||isNaN(price)||price<0||isNaN(stock)||stock<0){toast('Invalid values.','error');return;}
+            if(code!==item.code&&inventory.some(i=>i.code===code)){toast('Code exists!','error');return;}
+            try{await updateDoc(doc(db,'inventory',item.id),{code,name,price,stock});bg.remove();toast('Updated!');}
+            catch(err){toast('Error: '+err.message,'error');}
+        };
+        document.getElementById('cancelEdit').onclick=()=>bg.remove();
+        bg.onclick=ev=>{if(ev.target===bg)bg.remove();};
+    };
+
+    /* DELETE */
+    window.handleDelete=async id=>{
+        closeAllMenus(); const item=inventory.find(i=>i.id===id); if(!item)return;
+        if(!confirm(`Delete "${item.name}" (${item.code})?`))return;
+        try{await deleteDoc(doc(db,'inventory',id));toast('Deleted.');}
+        catch(err){toast('Error: '+err.message,'error');}
+    };
+
+    /* INIT */
+    window.onload=()=>{setupRoleUI();setupListener();};
+</script>
 </body>
 </html>
