@@ -22,7 +22,6 @@
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
         body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-        /* TOPBAR */
         .topbar{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:1100;gap:10px;}
         .topbar-left{display:flex;align-items:center;gap:10px;}
         .menu-btn{width:36px;height:36px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-fade);font-size:0.95rem;transition:all 0.2s;flex-shrink:0;}
@@ -33,7 +32,6 @@
         .logo-text span{color:var(--blue);}
         .time-badge{background:var(--bg3);border:1px solid var(--border2);border-radius:100px;padding:4px 11px;font-size:0.68rem;font-family:'DM Mono',monospace;color:var(--text-fade);white-space:nowrap;}
 
-        /* SIDEBAR */
         .sidebar{position:fixed;top:var(--header-h);left:0;width:var(--sidebar-w);height:calc(100vh - var(--header-h));background:rgba(255,255,255,0.98);border-right:1px solid var(--border);z-index:1000;padding:14px 10px 16px;transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);overflow-y:auto;display:flex;flex-direction:column;}
         .sidebar.hidden{transform:translateX(-100%);}
         .sidebar-label{font-size:0.58rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.14em;padding:0 10px;margin:12px 0 6px;}
@@ -47,11 +45,9 @@
         .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;}
         .sidebar-overlay.show{display:block;}
 
-        /* MAIN */
         .main{margin-top:var(--header-h);margin-left:var(--sidebar-w);min-height:calc(100vh - var(--header-h));display:flex;flex-direction:column;transition:margin-left 0.32s cubic-bezier(0.4,0,0.2,1);}
         .main.expanded{margin-left:0;}
 
-        /* CONTENT BAR */
         .content-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;box-shadow:var(--shadow);}
         .content-bar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
         .content-bar-right{display:flex;align-items:center;gap:6px;}
@@ -64,7 +60,6 @@
         .master-pill{display:none;background:linear-gradient(90deg,#f59e0b,#f97316);color:white;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
         .total-pill{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid rgba(67,97,238,0.2);color:var(--blue);font-size:0.75rem;font-weight:700;padding:4px 12px;border-radius:100px;white-space:nowrap;}
 
-        /* BUTTONS */
         .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border:none;border-radius:var(--radius);cursor:pointer;font-size:0.78rem;font-weight:700;transition:all 0.18s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
         .btn-primary{background:linear-gradient(135deg,var(--blue),#3451d1);color:white;}
         .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(67,97,238,0.3);}
@@ -77,13 +72,11 @@
         .btn-danger{background:linear-gradient(135deg,var(--danger),#dc2626);color:white;}
         .btn-sm{padding:5px 10px;font-size:0.72rem;}
 
-        /* SEARCH */
         .search-wrap{position:relative;}
         .search-wrap input{padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:var(--radius);font-size:0.78rem;background:var(--bg3);color:var(--text);width:160px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
         .search-wrap input:focus{border-color:var(--blue);background:white;}
         .search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:0.75rem;pointer-events:none;}
 
-        /* TABLE */
         .table-area{flex:1;padding:12px 14px 20px;}
         .table-card{background:var(--bg2);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;}
         .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
@@ -99,7 +92,6 @@
         .stock-zero{background:rgba(239,68,68,0.1);color:#991b1b;}
         .empty-row td{text-align:center;padding:48px 20px;color:var(--text-dim);font-size:0.82rem;}
 
-        /* THREE DOTS */
         .menu-container{position:relative;display:inline-block;}
         .three-dots-btn{background:none;border:none;cursor:pointer;width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2.5px;transition:background 0.15s;}
         .three-dots-btn:hover{background:var(--bg3);}
@@ -112,7 +104,6 @@
         .menu-item.edit{color:var(--blue);}
         .menu-item.delete{color:var(--danger);}
 
-        /* SLIDE PANEL */
         .panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:2000;opacity:0;pointer-events:none;transition:opacity 0.25s;}
         .panel-overlay.open{opacity:1;pointer-events:all;}
         .slide-panel{position:fixed;top:0;right:0;width:min(440px,100vw);height:100vh;background:var(--bg2);box-shadow:-8px 0 40px rgba(0,0,0,0.15);z-index:2001;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;overflow:hidden;}
@@ -135,7 +126,6 @@
         .panel-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;}
         .panel-footer .btn{flex:1;justify-content:center;padding:10px;}
 
-        /* TOAST */
         .toast-wrap{position:fixed;bottom:20px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none;}
         .toast{background:#1e2029;color:white;padding:10px 16px;border-radius:var(--radius);font-size:0.8rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,0.3);animation:toastIn 0.25s ease;display:flex;align-items:center;gap:9px;max-width:300px;}
         .toast.success{border-left:3px solid var(--green);}
@@ -144,7 +134,6 @@
         @keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
         @keyframes toastOut{from{opacity:1;}to{opacity:0;transform:translateY(10px);}}
 
-        /* EDIT MODAL */
         .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:3000;backdrop-filter:blur(3px);}
         .modal{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:24px 20px 18px;width:min(400px,94vw);animation:modalIn 0.2s ease;}
         @keyframes modalIn{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
@@ -153,13 +142,11 @@
         .modal .form-actions{display:flex;gap:8px;margin-top:16px;}
         .modal .form-actions .btn{flex:1;justify-content:center;}
 
-        /* LOADING */
         #loadingOverlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9998;flex-direction:column;gap:12px;}
         .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;}
         @keyframes spin{to{transform:rotate(360deg);}}
         .loading-text{font-size:0.82rem;color:var(--text-fade);font-weight:500;}
 
-        /* HISTORY TAB */
         .tab-bar{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;flex-shrink:0;}
         .tab-btn{flex:1;padding:10px 4px;font-size:0.78rem;font-weight:700;color:var(--text-fade);border:none;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:5px;}
         .tab-btn:hover{color:var(--blue);}
@@ -180,9 +167,11 @@
         .hist-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
         .hist-ref{font-size:0.78rem;font-weight:800;color:var(--text);}
         .hist-date{font-size:0.65rem;color:var(--text-fade);font-family:'DM Mono',monospace;}
-        .hist-route{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+        .hist-route{display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap;}
         .hist-branch{background:rgba(67,97,238,0.08);border:1px solid rgba(67,97,238,0.15);color:var(--blue);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:100px;}
         .hist-branch.dest{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.2);color:var(--green);}
+        .hist-branch.incoming{background:rgba(16,185,129,0.12);color:var(--green);border-color:rgba(16,185,129,0.3);}
+        .hist-branch.outgoing{background:rgba(239,68,68,0.08);color:var(--danger);border-color:rgba(239,68,68,0.15);}
         .hist-arrow{font-size:0.7rem;color:var(--text-dim);}
         .hist-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;}
         .hist-chip{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:2px 8px;font-size:0.62rem;color:var(--text-fade);}
@@ -215,7 +204,6 @@
 
 <div id="loadingOverlay"><div class="spinner"></div><div class="loading-text">Loading inventory…</div></div>
 
-<!-- TOPBAR -->
 <header class="topbar">
     <div class="topbar-left">
         <div class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></div>
@@ -227,7 +215,6 @@
     <div class="time-badge" id="timeBadge">--:--</div>
 </header>
 
-<!-- SIDEBAR -->
 <nav class="sidebar" id="sidebar">
     <div class="sidebar-label">Main</div>
     <a href="Airtel.html"><i class="fas fa-mobile-alt"></i> Airtel Money</a>
@@ -241,10 +228,7 @@
 </nav>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- MAIN -->
 <div class="main expanded" id="mainContent">
-
-    <!-- Content bar -->
     <div class="content-bar">
         <div class="content-bar-left">
             <span class="page-title-text" id="pageTitle">Warehouse</span>
@@ -265,13 +249,11 @@
         </div>
     </div>
 
-    <!-- TABS -->
     <div class="tab-bar">
         <button class="tab-btn active" id="tab-inventory" onclick="showTab('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
         <button class="tab-btn" id="tab-history" onclick="showTab('history')"><i class="fas fa-history"></i> Transfer History</button>
     </div>
 
-    <!-- INVENTORY TAB -->
     <div class="tab-content active" id="tabInventory">
         <div class="table-area">
             <div class="table-card">
@@ -293,14 +275,13 @@
         </div>
     </div>
 
-    <!-- HISTORY TAB -->
     <div class="tab-content" id="tabHistory">
         <div class="history-area">
             <div class="hist-card">
                 <div class="hist-hdr">
                     <div class="hist-hdr-left">
                         <div class="hist-hdr-dot"></div>
-                        <h3>Transfer Records</h3>
+                        <h3>Transfer Records for <span id="currentBranchName"></span></h3>
                     </div>
                     <div class="hist-count" id="histCount">—</div>
                 </div>
@@ -310,13 +291,10 @@
             </div>
         </div>
     </div>
-
 </div>
 
-<!-- Panel overlay -->
 <div class="panel-overlay" id="panelOverlay"></div>
 
-<!-- ADD PANEL -->
 <div class="slide-panel" id="addPanel">
     <div class="panel-hdr">
         <h3><span class="panel-icon green"><i class="fas fa-plus"></i></span> Add New Item</h3>
@@ -354,7 +332,6 @@
     </form>
 </div>
 
-<!-- TRANSFER PANEL -->
 <div class="slide-panel" id="transferPanel">
     <div class="panel-hdr">
         <h3><span class="panel-icon blue"><i class="fas fa-exchange-alt"></i></span> Transfer Stock</h3>
@@ -438,21 +415,29 @@
     }));
 
     const userName = (localStorage.getItem('userName')||'').toLowerCase().trim();
-    const isAdmin  = userName === 'chris';
-    if (!userName) window.location.href = 'index.html';
-
     let branchId = localStorage.getItem('branchId') || '';
-    if (!branchId) {
-        if (isAdmin) { branchId='master'; localStorage.setItem('branchId','master'); }
-        else { alert('Branch not set.'); window.location.href='dashboard.html'; }
+    const userId = localStorage.getItem('userId') || '';
+    
+    if (!userName || !branchId) { 
+        window.location.href = 'index.html'; 
     }
 
+    // BRANCHES configuration
     const BRANCHES = {
-        master:{id:'master',name:'Master Warehouse'},
-        makeni:{id:'makeni',name:'Kabanana Branch'},
-        kabana:{id:'kabana',name:'Makeni Branch'}
+        master: { id: 'master', name: 'Master Warehouse' },
+        makeni: { id: 'makeni', name: 'Kabanana Branch' },
+        kabana: { id: 'kabana', name: 'Makeni Branch' }
     };
+    
     const getBranchName = id => BRANCHES[id]?.name || id;
+    
+    // Check if user is admin (Chris)
+    let isAdmin = userName === 'chris';
+    
+    // If user is not admin, ensure they only see their own branch
+    if (!isAdmin && branchId !== 'master') {
+        console.log(`User ${userName} accessing branch: ${branchId}`);
+    }
 
     let inventory=[], transferCart=[], sourceInventory=[];
     let activeMenu=null, editUnlocked=false, unsubscribe=null;
@@ -479,7 +464,11 @@
     overlay.addEventListener('click',()=>{sidebar.classList.remove('visible');overlay.classList.remove('show');});
 
     document.getElementById('logoutLink').addEventListener('click',e=>{
-        e.preventDefault(); localStorage.removeItem('userName'); localStorage.removeItem('branchId'); window.location.replace('index.html');
+        e.preventDefault(); 
+        localStorage.removeItem('userName'); 
+        localStorage.removeItem('branchId'); 
+        localStorage.removeItem('userId');
+        window.location.replace('index.html');
     });
 
     /* CLOCK */
@@ -500,7 +489,7 @@
     window.closePanelById=id=>{document.getElementById('panelOverlay').classList.remove('open');document.getElementById(id).classList.remove('open');};
     document.getElementById('panelOverlay').addEventListener('click',()=>{closePanelById('addPanel');closePanelById('transferPanel');});
 
-    /* BRANCH SWITCHER */
+    /* BRANCH SWITCHER (admin only) */
     function setupBranchSwitcher(){
         if(!isAdmin)return;
         const sw=document.getElementById('branchSwitcher'); sw.style.display='flex'; sw.innerHTML='';
@@ -522,8 +511,11 @@
         branchId=newId; localStorage.setItem('branchId',branchId);
         document.getElementById('pageTitle').textContent=`Warehouse — ${getBranchName(branchId)}`;
         document.getElementById('masterPill').style.display=branchId==='master'?'inline-flex':'none';
+        document.getElementById('currentBranchName').textContent=getBranchName(branchId);
         updateSwitcherActive(); closePanelById('addPanel'); closePanelById('transferPanel');
         if(unsubscribe)unsubscribe(); setupListener();
+        // Reload history if history tab is active
+        if(document.getElementById('tabHistory').classList.contains('active')) loadTransferHistory();
     }
 
     /* ROLE UI */
@@ -533,6 +525,7 @@
         const restockBtn=document.getElementById('restockBtn');
         const masterPill=document.getElementById('masterPill');
         const actHdr=document.getElementById('actionsHeader');
+        document.getElementById('currentBranchName').textContent=getBranchName(branchId);
         if(isAdmin){
             adminCtrl.style.display='flex'; restockBtn.style.display='inline-flex';
             masterPill.style.display=branchId==='master'?'inline-flex':'none';
@@ -544,18 +537,31 @@
         }
     }
 
-    /* LISTENER */
+    /* LISTENER — real-time updates for this branch */
     function setupListener(){
         if(unsubscribe){unsubscribe();unsubscribe=null;}
         document.getElementById('pageTitle').textContent=`Warehouse — ${getBranchName(branchId)}`;
-        unsubscribe=onSnapshot(query(collection(db,'inventory'),where('branchId','==',branchId)),snap=>{
-            inventory=snap.docs.map(d=>({id:d.id,...d.data(),stock:Number(d.data().stock)||0,price:Number(d.data().price)||0}));
-            inventory.sort((a,b)=>a.code.localeCompare(b.code));
-            sourceInventory=[...inventory];
-            rebuildDatalist('addProductCodes',inventory); rebuildDatalist('transferCodes',inventory);
-            renderTable(inventory); hideLoading();
-        },err=>{toast('Error: '+err.message,'error');hideLoading();});
+
+        // onSnapshot means the table updates LIVE the moment stock changes in Firestore
+        unsubscribe=onSnapshot(
+            query(collection(db,'inventory'), where('branchId','==',branchId)),
+            snap=>{
+                inventory=snap.docs.map(d=>({
+                    id:d.id,...d.data(),
+                    stock:Number(d.data().stock)||0,
+                    price:Number(d.data().price)||0
+                }));
+                inventory.sort((a,b)=>a.code.localeCompare(b.code));
+                sourceInventory=[...inventory];
+                rebuildDatalist('addProductCodes',inventory);
+                rebuildDatalist('transferCodes',inventory);
+                renderTable(inventory);
+                hideLoading();
+            },
+            err=>{toast('Error: '+err.message,'error');hideLoading();}
+        );
     }
+
     function rebuildDatalist(id,items){
         const dl=document.getElementById(id); if(!dl)return; dl.innerHTML='';
         items.forEach(i=>{const o=document.createElement('option');o.value=i.code;dl.appendChild(o);});
@@ -664,27 +670,52 @@
     /* SUBMIT TRANSFER */
     window.submitTransfer=async e=>{
         e.preventDefault();
-        const destId=document.getElementById('transferDest').value; const srcId=document.getElementById('transferSource').value;
-        if(!srcId){toast('Select source.','error');return;} if(!destId){toast('Select destination.','error');return;}
-        if(srcId===destId){toast('Source and destination must differ.','error');return;} if(!transferCart.length){toast('Add items first.','error');return;}
+        const destId=document.getElementById('transferDest').value;
+        const srcId=document.getElementById('transferSource').value;
+        if(!srcId){toast('Select source.','error');return;}
+        if(!destId){toast('Select destination.','error');return;}
+        if(srcId===destId){toast('Source and destination must differ.','error');return;}
+        if(!transferCart.length){toast('Add items first.','error');return;}
         const itemList=transferCart.map(c=>`${c.qty}× ${c.name}`).join(', ');
         if(!confirm(`Transfer:\n${itemList}\n\nFrom: ${getBranchName(srcId)}\nTo:   ${getBranchName(destId)}`))return;
         const btn=document.getElementById('confirmTransferBtn'); btn.disabled=true; btn.textContent='Processing…';
         try{
             for(const c of transferCart){
                 await runTransaction(db,async tx=>{
-                    const srcRef=doc(db,'inventory',c.itemId); const srcDoc=await tx.get(srcRef); const live=srcDoc.data().stock||0;
-                    if(live<c.qty)throw new Error(`Stock changed for ${c.name}. Live: ${live}`);
+                    // Deduct from source
+                    const srcRef=doc(db,'inventory',c.itemId);
+                    const srcDoc=await tx.get(srcRef);
+                    const live=srcDoc.data().stock||0;
+                    if(live<c.qty) throw new Error(`Stock changed for ${c.name}. Live: ${live}`);
                     tx.update(srcRef,{stock:increment(-c.qty)});
-                    const destSnap=await getDocs(query(collection(db,'inventory'),where('branchId','==',destId),where('code','==',c.code)));
-                    if(!destSnap.empty)tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(c.qty)});
-                    else tx.set(doc(collection(db,'inventory')),{code:c.code,name:c.name,price:c.price,stock:c.qty,sold:0,branchId:destId});
+
+                    // Add to destination
+                    const destSnap = await getDocs(
+                        query(collection(db,'inventory'),
+                            where('branchId','==',destId),
+                            where('code','==',c.code))
+                    );
+                    if(!destSnap.empty){
+                        tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(c.qty)});
+                    } else {
+                        tx.set(doc(collection(db,'inventory')),{
+                            code:  c.code,
+                            name:  c.name,
+                            price: c.price,
+                            stock: c.qty,
+                            sold:  0,
+                            branchId: destId
+                        });
+                    }
                 });
             }
-            /* ── Save full transfer record to Firestore ── */
+
+            /* Save transfer record with branch context */
             const now = new Date();
+            const refNumber = 'TRF-' + Date.now().toString().slice(-6);
+            
             await addDoc(collection(db,'transfers'), {
-                ref: 'TRF-' + Date.now().toString().slice(-6),
+                ref: refNumber,
                 date: now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
                 time: now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
                 createdAt: now.toISOString(),
@@ -694,10 +725,14 @@
                 totalValue: transferCart.reduce((s,c)=>s+c.total,0),
                 doneBy: localStorage.getItem('userName') || 'unknown'
             });
+
             toast(`✓ ${transferCart.length} item(s) transferred → ${getBranchName(destId)}`);
             closePanelById('transferPanel'); transferCart=[];
-        }catch(err){toast('Transfer failed: '+err.message,'error');}
-        finally{btn.disabled=false; btn.textContent='✓ Confirm & Transfer All';}
+        }catch(err){
+            toast('Transfer failed: '+err.message,'error');
+        }finally{
+            btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Confirm & Transfer All';
+        }
     };
 
     /* MENUS */
@@ -745,41 +780,89 @@
         if(t==='history') loadTransferHistory();
     };
 
-    /* TRANSFER HISTORY */
+    /* TRANSFER HISTORY - ONLY SHOW TRANSACTIONS FOR CURRENT BRANCH */
     async function loadTransferHistory(){
         const wrap=document.getElementById('histListWrap');
-        wrap.innerHTML=`<div class="no-history"><i class="fas fa-spinner fa-spin"></i><br>Loading…</div>`;
+        wrap.innerHTML=`<div class="no-history"><i class="fas fa-spinner fa-spin"></i><br>Loading transfers for ${getBranchName(branchId)}...</div>`;
         try{
-            const snap=await getDocs(query(collection(db,'transfers'),orderBy('createdAt','desc')));
-            document.getElementById('histCount').textContent=snap.size+' records';
-            if(snap.empty){wrap.innerHTML=`<div class="no-history"><i class="fas fa-box-open"></i><br>No transfers yet.</div>`;return;}
+            // Query transfers where current branch is either source OR destination
+            const transfersRef = collection(db,'transfers');
+            const q = query(transfersRef, orderBy('createdAt','desc'));
+            const snap = await getDocs(q);
+            
+            // Filter transfers that involve the current branch
+            const branchTransfers = [];
+            snap.forEach(doc => {
+                const transfer = {id:doc.id, ...doc.data()};
+                // Check if current branch is involved in this transfer
+                if(transfer.srcId === branchId || transfer.destId === branchId) {
+                    branchTransfers.push(transfer);
+                }
+            });
+            
+            document.getElementById('histCount').textContent = branchTransfers.length + ' records';
+            
+            if(branchTransfers.length === 0){
+                wrap.innerHTML=`<div class="no-history"><i class="fas fa-box-open"></i><br>No transfers involving ${getBranchName(branchId)} yet.</div>`;
+                return;
+            }
+            
             wrap.innerHTML='';
-            snap.forEach(d=>{
-                const r={id:d.id,...d.data()};
+            branchTransfers.forEach(transfer => {
                 const el=document.createElement('div'); el.className='hist-item';
-                const chips=(r.items||[]).map(i=>`<div class="hist-chip"><strong>${i.qty}×</strong> ${i.name} <span style="font-family:'DM Mono',monospace;font-size:0.58rem;">${i.code}</span></div>`).join('');
+                const chips=(transfer.items||[]).map(i=>`<div class="hist-chip"><strong>${i.qty}×</strong> ${i.name} <span style="font-family:'DM Mono',monospace;font-size:0.58rem;">${i.code}</span></div>`).join('');
+                
+                // Determine if this is incoming or outgoing for current branch
+                const isIncoming = transfer.destId === branchId;
+                const directionClass = isIncoming ? 'incoming' : 'outgoing';
+                const directionIcon = isIncoming ? '⬅️' : '➡️';
+                const directionText = isIncoming ? 'RECEIVED' : 'SENT';
+                
                 el.innerHTML=`
                     <div class="hist-top">
-                        <div class="hist-ref">${r.ref||'—'}</div>
-                        <div class="hist-date">${r.date||''} ${r.time||''}</div>
+                        <div class="hist-ref">
+                            ${directionIcon} ${transfer.ref||'—'} 
+                            <span style="font-size:0.6rem;background:${isIncoming ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'};padding:2px 6px;border-radius:4px;margin-left:6px;">
+                                ${directionText}
+                            </span>
+                        </div>
+                        <div class="hist-date">${transfer.date||''} ${transfer.time||''}</div>
                     </div>
                     <div class="hist-route">
-                        <span class="hist-branch">${r.srcName||r.srcId||'?'}</span>
+                        <span class="hist-branch ${isIncoming ? '' : 'outgoing'}">${transfer.srcName||transfer.srcId||'?'}</span>
                         <span class="hist-arrow"><i class="fas fa-arrow-right"></i></span>
-                        <span class="hist-branch dest">${r.destName||r.destId||'?'}</span>
+                        <span class="hist-branch dest ${isIncoming ? 'incoming' : ''}">${transfer.destName||transfer.destId||'?'}</span>
                     </div>
                     <div class="hist-chips">${chips}</div>
                     <div class="hist-bottom">
-                        <div class="hist-total">K ${(r.totalValue||0).toFixed(2)}</div>
-                        <div class="hist-by">by ${r.doneBy||'—'}</div>
+                        <div class="hist-total">K ${(transfer.totalValue||0).toFixed(2)}</div>
+                        <div class="hist-by">by ${transfer.doneBy||'—'}</div>
                     </div>`;
                 wrap.appendChild(el);
             });
-        }catch(err){wrap.innerHTML=`<div class="no-history" style="color:var(--danger)"><i class="fas fa-exclamation-circle"></i><br>Error loading history.</div>`;}
+        }catch(err){
+            console.error(err);
+            wrap.innerHTML=`<div class="no-history" style="color:var(--danger)"><i class="fas fa-exclamation-circle"></i><br>Error loading history: ${err.message}</div>`;
+        }
     }
 
     /* INIT */
     window.onload=()=>{setupRoleUI();setupListener();};
+    
+    // Make functions globally available
+    window.removeFromTransferCart = removeFromTransferCart;
+    window.toggleMenu = toggleMenu;
+    window.handleEdit = handleEdit;
+    window.handleDelete = handleDelete;
+    window.showTab = showTab;
+    window.searchInventory = searchInventory;
+    window.openAddPanel = openAddPanel;
+    window.openTransferPanel = openTransferPanel;
+    window.submitAddItem = submitAddItem;
+    window.submitTransfer = submitTransfer;
+    window.addToTransferCart = addToTransferCart;
+    window.handleSourceChange = handleSourceChange;
+    window.closePanelById = closePanelById;
 </script>
 </body>
 </html>
