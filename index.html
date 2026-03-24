@@ -197,23 +197,33 @@
     <div class="card-foot">© 2025 Trismart Stores · All rights reserved</div>
 </div>
 
-<script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+        apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+        authDomain: "trismartstores.firebaseapp.com",
+        projectId: "trismartstores",
+        storageBucket: "trismartstores.appspot.com",
+        messagingSenderId: "416692703333",
+        appId: "1:416692703333:web:d4b60292621435c748f68c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     /* ── ALWAYS clear session when landing on login ── */
     localStorage.removeItem('userName');
     localStorage.removeItem('branchId');
+    localStorage.removeItem('userId');
 
     /* ── Block browser back button ── */
     history.pushState(null, '', window.location.href);
     window.addEventListener('popstate', () => {
         history.pushState(null, '', window.location.href);
     });
-
-    /* ── Users ── */
-    const USERS = [
-        { username: 'Mirriam', password: 'Mirriam@12345', branch: 'makeni' },
-        { username: 'Magret',  password: 'Magret.',        branch: 'kabana' },
-        { username: 'Chris',   password: 'chishela10',     branch: 'master' }
-    ];
 
     /* ── Password toggle ── */
     const pwInput  = document.getElementById('password');
@@ -225,7 +235,7 @@
         pwIcon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
     });
 
-    /* ── Login ── */
+    /* ── Login from Firestore ── */
     const loginForm = document.getElementById('loginForm');
     const loginBtn  = document.getElementById('loginBtn');
     const errorBox  = document.getElementById('errorBox');
@@ -234,13 +244,13 @@
     function showError(msg) {
         errorText.textContent = msg;
         errorBox.classList.remove('show');
-        void errorBox.offsetWidth; // force reflow to restart animation
+        void errorBox.offsetWidth;
         errorBox.classList.add('show');
         pwInput.style.borderColor = 'var(--danger)';
         setTimeout(() => { pwInput.style.borderColor = ''; }, 1400);
     }
 
-    loginForm.addEventListener('submit', e => {
+    loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         errorBox.classList.remove('show');
 
@@ -255,28 +265,47 @@
         loginBtn.disabled = true;
         loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
 
-        setTimeout(() => {
-            const user = USERS.find(u =>
-                u.username.toLowerCase() === username.toLowerCase() &&
-                u.password === password
-            );
-
-            if (user) {
-                localStorage.setItem('userName', user.username.toLowerCase());
-                localStorage.setItem('branchId', user.branch);
-
-                loginBtn.innerHTML = '<i class="fas fa-check"></i> Welcome!';
-
-                /* use replace() so back button on dashboard can't return to login */
-                setTimeout(() => {
-                    window.location.replace('dashboard.html');
-                }, 500);
-            } else {
-                showError('Wrong username or password. Try again.');
+        try {
+            // Query users collection from Firestore
+            const usersRef = collection(db, 'users');
+            const q = query(usersRef, where('username', '==', username.toLowerCase()));
+            const querySnapshot = await getDocs(q);
+            
+            if (querySnapshot.empty) {
+                showError('User not found. Please contact admin.');
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                return;
             }
-        }, 600);
+            
+            const userDoc = querySnapshot.docs[0];
+            const userData = userDoc.data();
+            
+            // Verify password
+            if (userData.password !== password) {
+                showError('Wrong password. Try again.');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                return;
+            }
+            
+            // Store user info in localStorage (only for session persistence)
+            localStorage.setItem('userName', userData.username);
+            localStorage.setItem('branchId', userData.branchId);
+            localStorage.setItem('userId', userDoc.id);
+            
+            loginBtn.innerHTML = '<i class="fas fa-check"></i> Welcome!';
+            
+            setTimeout(() => {
+                window.location.replace('warehouse.html');
+            }, 500);
+            
+        } catch (error) {
+            console.error('Login error:', error);
+            showError('Connection error. Please try again.');
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+        }
     });
 </script>
 </body>
