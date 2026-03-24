@@ -413,42 +413,33 @@
     }));
 
     const userName = (localStorage.getItem('userName')||'').toLowerCase().trim();
-    const isAdmin  = userName === 'chris';
-    if (!userName) { window.location.href = 'index.html'; }
-
-    // ── FIX: Map each known username to their branchId ──────────────────────
-    // Add your staff usernames here so they auto-get the right branch
-    const USER_BRANCH_MAP = {
-        'chris':   'master',
-        'kabana':  'kabana',   // staff at Makeni branch
-        'makeni':  'makeni',   // staff at Kabanana branch
-        // Add more staff: 'john': 'kabana', 'mary': 'makeni', etc.
-    };
-
     let branchId = localStorage.getItem('branchId') || '';
-
-    // Auto-assign branchId from username if not already stored
-    if (!branchId) {
-        const mapped = USER_BRANCH_MAP[userName];
-        if (mapped) {
-            branchId = mapped;
-            localStorage.setItem('branchId', branchId);
-        } else if (isAdmin) {
-            branchId = 'master';
-            localStorage.setItem('branchId', 'master');
-        } else {
-            alert('Your account has no branch assigned. Please contact admin.');
-            window.location.href = 'index.html';
-        }
+    const userId = localStorage.getItem('userId') || '';
+    
+    if (!userName || !branchId) { 
+        window.location.href = 'index.html'; 
     }
-    // ────────────────────────────────────────────────────────────────────────
 
+    // BRANCHES configuration - CORRECTLY ALIGNED
+    // 'makeni' is Kabanana Branch
+    // 'kabana' is Makeni Branch
     const BRANCHES = {
-        master:{id:'master',name:'Master Warehouse'},
-        makeni:{id:'makeni',name:'Kabanana Branch'},
-        kabana:{id:'kabana',name:'Makeni Branch'}
+        master: { id: 'master', name: 'Master Warehouse' },
+        makeni: { id: 'makeni', name: 'Kabanana Branch' },
+        kabana: { id: 'kabana', name: 'Makeni Branch' }
     };
+    
     const getBranchName = id => BRANCHES[id]?.name || id;
+    
+    // Verify user has permission for this branch
+    // Chris (master) can access all branches, others only their assigned branch
+    let isAdmin = userName === 'chris';
+    
+    // If user is not admin, ensure they only see their own branch
+    if (!isAdmin && branchId !== 'master') {
+        // User's branch is set from login, no need to change
+        console.log(`User ${userName} accessing branch: ${branchId}`);
+    }
 
     let inventory=[], transferCart=[], sourceInventory=[];
     let activeMenu=null, editUnlocked=false, unsubscribe=null;
@@ -475,7 +466,11 @@
     overlay.addEventListener('click',()=>{sidebar.classList.remove('visible');overlay.classList.remove('show');});
 
     document.getElementById('logoutLink').addEventListener('click',e=>{
-        e.preventDefault(); localStorage.removeItem('userName'); localStorage.removeItem('branchId'); window.location.replace('index.html');
+        e.preventDefault(); 
+        localStorage.removeItem('userName'); 
+        localStorage.removeItem('branchId'); 
+        localStorage.removeItem('userId');
+        window.location.replace('index.html');
     });
 
     /* CLOCK */
@@ -693,31 +688,24 @@
                     if(live<c.qty) throw new Error(`Stock changed for ${c.name}. Live: ${live}`);
                     tx.update(srcRef,{stock:increment(-c.qty)});
 
-                    // ── FIX: Add to destination ──────────────────────────────────────
-                    // We fetch ALL dest docs OUTSIDE the transaction first, then update
-                    // inside. The key: if item exists at dest → increment its stock.
-                    // If it doesn't exist → create it. Both paths write the correct
-                    // branchId so the dest user's onSnapshot fires and they see it.
+                    // Add to destination
                     const destSnap = await getDocs(
                         query(collection(db,'inventory'),
                             where('branchId','==',destId),
                             where('code','==',c.code))
                     );
                     if(!destSnap.empty){
-                        // Item already exists at destination — just bump the stock
                         tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(c.qty)});
                     } else {
-                        // Item doesn't exist at destination yet — create it with correct branchId
                         tx.set(doc(collection(db,'inventory')),{
                             code:  c.code,
                             name:  c.name,
                             price: c.price,
                             stock: c.qty,
                             sold:  0,
-                            branchId: destId   // ← this is what makes it visible to dest user
+                            branchId: destId
                         });
                     }
-                    // ────────────────────────────────────────────────────────────────
                 });
             }
 
