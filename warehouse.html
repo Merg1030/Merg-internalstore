@@ -441,10 +441,23 @@
     const isAdmin  = userName === 'chris';
     if (!userName) window.location.href = 'index.html';
 
+    // FIXED: Get branchId from localStorage or set based on user
     let branchId = localStorage.getItem('branchId') || '';
     if (!branchId) {
-        if (isAdmin) { branchId='master'; localStorage.setItem('branchId','master'); }
-        else { alert('Branch not set.'); window.location.href='dashboard.html'; }
+        if (isAdmin) { 
+            branchId='master'; 
+            localStorage.setItem('branchId','master');
+        } else {
+            // For non-admin users (Miriam, Margaret), set their branch based on username
+            if (userName === 'miriam') {
+                branchId = 'makeni';
+            } else if (userName === 'margret') {
+                branchId = 'kabana';
+            } else {
+                branchId = 'makeni'; // default
+            }
+            localStorage.setItem('branchId', branchId);
+        }
     }
 
     const BRANCHES = {
@@ -500,9 +513,9 @@
     window.closePanelById=id=>{document.getElementById('panelOverlay').classList.remove('open');document.getElementById(id).classList.remove('open');};
     document.getElementById('panelOverlay').addEventListener('click',()=>{closePanelById('addPanel');closePanelById('transferPanel');});
 
-    /* BRANCH SWITCHER */
+    /* BRANCH SWITCHER - Only for admin */
     function setupBranchSwitcher(){
-        if(!isAdmin)return;
+        if(!isAdmin) return;
         const sw=document.getElementById('branchSwitcher'); sw.style.display='flex'; sw.innerHTML='';
         Object.values(BRANCHES).forEach(b=>{
             const btn=document.createElement('button'); btn.className='branch-tab';
@@ -511,12 +524,14 @@
         });
         updateSwitcherActive();
     }
+    
     function updateSwitcherActive(){
         document.querySelectorAll('.branch-tab').forEach(btn=>{
             btn.classList.remove('active','active-master');
             if(btn.dataset.bid===branchId) btn.classList.add(branchId==='master'?'active-master':'active');
         });
     }
+    
     function switchBranch(newId){
         if(newId===branchId)return;
         branchId=newId; localStorage.setItem('branchId',branchId);
@@ -534,47 +549,89 @@
         const masterPill=document.getElementById('masterPill');
         const actHdr=document.getElementById('actionsHeader');
         if(isAdmin){
-            adminCtrl.style.display='flex'; restockBtn.style.display='inline-flex';
+            adminCtrl.style.display='flex'; 
+            restockBtn.style.display='inline-flex';
             masterPill.style.display=branchId==='master'?'inline-flex':'none';
             if(actHdr)actHdr.style.display='';
         } else {
-            adminCtrl.style.display='none'; restockBtn.style.display='none';
+            adminCtrl.style.display='none'; 
+            restockBtn.style.display='none';
             masterPill.style.display='none';
             if(actHdr)actHdr.style.display='none';
         }
     }
 
-    /* LISTENER */
+    /* LISTENER - FIXED: Now properly listens to the user's branch */
     function setupListener(){
         if(unsubscribe){unsubscribe();unsubscribe=null;}
         document.getElementById('pageTitle').textContent=`Warehouse — ${getBranchName(branchId)}`;
-        unsubscribe=onSnapshot(query(collection(db,'inventory'),where('branchId','==',branchId)),snap=>{
-            inventory=snap.docs.map(d=>({id:d.id,...d.data(),stock:Number(d.data().stock)||0,price:Number(d.data().price)||0}));
-            inventory.sort((a,b)=>a.code.localeCompare(b.code));
-            sourceInventory=[...inventory];
-            rebuildDatalist('addProductCodes',inventory); rebuildDatalist('transferCodes',inventory);
-            renderTable(inventory); hideLoading();
-        },err=>{toast('Error: '+err.message,'error');hideLoading();});
+        
+        // Only listen to the current user's branch
+        unsubscribe=onSnapshot(
+            query(collection(db,'inventory'), where('branchId','==',branchId)),
+            snap=>{
+                inventory=snap.docs.map(d=>({
+                    id:d.id,
+                    ...d.data(),
+                    stock:Number(d.data().stock)||0,
+                    price:Number(d.data().price)||0
+                }));
+                inventory.sort((a,b)=>a.code.localeCompare(b.code));
+                sourceInventory=[...inventory];
+                rebuildDatalist('addProductCodes',inventory);
+                rebuildDatalist('transferCodes',inventory);
+                renderTable(inventory);
+                hideLoading();
+            },
+            err=>{
+                toast('Error loading inventory: '+err.message,'error');
+                hideLoading();
+            }
+        );
     }
+    
     function rebuildDatalist(id,items){
-        const dl=document.getElementById(id); if(!dl)return; dl.innerHTML='';
-        items.forEach(i=>{const o=document.createElement('option');o.value=i.code;dl.appendChild(o);});
+        const dl=document.getElementById(id); if(!dl) return;
+        dl.innerHTML='';
+        items.forEach(i=>{
+            const o=document.createElement('option');
+            o.value=i.code;
+            dl.appendChild(o);
+        });
     }
-    function hideLoading(){const ov=document.getElementById('loadingOverlay');if(ov){ov.style.opacity='0';setTimeout(()=>ov.remove(),300);}}
+    
+    function hideLoading(){
+        const ov=document.getElementById('loadingOverlay');
+        if(ov){
+            ov.style.opacity='0';
+            setTimeout(()=>ov.remove(),300);
+        }
+    }
 
     /* RENDER TABLE */
     function renderTable(items){
-        const tbody=document.querySelector('#inventoryTable tbody'); tbody.innerHTML=''; let total=0;
+        const tbody=document.querySelector('#inventoryTable tbody'); 
+        tbody.innerHTML=''; 
+        let total=0;
+        
         if(!items.length){
-            tbody.innerHTML=`<tr class="empty-row"><td colspan="${isAdmin?5:4}">No items found.</td></tr>`;
-            document.getElementById('totalVal').textContent='0.00'; return;
+            tbody.innerHTML=`<tr class="empty-row"><td colspan="${isAdmin?5:4}">No items found in ${getBranchName(branchId)}仓库</td></tr>`;
+            document.getElementById('totalVal').textContent='0.00'; 
+            return;
         }
+        
         items.forEach(item=>{
             total+=item.price*item.stock;
             const sc=item.stock===0?'stock-zero':item.stock<10?'stock-low':'stock-ok';
             const tr=document.createElement('tr');
             const act=isAdmin?`<td><div class="menu-container"><button class="three-dots-btn" onclick="toggleMenu(event,'${item.id}')"><div class="dot"></div><div class="dot"></div><div class="dot"></div></button><div class="menu-dropdown" id="menu-${item.id}"><div class="menu-item edit" onclick="handleEdit('${item.id}')"><i class="fas fa-pen"></i> Edit</div><div class="menu-item delete" onclick="handleDelete('${item.id}')"><i class="fas fa-trash"></i> Delete</div></div></div></td>`:'';
-            tr.innerHTML=`<td><span class="code-chip">${item.code}</span></td><td style="font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.name}</td><td style="font-family:'DM Mono',monospace;font-size:0.75rem;">K${item.price.toFixed(2)}</td><td><span class="stock-chip ${sc}">${item.stock}</span></td>${act}`;
+            tr.innerHTML=`
+                <td><span class="code-chip">${item.code}</span></td>
+                <td style="font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.name}</td>
+                <td style="font-family:'DM Mono',monospace;font-size:0.75rem;">K${item.price.toFixed(2)}</td>
+                <td><span class="stock-chip ${sc}">${item.stock}</span></td>
+                ${act}
+            `;
             tbody.appendChild(tr);
         });
         document.getElementById('totalVal').textContent=total.toFixed(2);
@@ -586,156 +643,435 @@
     };
 
     /* ADD PANEL */
-    window.openAddPanel=()=>{document.getElementById('addForm').reset();openPanel('addPanel');setTimeout(()=>document.getElementById('addItemCode').focus(),320);};
+    window.openAddPanel=()=>{
+        document.getElementById('addForm').reset();
+        openPanel('addPanel');
+        setTimeout(()=>document.getElementById('addItemCode').focus(),320);
+    };
+    
     document.getElementById('addItemCode').addEventListener('input',function(){
         const found=inventory.find(i=>i.code===this.value.toUpperCase());
-        if(found){document.getElementById('addItemName').value=found.name;document.getElementById('addItemPrice').value=found.price.toFixed(2);}
+        if(found){
+            document.getElementById('addItemName').value=found.name;
+            document.getElementById('addItemPrice').value=found.price.toFixed(2);
+        }
     });
+    
     window.submitAddItem=async e=>{
         e.preventDefault();
         const code=document.getElementById('addItemCode').value.trim().toUpperCase();
         const name=document.getElementById('addItemName').value.trim();
         const price=parseFloat(document.getElementById('addItemPrice').value);
         const stock=parseInt(document.getElementById('addItemStock').value);
-        if(!code||!name||isNaN(price)||price<0||isNaN(stock)||stock<0){toast('Fill all fields.','error');return;}
-        if(inventory.find(i=>i.code===code)){toast('Code already exists.','error');return;}
-        try{await addDoc(collection(db,'inventory'),{code,name,price,stock,sold:0,branchId});toast(`"${name}" added!`);closePanelById('addPanel');}
-        catch(err){toast('Error: '+err.message,'error');}
+        
+        if(!code||!name||isNaN(price)||price<0||isNaN(stock)||stock<0){
+            toast('Please fill all fields correctly.','error');
+            return;
+        }
+        
+        if(inventory.find(i=>i.code===code)){
+            toast('Product code already exists in this branch.','error');
+            return;
+        }
+        
+        try{
+            await addDoc(collection(db,'inventory'),{
+                code,
+                name,
+                price,
+                stock,
+                sold:0,
+                branchId
+            });
+            toast(`✓ "${name}" added to ${getBranchName(branchId)}!`);
+            closePanelById('addPanel');
+        } catch(err){
+            toast('Error adding item: '+err.message,'error');
+        }
     };
 
     /* TRANSFER PANEL */
     window.openTransferPanel=()=>{
         transferCart=[];
-        const sel=document.getElementById('transferSource'); sel.innerHTML='<option value="">— Select Source —</option>';
-        Object.values(BRANCHES).forEach(b=>{const o=document.createElement('option');o.value=b.id;o.textContent=getBranchName(b.id);if(b.id===branchId)o.selected=true;sel.appendChild(o);});
-        document.getElementById('transferCode').value=''; document.getElementById('transferQty').value=1; document.getElementById('transferDest').value='';
+        const sel=document.getElementById('transferSource'); 
+        sel.innerHTML='<option value="">— Select Source —</option>';
+        Object.values(BRANCHES).forEach(b=>{
+            const o=document.createElement('option');
+            o.value=b.id;
+            o.textContent=getBranchName(b.id);
+            if(b.id===branchId) o.selected=true;
+            sel.appendChild(o);
+        });
+        document.getElementById('transferCode').value=''; 
+        document.getElementById('transferQty').value=1; 
+        document.getElementById('transferDest').value='';
         document.getElementById('transferPreview').textContent='Enter a product code above to preview';
-        sourceInventory=[...inventory]; rebuildDatalist('transferCodes',sourceInventory); buildDestOptions(branchId); renderTransferCart();
-        openPanel('transferPanel'); setTimeout(()=>document.getElementById('transferCode').focus(),320);
+        sourceInventory=[...inventory]; 
+        rebuildDatalist('transferCodes',sourceInventory); 
+        buildDestOptions(branchId); 
+        renderTransferCart();
+        openPanel('transferPanel'); 
+        setTimeout(()=>document.getElementById('transferCode').focus(),320);
     };
+    
     function buildDestOptions(srcId){
-        const sel=document.getElementById('transferDest'); sel.innerHTML='<option value="">— Select Destination —</option>';
-        Object.keys(BRANCHES).filter(id=>id!==srcId).forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent=getBranchName(id);sel.appendChild(o);});
+        const sel=document.getElementById('transferDest'); 
+        sel.innerHTML='<option value="">— Select Destination —</option>';
+        Object.keys(BRANCHES).filter(id=>id!==srcId).forEach(id=>{
+            const o=document.createElement('option');
+            o.value=id;
+            o.textContent=getBranchName(id);
+            sel.appendChild(o);
+        });
     }
+    
     window.handleSourceChange=async()=>{
-        const srcId=document.getElementById('transferSource').value; if(!srcId)return;
-        document.getElementById('transferPreview').textContent='Loading…'; document.getElementById('transferCode').value='';
-        transferCart=[]; renderTransferCart();
+        const srcId=document.getElementById('transferSource').value; 
+        if(!srcId) return;
+        document.getElementById('transferPreview').textContent='Loading…'; 
+        document.getElementById('transferCode').value='';
+        transferCart=[]; 
+        renderTransferCart();
+        
         try{
-            sourceInventory=srcId===branchId?[...inventory]:(await getDocs(query(collection(db,'inventory'),where('branchId','==',srcId)))).docs.map(d=>({id:d.id,...d.data(),stock:Number(d.data().stock)||0,price:Number(d.data().price)||0}));
-            rebuildDatalist('transferCodes',sourceInventory); buildDestOptions(srcId);
+            // Load inventory from selected source branch
+            const snap = await getDocs(query(collection(db,'inventory'), where('branchId','==',srcId)));
+            sourceInventory = snap.docs.map(d=>({
+                id:d.id,
+                ...d.data(),
+                stock:Number(d.data().stock)||0,
+                price:Number(d.data().price)||0
+            }));
+            rebuildDatalist('transferCodes',sourceInventory); 
+            buildDestOptions(srcId);
             document.getElementById('transferPreview').textContent='Enter a product code above to preview';
-        }catch(err){toast('Failed: '+err.message,'error');}
+        } catch(err){
+            toast('Failed to load source inventory: '+err.message,'error');
+        }
     };
+    
     document.getElementById('transferCode').addEventListener('input',function(){
-        const code=this.value.toUpperCase(); const item=sourceInventory.find(i=>i.code===code); const prev=document.getElementById('transferPreview');
-        prev.innerHTML=item?`<strong>${item.name}</strong> &mdash; Stock: <strong>${item.stock}</strong> &mdash; K${item.price.toFixed(2)}`:(code?'Not found in source':'Enter a product code above to preview');
+        const code=this.value.toUpperCase(); 
+        const item=sourceInventory.find(i=>i.code===code); 
+        const prev=document.getElementById('transferPreview');
+        prev.innerHTML=item?`<strong>${item.name}</strong> &mdash; Stock: <strong>${item.stock}</strong> &mdash; K${item.price.toFixed(2)}`:(code?'Product not found in source branch':'Enter a product code above to preview');
     });
+    
     window.addToTransferCart=()=>{
         const code=document.getElementById('transferCode').value.toUpperCase();
         const qty=parseInt(document.getElementById('transferQty').value);
         const srcId=document.getElementById('transferSource').value;
-        if(!srcId){toast('Select source first.','error');return;}
-        if(!code){toast('Enter a product code.','error');return;}
-        if(isNaN(qty)||qty<1){toast('Enter valid quantity.','error');return;}
-        const item=sourceInventory.find(i=>i.code===code); if(!item){toast('Product not found.','error');return;}
-        const existing=transferCart.find(c=>c.code===code); const staged=existing?existing.qty:0;
-        if(staged+qty>item.stock){toast(`Not enough stock. Available: ${item.stock}`,'error');return;}
-        if(existing){existing.qty+=qty;existing.total=existing.qty*item.price;}
-        else transferCart.push({code:item.code,name:item.name,price:item.price,qty,total:qty*item.price,itemId:item.id});
-        toast(`${item.name} added.`); renderTransferCart();
-        document.getElementById('transferCode').value=''; document.getElementById('transferQty').value=1;
+        
+        if(!srcId){
+            toast('Please select source branch first.','error');
+            return;
+        }
+        if(!code){
+            toast('Enter a product code.','error');
+            return;
+        }
+        if(isNaN(qty)||qty<1){
+            toast('Enter valid quantity.','error');
+            return;
+        }
+        
+        const item=sourceInventory.find(i=>i.code===code); 
+        if(!item){
+            toast('Product not found in source branch.','error');
+            return;
+        }
+        
+        const existing=transferCart.find(c=>c.code===code); 
+        const staged=existing?existing.qty:0;
+        
+        if(staged+qty>item.stock){
+            toast(`Not enough stock. Available: ${item.stock}`,'error');
+            return;
+        }
+        
+        if(existing){
+            existing.qty+=qty;
+            existing.total=existing.qty*item.price;
+        } else {
+            transferCart.push({
+                code:item.code,
+                name:item.name,
+                price:item.price,
+                qty,
+                total:qty*item.price,
+                itemId:item.id
+            });
+        }
+        
+        toast(`${item.name} added to transfer list.`);
+        renderTransferCart();
+        document.getElementById('transferCode').value=''; 
+        document.getElementById('transferQty').value=1;
         document.getElementById('transferPreview').textContent='Enter a product code above to preview';
         setTimeout(()=>document.getElementById('transferCode').focus(),80);
     };
-    window.removeFromTransferCart=idx=>{transferCart.splice(idx,1);renderTransferCart();};
+    
+    window.removeFromTransferCart=idx=>{
+        transferCart.splice(idx,1);
+        renderTransferCart();
+    };
+    
     function renderTransferCart(){
-        const wrap=document.getElementById('transferCartWrap'); const tbody=document.getElementById('transferCartBody'); const confirmBtn=document.getElementById('confirmTransferBtn');
-        if(!transferCart.length){wrap.style.display='none';confirmBtn.disabled=true;return;}
-        wrap.style.display='block'; confirmBtn.disabled=false; tbody.innerHTML=''; let grand=0;
+        const wrap=document.getElementById('transferCartWrap'); 
+        const tbody=document.getElementById('transferCartBody'); 
+        const confirmBtn=document.getElementById('confirmTransferBtn');
+        
+        if(!transferCart.length){
+            wrap.style.display='none';
+            confirmBtn.disabled=true;
+            return;
+        }
+        
+        wrap.style.display='block'; 
+        confirmBtn.disabled=false; 
+        tbody.innerHTML=''; 
+        let grand=0;
+        
         transferCart.forEach((c,idx)=>{
-            grand+=c.total; const tr=document.createElement('tr');
-            tr.innerHTML=`<td style="padding:6px 8px;border-bottom:1px solid var(--border);font-size:.78rem;"><strong>${c.name}</strong><br><span style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--text-fade);">${c.code}</span></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:center;font-weight:700;">${c.qty}</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:right;font-size:.78rem;">K${c.total.toFixed(2)}</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);"><button onclick="removeFromTransferCart(${idx})" style="background:none;border:1px solid var(--danger);color:var(--danger);padding:2px 6px;border-radius:5px;cursor:pointer;font-size:.66rem;font-weight:700;">✕</button></td>`;
+            grand+=c.total; 
+            const tr=document.createElement('tr');
+            tr.innerHTML=`
+                <td style="padding:6px 8px;border-bottom:1px solid var(--border);font-size:.78rem;">
+                    <strong>${c.name}</strong><br>
+                    <span style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--text-fade);">${c.code}</span>
+                </td>
+                <td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:center;font-weight:700;">${c.qty}</td>
+                <td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:right;font-size:.78rem;">K${c.total.toFixed(2)}</td>
+                <td style="padding:6px 8px;border-bottom:1px solid var(--border);">
+                    <button onclick="removeFromTransferCart(${idx})" style="background:none;border:1px solid var(--danger);color:var(--danger);padding:2px 6px;border-radius:5px;cursor:pointer;font-size:.66rem;font-weight:700;">✕</button>
+                </td>
+            `;
             tbody.appendChild(tr);
         });
-        document.getElementById('transferCartTotal').textContent=`Total: K${grand.toFixed(2)} — ${transferCart.length} item${transferCart.length>1?'s':''}`;
+        document.getElementById('transferCartTotal').textContent=`Total Value: K${grand.toFixed(2)} — ${transferCart.length} item${transferCart.length>1?'s':''}`;
     }
 
-    /* SUBMIT TRANSFER */
+    /* SUBMIT TRANSFER - FIXED: Now properly updates both source and destination */
     window.submitTransfer=async e=>{
         e.preventDefault();
-        const destId=document.getElementById('transferDest').value; const srcId=document.getElementById('transferSource').value;
-        if(!srcId){toast('Select source.','error');return;} if(!destId){toast('Select destination.','error');return;}
-        if(srcId===destId){toast('Source and destination must differ.','error');return;} if(!transferCart.length){toast('Add items first.','error');return;}
+        const destId=document.getElementById('transferDest').value; 
+        const srcId=document.getElementById('transferSource').value;
+        
+        if(!srcId){
+            toast('Please select source branch.','error');
+            return;
+        } 
+        if(!destId){
+            toast('Please select destination branch.','error');
+            return;
+        }
+        if(srcId===destId){
+            toast('Source and destination must be different branches.','error');
+            return;
+        } 
+        if(!transferCart.length){
+            toast('Please add items to transfer first.','error');
+            return;
+        }
+        
         const itemList=transferCart.map(c=>`${c.qty}× ${c.name}`).join(', ');
-        if(!confirm(`Transfer:\n${itemList}\n\nFrom: ${getBranchName(srcId)}\nTo:   ${getBranchName(destId)}`))return;
-        const btn=document.getElementById('confirmTransferBtn'); btn.disabled=true; btn.textContent='Processing…';
+        if(!confirm(`Confirm transfer:\n\n${itemList}\n\nFrom: ${getBranchName(srcId)}\nTo: ${getBranchName(destId)}\n\nThis action cannot be undone.`)) return;
+        
+        const btn=document.getElementById('confirmTransferBtn'); 
+        btn.disabled=true; 
+        btn.textContent='Processing...';
+        
         try{
+            // Process each item in the transfer cart
             for(const c of transferCart){
                 await runTransaction(db,async tx=>{
-                    const srcRef=doc(db,'inventory',c.itemId); const srcDoc=await tx.get(srcRef); const live=srcDoc.data().stock||0;
-                    if(live<c.qty)throw new Error(`Stock changed for ${c.name}. Live: ${live}`);
+                    // Update source branch (deduct stock)
+                    const srcRef=doc(db,'inventory',c.itemId); 
+                    const srcDoc=await tx.get(srcRef); 
+                    const liveStock=srcDoc.data().stock||0;
+                    
+                    if(liveStock<c.qty){
+                        throw new Error(`Stock changed for ${c.name}. Available: ${liveStock}`);
+                    }
                     tx.update(srcRef,{stock:increment(-c.qty)});
-                    const destSnap=await getDocs(query(collection(db,'inventory'),where('branchId','==',destId),where('code','==',c.code)));
-                    if(!destSnap.empty)tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(c.qty)});
-                    else tx.set(doc(collection(db,'inventory')),{code:c.code,name:c.name,price:c.price,stock:c.qty,sold:0,branchId:destId});
+                    
+                    // Update or create in destination branch
+                    const destSnap=await getDocs(query(
+                        collection(db,'inventory'),
+                        where('branchId','==',destId),
+                        where('code','==',c.code)
+                    ));
+                    
+                    if(!destSnap.empty){
+                        // Update existing item
+                        tx.update(doc(db,'inventory',destSnap.docs[0].id),{
+                            stock:increment(c.qty)
+                        });
+                    } else {
+                        // Create new item in destination branch
+                        tx.set(doc(collection(db,'inventory')),{
+                            code:c.code,
+                            name:c.name,
+                            price:c.price,
+                            stock:c.qty,
+                            sold:0,
+                            branchId:destId
+                        });
+                    }
                 });
             }
-            /* ── Save full transfer record to Firestore ── */
+            
+            // Save transfer record
             const now = new Date();
             await addDoc(collection(db,'transfers'), {
                 ref: 'TRF-' + Date.now().toString().slice(-6),
                 date: now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
                 time: now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
                 createdAt: now.toISOString(),
-                srcId, srcName: getBranchName(srcId),
-                destId, destName: getBranchName(destId),
-                items: transferCart.map(c=>({code:c.code,name:c.name,qty:c.qty,price:c.price,total:c.total})),
+                srcId, 
+                srcName: getBranchName(srcId),
+                destId, 
+                destName: getBranchName(destId),
+                items: transferCart.map(c=>({
+                    code:c.code,
+                    name:c.name,
+                    qty:c.qty,
+                    price:c.price,
+                    total:c.total
+                })),
                 totalValue: transferCart.reduce((s,c)=>s+c.total,0),
                 doneBy: localStorage.getItem('userName') || 'unknown'
             });
-            toast(`✓ ${transferCart.length} item(s) transferred → ${getBranchName(destId)}`);
-            closePanelById('transferPanel'); transferCart=[];
-        }catch(err){toast('Transfer failed: '+err.message,'error');}
-        finally{btn.disabled=false; btn.textContent='✓ Confirm & Transfer All';}
+            
+            toast(`✓ Successfully transferred ${transferCart.length} item(s) to ${getBranchName(destId)}`);
+            closePanelById('transferPanel');
+            transferCart=[];
+            
+            // If the user is viewing the destination branch, refresh their view
+            if(destId === branchId){
+                toast(`Your inventory has been updated!`, 'success');
+            }
+            
+        } catch(err){
+            toast('Transfer failed: '+err.message,'error');
+        } finally{
+            btn.disabled=false; 
+            btn.textContent='✓ Confirm & Transfer All';
+        }
     };
 
     /* MENUS */
-    function closeAllMenus(){if(activeMenu){activeMenu.classList.remove('show');activeMenu=null;}}
+    function closeAllMenus(){
+        if(activeMenu){
+            activeMenu.classList.remove('show');
+            activeMenu=null;
+        }
+    }
+    
     window.toggleMenu=(e,id)=>{
-        e.stopPropagation(); const menu=document.getElementById(`menu-${id}`);
-        if(activeMenu&&activeMenu!==menu)activeMenu.classList.remove('show');
-        menu.classList.toggle('show'); activeMenu=menu.classList.contains('show')?menu:null;
+        e.stopPropagation(); 
+        const menu=document.getElementById(`menu-${id}`);
+        if(activeMenu&&activeMenu!==menu) activeMenu.classList.remove('show');
+        menu.classList.toggle('show'); 
+        activeMenu=menu.classList.contains('show')?menu:null;
     };
     document.addEventListener('click',closeAllMenus);
 
     /* EDIT */
     window.handleEdit=async id=>{
         closeAllMenus();
-        if(!editUnlocked){const pass=prompt('Enter password to edit:');if(pass!=='1030'){toast('Incorrect password.','error');return;}editUnlocked=true;}
-        const item=inventory.find(i=>i.id===id); if(!item)return;
-        const bg=document.createElement('div'); bg.className='modal-bg';
-        bg.innerHTML=`<div class="modal"><h3><i class="fas fa-pen" style="margin-right:8px;"></i>Edit Product</h3><form id="editForm"><div class="field-group"><label>Product Code</label><input type="text" name="code" required value="${item.code}"></div><div class="field-group" style="margin-top:10px;"><label>Product Name</label><input type="text" name="name" required value="${item.name}"></div><div class="field-group" style="margin-top:10px;"><label>Price (ZMW)</label><input type="number" name="price" min="0" step="0.01" required value="${item.price}"></div><div class="field-group" style="margin-top:10px;"><label>Stock</label><input type="number" name="stock" min="0" required value="${item.stock}"></div><div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button><button type="button" class="btn btn-danger" id="cancelEdit"><i class="fas fa-times"></i> Cancel</button></div></form></div>`;
+        if(!editUnlocked){
+            const pass=prompt('Enter admin password to edit:');
+            if(pass!=='1030'){
+                toast('Incorrect password.','error');
+                return;
+            }
+            editUnlocked=true;
+        }
+        
+        const item=inventory.find(i=>i.id===id); 
+        if(!item) return;
+        
+        const bg=document.createElement('div'); 
+        bg.className='modal-bg';
+        bg.innerHTML=`
+            <div class="modal">
+                <h3><i class="fas fa-pen" style="margin-right:8px;"></i>Edit Product</h3>
+                <form id="editForm">
+                    <div class="field-group">
+                        <label>Product Code</label>
+                        <input type="text" name="code" required value="${item.code}">
+                    </div>
+                    <div class="field-group" style="margin-top:10px;">
+                        <label>Product Name</label>
+                        <input type="text" name="name" required value="${item.name.replace(/"/g, '&quot;')}">
+                    </div>
+                    <div class="field-group" style="margin-top:10px;">
+                        <label>Price (ZMW)</label>
+                        <input type="number" name="price" min="0" step="0.01" required value="${item.price}">
+                    </div>
+                    <div class="field-group" style="margin-top:10px;">
+                        <label>Stock</label>
+                        <input type="number" name="stock" min="0" required value="${item.stock}">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+                        <button type="button" class="btn btn-danger" id="cancelEdit"><i class="fas fa-times"></i> Cancel</button>
+                    </div>
+                </form>
+            </div>`;
         document.body.appendChild(bg);
+        
         document.getElementById('editForm').onsubmit=async ev=>{
-            ev.preventDefault(); const f=ev.target;
-            const code=f.code.value.trim().toUpperCase(); const name=f.name.value.trim();
-            const price=parseFloat(f.price.value); const stock=parseInt(f.stock.value);
-            if(!code||!name||isNaN(price)||price<0||isNaN(stock)||stock<0){toast('Invalid values.','error');return;}
-            if(code!==item.code&&inventory.some(i=>i.code===code)){toast('Code exists!','error');return;}
-            try{await updateDoc(doc(db,'inventory',item.id),{code,name,price,stock});bg.remove();toast('Updated!');}
-            catch(err){toast('Error: '+err.message,'error');}
+            ev.preventDefault(); 
+            const f=ev.target;
+            const code=f.code.value.trim().toUpperCase(); 
+            const name=f.name.value.trim();
+            const price=parseFloat(f.price.value); 
+            const stock=parseInt(f.stock.value);
+            
+            if(!code||!name||isNaN(price)||price<0||isNaN(stock)||stock<0){
+                toast('Please fill all fields correctly.','error');
+                return;
+            }
+            
+            if(code!==item.code && inventory.some(i=>i.code===code)){
+                toast('Product code already exists in this branch.','error');
+                return;
+            }
+            
+            try{
+                await updateDoc(doc(db,'inventory',item.id),{
+                    code,
+                    name,
+                    price,
+                    stock
+                });
+                bg.remove();
+                toast('✓ Product updated successfully!');
+            } catch(err){
+                toast('Error updating product: '+err.message,'error');
+            }
         };
+        
         document.getElementById('cancelEdit').onclick=()=>bg.remove();
-        bg.onclick=ev=>{if(ev.target===bg)bg.remove();};
+        bg.onclick=ev=>{if(ev.target===bg) bg.remove();};
     };
 
     /* DELETE */
     window.handleDelete=async id=>{
-        closeAllMenus(); const item=inventory.find(i=>i.id===id); if(!item)return;
-        if(!confirm(`Delete "${item.name}" (${item.code})?`))return;
-        try{await deleteDoc(doc(db,'inventory',id));toast('Deleted.');}
-        catch(err){toast('Error: '+err.message,'error');}
+        closeAllMenus(); 
+        const item=inventory.find(i=>i.id===id); 
+        if(!item) return;
+        
+        if(!confirm(`⚠️ Delete "${item.name}" (${item.code})?\n\nThis action cannot be undone.`)) return;
+        
+        try{
+            await deleteDoc(doc(db,'inventory',id));
+            toast(`✓ "${item.name}" deleted successfully.`);
+        } catch(err){
+            toast('Error deleting item: '+err.message,'error');
+        }
     };
 
     /* TABS */
@@ -745,41 +1081,76 @@
         if(t==='history') loadTransferHistory();
     };
 
-    /* TRANSFER HISTORY */
+    /* TRANSFER HISTORY - FIXED: Shows transfers involving user's branch */
     async function loadTransferHistory(){
         const wrap=document.getElementById('histListWrap');
-        wrap.innerHTML=`<div class="no-history"><i class="fas fa-spinner fa-spin"></i><br>Loading…</div>`;
+        wrap.innerHTML=`<div class="no-history"><i class="fas fa-spinner fa-spin"></i><br>Loading history...</div>`;
+        
         try{
-            const snap=await getDocs(query(collection(db,'transfers'),orderBy('createdAt','desc')));
-            document.getElementById('histCount').textContent=snap.size+' records';
-            if(snap.empty){wrap.innerHTML=`<div class="no-history"><i class="fas fa-box-open"></i><br>No transfers yet.</div>`;return;}
+            // Show transfers where user's branch is either source OR destination
+            const allTransfers = await getDocs(query(collection(db,'transfers'), orderBy('createdAt','desc')));
+            const relevantTransfers = [];
+            
+            allTransfers.forEach(doc => {
+                const transfer = doc.data();
+                // Show transfers that involve the user's branch
+                if(transfer.srcId === branchId || transfer.destId === branchId) {
+                    relevantTransfers.push({id: doc.id, ...transfer});
+                }
+            });
+            
+            document.getElementById('histCount').textContent=relevantTransfers.length+' records';
+            
+            if(relevantTransfers.length === 0){
+                wrap.innerHTML=`<div class="no-history"><i class="fas fa-box-open"></i><br>No transfers involving ${getBranchName(branchId)} yet.</div>`;
+                return;
+            }
+            
             wrap.innerHTML='';
-            snap.forEach(d=>{
-                const r={id:d.id,...d.data()};
-                const el=document.createElement('div'); el.className='hist-item';
-                const chips=(r.items||[]).map(i=>`<div class="hist-chip"><strong>${i.qty}×</strong> ${i.name} <span style="font-family:'DM Mono',monospace;font-size:0.58rem;">${i.code}</span></div>`).join('');
+            relevantTransfers.forEach(r=>{
+                const el=document.createElement('div'); 
+                el.className='hist-item';
+                const chips=(r.items||[]).map(i=>`
+                    <div class="hist-chip">
+                        <strong>${i.qty}×</strong> ${i.name} 
+                        <span style="font-family:'DM Mono',monospace;font-size:0.58rem;">${i.code}</span>
+                    </div>
+                `).join('');
+                
+                // Highlight if this branch is involved
+                const isIncoming = r.destId === branchId;
+                const arrowColor = isIncoming ? '#10b981' : '#f59e0b';
+                
                 el.innerHTML=`
                     <div class="hist-top">
-                        <div class="hist-ref">${r.ref||'—'}</div>
+                        <div class="hist-ref">${r.ref||'Transfer'}</div>
                         <div class="hist-date">${r.date||''} ${r.time||''}</div>
                     </div>
                     <div class="hist-route">
-                        <span class="hist-branch">${r.srcName||r.srcId||'?'}</span>
-                        <span class="hist-arrow"><i class="fas fa-arrow-right"></i></span>
-                        <span class="hist-branch dest">${r.destName||r.destId||'?'}</span>
+                        <span class="hist-branch" style="${isIncoming ? 'background:rgba(16,185,129,0.08);' : ''}">${r.srcName||r.srcId||'?'}</span>
+                        <span class="hist-arrow" style="color: ${arrowColor}"><i class="fas fa-arrow-right"></i></span>
+                        <span class="hist-branch dest" style="${isIncoming ? 'background:rgba(16,185,129,0.15);border-color:#10b981;' : ''}">${r.destName||r.destId||'?'}</span>
                     </div>
                     <div class="hist-chips">${chips}</div>
                     <div class="hist-bottom">
                         <div class="hist-total">K ${(r.totalValue||0).toFixed(2)}</div>
-                        <div class="hist-by">by ${r.doneBy||'—'}</div>
+                        <div class="hist-by">by ${r.doneBy||'—'} ${isIncoming ? '⬅️ Received' : '➡️ Sent'}</div>
                     </div>`;
                 wrap.appendChild(el);
             });
-        }catch(err){wrap.innerHTML=`<div class="no-history" style="color:var(--danger)"><i class="fas fa-exclamation-circle"></i><br>Error loading history.</div>`;}
+        } catch(err){
+            console.error('History error:', err);
+            wrap.innerHTML=`<div class="no-history" style="color:var(--danger)"><i class="fas fa-exclamation-circle"></i><br>Error loading transfer history.</div>`;
+        }
     }
 
     /* INIT */
-    window.onload=()=>{setupRoleUI();setupListener();};
+    window.onload=()=>{
+        setupRoleUI();
+        setupListener();
+        console.log(`✅ Logged in as: ${userName} (${isAdmin ? 'Admin' : 'User'})`);
+        console.log(`📍 Current branch: ${getBranchName(branchId)}`);
+    };
 </script>
 </body>
 </html>
