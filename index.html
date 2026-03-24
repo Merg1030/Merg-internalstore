@@ -197,27 +197,17 @@
     <div class="card-foot">© 2025 Trismart Stores · All rights reserved</div>
 </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-
-    // Firebase config
-    const firebaseConfig = {
-        apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
-        authDomain: "trismartstores.firebaseapp.com",
-        projectId: "trismartstores",
-        storageBucket: "trismartstores.appspot.com",
-        messagingSenderId: "416692703333",
-        appId: "1:416692703333:web:d4b60292621435c748f68c"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+<script>
+    /* ── Hardcoded users ── */
+    const USERS = [
+        { username: 'Mirriam', password: 'Mirriam@12345', branch: 'makeni' },
+        { username: 'Magret',  password: 'Magret.',        branch: 'kabana' },
+        { username: 'Chris',   password: 'chishela10',     branch: 'master' }
+    ];
 
     /* ── ALWAYS clear session when landing on login ── */
     localStorage.removeItem('userName');
     localStorage.removeItem('branchId');
-    localStorage.removeItem('userId');
 
     /* ── Block browser back button ── */
     history.pushState(null, '', window.location.href);
@@ -235,7 +225,7 @@
         pwIcon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
     });
 
-    /* ── Login from Firestore ── */
+    /* ── Login logic ── */
     const loginForm = document.getElementById('loginForm');
     const loginBtn  = document.getElementById('loginBtn');
     const errorBox  = document.getElementById('errorBox');
@@ -250,7 +240,7 @@
         setTimeout(() => { pwInput.style.borderColor = ''; }, 1400);
     }
 
-    loginForm.addEventListener('submit', async (e) => {
+    loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         errorBox.classList.remove('show');
 
@@ -265,47 +255,29 @@
         loginBtn.disabled = true;
         loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
 
-        try {
-            // Query users collection from Firestore
-            const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('username', '==', username.toLowerCase()));
-            const querySnapshot = await getDocs(q);
-            
-            if (querySnapshot.empty) {
-                showError('User not found. Please contact admin.');
+        setTimeout(() => {
+            // Find user (case-insensitive username)
+            const user = USERS.find(u => 
+                u.username.toLowerCase() === username.toLowerCase() && 
+                u.password === password
+            );
+
+            if (user) {
+                // Store user info
+                localStorage.setItem('userName', user.username.toLowerCase());
+                localStorage.setItem('branchId', user.branch);
+
+                loginBtn.innerHTML = '<i class="fas fa-check"></i> Welcome!';
+
+                setTimeout(() => {
+                    window.location.replace('warehouse.html');
+                }, 500);
+            } else {
+                showError('Wrong username or password. Try again.');
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
-                return;
             }
-            
-            const userDoc = querySnapshot.docs[0];
-            const userData = userDoc.data();
-            
-            // Verify password
-            if (userData.password !== password) {
-                showError('Wrong password. Try again.');
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
-                return;
-            }
-            
-            // Store user info in localStorage (only for session persistence)
-            localStorage.setItem('userName', userData.username);
-            localStorage.setItem('branchId', userData.branchId);
-            localStorage.setItem('userId', userDoc.id);
-            
-            loginBtn.innerHTML = '<i class="fas fa-check"></i> Welcome!';
-            
-            setTimeout(() => {
-                window.location.replace('warehouse.html');
-            }, 500);
-            
-        } catch (error) {
-            console.error('Login error:', error);
-            showError('Connection error. Please try again.');
-            loginBtn.disabled = false;
-            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
-        }
+        }, 600);
     });
 </script>
 </body>
