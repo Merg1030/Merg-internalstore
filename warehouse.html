@@ -159,6 +159,40 @@
         @keyframes spin{to{transform:rotate(360deg);}}
         .loading-text{font-size:0.82rem;color:var(--text-fade);font-weight:500;}
 
+        /* HISTORY TAB */
+        .tab-bar{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;flex-shrink:0;}
+        .tab-btn{flex:1;padding:10px 4px;font-size:0.78rem;font-weight:700;color:var(--text-fade);border:none;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:5px;}
+        .tab-btn:hover{color:var(--blue);}
+        .tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
+        .tab-content{display:none;flex:1;flex-direction:column;min-height:0;overflow:hidden;}
+        .tab-content.active{display:flex;}
+        @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+        .history-area{flex:1;padding:12px 14px 20px;overflow-y:auto;}
+        .hist-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;}
+        .hist-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+        .hist-hdr-left{display:flex;align-items:center;gap:7px;}
+        .hist-hdr-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 6px rgba(67,97,238,0.5);animation:pulse 2s infinite;}
+        .hist-hdr h3{font-size:0.8rem;font-weight:700;}
+        .hist-count{background:var(--bg3);border:1px solid var(--border2);border-radius:100px;padding:2px 9px;font-size:0.62rem;font-weight:700;color:var(--text-fade);}
+        .hist-item{padding:12px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;}
+        .hist-item:last-child{border-bottom:none;}
+        .hist-item:hover{background:var(--bg3);}
+        .hist-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+        .hist-ref{font-size:0.78rem;font-weight:800;color:var(--text);}
+        .hist-date{font-size:0.65rem;color:var(--text-fade);font-family:'DM Mono',monospace;}
+        .hist-route{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+        .hist-branch{background:rgba(67,97,238,0.08);border:1px solid rgba(67,97,238,0.15);color:var(--blue);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:100px;}
+        .hist-branch.dest{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.2);color:var(--green);}
+        .hist-arrow{font-size:0.7rem;color:var(--text-dim);}
+        .hist-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;}
+        .hist-chip{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:2px 8px;font-size:0.62rem;color:var(--text-fade);}
+        .hist-chip strong{color:var(--text);}
+        .hist-bottom{display:flex;align-items:center;justify-content:space-between;}
+        .hist-total{font-size:0.72rem;font-weight:700;color:var(--blue);font-family:'DM Mono',monospace;}
+        .hist-by{font-size:0.6rem;color:var(--text-dim);}
+        .no-history{text-align:center;padding:40px 20px;color:var(--text-dim);font-size:0.8rem;}
+        .no-history i{font-size:1.8rem;display:block;margin-bottom:10px;color:var(--border2);}
+
         ::-webkit-scrollbar{width:4px;height:4px;}
         ::-webkit-scrollbar-track{background:transparent;}
         ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
@@ -231,22 +265,48 @@
         </div>
     </div>
 
-    <!-- Table -->
-    <div class="table-area">
-        <div class="table-card">
-            <div class="table-scroll">
-                <table id="inventoryTable">
-                    <thead>
-                        <tr>
-                            <th>Code</th>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Stock</th>
-                            <th id="actionsHeader">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+    <!-- TABS -->
+    <div class="tab-bar">
+        <button class="tab-btn active" id="tab-inventory" onclick="showTab('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
+        <button class="tab-btn" id="tab-history" onclick="showTab('history')"><i class="fas fa-history"></i> Transfer History</button>
+    </div>
+
+    <!-- INVENTORY TAB -->
+    <div class="tab-content active" id="tabInventory">
+        <div class="table-area">
+            <div class="table-card">
+                <div class="table-scroll">
+                    <table id="inventoryTable">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th id="actionsHeader">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div class="tab-content" id="tabHistory">
+        <div class="history-area">
+            <div class="hist-card">
+                <div class="hist-hdr">
+                    <div class="hist-hdr-left">
+                        <div class="hist-hdr-dot"></div>
+                        <h3>Transfer Records</h3>
+                    </div>
+                    <div class="hist-count" id="histCount">—</div>
+                </div>
+                <div id="histListWrap">
+                    <div class="no-history"><i class="fas fa-box-open"></i><br>Switch to this tab to load records.</div>
+                </div>
             </div>
         </div>
     </div>
@@ -363,7 +423,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
     import {
-        getFirestore, collection, query, where,
+        getFirestore, collection, query, where, orderBy,
         getDocs, addDoc, updateDoc, deleteDoc,
         doc, increment, onSnapshot, runTransaction
     } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
@@ -621,6 +681,19 @@
                     else tx.set(doc(collection(db,'inventory')),{code:c.code,name:c.name,price:c.price,stock:c.qty,sold:0,branchId:destId});
                 });
             }
+            /* ── Save full transfer record to Firestore ── */
+            const now = new Date();
+            await addDoc(collection(db,'transfers'), {
+                ref: 'TRF-' + Date.now().toString().slice(-6),
+                date: now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
+                time: now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
+                createdAt: now.toISOString(),
+                srcId, srcName: getBranchName(srcId),
+                destId, destName: getBranchName(destId),
+                items: transferCart.map(c=>({code:c.code,name:c.name,qty:c.qty,price:c.price,total:c.total})),
+                totalValue: transferCart.reduce((s,c)=>s+c.total,0),
+                doneBy: localStorage.getItem('userName') || 'unknown'
+            });
             toast(`✓ ${transferCart.length} item(s) transferred → ${getBranchName(destId)}`);
             closePanelById('transferPanel'); transferCart=[];
         }catch(err){toast('Transfer failed: '+err.message,'error');}
@@ -664,6 +737,46 @@
         try{await deleteDoc(doc(db,'inventory',id));toast('Deleted.');}
         catch(err){toast('Error: '+err.message,'error');}
     };
+
+    /* TABS */
+    window.showTab=function(t){
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.id==='tab-'+t));
+        document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active',c.id==='tab'+t.charAt(0).toUpperCase()+t.slice(1)));
+        if(t==='history') loadTransferHistory();
+    };
+
+    /* TRANSFER HISTORY */
+    async function loadTransferHistory(){
+        const wrap=document.getElementById('histListWrap');
+        wrap.innerHTML=`<div class="no-history"><i class="fas fa-spinner fa-spin"></i><br>Loading…</div>`;
+        try{
+            const snap=await getDocs(query(collection(db,'transfers'),orderBy('createdAt','desc')));
+            document.getElementById('histCount').textContent=snap.size+' records';
+            if(snap.empty){wrap.innerHTML=`<div class="no-history"><i class="fas fa-box-open"></i><br>No transfers yet.</div>`;return;}
+            wrap.innerHTML='';
+            snap.forEach(d=>{
+                const r={id:d.id,...d.data()};
+                const el=document.createElement('div'); el.className='hist-item';
+                const chips=(r.items||[]).map(i=>`<div class="hist-chip"><strong>${i.qty}×</strong> ${i.name} <span style="font-family:'DM Mono',monospace;font-size:0.58rem;">${i.code}</span></div>`).join('');
+                el.innerHTML=`
+                    <div class="hist-top">
+                        <div class="hist-ref">${r.ref||'—'}</div>
+                        <div class="hist-date">${r.date||''} ${r.time||''}</div>
+                    </div>
+                    <div class="hist-route">
+                        <span class="hist-branch">${r.srcName||r.srcId||'?'}</span>
+                        <span class="hist-arrow"><i class="fas fa-arrow-right"></i></span>
+                        <span class="hist-branch dest">${r.destName||r.destId||'?'}</span>
+                    </div>
+                    <div class="hist-chips">${chips}</div>
+                    <div class="hist-bottom">
+                        <div class="hist-total">K ${(r.totalValue||0).toFixed(2)}</div>
+                        <div class="hist-by">by ${r.doneBy||'—'}</div>
+                    </div>`;
+                wrap.appendChild(el);
+            });
+        }catch(err){wrap.innerHTML=`<div class="no-history" style="color:var(--danger)"><i class="fas fa-exclamation-circle"></i><br>Error loading history.</div>`;}
+    }
 
     /* INIT */
     window.onload=()=>{setupRoleUI();setupListener();};
