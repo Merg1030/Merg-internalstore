@@ -198,13 +198,6 @@
 </div>
 
 <script>
-    /* ── Hardcoded users ── */
-    const USERS = [
-        { username: 'Mirriam', password: 'Mirriam@12345', branch: 'makeni' },
-        { username: 'Magret',  password: 'Magret.',        branch: 'kabana' },
-        { username: 'Chris',   password: 'chishela10',     branch: 'master' }
-    ];
-
     /* ── ALWAYS clear session when landing on login ── */
     localStorage.removeItem('userName');
     localStorage.removeItem('branchId');
@@ -214,6 +207,13 @@
     window.addEventListener('popstate', () => {
         history.pushState(null, '', window.location.href);
     });
+
+    /* ── Users ── */
+    const USERS = [
+        { username: 'Mirriam', password: 'Mirriam@12345', branch: 'makeni' },
+        { username: 'Magret',  password: 'Magret.',        branch: 'kabana' },
+        { username: 'Chris',   password: 'chishela10',     branch: 'master' }
+    ];
 
     /* ── Password toggle ── */
     const pwInput  = document.getElementById('password');
@@ -225,7 +225,7 @@
         pwIcon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
     });
 
-    /* ── Login logic ── */
+    /* ── Login ── */
     const loginForm = document.getElementById('loginForm');
     const loginBtn  = document.getElementById('loginBtn');
     const errorBox  = document.getElementById('errorBox');
@@ -234,13 +234,13 @@
     function showError(msg) {
         errorText.textContent = msg;
         errorBox.classList.remove('show');
-        void errorBox.offsetWidth;
+        void errorBox.offsetWidth; // force reflow to restart animation
         errorBox.classList.add('show');
         pwInput.style.borderColor = 'var(--danger)';
         setTimeout(() => { pwInput.style.borderColor = ''; }, 1400);
     }
 
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', e => {
         e.preventDefault();
         errorBox.classList.remove('show');
 
@@ -256,21 +256,20 @@
         loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
 
         setTimeout(() => {
-            // Find user (case-insensitive username)
-            const user = USERS.find(u => 
-                u.username.toLowerCase() === username.toLowerCase() && 
+            const user = USERS.find(u =>
+                u.username.toLowerCase() === username.toLowerCase() &&
                 u.password === password
             );
 
             if (user) {
-                // Store user info
                 localStorage.setItem('userName', user.username.toLowerCase());
                 localStorage.setItem('branchId', user.branch);
 
                 loginBtn.innerHTML = '<i class="fas fa-check"></i> Welcome!';
 
+                /* use replace() so back button on dashboard can't return to login */
                 setTimeout(() => {
-                    window.location.replace('warehouse.html');
+                    window.location.replace('dashboard.html');
                 }, 500);
             } else {
                 showError('Wrong username or password. Try again.');
