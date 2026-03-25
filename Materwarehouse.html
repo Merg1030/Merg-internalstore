@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trismart · Master Vault | Admin</title>
+    <title>Trismart · Master Vault | Clean Actions</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -21,7 +21,6 @@
             min-height: 100vh;
         }
 
-        /* --- compact variables --- */
         :root {
             --blue: #3b5bdb;
             --cyan: #0ea5e9;
@@ -37,7 +36,6 @@
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.03);
         }
 
-        /* top bar */
         .topbar {
             position: fixed;
             top: 0;
@@ -54,156 +52,64 @@
             z-index: 1100;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-mark {
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(135deg, var(--blue), #2563eb);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.8rem;
-        }
-
-        .logo-text {
-            font-size: 0.9rem;
-            font-weight: 800;
-            letter-spacing: -0.2px;
-        }
-
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo-mark { width: 30px; height: 30px; background: linear-gradient(135deg, var(--blue), #2563eb); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; }
+        .logo-text { font-size: 0.9rem; font-weight: 800; letter-spacing: -0.2px; }
         .logo-text span { color: var(--blue); }
+        .master-badge { background: linear-gradient(135deg, #f59e0b, #ea580c); font-size: 0.6rem; font-weight: 800; padding: 3px 8px; border-radius: 40px; color: white; }
+        .admin-badge { background: #eef2ff; color: var(--blue); font-size: 0.6rem; font-weight: 700; padding: 3px 10px; border-radius: 40px; border: 1px solid #cbd5e1; }
+        .time-badge { background: #f1f5f9; font-size: 0.65rem; font-family: 'DM Mono', monospace; padding: 4px 12px; border-radius: 40px; color: #334155; }
 
-        .master-badge {
-            background: linear-gradient(135deg, #f59e0b, #ea580c);
-            font-size: 0.6rem;
-            font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 40px;
-            color: white;
-        }
-
-        .admin-badge {
-            background: #eef2ff;
-            color: var(--blue);
-            font-size: 0.6rem;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 40px;
-            border: 1px solid #cbd5e1;
-        }
-
-        .time-badge {
-            background: #f1f5f9;
-            font-size: 0.65rem;
-            font-family: 'DM Mono', monospace;
-            padding: 4px 12px;
-            border-radius: 40px;
-            color: #334155;
-        }
-
-        /* main layout */
-        .main {
-            margin-top: var(--header-h);
-            padding: 18px 20px 32px;
-        }
+        .main { margin-top: var(--header-h); padding: 18px 20px 32px; }
 
         /* stats compact */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 18px;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; transition: 0.1s; }
+        .stat-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 4px; }
+        .stat-value { font-size: 1.5rem; font-weight: 800; font-family: 'DM Mono', monospace; color: var(--blue); }
+        .stat-sub { font-size: 0.6rem; color: #7e8b9f; }
 
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 12px 14px;
-            transition: 0.1s;
-        }
-
-        .stat-label {
-            font-size: 0.6rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 800;
-            font-family: 'DM Mono', monospace;
-            color: var(--blue);
-        }
-
-        .stat-sub {
-            font-size: 0.6rem;
-            color: #7e8b9f;
-        }
-
-        /* --- action bar (three-dot collapsible) --- */
-        .action-wrapper {
+        /* Action bar (3-dot collapsible) - without search */
+        .action-wrapper { margin-bottom: 18px; }
+        .action-dot-bar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 60px; padding: 6px 18px; display: inline-flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; box-shadow: var(--shadow-sm); }
+        .action-dot-bar i { font-size: 1.1rem; color: var(--blue); }
+        .dot-text { font-size: 0.7rem; font-weight: 700; color: #1f2a44; }
+        .action-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; margin-top: 12px; padding: 14px 20px; display: none; flex-wrap: wrap; align-items: center; gap: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.02); }
+        .action-panel.open { display: flex; }
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        
+        /* Search bar standalone - outside action bar */
+        .search-standalone {
             margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
         }
-
-        .action-dot-bar {
-            background: var(--bg-card);
+        .search-wrap {
+            position: relative;
+            width: 260px;
+        }
+        .search-wrap input {
+            padding: 7px 12px 7px 32px;
             border: 1px solid var(--border);
-            border-radius: 60px;
-            padding: 6px 18px;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
+            border-radius: 40px;
+            font-size: 0.75rem;
+            background: white;
+            width: 100%;
+            outline: none;
+            transition: 0.15s;
+            font-family: 'DM Sans', sans-serif;
         }
-
-        .action-dot-bar i {
-            font-size: 1.1rem;
-            color: var(--blue);
+        .search-wrap input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px rgba(59,91,219,0.1);
         }
-
-        .dot-text {
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
             font-size: 0.7rem;
-            font-weight: 700;
-            color: #1f2a44;
-        }
-
-        .action-panel {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            margin-top: 12px;
-            padding: 16px 20px;
-            display: none;
-            grid-template-columns: repeat(auto-fit, minmax(180px, auto));
-            gap: 12px;
-            align-items: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 4px rgba(0,0,0,0.02);
-            transition: 0.2s;
-        }
-
-        .action-panel.open {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
+            color: #94a3b8;
         }
 
         .btn {
@@ -219,187 +125,63 @@
             font-family: 'DM Sans', sans-serif;
             transition: 0.15s;
         }
-
         .btn-primary { background: linear-gradient(135deg, var(--blue), #2c4ed6); color: white; }
         .btn-success { background: linear-gradient(135deg, var(--green), #0b815a); color: white; }
         .btn-warning { background: linear-gradient(135deg, var(--orange), #ea580c); color: white; }
         .btn-purple { background: var(--purple); color: white; }
         .btn-ghost { background: #f1f5f9; color: #1f2a44; border: 1px solid #e2e8f0; }
 
-        .search-wrap {
-            position: relative;
-            min-width: 200px;
-        }
-        .search-wrap input {
-            padding: 6px 10px 6px 28px;
-            border: 1px solid var(--border);
-            border-radius: 32px;
-            font-size: 0.7rem;
-            background: #f9fafc;
-            width: 100%;
-            outline: none;
-        }
-        .search-icon {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.7rem;
-            color: #94a3b8;
-        }
-
-        /* tabs */
-        .tab-bar {
-            display: flex;
-            gap: 2px;
-            margin-bottom: 18px;
-            border-bottom: 1px solid var(--border);
-        }
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: 8px 18px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #5b6e8c;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-        }
-        .tab-btn.active {
-            color: var(--blue);
-            border-bottom-color: var(--blue);
-        }
+        /* Tabs */
+        .tab-bar { display: flex; gap: 2px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
+        .tab-btn { background: none; border: none; padding: 8px 18px; font-size: 0.75rem; font-weight: 700; color: #5b6e8c; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* tables compact */
-        .table-card {
-            background: var(--bg-card);
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
+        /* Table styles */
+        .table-card { background: var(--bg-card); border-radius: 18px; border: 1px solid var(--border); overflow: hidden; }
         .table-scroll { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th {
-            background: #fafcff;
-            font-size: 0.6rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border);
-            color: #5a6e8c;
-            text-align: left;
-        }
-        td {
-            padding: 8px 14px;
-            font-size: 0.75rem;
-            border-bottom: 1px solid #eff3f8;
-        }
-        .code-chip {
-            font-family: 'DM Mono', monospace;
-            background: #eef2ff;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: var(--blue);
-            display: inline-block;
-        }
-        .stock-chip {
-            padding: 2px 8px;
-            border-radius: 40px;
-            font-size: 0.65rem;
-            font-weight: 800;
-        }
-        .action-icon {
-            background: none;
-            border: none;
-            font-size: 0.8rem;
-            margin: 0 3px;
-            cursor: pointer;
-            padding: 4px;
-        }
-        .action-icon.edit { color: var(--blue); }
-        .action-icon.delete { color: var(--danger); }
+        th { background: #fafcff; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 10px 14px; border-bottom: 1px solid var(--border); color: #5a6e8c; text-align: left; }
+        td { padding: 10px 14px; font-size: 0.75rem; border-bottom: 1px solid #eff3f8; vertical-align: middle; }
+        .code-chip { font-family: 'DM Mono', monospace; background: #eef2ff; padding: 2px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; color: var(--blue); display: inline-block; }
+        .stock-chip { padding: 2px 8px; border-radius: 40px; font-size: 0.65rem; font-weight: 800; display: inline-block; }
 
-        /* modals */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(3px);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
+        /* 3-dot menu inside table row (compact actions) */
+        .row-actions { position: relative; display: inline-block; }
+        .row-dot-btn { background: transparent; border: none; font-size: 1rem; color: #6c757d; cursor: pointer; padding: 4px 8px; border-radius: 30px; transition: 0.1s; line-height: 1; }
+        .row-dot-btn:hover { background: #f1f5f9; color: var(--blue); }
+        .row-dropdown { position: absolute; right: 0; top: 30px; background: white; border-radius: 14px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); min-width: 100px; z-index: 200; display: none; overflow: hidden; }
+        .row-dropdown.show { display: block; }
+        .dropdown-item { display: flex; align-items: center; gap: 8px; padding: 8px 14px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: 0.1s; color: #1f2937; border-bottom: 1px solid #f0f2f8; }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background: #f8fafc; }
+        .dropdown-item.edit-item { color: var(--blue); }
+        .dropdown-item.delete-item { color: var(--danger); }
+        .dropdown-item i { width: 18px; font-size: 0.7rem; }
+
+        /* Modals, transfers, etc */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(3px); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.show { display: flex; }
-        .modal-detail {
-            background: white;
-            border-radius: 24px;
-            max-width: 520px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
+        .modal-detail { background: white; border-radius: 24px; max-width: 520px; width: 90%; max-height: 85vh; overflow-y: auto; }
         .modal-lg { max-width: 720px; }
-        .modal-header {
-            padding: 14px 18px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            font-weight: 800;
-        }
-        .field-group {
-            margin-bottom: 12px;
-        }
-        .field-group label {
-            font-size: 0.65rem;
-            font-weight: 800;
-            color: #5b6e8c;
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .field-group input, .field-group select {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.75rem;
-            background: #fafcff;
-        }
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-        .cart-table { width: 100%; font-size: 0.7rem; }
-        .toast-wrap {
-            position: fixed;
-            bottom: 16px;
-            right: 16px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .toast {
-            background: #1e293b;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            animation: fadeIn 0.2s;
-        }
+        .modal-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-weight: 800; }
+        .field-group { margin-bottom: 12px; }
+        .field-group label { font-size: 0.65rem; font-weight: 800; color: #5b6e8c; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .field-group input, .field-group select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 12px; font-size: 0.75rem; background: #fafcff; }
+        .form-actions { display: flex; gap: 10px; margin-top: 16px; }
+        .cart-table { width: 100%; font-size: 0.7rem; border-collapse: collapse; }
+        .cart-table td, .cart-table th { padding: 6px 8px; }
+        .toast-wrap { position: fixed; bottom: 16px; right: 16px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+        .toast { background: #1e293b; color: white; padding: 8px 16px; border-radius: 40px; font-size: 0.7rem; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from{ opacity:0; transform: translateY(5px);} to{opacity:1;} }
-
+        
         @media (max-width: 550px) {
             .main { padding: 14px; }
             .stats-grid { grid-template-columns: 1fr; }
             .action-panel.open { flex-direction: column; align-items: stretch; }
+            .search-standalone { justify-content: stretch; }
+            .search-wrap { width: 100%; }
         }
     </style>
 </head>
@@ -422,7 +204,7 @@
         <div class="stat-card"><div class="stat-label"><i class="fas fa-coins"></i> Inventory Value</div><div class="stat-value" id="totalValueStat">K0.00</div><div class="stat-sub">master value</div></div>
     </div>
 
-    <!-- 3-dot action bar with hide/unhide -->
+    <!-- 3-dot action bar (without search) -->
     <div class="action-wrapper">
         <div class="action-dot-bar" id="actionDotBtn">
             <i class="fas fa-ellipsis-h"></i>
@@ -435,10 +217,14 @@
                 <button class="btn btn-primary" id="transferBtn"><i class="fas fa-exchange-alt"></i> Transfer</button>
                 <button class="btn btn-warning" id="grvBtn"><i class="fas fa-file-import"></i> GRV</button>
             </div>
-            <div class="search-wrap">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" id="searchInput" placeholder="Code or name...">
-            </div>
+        </div>
+    </div>
+
+    <!-- Search bar standalone - right aligned outside action bar -->
+    <div class="search-standalone">
+        <div class="search-wrap">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" placeholder="Search by code or name...">
         </div>
     </div>
 
@@ -451,8 +237,11 @@
         <div class="table-card">
             <div class="table-scroll">
                 <table id="inventoryTable">
-                    <thead><tr><th>Code</th><th>Product</th><th>Price (K)</th><th>Stock</th><th>Actions</th></tr></thead>
-                    <tbody id="inventoryTbody"><tr class="empty-row"><td colspan="5">Loading master inventory...</td></tr></tbody>
+                    <thead>
+                        <tr><th>Code</th><th>Product</th><th>Price (K)</th><th>Stock</th><th style="width: 60px;">Actions</th></tr>
+                    </thead>
+                    <tbody id="inventoryTbody"><tr class="empty-row"><td colspan="5">Loading master inventory...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -473,11 +262,11 @@
 <!-- MODALS -->
 <div id="itemModal" class="modal-overlay"><div class="modal-detail"><div class="modal-header"><h3 id="itemModalTitle">Add Item</h3><button class="close-modal" onclick="closeModal('itemModal')">✕</button></div><div class="modal-body"><form id="itemForm"><div class="field-group"><label>Code *</label><input type="text" id="itemCodeInput" required></div><div class="field-group"><label>Name *</label><input type="text" id="itemNameInput" required></div><div class="field-group"><label>Price (K)</label><input type="number" id="itemPriceInput" step="0.01" min="0"></div><div class="field-group"><label>Stock Qty</label><input type="number" id="itemStockInput" min="0"></div><div class="form-actions"><button type="submit" class="btn btn-success">Save</button><button type="button" class="btn btn-ghost" onclick="closeModal('itemModal')">Cancel</button></div></form></div></div></div>
 
-<div id="transferModal" class="modal-overlay"><div class="modal-detail modal-lg"><div class="modal-header"><h3>Transfer Items</h3><button class="close-modal" onclick="closeModal('transferModal')">✕</button></div><div class="modal-body"><form id="transferForm"><div class="field-group"><label>Destination Branch</label><select id="destBranch" required><option value="">— Select —</option><option value="makeni">🏪 Kabanana Branch</option><option value="kabana">🏪 Makeni Branch</option></select></div><div style="display:flex; gap:8px; align-items:end;"><div style="flex:2"><label>Product Code</label><input type="text" id="transferCode" list="codesDatalist" autocomplete="off"><datalist id="codesDatalist"></datalist></div><div style="width:90px"><label>Qty</label><input type="number" id="transferQty" value="1" min="1"></div></div><div id="transferPreview" style="background:#f8fafc; padding:8px; border-radius:12px; margin:10px 0; font-size:0.7rem;">Select item</div><button type="button" class="btn btn-primary" id="addToTransferBtn" style="width:100%; margin-bottom:14px;"><i class="fas fa-plus"></i> Add to list</button><div id="transferCartDiv" style="display:none;"><table class="cart-table" style="width:100%"><thead><tr><th>Code</th><th>Name</th><th>Qty</th><th>Subtotal</th><th></th></tr></thead><tbody id="transferCartBody"></tbody></table><div style="text-align:right; margin:8px 0;"><strong id="cartTotalVal">K0.00</strong></div></div><div class="form-actions"><button type="submit" class="btn btn-primary" id="confirmTransferBtn" disabled>Confirm Transfer</button><button type="button" class="btn btn-ghost" onclick="closeModal('transferModal')">Cancel</button></div></form></div></div></div>
+<div id="transferModal" class="modal-overlay"><div class="modal-detail modal-lg"><div class="modal-header"><h3>Transfer Items</h3><button class="close-modal" onclick="closeModal('transferModal')">✕</button></div><div class="modal-body"><form id="transferForm"><div class="field-group"><label>Destination Branch</label><select id="destBranch" required><option value="">— Select —</option><option value="makeni">🏪 Kabanana Branch</option><option value="kabana">🏪 Makeni Branch</option></select></div><div style="display:flex; gap:8px; align-items:end;"><div style="flex:2"><label>Product Code</label><input type="text" id="transferCode" list="codesDatalist" autocomplete="off"><datalist id="codesDatalist"></datalist></div><div style="width:90px"><label>Qty</label><input type="number" id="transferQty" value="1" min="1"></div></div><div id="transferPreview" style="background:#f8fafc; padding:8px; border-radius:12px; margin:10px 0; font-size:0.7rem;">Select item</div><button type="button" class="btn btn-primary" id="addToTransferBtn" style="width:100%; margin-bottom:14px;"><i class="fas fa-plus"></i> Add to list</button><div id="transferCartDiv" style="display:none;"><table class="cart-table"><thead><tr><th>Code</th><th>Name</th><th>Qty</th><th>Subtotal</th><th></th></tr></thead><tbody id="transferCartBody"></tbody></table><div style="text-align:right; margin:8px 0;"><strong id="cartTotalVal">K0.00</strong></div></div><div class="form-actions"><button type="submit" class="btn btn-primary" id="confirmTransferBtn" disabled>Confirm Transfer</button><button type="button" class="btn btn-ghost" onclick="closeModal('transferModal')">Cancel</button></div></form></div></div></div>
 
 <div id="detailsModal" class="modal-overlay"><div class="modal-detail modal-lg"><div class="modal-header"><h3>Transfer Details</h3><button class="close-modal" onclick="closeModal('detailsModal')">✕</button></div><div class="modal-body" id="detailsModalBody"></div></div></div>
 
-<div id="reverseModal" class="modal-overlay"><div class="modal-detail"><div class="modal-header"><h3 style="color:var(--purple)">Reverse Transfer</h3><button class="close-modal" onclick="closeModal('reverseModal')">✕</button></div><div class="modal-body"><div class="reverse-warning" style="background:#faf5ff; padding:12px; border-radius:16px; margin-bottom:16px;"><i class="fas fa-exclamation-triangle"></i> This will return items to Master Warehouse and remove from branch.</div><div id="reverseTransferInfo"></div><div class="form-actions"><button class="btn btn-purple" id="confirmReverseBtn">Yes, Reverse</button><button class="btn btn-ghost" onclick="closeModal('reverseModal')">Cancel</button></div></div></div></div>
+<div id="reverseModal" class="modal-overlay"><div class="modal-detail"><div class="modal-header"><h3 style="color:var(--purple)">Reverse Transfer</h3><button class="close-modal" onclick="closeModal('reverseModal')">✕</button></div><div class="modal-body"><div style="background:#faf5ff; padding:12px; border-radius:16px; margin-bottom:16px;"><i class="fas fa-exclamation-triangle"></i> This will return items to Master Warehouse.</div><div id="reverseTransferInfo"></div><div class="form-actions"><button class="btn btn-purple" id="confirmReverseBtn">Yes, Reverse</button><button class="btn btn-ghost" onclick="closeModal('reverseModal')">Cancel</button></div></div></div></div>
 
 <div class="toast-wrap" id="toastWrap"></div>
 
@@ -498,15 +287,18 @@
     let transferCart = [];
     let editingId = null;
     let pendingReverse = null;
+    let activeDropdown = null; // track open row dropdown
 
     const toast = (msg, type='success') => { const w=document.getElementById('toastWrap'); const t=document.createElement('div'); t.className=`toast`; t.style.background= type==='error'?'#b91c1c':'#1e293b'; t.innerHTML=`<i class="fas ${type==='error'?'fa-times-circle':'fa-check-circle'}"></i> ${msg}`; w.appendChild(t); setTimeout(()=>t.remove(), 3000); };
-    const closeModal = (id) => document.getElementById(id).classList.remove('show');
+    const closeModal = (id) => { document.getElementById(id).classList.remove('show'); if(activeDropdown) { activeDropdown.classList.remove('show'); activeDropdown=null; } };
     window.closeModal = closeModal;
+    
+    function closeAllDropdowns() { if(activeDropdown) { activeDropdown.classList.remove('show'); activeDropdown=null; } }
+    document.addEventListener('click', (e) => { if(!e.target.closest('.row-actions')) closeAllDropdowns(); });
 
     function updateClock() { document.getElementById('timeBadge').innerText = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); }
     updateClock(); setInterval(updateClock, 30000);
 
-    // inventory realtime
     function loadInventory() {
         if(unsubscribeInv) unsubscribeInv();
         const q = query(collection(db, 'inventory'), where('branchId', '==', 'master'));
@@ -531,45 +323,79 @@
         const search = document.getElementById('searchInput').value.toLowerCase();
         let filtered = masterInventory.filter(i=> i.name?.toLowerCase().includes(search) || i.code?.toLowerCase().includes(search));
         tbody.innerHTML = '';
-        if(!filtered.length){ tbody.innerHTML='<tr><td colspan="5" class="empty-row">No items</td></tr>'; return; }
+        if(!filtered.length){ tbody.innerHTML='<tr><td colspan="5" class="empty-row">No items found</td></tr>'; return; }
         filtered.forEach(item => {
             const stockBg = item.stock===0?'#fee2e2':(item.stock<5?'#fff3e3':'#e0f2fe');
             const stockColor = item.stock===0?'#b91c1c':(item.stock<5?'#c2410c':'#0f3b2c');
             const row = tbody.insertRow();
-            row.innerHTML = `<td><span class="code-chip">${escapeHtml(item.code)}</span></td><td style="font-weight:600;">${escapeHtml(item.name)}</td><td>K${item.price.toFixed(2)}</td><td><span class="stock-chip" style="background:${stockBg};color:${stockColor};">${item.stock}</span></td><td><button class="action-icon edit" onclick="window.editItem('${item.id}')"><i class="fas fa-edit"></i></button><button class="action-icon delete" onclick="window.deleteItem('${item.id}')"><i class="fas fa-trash-alt"></i></button></td>`;
+            const uniqueId = `menu_${item.id}`;
+            row.innerHTML = `
+                <td><span class="code-chip">${escapeHtml(item.code)}</span></td>
+                <td style="font-weight:600;">${escapeHtml(item.name)}</td>
+                <td>K${item.price.toFixed(2)}</td>
+                <td><span class="stock-chip" style="background:${stockBg};color:${stockColor};">${item.stock}</span></td>
+                <td class="row-actions">
+                    <button class="row-dot-btn" data-item-id="${item.id}" data-menu-id="${uniqueId}"><i class="fas fa-ellipsis-v"></i></button>
+                    <div class="row-dropdown" id="${uniqueId}">
+                        <div class="dropdown-item edit-item" data-action="edit" data-id="${item.id}"><i class="fas fa-edit"></i> Edit</div>
+                        <div class="dropdown-item delete-item" data-action="delete" data-id="${item.id}"><i class="fas fa-trash-alt"></i> Delete</div>
+                    </div>
+                </td>
+            `;
+        });
+        
+        // attach dropdown toggle events after render
+        document.querySelectorAll('.row-dot-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menuId = btn.getAttribute('data-menu-id');
+                const dropdown = document.getElementById(menuId);
+                if(!dropdown) return;
+                closeAllDropdowns();
+                dropdown.classList.add('show');
+                activeDropdown = dropdown;
+            });
+        });
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const action = item.getAttribute('data-action');
+                const id = item.getAttribute('data-id');
+                if(action === 'edit') window.editItemById(id);
+                if(action === 'delete') window.deleteItemById(id);
+                closeAllDropdowns();
+            });
         });
     }
 
-    window.editItem = (id) => { const i = masterInventory.find(p=>p.id===id); if(!i) return; editingId=id; document.getElementById('itemCodeInput').value=i.code; document.getElementById('itemNameInput').value=i.name; document.getElementById('itemPriceInput').value=i.price; document.getElementById('itemStockInput').value=i.stock; document.getElementById('itemModalTitle').innerHTML='Edit Item'; document.getElementById('itemModal').classList.add('show'); };
-    window.deleteItem = async(id) => { const i=masterInventory.find(p=>p.id===id); if(!i) return; if(confirm(`Delete ${i.name}?`)){ try{ await deleteDoc(doc(db,'inventory',id)); toast('Deleted'); }catch(e){ toast(e.message,'error'); } } };
+    window.editItemById = (id) => { const i = masterInventory.find(p=>p.id===id); if(!i) return; editingId=id; document.getElementById('itemCodeInput').value=i.code; document.getElementById('itemNameInput').value=i.name; document.getElementById('itemPriceInput').value=i.price; document.getElementById('itemStockInput').value=i.stock; document.getElementById('itemModalTitle').innerHTML='Edit Item'; document.getElementById('itemModal').classList.add('show'); };
+    window.deleteItemById = async(id) => { const i=masterInventory.find(p=>p.id===id); if(!i) return; if(confirm(`Delete "${i.name}" ?`)){ try{ await deleteDoc(doc(db,'inventory',id)); toast('Item deleted'); }catch(e){ toast(e.message,'error'); } } };
+    
     document.getElementById('addItemBtn').onclick = () => { editingId=null; document.getElementById('itemForm').reset(); document.getElementById('itemModalTitle').innerHTML='Add New Item'; document.getElementById('itemModal').classList.add('show'); };
     document.getElementById('itemForm').onsubmit = async(e) => { e.preventDefault(); const code=document.getElementById('itemCodeInput').value.trim().toUpperCase(); const name=document.getElementById('itemNameInput').value.trim(); const price=parseFloat(document.getElementById('itemPriceInput').value); const stock=parseInt(document.getElementById('itemStockInput').value); if(!code||!name||isNaN(price)){ toast('Invalid fields','error'); return; } try{ if(editingId){ await updateDoc(doc(db,'inventory',editingId),{code,name,price,stock}); toast('Updated'); } else { if(masterInventory.some(i=>i.code===code)){ toast('Code exists','error'); return; } await addDoc(collection(db,'inventory'),{code,name,price,stock,sold:0,branchId:'master'}); toast('Item added'); } closeModal('itemModal'); }catch(err){ toast(err.message,'error'); } };
     
-    // TRANSFER LOGIC
+    // TRANSFER logic (identical as before but compact)
     document.getElementById('transferBtn').onclick = () => { transferCart=[]; document.getElementById('transferForm').reset(); document.getElementById('transferCartDiv').style.display='none'; document.getElementById('confirmTransferBtn').disabled=true; document.getElementById('transferPreview').innerText='Select product'; document.getElementById('transferModal').classList.add('show'); updateTransferUI(); };
     document.getElementById('transferCode').addEventListener('input',()=>{ const code=document.getElementById('transferCode').value.trim().toUpperCase(); const it=masterInventory.find(i=>i.code===code); const preview=document.getElementById('transferPreview'); if(it){ preview.innerHTML=`<strong>${escapeHtml(it.name)}</strong> | Stock: ${it.stock} | K${it.price.toFixed(2)}`; } else if(code) preview.innerHTML=`<span style="color:var(--danger);">Not found</span>`; else preview.innerText='Select product'; });
     document.getElementById('addToTransferBtn').onclick = () => { const code=document.getElementById('transferCode').value.trim().toUpperCase(); const qty=parseInt(document.getElementById('transferQty').value); const item=masterInventory.find(i=>i.code===code); if(!item){ toast('Invalid product','error'); return; } if(qty<1||isNaN(qty)){ toast('Valid quantity','error'); return; } const existing=transferCart.find(c=>c.code===code); const totalQtyInCart = existing ? existing.qty : 0; if(totalQtyInCart+qty > item.stock){ toast(`Not enough stock (max ${item.stock})`,'error'); return; } if(existing) existing.qty+=qty; else transferCart.push({code:item.code,name:item.name,price:item.price,qty,itemId:item.id}); toast(`${qty}x ${item.name} added`); updateTransferUI(); document.getElementById('transferCode').value=''; document.getElementById('transferPreview').innerText='Select product'; };
     function updateTransferUI(){ const cartDiv=document.getElementById('transferCartDiv'); const tbody=document.getElementById('transferCartBody'); if(transferCart.length===0){ cartDiv.style.display='none'; document.getElementById('confirmTransferBtn').disabled=true; return; } cartDiv.style.display='block'; document.getElementById('confirmTransferBtn').disabled=false; tbody.innerHTML=''; let total=0; transferCart.forEach((c,idx)=>{ total+=c.price*c.qty; const row=tbody.insertRow(); row.innerHTML=`<td>${escapeHtml(c.code)}</td><td>${escapeHtml(c.name)}</td><td>${c.qty}</td><td>K${(c.price*c.qty).toFixed(2)}</td><td><button type="button" onclick="window.removeFromCart(${idx})" style="background:#e11d48; border:none; color:white; border-radius:20px; padding:2px 8px; font-size:0.6rem;">✕</button></td>`; }); document.getElementById('cartTotalVal').innerHTML=`Total: K${total.toFixed(2)}`; }
     window.removeFromCart = (idx) => { transferCart.splice(idx,1); updateTransferUI(); };
-    document.getElementById('transferForm').onsubmit = async(e) => { e.preventDefault(); const destId=document.getElementById('destBranch').value; if(!destId){ toast('Select branch','error'); return; } if(transferCart.length===0){ toast('Add items','error'); return; } const destName = destId==='makeni'?'Kabanana Branch':'Makeni Branch'; const btn=document.getElementById('confirmTransferBtn'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Processing'; try{ for(const c of transferCart){ await runTransaction(db, async(tx)=>{ const srcRef=doc(db,'inventory',c.itemId); const srcDoc=await tx.get(srcRef); if(srcDoc.data().stock < c.qty) throw new Error(`Stock changed for ${c.name}`); tx.update(srcRef,{stock:increment(-c.qty)}); const destQuery=query(collection(db,'inventory'),where('branchId','==',destId),where('code','==',c.code)); const destSnap=await getDocs(destQuery); if(!destSnap.empty){ tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(c.qty)}); } else { tx.set(doc(collection(db,'inventory')),{code:c.code,name:c.name,price:c.price,stock:c.qty,sold:0,branchId:destId}); } }); } const now=new Date(); const refNum='TRF-'+Date.now().toString().slice(-6); await addDoc(collection(db,'transfers'),{ ref:refNum, date:now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}), time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}), createdAt:now.toISOString(), srcId:'master', srcName:'⭐ Master Warehouse', destId,destName, items:transferCart.map(c=>({code:c.code,name:c.name,qty:c.qty,price:c.price,total:c.price*c.qty})), totalValue:transferCart.reduce((s,c)=>s+(c.price*c.qty),0), doneBy:userName, status:'active' }); toast(`Transferred to ${destName}`); closeModal('transferModal'); transferCart=[]; loadTransferHistory(); }catch(err){ toast('Transfer failed: '+err.message,'error'); }finally{ btn.disabled=false; btn.innerHTML='Confirm Transfer'; } };
+    document.getElementById('transferForm').onsubmit = async(e) => { e.preventDefault(); const destId=document.getElementById('destBranch').value; if(!destId){ toast('Select branch','error'); return; } if(transferCart.length===0){ toast('Add items','error'); return; } const destName = destId==='makeni'?'Kabanana Branch':'Makeni Branch'; const btn=document.getElementById('confirmTransferBtn'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Processing'; try{ for(const c of transferCart){ await runTransaction(db, async(tx)=>{ const srcRef=doc(db,'inventory',c.itemId); const srcDoc=await tx.get(srcRef); if(srcDoc.data().stock < c.qty) throw new Error(`Stock changed`); tx.update(srcRef,{stock:increment(-c.qty)}); const destQuery=query(collection(db,'inventory'),where('branchId','==',destId),where('code','==',c.code)); const destSnap=await getDocs(destQuery); if(!destSnap.empty){ tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(c.qty)}); } else { tx.set(doc(collection(db,'inventory')),{code:c.code,name:c.name,price:c.price,stock:c.qty,sold:0,branchId:destId}); } }); } const now=new Date(); const refNum='TRF-'+Date.now().toString().slice(-6); await addDoc(collection(db,'transfers'),{ ref:refNum, date:now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}), time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}), createdAt:now.toISOString(), srcId:'master', srcName:'⭐ Master Warehouse', destId,destName, items:transferCart.map(c=>({code:c.code,name:c.name,qty:c.qty,price:c.price,total:c.price*c.qty})), totalValue:transferCart.reduce((s,c)=>s+(c.price*c.qty),0), doneBy:userName, status:'active' }); toast(`Transferred to ${destName}`); closeModal('transferModal'); transferCart=[]; loadTransferHistory(); }catch(err){ toast('Transfer failed: '+err.message,'error'); }finally{ btn.disabled=false; btn.innerHTML='Confirm Transfer'; } };
     
-    async function loadTransferHistory(){ const tbody=document.getElementById('historyTbody'); tbody.innerHTML='<tr><td colspan="8">Loading...</td></tr>'; try{ const q=query(collection(db,'transfers'),orderBy('createdAt','desc')); const snap=await getDocs(q); const transfers=[]; snap.forEach(d=>{ const t={id:d.id,...d.data()}; if(t.srcId==='master' || t.destId==='master') transfers.push(t); }); if(!transfers.length){ tbody.innerHTML='<tr><td colspan="8">No transfers</td></tr>'; return; } tbody.innerHTML=''; transfers.forEach(t=>{ const isOut=t.srcId==='master'; const isRev=t.status==='reversed'; const dir=isRev?'REVERSED':(isOut?'OUT':'IN'); const branch=isOut? (t.destName||t.destId):(t.srcName||t.srcId); const row=tbody.insertRow(); row.style.opacity=isRev?'0.65':'1'; row.innerHTML=`<td style="font-size:0.65rem;">${t.date||''} ${t.time||''}</td><td><span class="code-chip">${t.ref||t.id.slice(-6)}</span></td><td><span class="stock-chip" style="background:${isRev?'#ede9fe':(isOut?'#ffe4e6':'#dcfce7')}">${dir}</span></td><td>${escapeHtml(branch||'—')}</td><td>${t.items?.length||0}</td><td>K${(t.totalValue||0).toFixed(2)}</td><td><span class="stock-chip" style="background:${isRev?'#f3e8ff':'#dcfce7'}">${t.status||'active'}</span></td><td><button class="btn btn-ghost" style="padding:3px 8px;" onclick="window.showTransferDetail('${t.id}')"><i class="fas fa-eye"></i></button>${!isRev && isOut ? `<button class="btn btn-purple" style="margin-left:6px; padding:3px 8px;" onclick="window.openReverse('${t.id}')"><i class="fas fa-undo-alt"></i></button>` : ''}</td>`; }); window._transfersMap = transfers.reduce((acc,cur)=>{ acc[cur.id]=cur; return acc; },{}); }catch(e){ tbody.innerHTML=`<td colspan="8">Error loading</td>`; } }
-    window.showTransferDetail = (id) => { const t = window._transfersMap?.[id]; if(!t) return; const body=document.getElementById('detailsModalBody'); const items=t.items||[]; body.innerHTML=`<div style="margin-bottom:12px"><strong>Ref:</strong> ${t.ref||id}<br><strong>Date:</strong> ${t.date} ${t.time}<br><strong>From:</strong> ${t.srcName||t.srcId} → ${t.destName||t.destId}</div><table class="cart-table"><thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Subtotal</th></tr></thead><tbody>${items.map(i=>`<tr><td>${escapeHtml(i.code)}</td><td>${escapeHtml(i.name)}</td><td>${i.qty}</td><td>K${(i.total||i.qty*i.price).toFixed(2)}</td></tr>`).join('')}</tbody></table><div style="margin-top:12px; text-align:right;"><strong>Total: K${(t.totalValue||0).toFixed(2)}</strong></div>`; document.getElementById('detailsModal').classList.add('show'); };
+    async function loadTransferHistory(){ const tbody=document.getElementById('historyTbody'); tbody.innerHTML='<tr><td colspan="8">Loading...</td></tr>'; try{ const q=query(collection(db,'transfers'),orderBy('createdAt','desc')); const snap=await getDocs(q); const transfers=[]; snap.forEach(d=>{ const t={id:d.id,...d.data()}; if(t.srcId==='master' || t.destId==='master') transfers.push(t); }); if(!transfers.length){ tbody.innerHTML='<tr><td colspan="8">No transfers</td></tr>'; return; } tbody.innerHTML=''; transfers.forEach(t=>{ const isOut=t.srcId==='master'; const isRev=t.status==='reversed'; const dir=isRev?'REVERSED':(isOut?'OUT':'IN'); const branch=isOut? (t.destName||t.destId):(t.srcName||t.srcId); const row=tbody.insertRow(); row.style.opacity=isRev?'0.65':'1'; row.innerHTML=`<td style="font-size:0.65rem;">${t.date||''} ${t.time||''}</td><td><span class="code-chip">${t.ref||t.id.slice(-6)}</span></td><td><span class="stock-chip" style="background:${isRev?'#ede9fe':(isOut?'#ffe4e6':'#dcfce7')}">${dir}</span></td><td>${escapeHtml(branch||'—')}</td><td>${t.items?.length||0}</td><td>K${(t.totalValue||0).toFixed(2)}</td><td><span class="stock-chip" style="background:${isRev?'#f3e8ff':'#dcfce7'}">${t.status||'active'}</span></td><td><button class="btn btn-ghost" style="padding:3px 8px;" onclick="window.showTransferDetail('${t.id}')"><i class="fas fa-eye"></i></button>${!isRev && isOut ? `<button class="btn btn-purple" style="margin-left:6px; padding:3px 8px;" onclick="window.openReverse('${t.id}')"><i class="fas fa-undo-alt"></i></button>` : ''}</td>`; }); window._transfersMap = transfers.reduce((acc,cur)=>{ acc[cur.id]=cur; return acc; },{}); }catch(e){ tbody.innerHTML='<tr><td colspan="8">Error</td></tr>'; } }
+    window.showTransferDetail = (id) => { const t = window._transfersMap?.[id]; if(!t) return; const body=document.getElementById('detailsModalBody'); const items=t.items||[]; body.innerHTML=`<div><strong>Ref:</strong> ${t.ref||id}<br><strong>Date:</strong> ${t.date} ${t.time}<br><strong>From:</strong> ${t.srcName} → ${t.destName}</div><table class="cart-table"><thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Subtotal</th></tr></thead><tbody>${items.map(i=>`<tr><td>${escapeHtml(i.code)}</td><td>${escapeHtml(i.name)}</td><td>${i.qty}</td><td>K${(i.total||i.qty*i.price).toFixed(2)}</td></tr>`).join('')}</tbody></table><div style="margin-top:12px; text-align:right;"><strong>Total: K${(t.totalValue||0).toFixed(2)}</strong></div>`; document.getElementById('detailsModal').classList.add('show'); };
     window.openReverse = (id) => { const t = window._transfersMap?.[id]; if(!t|| t.status==='reversed'){ toast('Already reversed','error'); return; } pendingReverse=t; const revDiv=document.getElementById('reverseTransferInfo'); revDiv.innerHTML=`<div><strong>${t.ref||id}</strong> to ${t.destName}<br>Items: ${(t.items||[]).map(i=>`${i.code} x${i.qty}`).join(', ')}</div>`; document.getElementById('reverseModal').classList.add('show'); };
     document.getElementById('confirmReverseBtn').onclick = async()=>{ const t = pendingReverse; if(!t) return; const btn=document.getElementById('confirmReverseBtn'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Reversing'; try{ for(const item of t.items){ await runTransaction(db, async(tx)=>{ const destQ=query(collection(db,'inventory'),where('branchId','==',t.destId),where('code','==',item.code)); const destSnap=await getDocs(destQ); if(!destSnap.empty) tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(-item.qty)}); const masterQ=query(collection(db,'inventory'),where('branchId','==','master'),where('code','==',item.code)); const masterSnap=await getDocs(masterQ); if(!masterSnap.empty){ tx.update(doc(db,'inventory',masterSnap.docs[0].id),{stock:increment(item.qty)}); } else { tx.set(doc(collection(db,'inventory')),{code:item.code,name:item.name,price:item.price,stock:item.qty,sold:0,branchId:'master'}); } }); } await updateDoc(doc(db,'transfers',t.id),{status:'reversed',reversedAt:new Date().toISOString(),reversedBy:userName}); const now=new Date(); await addDoc(collection(db,'transfers'),{ref:'REV-'+Date.now().slice(-6), date:now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}), time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}), createdAt:now.toISOString(), srcId:t.destId, srcName:t.destName, destId:'master', destName:'⭐ Master Warehouse', items:t.items, totalValue:t.totalValue, doneBy:userName, status:'active', isReversal:true, reversalOf:t.ref }); toast('Transfer reversed!'); closeModal('reverseModal'); loadTransferHistory(); }catch(err){ toast('Reverse error: '+err.message,'error'); }finally{ btn.disabled=false; btn.innerHTML='Yes, Reverse'; } };
     document.getElementById('grvBtn').onclick = () => { localStorage.setItem('grvBranch','master'); window.open('grv.html','_blank'); toast('GRV for master warehouse','info'); };
     document.getElementById('searchInput').addEventListener('input',()=>renderInventory());
     document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>{ const tab=btn.dataset.tab; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active')); document.getElementById(`tab${tab.charAt(0).toUpperCase()+tab.slice(1)}`).classList.add('active'); if(tab==='history') loadTransferHistory(); }));
     
-    // 3-dot toggle logic
-    const dotBtn = document.getElementById('actionDotBtn');
-    const panel = document.getElementById('actionPanel');
+    const dotBtn = document.getElementById('actionDotBtn'); const panel = document.getElementById('actionPanel');
     dotBtn.addEventListener('click', (e) => { e.stopPropagation(); panel.classList.toggle('open'); });
     document.addEventListener('click', (e) => { if(!panel.contains(e.target) && !dotBtn.contains(e.target) && panel.classList.contains('open')) panel.classList.remove('open'); });
     
     loadInventory(); loadTransferHistory();
     function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-    window.removeFromCart = window.removeFromCart;
 </script>
 </body>
 </html>
