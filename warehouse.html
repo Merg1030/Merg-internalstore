@@ -3,483 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>TriSmart Stores | Warehouse</title>
+    <title>TriSmart Stores | Warehouse Control</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f4f6fb;
+            font-family: 'DM Sans', sans-serif;
+            color: #1a1e2e;
+            overflow-x: hidden;
+            font-size: 14px;
+        }
         :root {
-            --bg:#f4f6fb;--bg2:#fff;--bg3:#f1f3f5;
-            --border:#e2e6ef;--border2:#cdd3e0;
-            --text:#1a1e2e;--text-fade:#6b7490;--text-dim:#a0a8c0;
-            --blue:#4361ee;--cyan:#00b4d8;--green:#10b981;
-            --orange:#f59e0b;--purple:#7c3aed;--danger:#ef4444;
-            --radius:10px;--radius-lg:14px;
-            --header-h:52px;--sidebar-w:220px;
+            --blue: #4361ee;
+            --green: #10b981;
+            --danger: #ef4444;
+            --border: #e2e6ef;
+            --text-fade: #6b7490;
+            --radius: 10px;
         }
-        *{box-sizing:border-box;margin:0;padding:0;}
-        html,body{height:100%;}
-        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:14px;}
+        /* topbar + sidebar styles (same as original but compact) */
+        .topbar {
+            position: fixed; top: 0; left: 0; right: 0; height: 52px;
+            background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 12px; z-index: 1100;
+        }
+        .menu-btn { width: 34px; height: 34px; background: #f1f3f5; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #cdd3e0; }
+        .logo-mark { width: 30px; height: 30px; background: linear-gradient(135deg, #4361ee, #00b4d8); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; }
+        .logo-text { font-weight: 800; font-size: 0.9rem; }
+        .logo-text span { color: #4361ee; }
+        .branch-badge { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 3px 8px; border-radius: 100px; font-size: 0.6rem; font-weight: 800; }
+        .time-badge { background: #f1f3f5; padding: 4px 10px; border-radius: 100px; font-family: monospace; font-size: 0.65rem; }
+        .sidebar {
+            position: fixed; top: 52px; left: 0; width: 220px; height: calc(100vh - 52px);
+            background: white; border-right: 1px solid var(--border);
+            padding: 12px 8px; transition: transform 0.25s ease; z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar a { display: flex; align-items: center; gap: 8px; padding: 8px 10px; color: var(--text-fade); text-decoration: none; font-size: 0.78rem; border-radius: var(--radius); margin-bottom: 2px; }
+        .sidebar a.active { background: rgba(67,97,238,0.12); color: #4361ee; font-weight: 700; }
+        .logout-link { margin-top: 20px; display: flex; gap: 8px; padding: 8px 10px; color: var(--danger); border-top: 1px solid var(--border); cursor: pointer; font-weight: 600; }
+        .sidebar.hidden { transform: translateX(-100%); }
+        main { margin-top: 52px; margin-left: 220px; padding: 16px; transition: margin-left 0.2s; }
+        @media (max-width: 700px) { .sidebar { transform: translateX(-100%); } .sidebar.visible { transform: translateX(0); } main { margin-left: 0 !important; } }
 
-        /* ── TOPBAR ── */
-        .topbar{
-            position:fixed;top:0;left:0;right:0;height:var(--header-h);
-            background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);
-            border-bottom:1px solid var(--border);
-            display:flex;align-items:center;justify-content:space-between;
-            padding:0 12px;z-index:1100;gap:8px;
-        }
-        .topbar-left{display:flex;align-items:center;gap:8px;min-width:0;flex:1;}
-        .menu-btn{
-            width:34px;height:34px;flex-shrink:0;
-            background:var(--bg3);border:1px solid var(--border2);
-            border-radius:8px;display:flex;align-items:center;justify-content:center;
-            cursor:pointer;color:var(--text-fade);font-size:0.9rem;transition:all 0.2s;
-        }
-        .menu-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
-        .logo{display:flex;align-items:center;gap:8px;min-width:0;}
-        .logo-mark{
-            width:30px;height:30px;flex-shrink:0;
-            background:linear-gradient(135deg,var(--blue),var(--cyan));
-            border-radius:8px;display:flex;align-items:center;justify-content:center;
-            color:#fff;font-size:0.8rem;
-        }
-        .logo-text{font-size:0.9rem;font-weight:800;color:var(--text);white-space:nowrap;}
-        .logo-text span{color:var(--blue);}
-        .branch-badge{
-            background:linear-gradient(135deg,var(--green),#059669);
-            color:#fff;font-size:0.6rem;font-weight:800;
-            padding:3px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0;
-        }
-        .time-badge{
-            background:var(--bg3);border:1px solid var(--border2);
-            border-radius:100px;padding:4px 10px;
-            font-size:0.65rem;font-family:'DM Mono',monospace;color:var(--text-fade);white-space:nowrap;flex-shrink:0;
-        }
-
-        /* ── SIDEBAR ── */
-        .sidebar{
-            position:fixed;top:var(--header-h);left:0;
-            width:var(--sidebar-w);height:calc(100vh - var(--header-h));
-            background:rgba(255,255,255,0.99);
-            border-right:1px solid var(--border);z-index:1000;
-            padding:10px 8px 16px;
-            transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);
-            overflow-y:auto;display:flex;flex-direction:column;
-        }
-        .sidebar.hidden{transform:translateX(-100%);}
-        .sidebar-label{
-            font-size:0.56rem;font-weight:700;color:var(--text-dim);
-            text-transform:uppercase;letter-spacing:0.14em;
-            padding:0 8px;margin:10px 0 4px;
-        }
-        .sidebar a{
-            display:flex;align-items:center;gap:8px;padding:8px 10px;
-            color:var(--text-fade);text-decoration:none;
-            font-size:0.78rem;font-weight:500;border-radius:var(--radius);
-            margin-bottom:2px;transition:all 0.15s;
-        }
-        .sidebar a i{width:14px;text-align:center;font-size:0.8rem;flex-shrink:0;}
-        .sidebar a:hover{background:rgba(67,97,238,0.08);color:var(--blue);}
-        .sidebar a.active{background:rgba(67,97,238,0.12);color:var(--blue);font-weight:700;}
-        .sidebar-spacer{flex:1;}
-        .logout-link{
-            display:flex;align-items:center;gap:8px;padding:8px 10px;
-            color:var(--danger);font-size:0.78rem;font-weight:700;
-            border-radius:var(--radius);border:1px solid rgba(239,68,68,0.15);
-            background:rgba(239,68,68,0.04);cursor:pointer;transition:all 0.15s;margin-top:4px;
-        }
-        .logout-link:hover{background:rgba(239,68,68,0.1);}
-        .logout-link i{width:14px;text-align:center;color:var(--danger);}
-        .sidebar-overlay{
-            display:none;position:fixed;inset:0;
-            background:rgba(0,0,0,0.5);z-index:999;
-        }
-        .sidebar-overlay.show{display:block;}
-
-        /* ── MAIN ── */
-        main{
-            margin-top:var(--header-h);
-            margin-left:var(--sidebar-w);
-            padding:12px 12px 24px;
-            min-height:calc(100vh - var(--header-h));
-            transition:margin-left 0.28s cubic-bezier(0.4,0,0.2,1);
-        }
-
-        /* ── STATS ── */
-        .stats-row{
-            display:grid;grid-template-columns:repeat(3,1fr);
-            gap:8px;margin-bottom:12px;
-        }
-        .stat-card{
-            background:var(--bg2);border:1px solid var(--border);
-            border-radius:var(--radius-lg);padding:12px 10px;transition:all 0.2s;
-        }
-        .stat-card:hover{box-shadow:0 3px 12px rgba(67,97,238,0.1);border-color:var(--blue);}
-        .stat-label{font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-fade);margin-bottom:4px;}
-        .stat-value{font-size:1.35rem;font-weight:800;color:var(--blue);font-family:'DM Mono',monospace;line-height:1.1;}
-        .stat-sub{font-size:0.55rem;color:var(--text-dim);margin-top:3px;}
-
-        /* ── CONTENT BAR ── */
-        .content-bar{
-            background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);
-            padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
-            gap:8px;flex-wrap:wrap;margin-bottom:12px;
-        }
-        .page-title-text{font-size:0.82rem;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:6px;}
-        .total-pill{
-            background:linear-gradient(135deg,#eef2ff,#e0e7ff);
-            border:1px solid rgba(67,97,238,0.2);
-            color:var(--blue);font-size:0.68rem;font-weight:700;
-            padding:3px 10px;border-radius:100px;white-space:nowrap;
-        }
-
-        /* ── BUTTONS ── */
-        .btn{
-            display:inline-flex;align-items:center;gap:4px;
-            padding:6px 12px;border:none;border-radius:var(--radius);
-            cursor:pointer;font-size:0.72rem;font-weight:700;
-            transition:all 0.15s;font-family:'DM Sans',sans-serif;
-        }
-        .btn-primary{background:linear-gradient(135deg,var(--blue),#3451d1);color:#fff;}
-        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(67,97,238,0.28);}
-        .btn-success{background:linear-gradient(135deg,var(--green),#059669);color:#fff;}
-        .btn-ghost{background:var(--bg3);color:var(--blue);border:1px solid var(--border);}
-        .btn-sm{padding:3px 8px;font-size:0.65rem;}
-
-        /* ── ACTION FLEX ── */
-        .action-flex{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center;}
-        .search-wrap{position:relative;flex:1;min-width:120px;}
-        .search-wrap input{
-            width:100%;padding:7px 10px 7px 28px;
-            border:1px solid var(--border);border-radius:var(--radius);
-            font-size:0.75rem;background:var(--bg3);color:var(--text);outline:none;
-            font-family:'DM Sans',sans-serif;
-        }
-        .search-wrap input:focus{border-color:var(--blue);background:#fff;}
-        .search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:0.7rem;}
-
-        /* ── TRANSFER PANEL ── */
-        .transfer-panel{
-            background:var(--bg2);border-radius:var(--radius-lg);border:1px solid var(--border);
-            padding:14px;margin-bottom:12px;
-        }
-        .transfer-panel h3{font-size:0.82rem;font-weight:800;color:var(--blue);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
-        .field-group{margin-bottom:10px;}
-        .field-group label{font-size:0.6rem;font-weight:800;color:var(--text-fade);text-transform:uppercase;letter-spacing:0.07em;display:block;margin-bottom:3px;}
-        .field-group input,.field-group select{
-            width:100%;padding:8px 10px;border:1.5px solid var(--border);
-            border-radius:var(--radius);font-size:0.8rem;background:var(--bg3);outline:none;
-            font-family:'DM Sans',sans-serif;
-        }
-        .field-group input:focus,.field-group select:focus{border-color:var(--blue);background:#fff;}
-        .product-info-box{
-            background:linear-gradient(135deg,#eef2ff,#e0e7ff);
-            border:1px solid rgba(67,97,238,0.2);border-radius:var(--radius);
-            padding:8px 10px;font-size:0.7rem;margin-top:6px;color:var(--blue);
-        }
-        .btn-block{width:100%;justify-content:center;padding:9px;}
-
-        /* ── TABS ── */
-        .tab-bar{display:flex;gap:2px;margin-bottom:12px;border-bottom:1px solid var(--border);}
-        .tab-btn{
-            padding:8px 14px;font-size:0.74rem;font-weight:700;
-            background:none;border:none;cursor:pointer;
-            color:var(--text-fade);font-family:'DM Sans',sans-serif;
-            border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;
-        }
-        .tab-btn:hover{color:var(--blue);}
-        .tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
-        .tab-content{display:none;}
-        .tab-content.active{display:block;}
-
-        /* ── TABLE ── */
-        .table-card{
-            background:var(--bg2);border-radius:var(--radius-lg);
-            border:1px solid var(--border);overflow:hidden;
-        }
-        .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-        table{width:100%;border-collapse:collapse;}
-        thead th{
-            background:#f8f9ff;color:var(--text-fade);
-            font-size:0.58rem;font-weight:800;text-transform:uppercase;
-            letter-spacing:0.09em;padding:9px 10px;
-            border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;
-        }
-        tbody td{padding:8px 10px;font-size:0.76rem;border-bottom:1px solid #f0f2f8;}
-        tbody tr:hover td{background:#f8f9ff;}
-        .code-chip{
-            font-family:'DM Mono',monospace;font-size:0.65rem;font-weight:700;
-            background:#eef2ff;color:var(--blue);border-radius:5px;
-            padding:2px 6px;display:inline-block;white-space:nowrap;
-        }
-        .stock-chip{padding:2px 8px;border-radius:100px;font-size:0.65rem;font-weight:800;white-space:nowrap;display:inline-block;}
-        .empty-row td{text-align:center;padding:36px;color:var(--text-dim);font-size:0.78rem;}
-
-        /* ── 3-DOTS MENU ── */
-        .dots-wrap{position:relative;display:inline-block;}
-        .dots-btn{
-            background:none;border:1px solid transparent;
-            cursor:pointer;padding:4px 6px;border-radius:7px;
-            display:flex;flex-direction:column;gap:2.5px;
-            align-items:center;transition:all 0.12s;
-        }
-        .dots-btn:hover{background:var(--bg3);border-color:var(--border);}
-        .dots-btn .dot{display:block;width:3px;height:3px;background:var(--text-fade);border-radius:50%;}
-        .dots-menu{
-            position:absolute;right:0;top:calc(100% + 3px);
-            background:#fff;border:1px solid var(--border);
-            border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.11);
-            z-index:400;min-width:130px;display:none;overflow:hidden;
-        }
-        .dots-menu.open{display:block;animation:mIn 0.13s ease;}
-        @keyframes mIn{from{opacity:0;transform:scale(0.95) translateY(-3px);}to{opacity:1;transform:scale(1) translateY(0);}}
-        .dots-item{
-            display:flex;align-items:center;gap:8px;width:100%;
-            padding:9px 12px;background:none;border:none;
-            cursor:pointer;font-size:0.74rem;font-family:'DM Sans',sans-serif;
-            font-weight:600;transition:background 0.1s;text-align:left;
-        }
-        .dots-item:hover{background:var(--bg3);}
-        .dots-item.edit{color:var(--blue);}
-        .dots-item.delete{color:var(--danger);border-top:1px solid var(--border);}
-
-        /* ── INCOMING NOTICE ── */
-        .incoming-notice{
-            background:linear-gradient(135deg,rgba(16,185,129,0.07),rgba(0,180,216,0.05));
-            border:1.5px solid rgba(16,185,129,0.22);border-radius:var(--radius-lg);
-            padding:11px 14px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;
-        }
-        .incoming-notice i{color:var(--green);font-size:1rem;margin-top:1px;flex-shrink:0;}
-        .incoming-notice p{font-size:0.74rem;color:var(--text-fade);line-height:1.4;}
-        .incoming-notice strong{color:var(--green);}
-
-        .transfer-ref{font-family:'DM Mono',monospace;font-weight:700;color:var(--blue);font-size:0.7rem;}
-        .status-active{background:rgba(16,185,129,0.12);color:#065f46;font-size:0.6rem;padding:2px 7px;border-radius:100px;font-weight:800;display:inline-block;}
-        .status-reversed{background:rgba(124,58,237,0.12);color:var(--purple);font-size:0.6rem;padding:2px 7px;border-radius:100px;font-weight:800;display:inline-block;}
-
-        /* ── MODALS ── */
-        .modal-bg{
-            position:fixed;inset:0;background:rgba(0,0,0,0.42);
-            display:flex;align-items:center;justify-content:center;
-            z-index:3000;padding:12px;
-        }
-        .modal-box{
-            background:#fff;border-radius:var(--radius-lg);
-            padding:18px 16px;width:100%;max-width:420px;
-            max-height:90vh;overflow-y:auto;
-        }
-        .modal-box h3{color:var(--blue);margin-bottom:14px;font-size:0.9rem;}
-        .form-actions{display:flex;gap:8px;margin-top:14px;}
-        .form-actions button{flex:1;justify-content:center;}
-
-        .items-table-detail{width:100%;border-collapse:collapse;font-size:0.7rem;}
-        .items-table-detail th{text-align:left;padding:8px 6px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:0.58rem;font-weight:800;text-transform:uppercase;color:var(--text-fade);}
-        .items-table-detail td{padding:7px 6px;border-bottom:1px solid #f0f2f8;}
-
-        /* ── TOAST ── */
-        .toast-wrap{position:fixed;bottom:16px;right:12px;z-index:9999;display:flex;flex-direction:column;gap:6px;}
-        .toast{
-            background:#1e2029;color:#fff;padding:9px 14px;
-            border-radius:var(--radius);font-size:0.74rem;
-            animation:tIn 0.22s;display:flex;align-items:center;gap:7px;
-            max-width:280px;box-shadow:0 4px 12px rgba(0,0,0,0.2);
-        }
-        .toast.error{background:#7f1d1d;}
-        @keyframes tIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-
-        /* ── RESPONSIVE ── */
-        /* Mobile: sidebar hidden by default, slide in on open */
-        @media(max-width:700px){
-            .sidebar{transform:translateX(-100%);}
-            .sidebar.visible{transform:translateX(0);}
-            main{margin-left:0!important;padding:10px 10px 20px;}
-            .time-badge{display:none;}
-            .stats-row{grid-template-columns:1fr 1fr;}
-            .stat-value{font-size:1.1rem;}
-        }
-        /* Tablet: sidebar always visible */
-        @media(min-width:701px){
-            .sidebar{transform:translateX(0);}
-            .sidebar.hidden{transform:translateX(-100%);}
-        }
-        /* Bigger screens: comfortable spacing */
-        @media(min-width:1024px){
-            main{padding:16px 20px 28px;}
-            .stats-row{gap:12px;margin-bottom:16px;}
-            .stat-card{padding:16px 14px;}
-            .stat-value{font-size:1.6rem;}
-        }
+        /* cards, tables, actions */
+        .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 16px; }
+        .stat-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 12px; }
+        .stat-value { font-size: 1.5rem; font-weight: 800; color: #4361ee; }
+        .content-bar { background: white; border-radius: 14px; padding: 12px; display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center; }
+        .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .tab-btn { padding: 8px 16px; background: none; border: none; font-weight: 700; color: var(--text-fade); cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: #4361ee; border-bottom-color: #4361ee; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .action-flex { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+        .search-wrap { flex: 1; position: relative; }
+        .search-wrap input { width: 100%; padding: 8px 8px 8px 28px; border: 1px solid var(--border); border-radius: 10px; background: #f8f9fc; }
+        .search-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 0.7rem; color: gray; }
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 10px; font-weight: 700; font-size: 0.75rem; cursor: pointer; border: none; transition: 0.1s; }
+        .btn-primary { background: #4361ee; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-sm { padding: 3px 10px; font-size: 0.7rem; background: #f1f3f5; }
+        .transfer-panel { background: white; border-radius: 14px; border: 1px solid var(--border); padding: 16px; margin-bottom: 20px; }
+        .field-group { margin-bottom: 12px; }
+        .field-group label { font-size: 0.6rem; text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 4px; color: var(--text-fade); }
+        .field-group input, .field-group select { width: 100%; padding: 8px; border-radius: 10px; border: 1px solid var(--border); }
+        .product-info-box { background: #eef2ff; padding: 8px; border-radius: 10px; font-size: 0.7rem; margin-top: 4px; }
+        .table-card { background: white; border-radius: 14px; border: 1px solid var(--border); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 8px; background: #fafbff; font-size: 0.6rem; text-transform: uppercase; color: var(--text-fade); border-bottom: 1px solid var(--border); }
+        td { padding: 10px 8px; font-size: 0.75rem; border-bottom: 1px solid #f0f2f8; }
+        .code-chip { font-family: monospace; background: #eef2ff; padding: 2px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; color: #4361ee; }
+        .stock-chip { padding: 2px 8px; border-radius: 40px; font-weight: 800; display: inline-block; font-size: 0.65rem; }
+        .dots-wrap { position: relative; display: inline-block; }
+        .dots-btn { background: none; border: none; display: flex; gap: 2px; flex-direction: column; padding: 4px; cursor: pointer; }
+        .dots-btn .dot { width: 3px; height: 3px; background: gray; border-radius: 50%; margin: 1px 0; }
+        .dots-menu { position: absolute; right: 0; top: 100%; background: white; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.12); min-width: 120px; display: none; z-index: 300; border: 1px solid var(--border); }
+        .dots-menu.open { display: block; }
+        .dots-item { display: flex; gap: 8px; width: 100%; padding: 8px 12px; background: none; border: none; cursor: pointer; font-weight: 600; font-size: 0.7rem; }
+        .dots-item.edit { color: #4361ee; }
+        .dots-item.delete { color: #ef4444; border-top: 1px solid #e2e6ef; }
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-box { background: white; border-radius: 20px; padding: 20px; width: 90%; max-width: 420px; }
+        .form-actions { display: flex; gap: 8px; margin-top: 16px; }
+        .toast-wrap { position: fixed; bottom: 16px; right: 12px; z-index: 9999; }
+        .toast { background: #1f2937; color: white; padding: 8px 14px; border-radius: 30px; margin-top: 6px; font-size: 0.7rem; }
+        .status-active { background: rgba(16,185,129,0.2); color: #065f46; padding: 2px 8px; border-radius: 30px; font-weight: 800; }
+        .transfer-ref { font-family: monospace; font-weight: 700; color: #4361ee; }
+        .empty-row td { text-align: center; padding: 32px; color: gray; }
+        .incoming-notice { background: rgba(16,185,129,0.08); border-radius: 12px; padding: 10px; margin-bottom: 12px; display: flex; gap: 8px; font-size: 0.7rem; }
+        hr { margin: 8px 0; }
     </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <header class="topbar">
-    <div class="topbar-left">
+    <div class="topbar-left" style="display: flex; gap: 10px; align-items: center;">
         <div class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></div>
-        <div class="logo">
-            <div class="logo-mark"><i class="fas fa-warehouse"></i></div>
-            <div class="logo-text">Tri<span>smart</span></div>
-        </div>
-        <div class="branch-badge" id="branchBadge"><i class="fas fa-store"></i> BRANCH</div>
+        <div class="logo-mark"><i class="fas fa-warehouse"></i></div>
+        <div class="logo-text">Tri<span>smart</span></div>
+        <div class="branch-badge" id="branchBadge">BRANCH</div>
     </div>
     <div class="time-badge" id="timeBadge">--:--</div>
 </header>
 
-<!-- SIDEBAR -->
 <nav class="sidebar" id="sidebar">
-    <div class="sidebar-label">Main</div>
-    <a href="cashbook.html"><i class="fas fa-book-open"></i> Accounts</a>
-    <a href="Airtel.html"><i class="fas fa-mobile-alt"></i> Airtel Money</a>
-    <a href="warehouse.html" class="active"><i class="fas fa-warehouse"></i> Warehouse</a>
-    <a href="sale.html"><i class="fas fa-chart-line"></i> Sales</a>
-    <div class="sidebar-label">Tools</div>
-    <a href="Todo.html"><i class="fas fa-tasks"></i> To-Do</a>
-    <a href="lowstock.html"><i class="fas fa-exclamation-triangle"></i> Low Stock</a>
-    <a href="Report.html"><i class="fas fa-file-alt"></i> Daily Report</a>
-    <div class="sidebar-spacer"></div>
+    <a href="#"><i class="fas fa-warehouse"></i> Warehouse</a>
+    <a href="#"><i class="fas fa-chart-line"></i> Sales</a>
+    <div style="flex:1"></div>
     <div class="logout-link" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sign out</div>
 </nav>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" style="position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:900; display:none;"></div>
 
-<!-- MAIN -->
 <main id="mainContent">
-
-    <!-- Stats cards — only shown for Chris via JS -->
-    <div class="stats-row" id="statsRow" style="display:none;">
-        <div class="stat-card">
-            <div class="stat-label"><i class="fas fa-boxes"></i> Products</div>
-            <div class="stat-value" id="statItems">0</div>
-            <div class="stat-sub">distinct items</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label"><i class="fas fa-cubes"></i> Stock</div>
-            <div class="stat-value" id="statStock">0</div>
-            <div class="stat-sub">total units</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label"><i class="fas fa-coins"></i> Value</div>
-            <div class="stat-value" id="statValue">K0</div>
-            <div class="stat-sub">inventory value</div>
-        </div>
+    <div class="stats-row" id="statsRow" style="display: none;">
+        <div class="stat-card"><div class="stat-label">Products</div><div class="stat-value" id="statItems">0</div></div>
+        <div class="stat-card"><div class="stat-label">Total Stock</div><div class="stat-value" id="statStock">0</div></div>
+        <div class="stat-card"><div class="stat-label">Inventory Value</div><div class="stat-value" id="statValue">K0</div></div>
     </div>
-
-    <!-- Content bar -->
     <div class="content-bar">
-        <div class="page-title-text"><i class="fas fa-archive"></i> Warehouse · <span id="branchNameDisplay">Loading...</span></div>
+        <div><i class="fas fa-archive"></i> Warehouse · <span id="branchNameDisplay">Loading...</span></div>
         <div class="total-pill" id="totalStockPill">K0.00</div>
     </div>
 
-    <!-- Tabs -->
     <div class="tab-bar">
         <button class="tab-btn active" data-tab="inventory"><i class="fas fa-boxes"></i> Inventory</button>
-        <button class="tab-btn" data-tab="incoming"><i class="fas fa-truck-loading"></i> Transfers</button>
+        <button class="tab-btn" data-tab="incoming"><i class="fas fa-truck"></i> Transfers</button>
     </div>
 
     <!-- INVENTORY TAB -->
     <div class="tab-content active" id="tabInventory">
-
-        <!-- Action bar: search always visible; Add button only for Chris -->
         <div class="action-flex">
-            <div class="search-wrap">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" id="searchInput" placeholder="Search code or name…">
-            </div>
-            <!-- Add Product: hidden by default, shown for Chris via JS -->
-            <button class="btn btn-primary" id="addInventoryBtn" style="display:none;">
-                <i class="fas fa-plus-circle"></i> Add Product
-            </button>
+            <div class="search-wrap"><i class="fas fa-search search-icon"></i><input type="text" id="searchInput" placeholder="Search by code or name..."></div>
+            <button class="btn btn-primary" id="addInventoryBtn" style="display:none;"><i class="fas fa-plus"></i> Add Product</button>
         </div>
-
-        <!-- Transfer form — Chris only, hidden by default -->
+        <!-- Transfer Panel (only visible to Chris = admin) -->
         <div id="transferSectionWrapper" style="display:none;">
             <div class="transfer-panel">
-                <h3><i class="fas fa-exchange-alt"></i> Cross-Branch Transfer</h3>
+                <h3><i class="fas fa-exchange-alt"></i> Cross-Branch Transfer (Admin only)</h3>
                 <form id="transferForm">
-                    <div class="field-group">
-                        <label>Product Code</label>
-                        <input type="text" id="transferCode" required list="productCodesList"
-                               placeholder="Scan or type product code" autocomplete="off">
-                        <datalist id="productCodesList"></datalist>
-                        <div id="productInfoPreview" class="product-info-box">Product details will appear here</div>
-                    </div>
-                    <div class="field-group">
-                        <label>Quantity</label>
-                        <input type="number" id="transferQuantity" min="1" step="1" value="1" required>
-                    </div>
-                    <div class="field-group">
-                        <label>Destination Branch</label>
-                        <select id="transferBranch" required>
-                            <option value="">— Select Destination —</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">
-                        <i class="fas fa-paper-plane"></i> Execute Transfer
-                    </button>
+                    <div class="field-group"><label>Product Code</label><input type="text" id="transferCode" list="productCodesList" placeholder="Scan or type code"><datalist id="productCodesList"></datalist><div id="productInfoPreview" class="product-info-box">Product details</div></div>
+                    <div class="field-group"><label>Quantity</label><input type="number" id="transferQuantity" min="1" value="1"></div>
+                    <div class="field-group"><label>Destination Branch</label><select id="transferBranch"><option value="">— Select —</option></select></div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-paper-plane"></i> Execute Transfer</button>
                 </form>
             </div>
         </div>
 
-        <!-- Inventory table -->
         <div class="table-card">
             <div class="table-scroll">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Code</th>
-                            <th>Product Name</th>
-                            <th>Price</th>
-                            <th>Stock</th>
-                            <!-- Actions column header: hidden for non-Chris via JS -->
-                            <th id="actionsTh" style="display:none;width:40px;"></th>
-                        </tr>
+                        <tr><th>Code</th><th>Product</th><th>Price (K)</th><th>Stock</th><th id="actionsTh" style="display:none;">Actions</th></tr>
                     </thead>
-                    <tbody id="inventoryTbody">
-                        <tr class="empty-row"><td colspan="4">Loading inventory…</td></tr>
-                    </tbody>
+                    <tbody id="inventoryTbody"><tr class="empty-row"><td colspan="4">Loading...</td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- INCOMING TRANSFERS TAB -->
+    <!-- INCOMING TAB -->
     <div class="tab-content" id="tabIncoming">
-        <div class="incoming-notice">
-            <i class="fas fa-truck-loading"></i>
-            <p>Stock transfers <strong>sent to this branch</strong> from Master Warehouse appear here. Stock updates automatically.</p>
-        </div>
+        <div class="incoming-notice"><i class="fas fa-info-circle"></i> Transfers sent to/from your branch are recorded.</div>
         <div class="table-card">
-            <div class="table-scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date/Time</th>
-                            <th>Ref</th>
-                            <th>From</th>
-                            <th>Value</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="incomingTbody">
-                        <tr class="empty-row"><td colspan="6">Loading transfers…</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <table><thead><tr><th>Date</th><th>Ref</th><th>From/To</th><th>Value</th><th>Status</th><th></th></tr></thead><tbody id="incomingTbody"><tr class="empty-row"><td colspan="6">Loading...</td></tr></tbody></table>
         </div>
     </div>
-
 </main>
-
 <div class="toast-wrap" id="toastContainer"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import {
-    getFirestore, collection, query, where, getDocs, addDoc,
-    updateDoc, deleteDoc, doc, increment, onSnapshot,
-    runTransaction, orderBy
-} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, increment, onSnapshot, runTransaction, orderBy } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey:"AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
@@ -490,445 +189,353 @@ const firebaseConfig = {
     appId:"1:416692703333:web:d4b60292621435c748f68c"
 };
 const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const db = getFirestore(app);
 
-/* ── Auth ── */
-const branchId     = localStorage.getItem('branchId');
+// ---------- AUTH & ROLES ----------
+const branchId = localStorage.getItem('branchId');       // "makeni" or "kabana"
 const loggedInUser = (localStorage.getItem('loggedInUser') || '').toLowerCase().trim();
-if (!branchId) { alert('Branch ID missing. Please login again.'); window.location.href = 'dashboard.html'; }
+if (!branchId) { alert("Missing branch. Please login."); window.location.href = "dashboard.html"; }
 
+// Branch mapping
 const branches = {
-    makeni: { id:'makeni', name:'Kabanana Branch' },
-    kabana: { id:'kabana', name:'Makeni Branch'   }
+    makeni: { id: 'makeni', name: 'Kabanana Branch' },
+    kabana: { id: 'kabana', name: 'Makeni Branch' }
 };
-const currentBranch = branches[branchId] || { name: branchId };
-document.getElementById('branchNameDisplay').textContent = currentBranch.name;
+const currentBranch = branches[branchId] || { name: branchId, id: branchId };
+document.getElementById('branchNameDisplay').innerText = currentBranch.name;
 document.getElementById('branchBadge').innerHTML = `<i class="fas fa-store"></i> ${currentBranch.name.toUpperCase()}`;
 
-const isChris = loggedInUser === 'chris';
+// ROLE IDENTIFICATION:
+// admin = chris (full control)
+// warehouse manager = "warehouseman" (can see edit/delete on his branch but NOT transfer panel)
+// other branch users (like branch manager) = can VIEW only, no edit/delete buttons
+const isAdmin = loggedInUser === 'chris';
+const isWarehouseMan = loggedInUser === 'warehouseman';    // warehouse manager role
+// For branch user (any other logged user, like "john"): no edit/delete, no add, no transfer
 
-/* ── Show Chris-only UI ── */
-if (isChris) {
-    document.getElementById('statsRow').style.display       = 'grid';
+// UI Permissions:
+// 1. Admin (Chris) -> sees Stats, Add Product, Transfer panel, Edit/Delete dots
+// 2. Warehouse Man -> sees Edit/Delete dots (can modify inventory) but NO transfer panel, NO Add Product button, NO Stats row.
+// 3. Regular branch user -> only view table, no actions column, no add, no transfer.
+
+if (isAdmin) {
+    document.getElementById('statsRow').style.display = 'grid';
     document.getElementById('addInventoryBtn').style.display = 'inline-flex';
     document.getElementById('transferSectionWrapper').style.display = 'block';
-    document.getElementById('actionsTh').style.display      = '';   // show Actions column header
+    document.getElementById('actionsTh').style.display = 'table-cell';
+} else if (isWarehouseMan) {
+    // warehouse manager: can edit/delete but no stats row, no add product, no transfer panel
+    document.getElementById('statsRow').style.display = 'none';
+    document.getElementById('addInventoryBtn').style.display = 'none';
+    document.getElementById('transferSectionWrapper').style.display = 'none';
+    document.getElementById('actionsTh').style.display = 'table-cell';   // show actions column
+} else {
+    // Regular branch user (view only)
+    document.getElementById('statsRow').style.display = 'none';
+    document.getElementById('addInventoryBtn').style.display = 'none';
+    document.getElementById('transferSectionWrapper').style.display = 'none';
+    document.getElementById('actionsTh').style.display = 'none';   // no action column
 }
 
-/* ── State ── */
+// Global inventory array
 let inventory = [];
 let unsubInventory = null;
 
-/* ── Toast ── */
 function toast(msg, type = 'success') {
-    const tc = document.getElementById('toastContainer');
-    const t  = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.innerHTML = `<i class="fas ${type==='error'?'fa-exclamation-triangle':'fa-check-circle'}"></i> ${msg}`;
-    tc.appendChild(t);
-    setTimeout(() => t.remove(), 3000);
+    const cont = document.getElementById('toastContainer');
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.innerHTML = `<i class="fas ${type==='error'?'fa-exclamation-triangle':'fa-check-circle'}"></i> ${msg}`;
+    cont.appendChild(el);
+    setTimeout(() => el.remove(), 2800);
 }
 
-/* ── Escape HTML ── */
-function esc(s) {
-    if (!s) return '';
-    return String(s).replace(/[&<>"']/g, m =>
-        ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function esc(s) { if(!s) return ''; return String(s).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+// Stats update only for admin
+function updateStatsForAdmin(inv) {
+    if (!isAdmin) return;
+    const totalStock = inv.reduce((s,i)=> s + i.stock, 0);
+    const totalValue = inv.reduce((s,i)=> s + (i.price * i.stock), 0);
+    document.getElementById('statItems').innerText = inv.length;
+    document.getElementById('statStock').innerText = totalStock;
+    document.getElementById('statValue').innerHTML = `K${totalValue.toFixed(0)}`;
+    document.getElementById('totalStockPill').innerHTML = `K${totalValue.toFixed(2)}`;
 }
 
-/* ── Stats ── */
-function updateStats(inv) {
-    if (!isChris) return;
-    const val = inv.reduce((s,i) => s + i.price * i.stock, 0);
-    document.getElementById('statItems').textContent = inv.length;
-    document.getElementById('statStock').textContent = inv.reduce((s,i) => s + i.stock, 0);
-    document.getElementById('statValue').textContent = `K${val.toFixed(0)}`;
-    document.getElementById('totalStockPill').textContent = `K${val.toFixed(2)}`;
-}
-
-/* ── 3-dots menu ── */
-function closeAllMenus() {
-    document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open'));
-}
+function closeAllMenus() { document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open')); }
 document.addEventListener('click', closeAllMenus);
+window.toggleMenu = function(e, id) { e.stopPropagation(); const m = document.getElementById('dm-'+id); const open = m.classList.contains('open'); closeAllMenus(); if(!open) m.classList.add('open'); };
 
-window.toggleMenu = function(e, id) {
-    e.stopPropagation();
-    const menu    = document.getElementById('dm-' + id);
-    const wasOpen = menu.classList.contains('open');
-    closeAllMenus();
-    if (!wasOpen) menu.classList.add('open');
-};
-
-/* ── Inventory listener ── */
-function setupInventoryListener() {
-    if (unsubInventory) unsubInventory();
-    const q = query(collection(db,'inventory'), where('branchId','==',branchId));
-    unsubInventory = onSnapshot(q, snap => {
-        inventory = snap.docs.map(d => ({
-            id: d.id, ...d.data(),
-            stock: Number(d.data().stock) || 0,
-            price: Number(d.data().price) || 0
-        }));
-        inventory.sort((a,b) => (a.code||'').localeCompare(b.code||''));
-
-        // Datalist for transfer
-        const dl = document.getElementById('productCodesList');
-        if (dl) { dl.innerHTML=''; inventory.forEach(i => { const o=document.createElement('option'); o.value=i.code; dl.appendChild(o); }); }
-
-        // Branch dropdown
-        if (isChris) {
-            const bs = document.getElementById('transferBranch');
-            if (bs) {
-                bs.innerHTML = '<option value="">— Select Destination —</option>';
-                const otherId = branchId==='makeni' ? 'kabana' : 'makeni';
-                const other   = branches[otherId];
-                if (other) { const o=document.createElement('option'); o.value=other.id; o.textContent=other.name; bs.appendChild(o); }
-                const mo=document.createElement('option'); mo.value='master'; mo.textContent='⭐ Master Warehouse'; bs.appendChild(mo);
-            }
-        }
-        updateStats(inventory);
-        renderTable();
-    });
-}
-
-/* ── Render table ── */
-function renderTable() {
-    const tbody = document.getElementById('inventoryTbody');
-    const sv    = document.getElementById('searchInput').value.toLowerCase();
-    const list  = inventory.filter(i =>
-        i.name?.toLowerCase().includes(sv) || i.code?.toLowerCase().includes(sv));
-
-    tbody.innerHTML = '';
-    if (!list.length) {
-        tbody.innerHTML = `<tr class="empty-row"><td colspan="${isChris?5:4}">No products found</td></tr>`;
-        return;
-    }
-
-    list.forEach(item => {
-        let bg='', tc='';
-        if      (item.stock === 0) { bg='rgba(239,68,68,0.1)';    tc='#991b1b'; }
-        else if (item.stock <  5)  { bg='rgba(245,158,11,0.12)';  tc='#92400e'; }
-        else                       { bg='rgba(16,185,129,0.1)';   tc='#065f46'; }
-
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td><span class="code-chip">${esc(item.code)}</span></td>
-            <td style="font-weight:600;">${esc(item.name)}</td>
-            <td>K${item.price.toFixed(2)}</td>
-            <td><span class="stock-chip" style="background:${bg};color:${tc};">${item.stock}</span></td>
-            ${isChris ? `
-            <td>
-                <div class="dots-wrap">
-                    <button class="dots-btn" onclick="toggleMenu(event,'${item.id}')" title="Actions">
-                        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                    </button>
-                    <div class="dots-menu" id="dm-${item.id}">
-                        <button class="dots-item edit"
-                            onclick="closeAllMenus();editItem('${item.id}')">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="dots-item delete"
-                            onclick="closeAllMenus();deleteItem('${item.id}')">
-                            <i class="fas fa-trash-alt"></i> Delete
-                        </button>
-                    </div>
-                </div>
-            </td>` : ''}
-        `;
-    });
-}
-
-/* ── Edit ── */
-window.editItem = id => {
+// Edit & Delete functions (global for onclick)
+window.editItem = (id) => {
     const item = inventory.find(i => i.id === id);
     if (!item) return;
-    showEditModal(item);
-};
-
-function showEditModal(item) {
-    const md = document.createElement('div'); md.className = 'modal-bg';
-    md.innerHTML = `
+    const modal = document.createElement('div'); modal.className = 'modal-bg';
+    modal.innerHTML = `
         <div class="modal-box">
-            <h3><i class="fas fa-pen"></i> Edit Product</h3>
-            <form id="editForm">
+            <h3>✏️ Edit Product</h3>
+            <form id="editFormModal">
                 <div class="field-group"><label>Code</label><input name="code" value="${esc(item.code)}" required></div>
                 <div class="field-group"><label>Name</label><input name="name" value="${esc(item.name)}" required></div>
                 <div class="field-group"><label>Price (K)</label><input name="price" type="number" step="0.01" value="${item.price}" required></div>
                 <div class="field-group"><label>Stock</label><input name="stock" type="number" value="${item.stock}" required></div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-ghost" id="closeEditBtn">Cancel</button>
-                </div>
+                <div class="form-actions"><button type="submit" class="btn btn-primary">Save</button><button type="button" id="closeEditModal" class="btn btn-sm">Cancel</button></div>
             </form>
         </div>`;
-    document.body.appendChild(md);
-    md.querySelector('#editForm').onsubmit = async e => {
+    document.body.appendChild(modal);
+    modal.querySelector('#editFormModal').onsubmit = async (e) => {
         e.preventDefault();
-        const f  = e.target;
-        const nc = f.code.value.trim().toUpperCase();
-        const nn = f.name.value.trim();
-        const np = parseFloat(f.price.value);
-        const ns = parseInt(f.stock.value);
-        if (!nc||!nn||isNaN(np)||np<0||isNaN(ns)||ns<0) { toast('Invalid fields','error'); return; }
-        if (nc!==item.code && inventory.some(i=>i.code===nc)) { toast('Code already exists','error'); return; }
+        const code = e.target.code.value.trim().toUpperCase();
+        const name = e.target.name.value.trim();
+        const price = parseFloat(e.target.price.value);
+        const stock = parseInt(e.target.stock.value);
+        if (!code || !name || isNaN(price) || price<0 || isNaN(stock) || stock<0) return toast("Invalid data", "error");
+        if (code !== item.code && inventory.some(i => i.code === code)) return toast("Code already exists", "error");
         try {
-            await updateDoc(doc(db,'inventory',item.id), {code:nc,name:nn,price:np,stock:ns});
-            md.remove(); toast('Updated');
-        } catch(err) { toast(err.message,'error'); }
+            await updateDoc(doc(db,'inventory',item.id), { code, name, price, stock });
+            modal.remove(); toast("Product updated");
+        } catch(err) { toast(err.message, "error"); }
     };
-    md.querySelector('#closeEditBtn').onclick = () => md.remove();
-    md.onclick = e => { if (e.target===md) md.remove(); };
-}
-
-/* ── Delete ── */
-window.deleteItem = async id => {
-    const item = inventory.find(i => i.id === id);
-    if (!item) return;
-    if (!confirm(`Delete "${item.name}"? This is permanent.`)) return;
-    try { await deleteDoc(doc(db,'inventory',id)); toast(`${item.code} deleted`); }
-    catch(err) { toast(err.message,'error'); }
+    modal.querySelector('#closeEditModal').onclick = () => modal.remove();
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
 };
 
-/* ── Add product (Chris only) ── */
-document.getElementById('addInventoryBtn')?.addEventListener('click', () => {
-    const md = document.createElement('div'); md.className = 'modal-bg';
-    md.innerHTML = `
-        <div class="modal-box">
-            <h3><i class="fas fa-plus-circle"></i> Add Product</h3>
-            <form id="addForm">
-                <div class="field-group"><label>Code *</label><input name="code" placeholder="e.g., EL-5" required></div>
-                <div class="field-group"><label>Name *</label><input name="name" placeholder="Product name" required></div>
-                <div class="field-group"><label>Price (K) *</label><input name="price" type="number" step="0.01" min="0" placeholder="0.00" required></div>
-                <div class="field-group"><label>Stock *</label><input name="stock" type="number" min="0" placeholder="0" required></div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-success">Add</button>
-                    <button type="button" class="btn btn-ghost" id="cancelAddBtn">Cancel</button>
+window.deleteItem = async (id) => {
+    const item = inventory.find(i => i.id === id);
+    if (!item) return;
+    if (!confirm(`Permanently delete "${item.name}"?`)) return;
+    try {
+        await deleteDoc(doc(db,'inventory',id));
+        toast(`${item.code} deleted`);
+    } catch(err) { toast(err.message, "error"); }
+};
+
+// Render table with conditional actions column based on role
+function renderTable() {
+    const tbody = document.getElementById('inventoryTbody');
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    let filtered = inventory.filter(i => i.name?.toLowerCase().includes(search) || i.code?.toLowerCase().includes(search));
+    tbody.innerHTML = '';
+    if(filtered.length === 0) { tbody.innerHTML = `<tr class="empty-row"><td colspan="${(isAdmin || isWarehouseMan) ? 5 : 4}">No products found</td></tr>`; return; }
+    filtered.forEach(item => {
+        const bgColor = item.stock === 0 ? '#fee2e2' : (item.stock < 5 ? '#fff3e0' : '#e0f2fe');
+        const textColor = item.stock === 0 ? '#b91c1c' : (item.stock < 5 ? '#b45309' : '#065f46');
+        const row = tbody.insertRow();
+        let actionsHtml = '';
+        if (isAdmin || isWarehouseMan) {
+            actionsHtml = `<td><div class="dots-wrap">
+                <button class="dots-btn" onclick="toggleMenu(event,'${item.id}')"><span class="dot"></span><span class="dot"></span><span class="dot"></span></button>
+                <div class="dots-menu" id="dm-${item.id}">
+                    <button class="dots-item edit" onclick="closeAllMenus();editItem('${item.id}')"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="dots-item delete" onclick="closeAllMenus();deleteItem('${item.id}')"><i class="fas fa-trash-alt"></i> Delete</button>
                 </div>
+            </div></td>`;
+        }
+        row.innerHTML = `
+            <td><span class="code-chip">${esc(item.code)}</span></td>
+            <td><strong>${esc(item.name)}</strong></td>
+            <td>K${item.price.toFixed(2)}</td>
+            <td><span class="stock-chip" style="background:${bgColor}; color:${textColor};">${item.stock}</span></td>
+            ${actionsHtml}
+        `;
+    });
+}
+
+// Inventory listener (branch-based)
+function setupInventoryListener() {
+    if(unsubInventory) unsubInventory();
+    const q = query(collection(db,'inventory'), where('branchId','==',branchId));
+    unsubInventory = onSnapshot(q, (snap) => {
+        inventory = snap.docs.map(d => ({ id: d.id, ...d.data(), stock: Number(d.data().stock) || 0, price: Number(d.data().price) || 0 }));
+        inventory.sort((a,b)=> (a.code||'').localeCompare(b.code||''));
+        // update datalist for transfer if admin
+        if(isAdmin) {
+            const dl = document.getElementById('productCodesList');
+            if(dl) { dl.innerHTML=''; inventory.forEach(i => { let opt=document.createElement('option'); opt.value=i.code; dl.appendChild(opt); }); }
+            const branchSelect = document.getElementById('transferBranch');
+            if(branchSelect) {
+                branchSelect.innerHTML = '<option value="">— Select Destination —</option>';
+                const otherId = branchId === 'makeni' ? 'kabana' : 'makeni';
+                if(branches[otherId]) branchSelect.appendChild(new Option(branches[otherId].name, branches[otherId].id));
+                branchSelect.appendChild(new Option('⭐ Master Warehouse', 'master'));
+            }
+        }
+        updateStatsForAdmin(inventory);
+        renderTable();
+    });
+}
+
+// Add product (only Chris/admin)
+document.getElementById('addInventoryBtn')?.addEventListener('click', () => {
+    if(!isAdmin) return;
+    const modalDiv = document.createElement('div'); modalDiv.className = 'modal-bg';
+    modalDiv.innerHTML = `
+        <div class="modal-box">
+            <h3><i class="fas fa-plus"></i> Add New Product</h3>
+            <form id="addProductForm">
+                <div class="field-group"><label>Product Code</label><input name="code" required placeholder="e.g., ELEC-01"></div>
+                <div class="field-group"><label>Product Name</label><input name="name" required></div>
+                <div class="field-group"><label>Price (K)</label><input name="price" type="number" step="0.01" required></div>
+                <div class="field-group"><label>Initial Stock</label><input name="stock" type="number" value="0" required></div>
+                <div class="form-actions"><button type="submit" class="btn btn-primary">Create</button><button type="button" id="closeAddModal" class="btn btn-sm">Cancel</button></div>
             </form>
         </div>`;
-    document.body.appendChild(md);
-    md.querySelector('#addForm').onsubmit = async e => {
+    document.body.appendChild(modalDiv);
+    modalDiv.querySelector('#addProductForm').onsubmit = async (e) => {
         e.preventDefault();
-        const f    = e.target;
-        const code = f.code.value.trim().toUpperCase();
-        const name = f.name.value.trim();
-        const price= parseFloat(f.price.value);
-        const stock= parseInt(f.stock.value);
-        if (!code||!name||isNaN(price)||isNaN(stock)||price<0||stock<0) { toast('Invalid data','error'); return; }
-        if (inventory.some(i=>i.code===code)) { toast('Duplicate code','error'); return; }
+        const code = e.target.code.value.trim().toUpperCase();
+        const name = e.target.name.value.trim();
+        const price = parseFloat(e.target.price.value);
+        const stock = parseInt(e.target.stock.value);
+        if(!code || !name || isNaN(price) || price<0 || isNaN(stock)) { toast("Invalid fields","error"); return; }
+        if(inventory.some(i=>i.code===code)) { toast("Code already exists","error"); return; }
         try {
-            await addDoc(collection(db,'inventory'),{code,name,price,stock,sold:0,branchId});
-            md.remove(); toast(`${code} added`);
-        } catch(err) { toast(err.message,'error'); }
+            await addDoc(collection(db,'inventory'), { code, name, price, stock, sold:0, branchId });
+            modalDiv.remove(); toast(`${code} added`);
+        } catch(err) { toast(err.message,"error"); }
     };
-    md.querySelector('#cancelAddBtn').onclick = () => md.remove();
-    md.onclick = e => { if (e.target===md) md.remove(); };
+    modalDiv.querySelector('#closeAddModal').onclick = () => modalDiv.remove();
+    modalDiv.onclick = (e) => { if(e.target === modalDiv) modalDiv.remove(); };
 });
 
-/* ── Transfer (Chris only) ── */
-if (isChris) {
-    document.getElementById('transferCode')?.addEventListener('input', () => {
-        const code = document.getElementById('transferCode').value.trim().toUpperCase();
-        const item = inventory.find(i => i.code === code);
-        const box  = document.getElementById('productInfoPreview');
-        if (item) {
-            const sc = item.stock===0?'#ef4444':item.stock<5?'#f59e0b':'#10b981';
-            box.innerHTML = `<strong>${esc(item.name)}</strong> &nbsp;|&nbsp; Stock: <strong style="color:${sc};">${item.stock}</strong> &nbsp;|&nbsp; K${item.price.toFixed(2)}`;
-        } else if (code.length>0) {
-            box.innerHTML = `<span style="color:#ef4444;"><i class="fas fa-times-circle"></i> Not found</span>`;
-        } else {
-            box.textContent = 'Product details will appear here';
-        }
-    });
-
-    document.getElementById('transferForm')?.addEventListener('submit', async e => {
+// Transfer (only for admin/chris)
+if(isAdmin) {
+    const codeInput = document.getElementById('transferCode');
+    if(codeInput) {
+        codeInput.addEventListener('input', () => {
+            const code = codeInput.value.trim().toUpperCase();
+            const item = inventory.find(i=>i.code===code);
+            const preview = document.getElementById('productInfoPreview');
+            if(item) preview.innerHTML = `<strong>${esc(item.name)}</strong> | Stock: ${item.stock} | Price: K${item.price.toFixed(2)}`;
+            else if(code) preview.innerHTML = `<span style="color:#ef4444">Not found</span>`;
+            else preview.textContent = 'Product details will appear';
+        });
+    }
+    document.getElementById('transferForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const code  = document.getElementById('transferCode').value.trim().toUpperCase();
-        const qty   = parseInt(document.getElementById('transferQuantity').value);
-        const dest  = document.getElementById('transferBranch').value;
-        if (!code||isNaN(qty)||qty<=0||!dest) { toast('Fill all fields','error'); return; }
-        const item  = inventory.find(i => i.code===code);
-        if (!item)          { toast('Product not found','error'); return; }
-        if (item.stock<qty) { toast(`Insufficient stock. Available: ${item.stock}`,'error'); return; }
-        const destName = dest==='master' ? '⭐ Master Warehouse' : (branches[dest]?.name||dest);
-        if (!confirm(`Transfer ${qty}x ${item.name} → ${destName}?`)) return;
-
+        const code = document.getElementById('transferCode').value.trim().toUpperCase();
+        const qty = parseInt(document.getElementById('transferQuantity').value);
+        const dest = document.getElementById('transferBranch').value;
+        if(!code || isNaN(qty) || qty<1 || !dest) { toast("Complete all fields","error"); return; }
+        const product = inventory.find(i=>i.code===code);
+        if(!product) { toast("Product not found","error"); return; }
+        if(product.stock < qty) { toast(`Only ${product.stock} available`,"error"); return; }
+        const destName = dest === 'master' ? '⭐ Master Warehouse' : (branches[dest]?.name || dest);
+        if(!confirm(`Transfer ${qty}x ${product.name} to ${destName}?`)) return;
         const btn = e.target.querySelector('button[type="submit"]');
-        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing';
         try {
-            await runTransaction(db, async tx => {
-                const sr = doc(db,'inventory',item.id);
-                const ss = await tx.get(sr);
-                if (ss.data().stock < qty) throw new Error('Stock changed, retry');
-                tx.update(sr, {stock:increment(-qty)});
-                const dq = query(collection(db,'inventory'),where('branchId','==',dest),where('code','==',code));
-                const ds = await getDocs(dq);
-                if (!ds.empty) tx.update(doc(db,'inventory',ds.docs[0].id),{stock:increment(qty)});
-                else tx.set(doc(collection(db,'inventory')),{code,name:item.name,price:item.price,stock:qty,sold:0,branchId:dest});
+            await runTransaction(db, async (tx) => {
+                const srcRef = doc(db,'inventory',product.id);
+                const srcSnap = await tx.get(srcRef);
+                if(srcSnap.data().stock < qty) throw new Error("Stock changed");
+                tx.update(srcRef, { stock: increment(-qty) });
+                const destQuery = query(collection(db,'inventory'), where('branchId','==',dest), where('code','==',code));
+                const destDocs = await getDocs(destQuery);
+                if(!destDocs.empty) tx.update(doc(db,'inventory',destDocs.docs[0].id), { stock: increment(qty) });
+                else tx.set(doc(collection(db,'inventory')), { code: product.code, name: product.name, price: product.price, stock: qty, sold:0, branchId: dest });
             });
             const now = new Date();
-            await addDoc(collection(db,'transfers'),{
-                ref:'TRF-'+Date.now().toString().slice(-6),
-                date:now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
-                time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
-                createdAt:now.toISOString(),
-                srcId:branchId,srcName:currentBranch.name,
-                destId:dest,destName,
-                items:[{code,name:item.name,qty,price:item.price,total:item.price*qty}],
-                totalValue:item.price*qty,doneBy:loggedInUser,status:'active'
+            await addDoc(collection(db,'transfers'), {
+                ref: 'TX-'+Date.now().toString().slice(-6),
+                date: now.toLocaleDateString('en-GB'), time: now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),
+                createdAt: now.toISOString(),
+                srcId: branchId, srcName: currentBranch.name,
+                destId: dest, destName: destName,
+                items: [{ code: product.code, name: product.name, qty, price: product.price, total: product.price * qty }],
+                totalValue: product.price * qty, doneBy: loggedInUser, status: 'active'
             });
-            toast(`✅ ${qty}x ${item.name} → ${destName}`);
-            e.target.reset();
-            document.getElementById('productInfoPreview').textContent='Product details will appear here';
-        } catch(err) { toast('Transfer failed: '+err.message,'error'); }
+            toast(`✅ Transfer ${qty}x ${product.name} to ${destName}`);
+            document.getElementById('transferForm').reset();
+            document.getElementById('productInfoPreview').innerHTML = 'Product details';
+        } catch(err) { toast("Transfer failed: "+err.message,"error"); }
         finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Execute Transfer'; }
     });
 }
 
-/* ── Incoming transfers ── */
+// Incoming transfers (visible to all roles)
 async function loadIncomingTransfers() {
     const tbody = document.getElementById('incomingTbody');
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="6"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Loading transfers...</td></tr>';
     try {
-        const q    = query(collection(db,'transfers'), orderBy('createdAt','desc'));
-        const snap = await getDocs(q);
-        const list = [];
-        snap.forEach(d => {
-            const t = {id:d.id,...d.data()};
-            if (t.destId===branchId||t.srcId===branchId) list.push(t);
-        });
-        if (!list.length) { tbody.innerHTML='<tr class="empty-row"><td colspan="6">No transfers yet</td></tr>'; return; }
+        const snap = await getDocs(query(collection(db,'transfers'), orderBy('createdAt','desc')));
+        const transfers = [];
+        snap.forEach(d => { const t = {id:d.id, ...d.data()}; if(t.destId===branchId || t.srcId===branchId) transfers.push(t); });
+        if(transfers.length === 0) { tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No transfers recorded</td></tr>'; return; }
         tbody.innerHTML = '';
-        window._btr = {};
-        list.forEach(t => {
-            window._btr[t.id] = t;
-            const isIn  = t.destId === branchId;
-            const isRev = t.status === 'reversed';
-            const from  = isIn ? (t.srcName||t.srcId) : `→ ${t.destName||t.destId}`;
-            const row   = tbody.insertRow();
-            row.style.opacity = isRev ? '0.6' : '1';
+        window._transferDetails = {};
+        transfers.forEach(t => {
+            window._transferDetails[t.id] = t;
+            const isIncoming = t.destId === branchId;
+            const fromTo = isIncoming ? `← ${t.srcName||t.srcId}` : `→ ${t.destName||t.destId}`;
+            const row = tbody.insertRow();
             row.innerHTML = `
-                <td style="font-size:0.68rem;white-space:nowrap;">${esc(t.date||'')} ${esc(t.time||'')}</td>
-                <td><span class="transfer-ref">${esc(t.ref||t.id.slice(-8))}</span></td>
-                <td style="font-size:0.72rem;">${esc(from)}</td>
-                <td style="font-family:'DM Mono',monospace;font-weight:700;font-size:0.72rem;">K${(t.totalValue||0).toFixed(2)}</td>
-                <td><span class="${isRev?'status-reversed':'status-active'}">${isRev?'REV':'ACTIVE'}</span></td>
-                <td><button class="btn btn-ghost btn-sm" onclick="viewDetail('${t.id}')"><i class="fas fa-eye"></i></button></td>`;
+                <td style="white-space:nowrap">${esc(t.date||'')} ${esc(t.time||'')}</td>
+                <td><span class="transfer-ref">${esc(t.ref||t.id.slice(-6))}</span></td>
+                <td>${esc(fromTo)}</td>
+                <td>K${(t.totalValue||0).toFixed(2)}</td>
+                <td><span class="status-active">${t.status==='reversed'?'REVERSED':'ACTIVE'}</span></td>
+                <td><button class="btn btn-sm" onclick="viewTransferDetail('${t.id}')"><i class="fas fa-eye"></i> View</button></td>
+            `;
         });
-    } catch(err) {
-        tbody.innerHTML = `<tr class="empty-row"><td colspan="6" style="color:var(--danger);">${esc(err.message)}</td></tr>`;
-    }
+    } catch(err) { tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Error loading</td></tr>`; }
 }
 
-window.viewDetail = id => {
-    const t = window._btr?.[id]; if (!t) return;
-    const items = t.items||[], isRev = t.status==='reversed';
-    const md = document.createElement('div'); md.className='modal-bg';
-    md.innerHTML = `
-        <div class="modal-box" style="max-width:560px;width:100%;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                <h3><i class="fas fa-receipt"></i> Transfer Details</h3>
-                <button id="closeD" style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-fade);">✕</button>
-            </div>
-            ${isRev?`<div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:8px 10px;margin-bottom:10px;color:var(--purple);font-size:0.72rem;font-weight:700;"><i class="fas fa-undo-alt"></i> REVERSED</div>`:''}
-            <div style="background:var(--bg3);border-radius:9px;padding:10px;margin-bottom:10px;font-size:0.75rem;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;">
-                <div><strong>Ref:</strong> <span style="font-family:'DM Mono',monospace;color:var(--blue);">${esc(t.ref||t.id)}</span></div>
-                <div><strong>Date:</strong> ${esc(t.date||'')} ${esc(t.time||'')}</div>
-                <div><strong>By:</strong> ${esc(t.doneBy||'system')}</div>
-            </div>
-            <div style="background:var(--bg3);border-radius:9px;padding:10px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;font-size:0.8rem;">
-                <strong style="color:var(--orange);">${esc(t.srcName||t.srcId)}</strong>
-                <i class="fas fa-arrow-right" style="color:var(--blue);font-size:0.75rem;"></i>
-                <strong style="color:var(--green);">${esc(t.destName||t.destId)}</strong>
-            </div>
-            <div class="table-scroll">
-                <table class="items-table-detail">
-                    <thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Price</th><th>Sub</th></tr></thead>
-                    <tbody>${items.map(i=>`<tr>
-                        <td><span class="code-chip" style="font-size:0.6rem;">${esc(i.code)}</span></td>
-                        <td>${esc(i.name)}</td><td><strong>${i.qty}</strong></td>
-                        <td>K${(i.price||0).toFixed(2)}</td>
-                        <td>K${(i.total||i.qty*(i.price||0)).toFixed(2)}</td>
-                    </tr>`).join('')}</tbody>
-                    <tfoot><tr style="background:var(--bg3);">
-                        <td colspan="4" style="text-align:right;font-weight:800;padding:8px 6px;">Total:</td>
-                        <td style="font-weight:800;color:var(--blue);padding:8px 6px;">K${(t.totalValue||0).toFixed(2)}</td>
-                    </tr></tfoot>
-                </table>
-            </div>
+window.viewTransferDetail = (id) => {
+    const t = window._transferDetails?.[id]; if(!t) return;
+    const items = t.items || [];
+    const modal = document.createElement('div'); modal.className = 'modal-bg';
+    modal.innerHTML = `
+        <div class="modal-box" style="max-width:500px;">
+            <h3>📦 Transfer Receipt</h3>
+            <div style="background:#f8f9fc; padding:10px; border-radius:12px; margin:10px 0;"><strong>Ref:</strong> ${esc(t.ref||t.id)}<br><strong>From:</strong> ${esc(t.srcName)} → <strong>To:</strong> ${esc(t.destName)}<br><strong>By:</strong> ${esc(t.doneBy)}</div>
+            <div class="table-scroll"><table style="width:100%"><thead><tr><th>Item</th><th>Qty</th><th>Price</th></tr></thead><tbody>${items.map(i => `<tr><td>${esc(i.code)} ${esc(i.name)}</td><td>${i.qty}</td><td>K${(i.price||0).toFixed(2)}</td></tr>`).join('')}</tbody><tfoot><tr><td colspan="2"><strong>Total</strong></td><td><strong>K${(t.totalValue||0).toFixed(2)}</strong></td></tr></tfoot></table></div>
+            <button id="closeDetailBtn" class="btn btn-sm" style="margin-top:12px;">Close</button>
         </div>`;
-    document.body.appendChild(md);
-    md.querySelector('#closeD').onclick = () => md.remove();
-    md.onclick = e => { if(e.target===md) md.remove(); };
+    document.body.appendChild(modal);
+    modal.querySelector('#closeDetailBtn').onclick = () => modal.remove();
+    modal.onclick = e => { if(e.target === modal) modal.remove(); };
 };
 
-/* ── Tabs ── */
+// Tabs
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        const tn = btn.dataset.tab;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===tn));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id===`tab${tn.charAt(0).toUpperCase()+tn.slice(1)}`));
-        if (tn==='incoming') loadIncomingTransfers();
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab${tab.charAt(0).toUpperCase()+tab.slice(1)}`));
+        if(tab === 'incoming') loadIncomingTransfers();
     });
 });
-
 document.getElementById('searchInput').addEventListener('input', renderTable);
 
-/* ── Sidebar ── */
-const sidebar  = document.getElementById('sidebar');
-const overlay  = document.getElementById('sidebarOverlay');
-const menuBtn  = document.getElementById('menuBtn');
-const mainEl   = document.getElementById('mainContent');
-const isMobile = () => window.innerWidth <= 700;
-
-function applySidebarLayout() {
-    if (isMobile()) {
-        // mobile: always collapsed unless .visible
-        if (!sidebar.classList.contains('visible')) sidebar.classList.add('hidden');
-        mainEl.style.marginLeft = '0';
+// sidebar toggling (mobile & desktop)
+const side = document.getElementById('sidebar'), overlay = document.getElementById('sidebarOverlay'), menuBtn = document.getElementById('menuBtn');
+function updateSidebarLayout() {
+    if(window.innerWidth <= 700) {
+        side.classList.add('hidden'); side.classList.remove('visible');
+        document.querySelector('main').style.marginLeft = '0';
     } else {
-        // desktop: open by default
-        sidebar.classList.remove('hidden','visible');
-        mainEl.style.marginLeft = `${sidebar.offsetWidth}px`;
+        side.classList.remove('hidden', 'visible');
+        document.querySelector('main').style.marginLeft = '220px';
     }
 }
-applySidebarLayout();
-window.addEventListener('resize', applySidebarLayout);
-
 menuBtn.addEventListener('click', () => {
-    if (isMobile()) {
-        const open = sidebar.classList.contains('visible');
-        open ? (sidebar.classList.remove('visible'), overlay.classList.remove('show'))
-             : (sidebar.classList.add('visible'),   overlay.classList.add('show'));
+    if(window.innerWidth <= 700) {
+        side.classList.toggle('visible'); side.classList.toggle('hidden');
+        overlay.style.display = side.classList.contains('visible') ? 'block' : 'none';
     } else {
-        const hidden = sidebar.classList.contains('hidden');
-        if (hidden) {
-            sidebar.classList.remove('hidden');
-            mainEl.style.marginLeft = `${sidebar.offsetWidth}px`;
-        } else {
-            sidebar.classList.add('hidden');
-            mainEl.style.marginLeft = '0';
-        }
+        side.classList.toggle('hidden');
+        document.querySelector('main').style.marginLeft = side.classList.contains('hidden') ? '0' : '220px';
     }
 });
-overlay.addEventListener('click', () => {
-    sidebar.classList.remove('visible');
-    overlay.classList.remove('show');
-});
+overlay.addEventListener('click', () => { side.classList.add('hidden'); side.classList.remove('visible'); overlay.style.display = 'none'; });
+window.addEventListener('resize', updateSidebarLayout);
+updateSidebarLayout();
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.clear(); window.location.href = 'dashboard.html';
-});
-
-/* ── Clock ── */
-function updateClock() {
-    document.getElementById('timeBadge').textContent =
-        new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-}
+function updateClock() { document.getElementById('timeBadge').innerText = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
 setInterval(updateClock, 1000); updateClock();
-
-/* ── Init ── */
+document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.clear(); window.location.href = 'dashboard.html'; });
 setupInventoryListener();
 </script>
 </body>
