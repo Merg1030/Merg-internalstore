@@ -72,6 +72,40 @@ body{min-height:100vh;display:flex;flex-direction:column;}
 }
 .month-pick input[type=month]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.6;}
 
+/* filter bar */
+.filter-bar{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);padding:12px 18px;
+  border-bottom:1px solid var(--border);flex-wrap:wrap;
+}
+.filter-group{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg-lighter);padding:5px 12px;
+  border-radius:var(--radius);border:1px solid var(--border);
+}
+.filter-group label{
+  font-size:.7rem;font-weight:700;color:var(--text-fade);
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.filter-group select{
+  background:transparent;border:none;padding:6px 0;
+  font-size:.82rem;font-weight:500;color:var(--text);
+  outline:none;cursor:pointer;
+}
+.filter-group input{
+  background:transparent;border:none;padding:6px 0;
+  font-size:.82rem;font-weight:500;color:var(--text);
+  outline:none;width:120px;
+}
+.filter-group input::placeholder{color:var(--text-fade);}
+.clear-filter{
+  background:var(--bg-lighter);border:1px solid var(--border);
+  border-radius:var(--radius);padding:6px 12px;
+  font-size:.75rem;font-weight:600;color:var(--text-fade);
+  cursor:pointer;transition:all .15s;
+}
+.clear-filter:hover{background:var(--danger);color:white;border-color:var(--danger);}
+
 /* buttons */
 .btn{
   display:inline-flex;align-items:center;gap:6px;
@@ -219,6 +253,7 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
 .field input:focus,.field select:focus{border-color:var(--primary);background:white;}
 .field select option{background:var(--surface);}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 
 .form-error{color:var(--danger);font-size:.78rem;margin-bottom:10px;min-height:14px;}
 
@@ -263,6 +298,8 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
   .main{padding:12px;}
   .acc-bar{padding:0 12px;}
   .field-row{grid-template-columns:1fr;}
+  .field-row-3{grid-template-columns:1fr;}
+  .filter-bar{flex-direction:column;align-items:stretch;}
 }
 </style>
 </head>
@@ -285,7 +322,36 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
   </div>
 </div>
 
-<!-- ACCOUNT TABS — updated account names -->
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-group">
+    <label><i class="fas fa-tag"></i> Reference:</label>
+    <select id="filterReference">
+      <option value="">All References</option>
+      <option value="TS-1">TS-1</option>
+      <option value="TS-2">TS-2</option>
+      <option value="TS-3">TS-3</option>
+      <option value="TS-4">TS-4</option>
+      <option value="TS-5">TS-5</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label><i class="fas fa-search"></i> Search:</label>
+    <input type="text" id="filterSearch" placeholder="Description or Ref...">
+  </div>
+  <div class="filter-group">
+    <label><i class="fas fa-exchange-alt"></i> Type:</label>
+    <select id="filterType">
+      <option value="">All</option>
+      <option value="credit">Credit (In)</option>
+      <option value="debit">Debit (Out)</option>
+    </select>
+  </div>
+  <button class="clear-filter" onclick="clearFilters()"><i class="fas fa-times"></i> Clear Filters</button>
+</div>
+
+<!-- ACCOUNT TABS -->
 <div class="acc-bar" id="accBar">
   <div class="acc-tab active" data-acc="Expenses A/c"        onclick="switchAcc(this)"><span class="acc-dot"></span> Expenses A/c</div>
   <div class="acc-tab"        data-acc="Business savings A/c" onclick="switchAcc(this)"><span class="acc-dot"></span> Business Savings A/c</div>
@@ -301,7 +367,7 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
     <div class="table-scroll">
       <table>
         <thead>
-          <tr>
+           <tr>
             <th>Date</th>
             <th>Description</th>
             <th>Reference</th>
@@ -309,7 +375,7 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
             <th class="num">Credit</th>
             <th class="num">Balance</th>
             <th></th>
-          </tr>
+           </tr>
         </thead>
         <tbody id="cfTbody">
           <tr class="empty-row"><td colspan="7"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
@@ -331,7 +397,7 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
     <div class="form-error" id="txnErr"></div>
     <form onsubmit="saveTxn(event)" autocomplete="off">
       <input type="hidden" id="txnId">
-      <div class="field-row">
+      <div class="field-row-3">
         <div class="field">
           <label>Date</label>
           <input type="date" id="tDate" required>
@@ -342,6 +408,18 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
             <option value="">— Select —</option>
             <option value="credit">Credit (In)</option>
             <option value="debit">Debit (Out)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Reference Prefix</label>
+          <select id="tRefPrefix">
+            <option value="">— Select Prefix —</option>
+            <option value="TS-1">TS-1</option>
+            <option value="TS-2">TS-2</option>
+            <option value="TS-3">TS-3</option>
+            <option value="TS-4">TS-4</option>
+            <option value="TS-5">TS-5</option>
+            <option value="Other">Other (Custom)</option>
           </select>
         </div>
       </div>
@@ -361,8 +439,8 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
         <input type="text" id="tDesc" placeholder="e.g. Cash sale" required>
       </div>
       <div class="field">
-        <label>Reference</label>
-        <input type="text" id="tRef" placeholder="e.g. INV-001">
+        <label>Reference Number</label>
+        <input type="text" id="tRefNum" placeholder="e.g. 001, 002 or custom reference">
       </div>
       <div class="field">
         <label>Amount (ZMW)</label>
@@ -474,11 +552,17 @@ const ACCOUNTS=[
 let selAcc=ACCOUNTS[0];
 let allTransactions=[];
 let unsubscribeListener=null;
+let filteredTransactions=[];
 
 // Month picker
 const monthPicker=document.getElementById('monthPicker');
 const today=new Date();
 monthPicker.value=localStorage.getItem('cf_month')||today.toISOString().substring(0,7);
+
+// Filter elements
+const filterReference=document.getElementById('filterReference');
+const filterSearch=document.getElementById('filterSearch');
+const filterType=document.getElementById('filterType');
 
 // ── HELPERS ──
 function toast(msg,type='success'){
@@ -493,6 +577,14 @@ function toast(msg,type='success'){
 function fmtN(n){return Math.abs(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtK(n){return'ZMW '+fmtN(n);}
 
+// Generate reference from prefix and number
+function generateReference(prefix, num){
+  if(!prefix) return num || '—';
+  if(prefix === 'Other') return num || 'CUSTOM';
+  if(!num) return prefix;
+  return `${prefix}-${num.padStart(3,'0')}`;
+}
+
 document.addEventListener('click',()=>{
   document.querySelectorAll('.dropdown-menu.show').forEach(m=>m.classList.remove('show'));
 });
@@ -502,8 +594,68 @@ window.switchAcc=function(el){
   document.querySelectorAll('.acc-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   selAcc=el.dataset.acc;
-  renderTable();
+  applyFilters();
 };
+
+// ── FILTER FUNCTIONS ──
+function applyFilters(){
+  const month=monthPicker.value;
+  if(!month) return;
+  
+  let filtered = allTransactions.filter(t =>
+    t.account === selAcc && t.date && t.date.substring(0,7) === month
+  );
+  
+  // Filter by reference prefix
+  const refFilter = filterReference.value;
+  if(refFilter){
+    if(refFilter === 'Other'){
+      filtered = filtered.filter(t => {
+        const ref = t.reference || '';
+        return ref && !ref.startsWith('TS-');
+      });
+    } else {
+      filtered = filtered.filter(t => (t.reference || '').startsWith(refFilter));
+    }
+  }
+  
+  // Filter by search term
+  const searchTerm = filterSearch.value.toLowerCase().trim();
+  if(searchTerm){
+    filtered = filtered.filter(t => 
+      (t.description || '').toLowerCase().includes(searchTerm) || 
+      (t.reference || '').toLowerCase().includes(searchTerm)
+    );
+  }
+  
+  // Filter by type
+  const typeFilter = filterType.value;
+  if(typeFilter){
+    filtered = filtered.filter(t => t.type === typeFilter);
+  }
+  
+  // Sort by date
+  filtered.sort((a,b)=>{
+    if((a.date||'')===(b.date||'')) return (a.createdAt||0)-(b.createdAt||0);
+    return (a.date||'')<(b.date||'')?-1:1;
+  });
+  
+  filteredTransactions = filtered;
+  renderTableWithFilters();
+}
+
+function clearFilters(){
+  filterReference.value = '';
+  filterSearch.value = '';
+  filterType.value = '';
+  applyFilters();
+  toast('Filters cleared!', 'info');
+}
+
+// Add event listeners for filters
+filterReference.addEventListener('change', applyFilters);
+filterSearch.addEventListener('input', applyFilters);
+filterType.addEventListener('change', applyFilters);
 
 // ── MODAL HELPERS ──
 window.bgClick=function(e,id){if(e.target.id===id)document.getElementById(id).classList.remove('open');};
@@ -519,7 +671,8 @@ window.openTxnModal=function(mode,id=null){
     document.getElementById('tType').value='';
     document.getElementById('tAccount').value=selAcc;
     document.getElementById('tDesc').value='';
-    document.getElementById('tRef').value='';
+    document.getElementById('tRefPrefix').value='';
+    document.getElementById('tRefNum').value='';
     document.getElementById('tAmount').value='';
   }else if(id){
     const t=allTransactions.find(x=>x.id===id);
@@ -529,12 +682,26 @@ window.openTxnModal=function(mode,id=null){
       document.getElementById('tType').value=t.type||'';
       document.getElementById('tAccount').value=t.account||selAcc;
       document.getElementById('tDesc').value=t.description||'';
-      document.getElementById('tRef').value=t.reference||'';
+      
+      // Parse reference to prefix and number
+      const ref = t.reference || '';
+      let prefix = '', num = '';
+      if(ref.startsWith('TS-')) {
+        const parts = ref.split('-');
+        prefix = parts[0] + '-' + parts[1];
+        num = parts[2] || '';
+      } else if(ref !== '—' && ref !== 'CUSTOM') {
+        prefix = 'Other';
+        num = ref;
+      }
+      document.getElementById('tRefPrefix').value = prefix;
+      document.getElementById('tRefNum').value = num;
       document.getElementById('tAmount').value=t.amount||'';
     }
   }
   ov.classList.add('open');
 };
+
 window.closeTxnModal=function(){document.getElementById('txnOverlay').classList.remove('open');};
 
 window.openTransferModal=function(){
@@ -583,8 +750,12 @@ window.saveTxn=async function(e){
   const type=document.getElementById('tType').value;
   const account=document.getElementById('tAccount').value;
   const desc=document.getElementById('tDesc').value.trim();
-  const ref=document.getElementById('tRef').value.trim()||'—';
+  const refPrefix=document.getElementById('tRefPrefix').value;
+  const refNum=document.getElementById('tRefNum').value.trim();
   const amount=parseFloat(document.getElementById('tAmount').value);
+  
+  // Generate reference
+  const reference = generateReference(refPrefix, refNum);
 
   if(!date){errEl.textContent='Select a date.';return;}
   if(!type){errEl.textContent='Select a type.';return;}
@@ -594,7 +765,7 @@ window.saveTxn=async function(e){
 
   btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving…';
   try{
-    const data={date,type,account,description:desc,reference:ref,amount,
+    const data={date,type,account,description:desc,reference,amount,
                 updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
     if(id){
       await db.collection('Cashflow transactions').doc(id).update(data);
@@ -659,24 +830,17 @@ function getOpeningBalance(account,yearMonth){
   return bal;
 }
 
-// ── RENDER TABLE ── FIXED VERSION
-function renderTable(){
+// ── RENDER TABLE WITH FILTERS ──
+function renderTableWithFilters(){
   const tbody=document.getElementById('cfTbody');
   const month=monthPicker.value;
   if(!month)return;
 
-  let rows=allTransactions.filter(t=>
-    t.account===selAcc&&t.date&&t.date.substring(0,7)===month
-  ).sort((a,b)=>{
-    if((a.date||'')===(b.date||''))return(a.createdAt||0)-(b.createdAt||0);
-    return(a.date||'')<(b.date||'')?-1:1;
-  });
-
   const openBal=getOpeningBalance(selAcc,month);
   let runBal=openBal;
 
-  if(!rows.length&&openBal===0){
-    tbody.innerHTML='<tr class="empty-row"><td colspan="7">No transactions for this period.</td></tr>';
+  if(!filteredTransactions.length && openBal===0){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="7">No transactions match your filters.  </tr>';
     return;
   }
 
@@ -684,16 +848,16 @@ function renderTable(){
 
   // Opening row
   html.push(`<tr class="opening-row">
-    <td>${month}-01</td>
-    <td>Opening Balance (brought forward)</td>
-    <td>—</td>
+     <td>${month}-01</td>
+     <td>Opening Balance (brought forward)</td>
+     <td>—</td>
     <td class="num"><span class="blank-cell">·</span></td>
     <td class="num"><span class="blank-cell">·</span></td>
     <td class="num bal-val${openBal<0?' neg':''}">${fmtK(openBal)}</td>
     <td></td>
    </tr>`);
 
-  rows.forEach(t=>{
+  filteredTransactions.forEach(t=>{
     const isCredit=t.type==='credit';
     if(isCredit){
       runBal+=(t.amount||0);
@@ -754,7 +918,7 @@ function setupListener(){
         createdAt:d.createdAt?.seconds?d.createdAt.seconds*1000:Date.now()
       });
     });
-    renderTable();
+    applyFilters();
   },err=>{
     document.getElementById('cfTbody').innerHTML=
       `<tr class="empty-row"><td colspan="7"><i class="fas fa-exclamation-triangle" style="color:var(--danger)"></i> ${err.message}</td></tr>`;
@@ -764,20 +928,19 @@ function setupListener(){
 
 monthPicker.addEventListener('change',()=>{
   localStorage.setItem('cf_month',monthPicker.value);
-  renderTable();
+  applyFilters();
 });
 
-// ── PDF EXPORT — FULL PAGE ──
+// ── PDF EXPORT ──
 document.getElementById('pdfBtn').addEventListener('click',()=>{
   try{
     const{jsPDF}=window.jspdf;
     const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
-    const PW=doc.internal.pageSize.getWidth();   // 841.89
-    const PH=doc.internal.pageSize.getHeight();  // 595.28
+    const PW=doc.internal.pageSize.getWidth();
+    const PH=doc.internal.pageSize.getHeight();
     const ML=30,MR=30,MT=30,MB=30;
-    const CW=PW-ML-MR; // usable width
+    const CW=PW-ML-MR;
 
-    // ── HEADER ──
     doc.setFillColor(67,97,238);
     doc.rect(0,0,PW,54,'F');
     doc.setTextColor(255,255,255);
@@ -786,7 +949,6 @@ document.getElementById('pdfBtn').addEventListener('click',()=>{
     doc.setFontSize(10);doc.setFont('helvetica','normal');
     doc.text('Cash Flow Statement · '+selAcc,ML,48);
 
-    // right side of header
     const mo=monthPicker.value||'All';
     doc.setFontSize(9);
     doc.text('Month: '+mo,PW-MR,34,{align:'right'});
@@ -794,8 +956,6 @@ document.getElementById('pdfBtn').addEventListener('click',()=>{
 
     let y=MT+54+14;
 
-    // ── TABLE ──
-    // Column definitions: fill full width
     const cols=[
       {lbl:'Date',       w:0.10},
       {lbl:'Description',w:0.33},
@@ -804,7 +964,6 @@ document.getElementById('pdfBtn').addEventListener('click',()=>{
       {lbl:'Credit',     w:0.13,r:true},
       {lbl:'Balance',    w:0.17,r:true},
     ];
-    // Convert ratios to pt widths
     cols.forEach(c=>c.pw=c.w*CW);
 
     const ROW_H=18;
@@ -825,7 +984,6 @@ document.getElementById('pdfBtn').addEventListener('click',()=>{
 
     y=drawHeader(y);
 
-    // Collect rows from DOM
     const tableRows=[];
     document.querySelectorAll('#cfTbody tr').forEach(tr=>{
       if(tr.classList.contains('empty-row'))return;
@@ -836,28 +994,23 @@ document.getElementById('pdfBtn').addEventListener('click',()=>{
 
     let rowIdx=0;
     tableRows.forEach(row=>{
-      // New page if needed
       if(y+ROW_H>PH-MB){
         doc.addPage();
         y=MT;
         y=drawHeader(y);
       }
 
-      // Row background
-      const bgOdd=rowIdx%2===0;
       if(row.isOpening){
         doc.setFillColor(240,242,255);
         doc.rect(ML,y,CW,ROW_H,'F');
-      }else if(bgOdd){
+      }else if(rowIdx%2===0){
         doc.setFillColor(250,251,254);
         doc.rect(ML,y,CW,ROW_H,'F');
       }
 
-      // Row bottom border
       doc.setDrawColor(230,232,240);
       doc.line(ML,y+ROW_H,ML+CW,y+ROW_H);
 
-      // Cell text
       let xx=ML;
       doc.setFontSize(8);doc.setFont('helvetica','normal');
 
@@ -865,17 +1018,15 @@ document.getElementById('pdfBtn').addEventListener('click',()=>{
         const c=cols[i];
         let r=0,g=0,b=0;
 
-        // Colour logic
-        if(i===3&&cell&&!cell.includes('·')&&!cell.includes(' ·'))    {r=247;g=37;b=133;}   // debit = red
-        if(i===4&&cell&&!cell.includes('·')&&!cell.includes(' ·'))    {r=46;g=204;b=113;}   // credit = green
-        if(i===5)                                                        {r=67;g=97;b=238;}   // balance = blue
-        if(i===5&&cell.includes('-'))                                   {r=247;g=37;b=133;}   // negative bal = red
-        if(row.isOpening)                                               {r=107;g=117;b=128;}  // opening row muted
-        if(row.isTransfer&&i>2)                                         {r=248;g=150;b=30;}   // transfer = amber
+        if(i===3&&cell&&!cell.includes('·'))    {r=247;g=37;b=133;}
+        if(i===4&&cell&&!cell.includes('·'))    {r=46;g=204;b=113;}
+        if(i===5)                                {r=67;g=97;b=238;}
+        if(i===5&&cell.includes('-'))           {r=247;g=37;b=133;}
+        if(row.isOpening)                       {r=107;g=117;b=128;}
+        if(row.isTransfer&&i>2)                 {r=248;g=150;b=30;}
 
         doc.setTextColor(r,g,b);
 
-        // clip long text for description column
         let txt=cell;
         if(i===1&&txt.length>42)txt=txt.substring(0,42)+'…';
         if(i===2&&txt.length>20)txt=txt.substring(0,20)+'…';
@@ -889,7 +1040,6 @@ document.getElementById('pdfBtn').addEventListener('click',()=>{
       rowIdx++;
     });
 
-    // ── FOOTER LINE ──
     doc.setDrawColor(67,97,238);
     doc.setLineWidth(1);
     doc.line(ML,PH-MB-12,PW-MR,PH-MB-12);
