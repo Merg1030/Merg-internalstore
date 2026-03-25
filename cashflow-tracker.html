@@ -659,7 +659,7 @@ function getOpeningBalance(account,yearMonth){
   return bal;
 }
 
-// ── RENDER TABLE ──
+// ── RENDER TABLE ── FIXED VERSION
 function renderTable(){
   const tbody=document.getElementById('cfTbody');
   const month=monthPicker.value;
@@ -691,12 +691,15 @@ function renderTable(){
     <td class="num"><span class="blank-cell">·</span></td>
     <td class="num bal-val${openBal<0?' neg':''}">${fmtK(openBal)}</td>
     <td></td>
-  </tr>`);
+   </tr>`);
 
   rows.forEach(t=>{
     const isCredit=t.type==='credit';
-    if(isCredit){runBal+=(t.amount||0);totalCredits+=(t.amount||0);}
-    else{runBal-=(t.amount||0);totalDebits+=(t.amount||0);}
+    if(isCredit){
+      runBal+=(t.amount||0);
+    } else {
+      runBal-=(t.amount||0);
+    }
 
     const dCell=!isCredit
       ?`<td class="num debit-val">${fmtK(t.amount||0)}</td>`
@@ -734,10 +737,7 @@ function renderTable(){
   });
 
   tbody.innerHTML=html.join('');
-
 }
-
-
 
 // ── FIREBASE LISTENER ──
 function setupListener(){
@@ -861,7 +861,6 @@ document.getElementById('pdfBtn').addEventListener('click',()=>{
       let xx=ML;
       doc.setFontSize(8);doc.setFont('helvetica','normal');
 
-      cells:
       row.cells.slice(0,6).forEach((cell,i)=>{
         const c=cols[i];
         let r=0,g=0,b=0;
