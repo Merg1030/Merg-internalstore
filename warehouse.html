@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trismart — Warehouse</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>TriSmart Stores | Warehouse</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
@@ -13,856 +12,733 @@
             --border:#e2e6ef; --border2:#cdd3e0;
             --text:#1a1e2e; --text-fade:#6b7490; --text-dim:#a0a8c0;
             --blue:#4361ee; --cyan:#00b4d8; --green:#10b981;
-            --orange:#f59e0b; --pink:#f72585; --danger:#ef4444;
-            --radius:10px; --radius-lg:16px;
-            --header-h:56px; --sidebar-w:230px;
-            --shadow:0 2px 12px rgba(67,97,238,0.08);
-            --shadow-lg:0 8px 32px rgba(67,97,238,0.13);
+            --orange:#f59e0b; --pink:#f72585; --purple:#7c3aed;
+            --danger:#ef4444;
+            --blue-glow:rgba(67,97,238,0.15);
+            --radius:12px; --radius-lg:18px;
+            --header-h:58px; --sidebar-w:240px;
         }
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+        *{box-sizing:border-box;margin:0;padding:0;}
         body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-        .topbar{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:1100;gap:10px;}
-        .topbar-left{display:flex;align-items:center;gap:10px;}
-        .menu-btn{width:36px;height:36px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-fade);font-size:0.95rem;transition:all 0.2s;flex-shrink:0;}
-        .menu-btn:hover{background:var(--blue);color:white;border-color:var(--blue);}
-        .logo{display:flex;align-items:center;gap:9px;}
-        .logo-mark{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:9px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.85rem;box-shadow:0 0 14px rgba(67,97,238,0.3);}
-        .logo-text{font-size:0.95rem;font-weight:800;color:var(--text);letter-spacing:-0.3px;}
+        /* TOPBAR */
+        .topbar{
+            position:fixed;top:0;left:0;right:0;height:var(--header-h);
+            background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);
+            border-bottom:1px solid var(--border);
+            display:flex;align-items:center;justify-content:space-between;
+            padding:0 16px;z-index:1100;
+        }
+        .topbar-left{display:flex;align-items:center;gap:12px;}
+        .menu-btn{
+            width:38px;height:38px;background:var(--bg3);border:1px solid var(--border2);
+            border-radius:10px;display:flex;align-items:center;justify-content:center;
+            cursor:pointer;color:var(--text-fade);font-size:1rem;transition:all 0.2s;flex-shrink:0;
+        }
+        .menu-btn:hover{background:var(--blue);color:white;border-color:var(--blue);box-shadow:0 0 20px var(--blue-glow);}
+        .logo{display:flex;align-items:center;gap:10px;}
+        .logo-mark{
+            width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--cyan));
+            border-radius:10px;display:flex;align-items:center;justify-content:center;
+            color:white;font-size:0.9rem;box-shadow:0 0 18px rgba(79,142,255,0.4);
+        }
+        .logo-text{font-size:1rem;font-weight:800;color:var(--text);letter-spacing:-0.3px;}
         .logo-text span{color:var(--blue);}
-        .time-badge{background:var(--bg3);border:1px solid var(--border2);border-radius:100px;padding:4px 11px;font-size:0.68rem;font-family:'DM Mono',monospace;color:var(--text-fade);white-space:nowrap;}
+        .branch-badge{
+            background:linear-gradient(135deg,var(--green),#059669);
+            color:white;font-size:0.68rem;font-weight:800;
+            padding:4px 12px;border-radius:100px;
+        }
+        .time-badge{
+            background:var(--bg3);border:1px solid var(--border2);
+            border-radius:100px;padding:5px 12px;
+            font-size:0.7rem;font-family:'DM Mono',monospace;color:var(--text-fade);white-space:nowrap;
+        }
 
-        .sidebar{position:fixed;top:var(--header-h);left:0;width:var(--sidebar-w);height:calc(100vh - var(--header-h));background:rgba(255,255,255,0.98);border-right:1px solid var(--border);z-index:1000;padding:14px 10px 16px;transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);overflow-y:auto;display:flex;flex-direction:column;}
+        /* SIDEBAR */
+        .sidebar{
+            position:fixed;top:var(--header-h);left:0;
+            width:var(--sidebar-w);height:calc(100vh - var(--header-h));
+            background:rgba(255,255,255,0.98);backdrop-filter:blur(20px);
+            border-right:1px solid var(--border);z-index:1000;
+            padding:14px 10px;transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);
+            overflow-y:auto;
+        }
         .sidebar.hidden{transform:translateX(-100%);}
         .sidebar-label{font-size:0.58rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.14em;padding:0 10px;margin:12px 0 6px;}
-        .sidebar a{display:flex;align-items:center;gap:10px;padding:9px 12px;color:var(--text-fade);text-decoration:none;font-size:0.82rem;font-weight:500;border-radius:var(--radius);margin-bottom:2px;transition:all 0.18s;}
+        .sidebar a{
+            display:flex;align-items:center;gap:10px;padding:9px 12px;color:var(--text-fade);
+            text-decoration:none;font-size:0.82rem;font-weight:500;border-radius:var(--radius);
+            margin-bottom:2px;transition:all 0.18s;
+        }
         .sidebar a i{width:16px;text-align:center;font-size:0.85rem;}
-        .sidebar a:hover{background:rgba(67,97,238,0.08);color:var(--blue);}
-        .sidebar a.active{background:rgba(67,97,238,0.12);color:var(--blue);font-weight:700;}
-        .logout-link{margin-top:auto;display:flex;align-items:center;gap:10px;padding:9px 12px;color:var(--danger);text-decoration:none;font-size:0.82rem;font-weight:700;border-radius:var(--radius);border:1px solid rgba(239,68,68,0.15);background:rgba(239,68,68,0.04);transition:all 0.18s;cursor:pointer;}
+        .sidebar a:hover{background:rgba(79,142,255,0.1);color:var(--blue);}
+        .sidebar a.active{background:rgba(79,142,255,0.15);color:var(--blue);font-weight:700;box-shadow:inset 0 0 0 1px rgba(79,142,255,0.2);}
+        .logout-link{
+            margin-top:auto;margin-bottom:10px;display:flex;align-items:center;gap:10px;
+            padding:9px 12px;color:var(--danger);text-decoration:none;font-size:0.82rem;font-weight:700;
+            border-radius:var(--radius);border:1px solid rgba(239,68,68,0.15);
+            background:rgba(239,68,68,0.04);transition:all 0.18s;cursor:pointer;
+        }
         .logout-link:hover{background:rgba(239,68,68,0.1);border-color:var(--danger);}
         .logout-link i{width:16px;text-align:center;color:var(--danger);}
-        .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;}
+        .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;backdrop-filter:blur(4px);}
         .sidebar-overlay.show{display:block;}
 
-        .main{margin-top:var(--header-h);margin-left:var(--sidebar-w);min-height:calc(100vh - var(--header-h));display:flex;flex-direction:column;transition:margin-left 0.32s cubic-bezier(0.4,0,0.2,1);}
-        .main.expanded{margin-left:0;}
+        /* MAIN */
+        main{
+            margin-top:var(--header-h);margin-left:var(--sidebar-w);
+            padding:16px 14px 28px;min-height:calc(100vh - var(--header-h));
+            transition:margin-left 0.32s cubic-bezier(0.4,0,0.2,1);
+        }
+        main.expanded{margin-left:0;}
 
-        .content-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;box-shadow:var(--shadow);}
-        .content-bar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-        .content-bar-right{display:flex;align-items:center;gap:6px;}
-        .page-title-text{font-size:0.9rem;font-weight:700;color:var(--blue);white-space:nowrap;}
-        .branch-switcher{display:none;align-items:center;gap:3px;background:var(--bg3);border:1px solid var(--border);border-radius:100px;padding:3px 4px;}
-        .branch-tab{padding:4px 11px;border-radius:100px;font-size:0.72rem;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--text-fade);transition:all 0.18s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
-        .branch-tab:hover{color:var(--blue);background:white;}
-        .branch-tab.active{background:var(--blue);color:white;box-shadow:0 2px 8px rgba(67,97,238,0.25);}
-        .branch-tab.active-master{background:linear-gradient(135deg,#f59e0b,#f97316);color:white;}
-        .master-pill{display:none;background:linear-gradient(90deg,#f59e0b,#f97316);color:white;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
-        .total-pill{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid rgba(67,97,238,0.2);color:var(--blue);font-size:0.75rem;font-weight:700;padding:4px 12px;border-radius:100px;white-space:nowrap;}
+        /* STATS */
+        .stats-row{
+            display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;
+        }
+        .stat-card{
+            background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);
+            padding:16px;transition:all 0.2s;
+        }
+        .stat-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(67,97,238,0.1);border-color:var(--blue);}
+        .stat-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-fade);margin-bottom:6px;}
+        .stat-value{font-size:1.6rem;font-weight:800;color:var(--blue);font-family:'DM Mono',monospace;}
+        .stat-sub{font-size:0.6rem;color:var(--text-dim);margin-top:4px;}
 
-        .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border:none;border-radius:var(--radius);cursor:pointer;font-size:0.78rem;font-weight:700;transition:all 0.18s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+        /* CONTENT BAR */
+        .content-bar{
+            background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);
+            padding:12px 18px;display:flex;align-items:center;justify-content:space-between;
+            gap:12px;flex-wrap:wrap;margin-bottom:16px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.02);
+        }
+        .page-title-text{font-size:0.9rem;font-weight:700;color:var(--blue);display:flex;align-items:center;gap:8px;}
+        .total-pill{
+            background:linear-gradient(135deg,#eef2ff,#e0e7ff);
+            border:1px solid rgba(67,97,238,0.2);
+            color:var(--blue);font-size:0.75rem;font-weight:700;padding:4px 12px;
+            border-radius:100px;white-space:nowrap;
+        }
+
+        /* BUTTONS */
+        .btn{
+            display:inline-flex;align-items:center;gap:5px;padding:7px 13px;
+            border:none;border-radius:var(--radius);cursor:pointer;font-size:0.78rem;font-weight:700;
+            transition:all 0.18s;font-family:'DM Sans',sans-serif;
+        }
         .btn-primary{background:linear-gradient(135deg,var(--blue),#3451d1);color:white;}
         .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(67,97,238,0.3);}
         .btn-success{background:linear-gradient(135deg,var(--green),#059669);color:white;}
         .btn-success:hover{transform:translateY(-1px);}
-        .btn-warning{background:linear-gradient(135deg,var(--orange),#d97706);color:white;}
-        .btn-warning:hover{transform:translateY(-1px);}
         .btn-ghost{background:var(--bg3);color:var(--blue);border:1px solid var(--border);}
-        .btn-ghost:hover{background:var(--border);}
-        .btn-danger{background:linear-gradient(135deg,var(--danger),#dc2626);color:white;}
-        .btn-sm{padding:5px 10px;font-size:0.72rem;}
+        .btn-danger-outline{background:rgba(239,68,68,0.08);color:var(--danger);border:1px solid rgba(239,68,68,0.2);}
+        .btn-sm{padding:4px 10px;font-size:0.7rem;}
 
+        /* FLEX ACTION BAR */
+        .action-flex{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center;}
         .search-wrap{position:relative;}
-        .search-wrap input{padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:var(--radius);font-size:0.78rem;background:var(--bg3);color:var(--text);width:160px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+        .search-wrap input{
+            padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:var(--radius);
+            font-size:0.78rem;background:var(--bg3);color:var(--text);width:220px;outline:none;
+            font-family:'DM Sans',sans-serif;
+        }
         .search-wrap input:focus{border-color:var(--blue);background:white;}
-        .search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:0.75rem;pointer-events:none;}
+        .search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:0.75rem;}
 
-        .table-area{flex:1;padding:12px 14px 20px;}
-        .table-card{background:var(--bg2);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;}
-        .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-        table{width:100%;border-collapse:collapse;min-width:320px;}
-        thead th{background:#f8f9ff;color:var(--text-fade);font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;padding:10px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;text-align:left;white-space:nowrap;}
-        tbody td{padding:9px 12px;font-size:0.8rem;border-bottom:1px solid #f0f2f8;transition:background 0.12s;}
-        tbody tr:last-child td{border-bottom:none;}
-        tbody tr:hover td{background:#f8f9ff;}
-        .code-chip{font-family:'DM Mono',monospace;font-size:0.7rem;background:#eef2ff;color:var(--blue);border:1px solid rgba(67,97,238,0.2);border-radius:6px;padding:2px 7px;font-weight:600;}
-        .stock-chip{font-size:0.7rem;font-weight:800;padding:3px 9px;border-radius:100px;white-space:nowrap;}
-        .stock-ok{background:rgba(16,185,129,0.1);color:#065f46;}
-        .stock-low{background:rgba(245,158,11,0.12);color:#92400e;}
-        .stock-zero{background:rgba(239,68,68,0.1);color:#991b1b;}
-        .empty-row td{text-align:center;padding:48px 20px;color:var(--text-dim);font-size:0.82rem;}
-
-        .menu-container{position:relative;display:inline-block;}
-        .three-dots-btn{background:none;border:none;cursor:pointer;width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2.5px;transition:background 0.15s;}
-        .three-dots-btn:hover{background:var(--bg3);}
-        .three-dots-btn .dot{width:3px;height:3px;background:var(--text-fade);border-radius:50%;}
-        .menu-dropdown{position:absolute;top:100%;right:0;background:white;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);z-index:100;min-width:120px;display:none;overflow:hidden;}
-        .menu-dropdown.show{display:block;}
-        .menu-item{display:flex;align-items:center;gap:7px;padding:8px 12px;cursor:pointer;font-size:0.78rem;border-bottom:1px solid #f0f2f8;transition:background 0.12s;color:var(--text);}
-        .menu-item:last-child{border-bottom:none;}
-        .menu-item:hover{background:var(--bg3);}
-        .menu-item.edit{color:var(--blue);}
-        .menu-item.delete{color:var(--danger);}
-
-        .panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:2000;opacity:0;pointer-events:none;transition:opacity 0.25s;}
-        .panel-overlay.open{opacity:1;pointer-events:all;}
-        .slide-panel{position:fixed;top:0;right:0;width:min(440px,100vw);height:100vh;background:var(--bg2);box-shadow:-8px 0 40px rgba(0,0,0,0.15);z-index:2001;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;overflow:hidden;}
-        .slide-panel.open{transform:translateX(0);}
-        .panel-hdr{padding:16px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-        .panel-hdr h3{font-size:0.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:9px;}
-        .panel-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;}
-        .panel-icon.green{background:rgba(16,185,129,0.12);color:var(--green);}
-        .panel-icon.blue{background:rgba(67,97,238,0.1);color:var(--blue);}
-        .close-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-fade);font-size:0.9rem;transition:all 0.15s;}
-        .close-btn:hover{background:var(--danger);color:white;border-color:var(--danger);}
-        .panel-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;}
-        .field-group{display:flex;flex-direction:column;gap:5px;}
-        .field-group label{font-size:0.65rem;font-weight:800;color:var(--text-fade);text-transform:uppercase;letter-spacing:0.08em;}
-        .field-group input,.field-group select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:0.85rem;color:var(--text);background:var(--bg3);font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+        /* TRANSFER PANEL */
+        .transfer-panel{
+            background:var(--bg2);border-radius:var(--radius-lg);border:1px solid var(--border);
+            padding:20px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,0.03);
+        }
+        .transfer-panel h3{font-size:0.9rem;font-weight:800;color:var(--blue);margin-bottom:15px;display:flex;align-items:center;gap:8px;}
+        .field-group{margin-bottom:12px;}
+        .field-group label{font-size:0.65rem;font-weight:800;color:var(--text-fade);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:4px;}
+        .field-group input,.field-group select{
+            width:100%;padding:9px 12px;border:1.5px solid var(--border);
+            border-radius:var(--radius);font-size:0.85rem;background:var(--bg3);outline:none;
+            font-family:'DM Sans',sans-serif;
+        }
         .field-group input:focus,.field-group select:focus{border-color:var(--blue);background:white;}
-        .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-        .preview-box{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid rgba(67,97,238,0.2);border-radius:var(--radius);padding:10px 12px;font-size:0.78rem;color:var(--blue);min-height:42px;display:flex;align-items:center;gap:7px;}
-        .tip-text{font-size:0.7rem;color:var(--text-dim);}
-        .panel-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;}
-        .panel-footer .btn{flex:1;justify-content:center;padding:10px;}
+        .product-info-box{
+            background:linear-gradient(135deg,#eef2ff,#e0e7ff);
+            border:1px solid rgba(67,97,238,0.2);border-radius:var(--radius);
+            padding:10px 12px;font-size:0.75rem;margin-top:8px;color:var(--blue);
+        }
+        .btn-block{width:100%;justify-content:center;padding:10px;}
 
-        .toast-wrap{position:fixed;bottom:20px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none;}
-        .toast{background:#1e2029;color:white;padding:10px 16px;border-radius:var(--radius);font-size:0.8rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,0.3);animation:toastIn 0.25s ease;display:flex;align-items:center;gap:9px;max-width:300px;}
-        .toast.success{border-left:3px solid var(--green);}
-        .toast.error{border-left:3px solid var(--danger);}
-        .toast.fade-out{animation:toastOut 0.3s ease forwards;}
-        @keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-        @keyframes toastOut{from{opacity:1;}to{opacity:0;transform:translateY(10px);}}
-
-        .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:3000;backdrop-filter:blur(3px);}
-        .modal{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:24px 20px 18px;width:min(400px,94vw);animation:modalIn 0.2s ease;}
-        @keyframes modalIn{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
-        .modal h3{margin-bottom:16px;color:var(--blue);font-size:0.95rem;}
-        .modal .field-group{margin-bottom:12px;}
-        .modal .form-actions{display:flex;gap:8px;margin-top:16px;}
-        .modal .form-actions .btn{flex:1;justify-content:center;}
-
-        #loadingOverlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9998;flex-direction:column;gap:12px;}
-        .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;}
-        @keyframes spin{to{transform:rotate(360deg);}}
-        .loading-text{font-size:0.82rem;color:var(--text-fade);font-weight:500;}
-
-        .tab-bar{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;flex-shrink:0;}
-        .tab-btn{flex:1;padding:10px 4px;font-size:0.78rem;font-weight:700;color:var(--text-fade);border:none;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:5px;}
+        /* TABS */
+        .tab-bar{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border);}
+        .tab-btn{
+            padding:9px 18px;font-size:0.8rem;font-weight:700;
+            background:none;border:none;cursor:pointer;color:var(--text-fade);
+            font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;transition:all 0.2s;
+        }
         .tab-btn:hover{color:var(--blue);}
         .tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
-        .tab-content{display:none;flex:1;flex-direction:column;min-height:0;overflow:hidden;}
-        .tab-content.active{display:flex;}
-        @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
-        .history-area{flex:1;padding:12px 14px 20px;overflow-y:auto;}
-        .hist-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;}
-        .hist-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-        .hist-hdr-left{display:flex;align-items:center;gap:7px;}
-        .hist-hdr-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 6px rgba(67,97,238,0.5);animation:pulse 2s infinite;}
-        .hist-hdr h3{font-size:0.8rem;font-weight:700;}
-        .hist-count{background:var(--bg3);border:1px solid var(--border2);border-radius:100px;padding:2px 9px;font-size:0.62rem;font-weight:700;color:var(--text-fade);}
-        .hist-item{padding:12px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;}
-        .hist-item:last-child{border-bottom:none;}
-        .hist-item:hover{background:var(--bg3);}
-        .hist-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-        .hist-ref{font-size:0.78rem;font-weight:800;color:var(--text);}
-        .hist-date{font-size:0.65rem;color:var(--text-fade);font-family:'DM Mono',monospace;}
-        .hist-route{display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap;}
-        .hist-branch{background:rgba(67,97,238,0.08);border:1px solid rgba(67,97,238,0.15);color:var(--blue);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:100px;}
-        .hist-branch.dest{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.2);color:var(--green);}
-        .hist-branch.incoming{background:rgba(16,185,129,0.12);color:var(--green);border-color:rgba(16,185,129,0.3);}
-        .hist-branch.outgoing{background:rgba(239,68,68,0.08);color:var(--danger);border-color:rgba(239,68,68,0.15);}
-        .hist-arrow{font-size:0.7rem;color:var(--text-dim);}
-        .hist-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;}
-        .hist-chip{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:2px 8px;font-size:0.62rem;color:var(--text-fade);}
-        .hist-chip strong{color:var(--text);}
-        .hist-bottom{display:flex;align-items:center;justify-content:space-between;}
-        .hist-total{font-size:0.72rem;font-weight:700;color:var(--blue);font-family:'DM Mono',monospace;}
-        .hist-by{font-size:0.6rem;color:var(--text-dim);}
-        .no-history{text-align:center;padding:40px 20px;color:var(--text-dim);font-size:0.8rem;}
-        .no-history i{font-size:1.8rem;display:block;margin-bottom:10px;color:var(--border2);}
+        .tab-content{display:none;}
+        .tab-content.active{display:block;}
 
-        ::-webkit-scrollbar{width:4px;height:4px;}
-        ::-webkit-scrollbar-track{background:transparent;}
-        ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+        /* TABLES */
+        .table-card{background:var(--bg2);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,0.03);overflow:hidden;}
+        .table-scroll{overflow-x:auto;}
+        table{width:100%;border-collapse:collapse;}
+        thead th{background:#f8f9ff;color:var(--text-fade);font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;}
+        tbody td{padding:9px 12px;font-size:0.8rem;border-bottom:1px solid #f0f2f8;}
+        tbody tr:hover td{background:#f8f9ff;}
+        .code-chip{font-family:'DM Mono',monospace;font-size:0.7rem;background:#eef2ff;color:var(--blue);border-radius:6px;padding:2px 7px;font-weight:600;display:inline-block;}
+        .stock-chip{padding:3px 9px;border-radius:100px;font-size:0.7rem;font-weight:800;white-space:nowrap;}
+        .empty-row td{text-align:center;padding:48px;color:var(--text-dim);}
+        .action-icons{display:flex;gap:6px;align-items:center;}
+        .action-icon{background:none;border:none;cursor:pointer;font-size:0.85rem;padding:4px;border-radius:4px;transition:all 0.2s;}
+        .action-icon.edit{color:var(--blue);}
+        .action-icon.edit:hover{background:rgba(67,97,238,0.1);}
+        .action-icon.delete{color:var(--danger);}
+        .action-icon.delete:hover{background:rgba(239,68,68,0.1);}
+
+        /* Incoming transfers notification */
+        .incoming-notice{
+            background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(0,180,216,0.06));
+            border:1.5px solid rgba(16,185,129,0.25);border-radius:var(--radius-lg);
+            padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:12px;
+        }
+        .incoming-notice i{color:var(--green);font-size:1.2rem;}
+        .incoming-notice p{font-size:0.8rem;color:var(--text-fade);}
+        .incoming-notice strong{color:var(--green);}
+
+        /* Transfer history in branch */
+        .transfer-ref{font-family:'DM Mono',monospace;font-weight:700;color:var(--blue);font-size:0.75rem;}
+        .in-badge-sm{background:rgba(16,185,129,0.15);color:#065f46;font-size:0.6rem;padding:2px 8px;border-radius:100px;font-weight:700;}
+        .status-active{background:rgba(16,185,129,0.15);color:#065f46;font-size:0.65rem;padding:3px 10px;border-radius:100px;font-weight:800;display:inline-block;}
+        .status-reversed{background:rgba(124,58,237,0.15);color:var(--purple);font-size:0.65rem;padding:3px 10px;border-radius:100px;font-weight:800;display:inline-block;}
+
+        /* Modals */
+        .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:3000;}
+        .modal{background:white;border-radius:var(--radius-lg);padding:24px 20px;width:min(420px,94vw);}
+        .modal h3{color:var(--blue);margin-bottom:16px;}
+        .form-actions{display:flex;gap:8px;margin-top:16px;}
+        .form-actions button{flex:1;justify-content:center;}
+
+        .items-table-detail{width:100%;border-collapse:collapse;font-size:0.75rem;}
+        .items-table-detail th{text-align:left;padding:10px 8px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:0.65rem;font-weight:800;text-transform:uppercase;color:var(--text-fade);}
+        .items-table-detail td{padding:8px;border-bottom:1px solid #f0f2f8;}
+
+        .toast-wrap{position:fixed;bottom:20px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:7px;}
+        .toast{background:#1e2029;color:white;padding:10px 16px;border-radius:var(--radius);font-size:0.8rem;animation:toastIn 0.25s;display:flex;align-items:center;gap:8px;max-width:300px;}
+        .toast.error{background:#7f1d1d;}
+        .toast.info{background:#1e3a5f;}
+        @keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
         @media(max-width:600px){
-            :root{--sidebar-w:240px;}
             .sidebar{transform:translateX(-100%);}
-            .sidebar.visible{transform:translateX(0)!important;}
-            .main{margin-left:0!important;}
+            .sidebar.visible{transform:translateX(0);}
+            main{margin-left:0!important;padding:14px 12px 30px;}
             .time-badge{display:none;}
-            .field-row{grid-template-columns:1fr;}
-            .table-area{padding:10px 10px 20px;}
-            .content-bar{padding:8px 10px;}
+            .search-wrap input{width:150px;}
+            .stats-row{grid-template-columns:1fr 1fr;}
         }
-        @media(max-width:400px){.btn{padding:6px 9px;font-size:0.72rem;}.search-wrap input{width:120px;}}
-        @media(min-width:601px){.sidebar{transform:translateX(0);}.sidebar.hidden{transform:translateX(-100%);}}
+        @media(min-width:601px){
+            .sidebar{transform:translateX(0);}
+            .sidebar.hidden{transform:translateX(-100%);}
+        }
     </style>
 </head>
 <body>
-
-<div id="loadingOverlay"><div class="spinner"></div><div class="loading-text">Loading inventory…</div></div>
 
 <header class="topbar">
     <div class="topbar-left">
         <div class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></div>
         <div class="logo">
-            <div class="logo-mark"><i class="fas fa-store-alt"></i></div>
+            <div class="logo-mark"><i class="fas fa-warehouse"></i></div>
             <div class="logo-text">Tri<span>smart</span></div>
         </div>
+        <div class="branch-badge" id="branchBadge"><i class="fas fa-store"></i> BRANCH</div>
     </div>
     <div class="time-badge" id="timeBadge">--:--</div>
 </header>
 
 <nav class="sidebar" id="sidebar">
     <div class="sidebar-label">Main</div>
+    <a href="cashbook.html"><i class="fas fa-book-open"></i> Accounts</a>
     <a href="Airtel.html"><i class="fas fa-mobile-alt"></i> Airtel Money</a>
     <a href="warehouse.html" class="active"><i class="fas fa-warehouse"></i> Warehouse</a>
     <a href="sale.html"><i class="fas fa-chart-line"></i> Sales</a>
-    <div class="sidebar-label" style="margin-top:14px;">Tools</div>
+    <div class="sidebar-label">Tools</div>
     <a href="Todo.html"><i class="fas fa-tasks"></i> To-Do</a>
     <a href="lowstock.html"><i class="fas fa-exclamation-triangle"></i> Low Stock</a>
     <a href="Report.html"><i class="fas fa-file-alt"></i> Daily Report</a>
-    <a href="index.html" class="logout-link" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <div class="logout-link" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Sign out</div>
 </nav>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<div class="main expanded" id="mainContent">
+<main id="mainContent">
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-card"><div class="stat-label"><i class="fas fa-boxes"></i> Total Products</div><div class="stat-value" id="statItems">0</div><div class="stat-sub">distinct items</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="fas fa-cubes"></i> Total Stock</div><div class="stat-value" id="statStock">0</div><div class="stat-sub">units</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="fas fa-coins"></i> Total Value</div><div class="stat-value" id="statValue">K0</div><div class="stat-sub">inventory value</div></div>
+    </div>
+
+    <!-- Content bar -->
     <div class="content-bar">
-        <div class="content-bar-left">
-            <span class="page-title-text" id="pageTitle">Warehouse</span>
-            <span class="master-pill" id="masterPill">⭐ Master</span>
-            <div class="branch-switcher" id="branchSwitcher"></div>
-            <div class="total-pill">Stock: <span id="totalVal">0.00</span> ZMW</div>
-        </div>
-        <div class="content-bar-right">
+        <div class="page-title-text"><i class="fas fa-archive"></i> Warehouse · <span id="branchNameDisplay">Loading...</span></div>
+        <div class="total-pill" id="totalStockPill">Total value: K0.00</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="inventory"><i class="fas fa-boxes"></i> Inventory</button>
+        <button class="tab-btn" data-tab="incoming"><i class="fas fa-truck-loading"></i> Incoming Transfers</button>
+    </div>
+
+    <!-- ── INVENTORY TAB ── -->
+    <div class="tab-content active" id="tabInventory">
+        <div class="action-flex">
             <div class="search-wrap">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" id="searchInput" placeholder="Search…" oninput="searchInventory()">
+                <input type="text" id="searchInput" placeholder="Search by code or name">
             </div>
-            <div id="adminControls" style="display:none;align-items:center;gap:6px;">
-                <button class="btn btn-success btn-sm" onclick="openAddPanel()"><i class="fas fa-plus"></i> Add</button>
-                <button class="btn btn-primary btn-sm" onclick="openTransferPanel()"><i class="fas fa-exchange-alt"></i> Transfer</button>
-            </div>
-            <a href="Restock.html" id="restockBtn" class="btn btn-warning btn-sm" style="display:none;text-decoration:none;"><i class="fas fa-file-alt"></i> GRV</a>
+            <button class="btn btn-primary" id="addInventoryBtn" style="display:none;"><i class="fas fa-plus-circle"></i> Add Product</button>
         </div>
-    </div>
 
-    <div class="tab-bar">
-        <button class="tab-btn active" id="tab-inventory" onclick="showTab('inventory')"><i class="fas fa-boxes"></i> Inventory</button>
-        <button class="tab-btn" id="tab-history" onclick="showTab('history')"><i class="fas fa-history"></i> Transfer History</button>
-    </div>
-
-    <div class="tab-content active" id="tabInventory">
-        <div class="table-area">
-            <div class="table-card">
-                <div class="table-scroll">
-                    <table id="inventoryTable">
-                        <thead>
-                            <tr>
-                                <th>Code</th>
-                                <th>Product</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th id="actionsHeader">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="tab-content" id="tabHistory">
-        <div class="history-area">
-            <div class="hist-card">
-                <div class="hist-hdr">
-                    <div class="hist-hdr-left">
-                        <div class="hist-hdr-dot"></div>
-                        <h3>Transfer Records for <span id="currentBranchName"></span></h3>
+        <!-- TRANSFER FORM (Chris only) -->
+        <div id="transferSectionWrapper" style="display:none;">
+            <div class="transfer-panel">
+                <h3><i class="fas fa-exchange-alt"></i> Cross-Branch Transfer</h3>
+                <form id="transferForm">
+                    <div class="field-group">
+                        <label>Product Code</label>
+                        <input type="text" id="transferCode" required list="productCodesList" placeholder="Scan or type product code" autocomplete="off">
+                        <datalist id="productCodesList"></datalist>
+                        <div id="productInfoPreview" class="product-info-box" style="margin-top:8px;">Product details will appear here</div>
                     </div>
-                    <div class="hist-count" id="histCount">—</div>
-                </div>
-                <div id="histListWrap">
-                    <div class="no-history"><i class="fas fa-box-open"></i><br>Switch to this tab to load records.</div>
-                </div>
+                    <div class="field-group">
+                        <label>Quantity to Transfer</label>
+                        <input type="number" id="transferQuantity" min="1" step="1" value="1" required>
+                    </div>
+                    <div class="field-group">
+                        <label>Destination Branch</label>
+                        <select id="transferBranch" required><option value="">— Select Destination Branch —</option></select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-paper-plane"></i> Execute Transfer</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <thead><tr><th>Code</th><th>Product Name</th><th>Price (K)</th><th>Stock</th><th>Actions</th></tr></thead>
+                    <tbody id="inventoryTbody"><tr class="empty-row"><td colspan="5">Loading inventory...</td></tr></tbody>
+                </table>
             </div>
         </div>
     </div>
-</div>
 
-<div class="panel-overlay" id="panelOverlay"></div>
-
-<div class="slide-panel" id="addPanel">
-    <div class="panel-hdr">
-        <h3><span class="panel-icon green"><i class="fas fa-plus"></i></span> Add New Item</h3>
-        <button class="close-btn" onclick="closePanelById('addPanel')">✕</button>
+    <!-- ── INCOMING TRANSFERS TAB ── -->
+    <div class="tab-content" id="tabIncoming">
+        <div style="margin-bottom:16px;">
+            <div class="incoming-notice">
+                <i class="fas fa-truck-loading"></i>
+                <p>All stock transfers <strong>sent to this branch</strong> from Master Warehouse appear here. Stock is automatically updated when transferred.</p>
+            </div>
+        </div>
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <thead><tr><th>Date & Time</th><th>Reference</th><th>From</th><th>Items</th><th>Total Value</th><th>Status</th><th></th></tr></thead>
+                    <tbody id="incomingTbody"><tr class="empty-row"><td colspan="7">Loading incoming transfers...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    <form id="addForm" onsubmit="submitAddItem(event)">
-        <div class="panel-body">
-            <div class="field-row">
-                <div class="field-group">
-                    <label>Product Code *</label>
-                    <input type="text" id="addItemCode" list="addProductCodes" placeholder="e.g. PROD001" required autocomplete="off">
-                    <datalist id="addProductCodes"></datalist>
-                </div>
-                <div class="field-group">
-                    <label>Product Name *</label>
-                    <input type="text" id="addItemName" placeholder="e.g. Sugar 2kg" required>
-                </div>
-            </div>
-            <div class="field-row">
-                <div class="field-group">
-                    <label>Price (ZMW) *</label>
-                    <input type="number" id="addItemPrice" min="0" step="0.01" placeholder="0.00" required>
-                </div>
-                <div class="field-group">
-                    <label>Initial Stock *</label>
-                    <input type="number" id="addItemStock" min="0" placeholder="0" required>
-                </div>
-            </div>
-            <p class="tip-text">💡 Typing an existing code auto-fills name and price.</p>
-        </div>
-        <div class="panel-footer">
-            <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Item</button>
-            <button type="button" class="btn btn-ghost" onclick="closePanelById('addPanel')">Cancel</button>
-        </div>
-    </form>
-</div>
+</main>
 
-<div class="slide-panel" id="transferPanel">
-    <div class="panel-hdr">
-        <h3><span class="panel-icon blue"><i class="fas fa-exchange-alt"></i></span> Transfer Stock</h3>
-        <button class="close-btn" onclick="closePanelById('transferPanel')">✕</button>
-    </div>
-    <form id="transferForm" onsubmit="submitTransfer(event)">
-        <div class="panel-body">
-            <div class="field-row">
-                <div class="field-group">
-                    <label>From *</label>
-                    <select id="transferSource" onchange="handleSourceChange()"><option value="">— Source —</option></select>
-                </div>
-                <div class="field-group">
-                    <label>To *</label>
-                    <select id="transferDest" required><option value="">— Dest —</option></select>
-                </div>
-            </div>
-            <div style="border-top:1px solid var(--border);padding-top:12px;">
-                <p class="tip-text" style="margin-bottom:8px;">Add each item then click <strong>+ Add to List</strong>.</p>
-                <div class="field-group">
-                    <label>Product Code</label>
-                    <input type="text" id="transferCode" list="transferCodes" placeholder="Enter code" autocomplete="off">
-                    <datalist id="transferCodes"></datalist>
-                </div>
-                <div class="field-group">
-                    <label>Preview</label>
-                    <div class="preview-box" id="transferPreview">Enter a product code above to preview</div>
-                </div>
-                <div class="field-group">
-                    <label>Quantity</label>
-                    <input type="number" id="transferQty" min="1" value="1">
-                </div>
-                <button type="button" class="btn btn-success" onclick="addToTransferCart()" style="width:100%;justify-content:center;margin-top:4px;">
-                    <i class="fas fa-plus"></i> + Add to Transfer List
-                </button>
-            </div>
-            <div id="transferCartWrap" style="display:none;border-top:1px solid var(--border);padding-top:12px;">
-                <p style="font-size:.72rem;font-weight:800;color:var(--blue);margin-bottom:7px;">📦 Items to Transfer</p>
-                <div style="overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
-                    <table style="width:100%;border-collapse:collapse;min-width:260px;">
-                        <thead>
-                            <tr style="background:var(--bg3);">
-                                <th style="padding:6px 8px;font-size:.6rem;text-transform:uppercase;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:left;">Product</th>
-                                <th style="padding:6px 8px;font-size:.6rem;text-transform:uppercase;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:center;">Qty</th>
-                                <th style="padding:6px 8px;font-size:.6rem;text-transform:uppercase;color:var(--text-fade);border-bottom:1px solid var(--border);text-align:right;">Value</th>
-                                <th style="padding:6px 8px;border-bottom:1px solid var(--border);"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="transferCartBody"></tbody>
-                    </table>
-                </div>
-                <div style="margin-top:6px;font-size:.72rem;font-weight:700;color:var(--blue);text-align:right;" id="transferCartTotal"></div>
-            </div>
-        </div>
-        <div class="panel-footer">
-            <button type="submit" class="btn btn-primary" id="confirmTransferBtn" disabled>
-                <i class="fas fa-check"></i> Confirm & Transfer All
-            </button>
-            <button type="button" class="btn btn-ghost" onclick="closePanelById('transferPanel')">Cancel</button>
-        </div>
-    </form>
-</div>
+<!-- Transfer Details Modal (Incoming) -->
+<div id="incomingDetailModalWrap"></div>
 
-<div class="toast-wrap" id="toastWrap"></div>
+<div class="toast-wrap" id="toastContainer"></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-    import {
-        getFirestore, collection, query, where, orderBy,
-        getDocs, addDoc, updateDoc, deleteDoc,
-        doc, increment, onSnapshot, runTransaction
+    import { 
+        getFirestore, collection, query, where, getDocs, addDoc, updateDoc, 
+        deleteDoc, doc, increment, onSnapshot, runTransaction, orderBy
     } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-
-    const db = getFirestore(initializeApp({
-        apiKey:"AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
-        authDomain:"trismartstores.firebaseapp.com",
-        projectId:"trismartstores",
-        storageBucket:"trismartstores.appspot.com",
-        messagingSenderId:"416692703333",
-        appId:"1:416692703333:web:d4b60292621435c748f68c"
-    }));
-
-    const userName = (localStorage.getItem('userName')||'').toLowerCase().trim();
-    let branchId = localStorage.getItem('branchId') || '';
-    const userId = localStorage.getItem('userId') || '';
     
-    if (!userName || !branchId) { 
-        window.location.href = 'index.html'; 
-    }
-
-    // BRANCHES configuration
-    const BRANCHES = {
-        master: { id: 'master', name: 'Master Warehouse' },
-        makeni: { id: 'makeni', name: 'Kabanana Branch' },
-        kabana: { id: 'kabana', name: 'Makeni Branch' }
+    const firebaseConfig = {
+        apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+        authDomain: "trismartstores.firebaseapp.com",
+        projectId: "trismartstores",
+        storageBucket: "trismartstores.appspot.com",
+        messagingSenderId: "416692703333",
+        appId: "1:416692703333:web:d4b60292621435c748f68c"
     };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
     
-    const getBranchName = id => BRANCHES[id]?.name || id;
+    const branchId = localStorage.getItem('branchId');
+    const loggedInUser = localStorage.getItem('loggedInUser') || '';
+    if (!branchId) { alert('Branch ID missing. Please login again.'); window.location.href = 'dashboard.html'; }
     
-    // Check if user is admin (Chris)
-    let isAdmin = userName === 'chris';
+    const branches = { 
+        "makeni": { id: "makeni", name: "Kabanana Branch" }, 
+        "kabana": { id: "kabana", name: "Makeni Branch" } 
+    };
+    const currentBranch = branches[branchId] || { name: branchId };
+    document.getElementById('branchNameDisplay').innerText = currentBranch.name;
+    document.getElementById('branchBadge').innerHTML = `<i class="fas fa-store"></i> ${currentBranch.name.toUpperCase()}`;
     
-    // If user is not admin, ensure they only see their own branch
-    if (!isAdmin && branchId !== 'master') {
-        console.log(`User ${userName} accessing branch: ${branchId}`);
+    const isChris = (loggedInUser && loggedInUser.toLowerCase() === 'chris');
+    
+    if (isChris) {
+        document.getElementById('transferSectionWrapper').style.display = 'block';
+        document.getElementById('addInventoryBtn').style.display = 'inline-flex';
     }
-
-    let inventory=[], transferCart=[], sourceInventory=[];
-    let activeMenu=null, editUnlocked=false, unsubscribe=null;
-
-    /* SIDEBAR */
-    const sidebar=document.getElementById('sidebar');
-    const overlay=document.getElementById('sidebarOverlay');
-    const mainEl=document.getElementById('mainContent');
-    const isMobile=()=>window.innerWidth<=600;
-
-    function initSidebar(){
-        if(isMobile()){sidebar.classList.remove('visible');mainEl.classList.add('expanded');}
-        else{sidebar.classList.remove('hidden');mainEl.classList.remove('expanded');mainEl.style.marginLeft='230px';}
+    
+    let inventory = [];
+    let unsubscribeInventory = null;
+    let activeMenu = null;
+    
+    function showToast(msg, type = 'success') { 
+        const tc = document.getElementById('toastContainer'); 
+        const t = document.createElement('div'); 
+        t.className = `toast ${type}`; 
+        const icon = type === 'success' ? 'fa-check-circle' : type === 'info' ? 'fa-info-circle' : 'fa-exclamation-triangle';
+        t.innerHTML = `<i class="fas ${icon}"></i> ${msg}`; 
+        tc.appendChild(t); 
+        setTimeout(() => t.remove(), 3000); 
     }
-    initSidebar(); window.addEventListener('resize',initSidebar);
-
-    document.getElementById('menuBtn').addEventListener('click',()=>{
-        if(isMobile()){
-            sidebar.classList.contains('visible')?(sidebar.classList.remove('visible'),overlay.classList.remove('show')):(sidebar.classList.add('visible'),overlay.classList.add('show'));
-        } else {
-            sidebar.classList.contains('hidden')?(sidebar.classList.remove('hidden'),mainEl.style.marginLeft='230px'):(sidebar.classList.add('hidden'),mainEl.style.marginLeft='0');
+    
+    function closeAllMenus() { if(activeMenu) { activeMenu.classList.remove('show'); activeMenu = null; } }
+    
+    function escapeHtml(str) { 
+        if(!str) return ''; 
+        return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); 
+    }
+    
+    function updateStats(inv) {
+        document.getElementById('statItems').textContent = inv.length;
+        document.getElementById('statStock').textContent = inv.reduce((s, i) => s + i.stock, 0);
+        const val = inv.reduce((s, i) => s + (i.price * i.stock), 0);
+        document.getElementById('statValue').textContent = `K${val.toFixed(0)}`;
+        document.getElementById('totalStockPill').innerHTML = `Total value: K${val.toFixed(2)}`;
+    }
+    
+    function setupInventoryListener() {
+        const q = query(collection(db, 'inventory'), where('branchId', '==', branchId));
+        if(unsubscribeInventory) unsubscribeInventory();
+        unsubscribeInventory = onSnapshot(q, (snapshot) => {
+            inventory = snapshot.docs.map(d => ({ id: d.id, ...d.data(), stock: Number(d.data().stock)||0, price: Number(d.data().price)||0 }));
+            inventory.sort((a,b) => (a.code||'').localeCompare(b.code||''));
+            // Update transfer datalist
+            const datalist = document.getElementById('productCodesList');
+            if(datalist) {
+                datalist.innerHTML = '';
+                inventory.forEach(item => { const opt = document.createElement('option'); opt.value = item.code; datalist.appendChild(opt); });
+            }
+            // Populate transfer branch dropdown
+            if(isChris) {
+                const branchSelect = document.getElementById('transferBranch');
+                if(branchSelect) {
+                    branchSelect.innerHTML = '<option value="">— Select Destination Branch —</option>';
+                    const otherId = branchId === "makeni" ? "kabana" : "makeni";
+                    const other = branches[otherId];
+                    if(other) { const opt = document.createElement('option'); opt.value = other.id; opt.textContent = other.name; branchSelect.appendChild(opt); }
+                    // Also allow sending back to master
+                    const masterOpt = document.createElement('option');
+                    masterOpt.value = 'master'; masterOpt.textContent = '⭐ Master Warehouse';
+                    branchSelect.appendChild(masterOpt);
+                }
+            }
+            updateStats(inventory);
+            renderInventoryTable();
+        });
+    }
+    
+    function renderInventoryTable() {
+        const tbody = document.getElementById('inventoryTbody');
+        const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        let filtered = inventory.filter(i => i.name?.toLowerCase().includes(searchVal) || i.code?.toLowerCase().includes(searchVal));
+        tbody.innerHTML = '';
+        if(filtered.length === 0) { tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No products found</td></tr>'; return; }
+        filtered.forEach(item => {
+            const row = tbody.insertRow();
+            let bgColor = '', textColor = '';
+            if(item.stock === 0) { bgColor='rgba(239,68,68,0.1)'; textColor='#991b1b'; }
+            else if(item.stock < 5) { bgColor='rgba(245,158,11,0.12)'; textColor='#92400e'; }
+            else { bgColor='rgba(16,185,129,0.1)'; textColor='#065f46'; }
+            row.innerHTML = `
+                <td><span class="code-chip">${escapeHtml(item.code)}</span></td>
+                <td style="font-weight:600;">${escapeHtml(item.name)}</td>
+                <td>K${item.price.toFixed(2)}</td>
+                <td><span class="stock-chip" style="background:${bgColor};color:${textColor};">${item.stock}</span></td>
+                <td class="action-icons">
+                    <button class="action-icon edit" onclick="window.editItem('${item.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="action-icon delete" onclick="window.deleteItem('${item.id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            `;
+        });
+    }
+    
+    window.editItem = (id) => {
+        const item = inventory.find(i => i.id === id);
+        if (!item) return;
+        if (isChris === false) {
+            const pass = prompt("Enter admin password:");
+            if(pass !== "1030") { showToast("Incorrect password", "error"); return; }
         }
-    });
-    overlay.addEventListener('click',()=>{sidebar.classList.remove('visible');overlay.classList.remove('show');});
+        showEditModal(item);
+    };
 
-    document.getElementById('logoutLink').addEventListener('click',e=>{
-        e.preventDefault(); 
-        localStorage.removeItem('userName'); 
-        localStorage.removeItem('branchId'); 
-        localStorage.removeItem('userId');
-        window.location.replace('index.html');
-    });
-
-    /* CLOCK */
-    function tick(){document.getElementById('timeBadge').textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
-    tick(); setInterval(tick,30000);
-
-    /* TOAST */
-    function toast(msg,type='success'){
-        const wrap=document.getElementById('toastWrap');
-        const el=document.createElement('div'); el.className=`toast ${type}`;
-        el.innerHTML=`<i class="fas fa-${type==='success'?'check':'times'}"></i> ${msg}`;
-        wrap.appendChild(el);
-        setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),350);},3200);
-    }
-
-    /* PANELS */
-    function openPanel(id){document.getElementById('panelOverlay').classList.add('open');document.getElementById(id).classList.add('open');}
-    window.closePanelById=id=>{document.getElementById('panelOverlay').classList.remove('open');document.getElementById(id).classList.remove('open');};
-    document.getElementById('panelOverlay').addEventListener('click',()=>{closePanelById('addPanel');closePanelById('transferPanel');});
-
-    /* BRANCH SWITCHER (admin only) */
-    function setupBranchSwitcher(){
-        if(!isAdmin)return;
-        const sw=document.getElementById('branchSwitcher'); sw.style.display='flex'; sw.innerHTML='';
-        Object.values(BRANCHES).forEach(b=>{
-            const btn=document.createElement('button'); btn.className='branch-tab';
-            btn.textContent=b.id==='master'?'⭐ Master':b.name; btn.dataset.bid=b.id;
-            btn.onclick=()=>switchBranch(b.id); sw.appendChild(btn);
-        });
-        updateSwitcherActive();
-    }
-    function updateSwitcherActive(){
-        document.querySelectorAll('.branch-tab').forEach(btn=>{
-            btn.classList.remove('active','active-master');
-            if(btn.dataset.bid===branchId) btn.classList.add(branchId==='master'?'active-master':'active');
-        });
-    }
-    function switchBranch(newId){
-        if(newId===branchId)return;
-        branchId=newId; localStorage.setItem('branchId',branchId);
-        document.getElementById('pageTitle').textContent=`Warehouse — ${getBranchName(branchId)}`;
-        document.getElementById('masterPill').style.display=branchId==='master'?'inline-flex':'none';
-        document.getElementById('currentBranchName').textContent=getBranchName(branchId);
-        updateSwitcherActive(); closePanelById('addPanel'); closePanelById('transferPanel');
-        if(unsubscribe)unsubscribe(); setupListener();
-        // Reload history if history tab is active
-        if(document.getElementById('tabHistory').classList.contains('active')) loadTransferHistory();
-    }
-
-    /* ROLE UI */
-    function setupRoleUI(){
-        setupBranchSwitcher();
-        const adminCtrl=document.getElementById('adminControls');
-        const restockBtn=document.getElementById('restockBtn');
-        const masterPill=document.getElementById('masterPill');
-        const actHdr=document.getElementById('actionsHeader');
-        document.getElementById('currentBranchName').textContent=getBranchName(branchId);
-        if(isAdmin){
-            adminCtrl.style.display='flex'; restockBtn.style.display='inline-flex';
-            masterPill.style.display=branchId==='master'?'inline-flex':'none';
-            if(actHdr)actHdr.style.display='';
-        } else {
-            adminCtrl.style.display='none'; restockBtn.style.display='none';
-            masterPill.style.display='none';
-            if(actHdr)actHdr.style.display='none';
+    window.deleteItem = async (id) => {
+        const item = inventory.find(i => i.id === id);
+        if (!item) return;
+        if (!isChris) { const pass = prompt("Enter admin password:"); if(pass !== "1030") { showToast("Unauthorized", "error"); return; } }
+        if (confirm(`Delete "${item.name}"? This is permanent.`)) { 
+            try { await deleteDoc(doc(db, 'inventory', id)); showToast(`${item.code} deleted`); } 
+            catch(err) { showToast(err.message, "error"); } 
         }
+    };
+    
+    function showEditModal(item) {
+        const md = document.createElement('div'); md.className = 'modal-bg'; 
+        md.innerHTML = `<div class="modal"><h3><i class="fas fa-pen"></i> Edit Product</h3><form id="editForm"><div class="field-group"><label>Code</label><input name="code" value="${escapeHtml(item.code)}" required></div><div class="field-group"><label>Name</label><input name="name" value="${escapeHtml(item.name)}" required></div><div class="field-group"><label>Price (K)</label><input name="price" type="number" step="0.01" value="${item.price}" required></div><div class="field-group"><label>Stock</label><input name="stock" type="number" value="${item.stock}" required></div><div class="form-actions"><button type="submit" class="btn btn-primary">Save</button><button type="button" class="btn btn-ghost" id="closeModalBtn">Cancel</button></div></form></div>`;
+        document.body.appendChild(md);
+        const form = md.querySelector('#editForm');
+        form.onsubmit = async (e) => { 
+            e.preventDefault(); 
+            const nc = form.code.value.trim().toUpperCase(); 
+            const nn = form.name.value.trim(); 
+            const np = parseFloat(form.price.value); 
+            const ns = parseInt(form.stock.value); 
+            if(!nc||!nn||isNaN(np)||np<0||isNaN(ns)||ns<0) { showToast("Invalid fields","error"); return; } 
+            if(nc !== item.code && inventory.some(i=>i.code===nc)) { showToast("Code already exists","error"); return; } 
+            try { await updateDoc(doc(db,'inventory',item.id), {code:nc,name:nn,price:np,stock:ns}); md.remove(); showToast("Updated successfully"); } 
+            catch(err){ showToast(err.message,"error"); } 
+        };
+        md.querySelector('#closeModalBtn').onclick = () => md.remove();
+        md.onclick = e => { if(e.target===md) md.remove(); };
     }
-
-    /* LISTENER — real-time updates for this branch */
-    function setupListener(){
-        if(unsubscribe){unsubscribe();unsubscribe=null;}
-        document.getElementById('pageTitle').textContent=`Warehouse — ${getBranchName(branchId)}`;
-
-        // onSnapshot means the table updates LIVE the moment stock changes in Firestore
-        unsubscribe=onSnapshot(
-            query(collection(db,'inventory'), where('branchId','==',branchId)),
-            snap=>{
-                inventory=snap.docs.map(d=>({
-                    id:d.id,...d.data(),
-                    stock:Number(d.data().stock)||0,
-                    price:Number(d.data().price)||0
-                }));
-                inventory.sort((a,b)=>a.code.localeCompare(b.code));
-                sourceInventory=[...inventory];
-                rebuildDatalist('addProductCodes',inventory);
-                rebuildDatalist('transferCodes',inventory);
-                renderTable(inventory);
-                hideLoading();
-            },
-            err=>{toast('Error: '+err.message,'error');hideLoading();}
-        );
-    }
-
-    function rebuildDatalist(id,items){
-        const dl=document.getElementById(id); if(!dl)return; dl.innerHTML='';
-        items.forEach(i=>{const o=document.createElement('option');o.value=i.code;dl.appendChild(o);});
-    }
-    function hideLoading(){const ov=document.getElementById('loadingOverlay');if(ov){ov.style.opacity='0';setTimeout(()=>ov.remove(),300);}}
-
-    /* RENDER TABLE */
-    function renderTable(items){
-        const tbody=document.querySelector('#inventoryTable tbody'); tbody.innerHTML=''; let total=0;
-        if(!items.length){
-            tbody.innerHTML=`<tr class="empty-row"><td colspan="${isAdmin?5:4}">No items found.</td></tr>`;
-            document.getElementById('totalVal').textContent='0.00'; return;
-        }
-        items.forEach(item=>{
-            total+=item.price*item.stock;
-            const sc=item.stock===0?'stock-zero':item.stock<10?'stock-low':'stock-ok';
-            const tr=document.createElement('tr');
-            const act=isAdmin?`<td><div class="menu-container"><button class="three-dots-btn" onclick="toggleMenu(event,'${item.id}')"><div class="dot"></div><div class="dot"></div><div class="dot"></div></button><div class="menu-dropdown" id="menu-${item.id}"><div class="menu-item edit" onclick="handleEdit('${item.id}')"><i class="fas fa-pen"></i> Edit</div><div class="menu-item delete" onclick="handleDelete('${item.id}')"><i class="fas fa-trash"></i> Delete</div></div></div></td>`:'';
-            tr.innerHTML=`<td><span class="code-chip">${item.code}</span></td><td style="font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.name}</td><td style="font-family:'DM Mono',monospace;font-size:0.75rem;">K${item.price.toFixed(2)}</td><td><span class="stock-chip ${sc}">${item.stock}</span></td>${act}`;
-            tbody.appendChild(tr);
+    
+    // Add product (Chris only)
+    if(isChris) {
+        document.getElementById('addInventoryBtn').addEventListener('click', () => {
+            const md = document.createElement('div'); md.className = 'modal-bg';
+            md.innerHTML = `<div class="modal"><h3><i class="fas fa-plus-circle"></i> Add Product</h3><form id="addForm"><div class="field-group"><label>Code *</label><input name="code" placeholder="e.g., EL-5" required></div><div class="field-group"><label>Name *</label><input name="name" placeholder="Product name" required></div><div class="field-group"><label>Price (K) *</label><input name="price" type="number" step="0.01" min="0" placeholder="0.00" required></div><div class="field-group"><label>Stock *</label><input name="stock" type="number" min="0" placeholder="0" required></div><div class="form-actions"><button type="submit" class="btn btn-success">Add Product</button><button type="button" class="btn btn-ghost" id="closeAddModal">Cancel</button></div></form></div>`;
+            document.body.appendChild(md);
+            const form = md.querySelector('#addForm');
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                const code = form.code.value.trim().toUpperCase();
+                const name = form.name.value.trim();
+                const price = parseFloat(form.price.value);
+                const stock = parseInt(form.stock.value);
+                if(!code||!name||isNaN(price)||isNaN(stock)||price<0||stock<0) { showToast("Invalid data","error"); return; }
+                if(inventory.some(i=>i.code===code)) { showToast("Duplicate code","error"); return; }
+                try { await addDoc(collection(db,'inventory'),{code,name,price,stock,sold:0,branchId}); md.remove(); showToast(`${code} added`); } 
+                catch(err){ showToast(err.message,"error"); }
+            };
+            md.querySelector('#closeAddModal').onclick = () => md.remove();
+            md.onclick = e => { if(e.target===md) md.remove(); };
         });
-        document.getElementById('totalVal').textContent=total.toFixed(2);
     }
-
-    window.searchInventory=()=>{
-        const q=document.getElementById('searchInput').value.toLowerCase();
-        renderTable(q?inventory.filter(i=>i.name.toLowerCase().includes(q)||i.code.toLowerCase().includes(q)):inventory);
-    };
-
-    /* ADD PANEL */
-    window.openAddPanel=()=>{document.getElementById('addForm').reset();openPanel('addPanel');setTimeout(()=>document.getElementById('addItemCode').focus(),320);};
-    document.getElementById('addItemCode').addEventListener('input',function(){
-        const found=inventory.find(i=>i.code===this.value.toUpperCase());
-        if(found){document.getElementById('addItemName').value=found.name;document.getElementById('addItemPrice').value=found.price.toFixed(2);}
-    });
-    window.submitAddItem=async e=>{
-        e.preventDefault();
-        const code=document.getElementById('addItemCode').value.trim().toUpperCase();
-        const name=document.getElementById('addItemName').value.trim();
-        const price=parseFloat(document.getElementById('addItemPrice').value);
-        const stock=parseInt(document.getElementById('addItemStock').value);
-        if(!code||!name||isNaN(price)||price<0||isNaN(stock)||stock<0){toast('Fill all fields.','error');return;}
-        if(inventory.find(i=>i.code===code)){toast('Code already exists.','error');return;}
-        try{await addDoc(collection(db,'inventory'),{code,name,price,stock,sold:0,branchId});toast(`"${name}" added!`);closePanelById('addPanel');}
-        catch(err){toast('Error: '+err.message,'error');}
-    };
-
-    /* TRANSFER PANEL */
-    window.openTransferPanel=()=>{
-        transferCart=[];
-        const sel=document.getElementById('transferSource'); sel.innerHTML='<option value="">— Select Source —</option>';
-        Object.values(BRANCHES).forEach(b=>{const o=document.createElement('option');o.value=b.id;o.textContent=getBranchName(b.id);if(b.id===branchId)o.selected=true;sel.appendChild(o);});
-        document.getElementById('transferCode').value=''; document.getElementById('transferQty').value=1; document.getElementById('transferDest').value='';
-        document.getElementById('transferPreview').textContent='Enter a product code above to preview';
-        sourceInventory=[...inventory]; rebuildDatalist('transferCodes',sourceInventory); buildDestOptions(branchId); renderTransferCart();
-        openPanel('transferPanel'); setTimeout(()=>document.getElementById('transferCode').focus(),320);
-    };
-    function buildDestOptions(srcId){
-        const sel=document.getElementById('transferDest'); sel.innerHTML='<option value="">— Select Destination —</option>';
-        Object.keys(BRANCHES).filter(id=>id!==srcId).forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent=getBranchName(id);sel.appendChild(o);});
-    }
-    window.handleSourceChange=async()=>{
-        const srcId=document.getElementById('transferSource').value; if(!srcId)return;
-        document.getElementById('transferPreview').textContent='Loading…'; document.getElementById('transferCode').value='';
-        transferCart=[]; renderTransferCart();
-        try{
-            sourceInventory=srcId===branchId?[...inventory]:(await getDocs(query(collection(db,'inventory'),where('branchId','==',srcId)))).docs.map(d=>({id:d.id,...d.data(),stock:Number(d.data().stock)||0,price:Number(d.data().price)||0}));
-            rebuildDatalist('transferCodes',sourceInventory); buildDestOptions(srcId);
-            document.getElementById('transferPreview').textContent='Enter a product code above to preview';
-        }catch(err){toast('Failed: '+err.message,'error');}
-    };
-    document.getElementById('transferCode').addEventListener('input',function(){
-        const code=this.value.toUpperCase(); const item=sourceInventory.find(i=>i.code===code); const prev=document.getElementById('transferPreview');
-        prev.innerHTML=item?`<strong>${item.name}</strong> &mdash; Stock: <strong>${item.stock}</strong> &mdash; K${item.price.toFixed(2)}`:(code?'Not found in source':'Enter a product code above to preview');
-    });
-    window.addToTransferCart=()=>{
-        const code=document.getElementById('transferCode').value.toUpperCase();
-        const qty=parseInt(document.getElementById('transferQty').value);
-        const srcId=document.getElementById('transferSource').value;
-        if(!srcId){toast('Select source first.','error');return;}
-        if(!code){toast('Enter a product code.','error');return;}
-        if(isNaN(qty)||qty<1){toast('Enter valid quantity.','error');return;}
-        const item=sourceInventory.find(i=>i.code===code); if(!item){toast('Product not found.','error');return;}
-        const existing=transferCart.find(c=>c.code===code); const staged=existing?existing.qty:0;
-        if(staged+qty>item.stock){toast(`Not enough stock. Available: ${item.stock}`,'error');return;}
-        if(existing){existing.qty+=qty;existing.total=existing.qty*item.price;}
-        else transferCart.push({code:item.code,name:item.name,price:item.price,qty,total:qty*item.price,itemId:item.id});
-        toast(`${item.name} added.`); renderTransferCart();
-        document.getElementById('transferCode').value=''; document.getElementById('transferQty').value=1;
-        document.getElementById('transferPreview').textContent='Enter a product code above to preview';
-        setTimeout(()=>document.getElementById('transferCode').focus(),80);
-    };
-    window.removeFromTransferCart=idx=>{transferCart.splice(idx,1);renderTransferCart();};
-    function renderTransferCart(){
-        const wrap=document.getElementById('transferCartWrap'); const tbody=document.getElementById('transferCartBody'); const confirmBtn=document.getElementById('confirmTransferBtn');
-        if(!transferCart.length){wrap.style.display='none';confirmBtn.disabled=true;return;}
-        wrap.style.display='block'; confirmBtn.disabled=false; tbody.innerHTML=''; let grand=0;
-        transferCart.forEach((c,idx)=>{
-            grand+=c.total; const tr=document.createElement('tr');
-            tr.innerHTML=`<td style="padding:6px 8px;border-bottom:1px solid var(--border);font-size:.78rem;"><strong>${c.name}</strong><br><span style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--text-fade);">${c.code}</span></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:center;font-weight:700;">${c.qty}</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:right;font-size:.78rem;">K${c.total.toFixed(2)}</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);"><button onclick="removeFromTransferCart(${idx})" style="background:none;border:1px solid var(--danger);color:var(--danger);padding:2px 6px;border-radius:5px;cursor:pointer;font-size:.66rem;font-weight:700;">✕</button></td>`;
-            tbody.appendChild(tr);
+    
+    // TRANSFER (Chris only)
+    if(isChris) {
+        document.getElementById('transferCode').addEventListener('input', () => {
+            const code = document.getElementById('transferCode').value.trim().toUpperCase();
+            const item = inventory.find(i => i.code === code);
+            const box = document.getElementById('productInfoPreview');
+            if(item) {
+                const sc = item.stock === 0 ? '#ef4444' : item.stock < 5 ? '#f59e0b' : '#10b981';
+                box.innerHTML = `<strong>${escapeHtml(item.name)}</strong> &nbsp;|&nbsp; Stock: <strong style="color:${sc};">${item.stock}</strong> &nbsp;|&nbsp; Price: K${item.price.toFixed(2)}`;
+            } else if(code.length > 0) {
+                box.innerHTML = `<span style="color:#ef4444;"><i class="fas fa-times-circle"></i> Product not found</span>`;
+            } else {
+                box.textContent = 'Product details will appear here';
+            }
         });
-        document.getElementById('transferCartTotal').textContent=`Total: K${grand.toFixed(2)} — ${transferCart.length} item${transferCart.length>1?'s':''}`;
-    }
 
-    /* SUBMIT TRANSFER */
-    window.submitTransfer=async e=>{
-        e.preventDefault();
-        const destId=document.getElementById('transferDest').value;
-        const srcId=document.getElementById('transferSource').value;
-        if(!srcId){toast('Select source.','error');return;}
-        if(!destId){toast('Select destination.','error');return;}
-        if(srcId===destId){toast('Source and destination must differ.','error');return;}
-        if(!transferCart.length){toast('Add items first.','error');return;}
-        const itemList=transferCart.map(c=>`${c.qty}× ${c.name}`).join(', ');
-        if(!confirm(`Transfer:\n${itemList}\n\nFrom: ${getBranchName(srcId)}\nTo:   ${getBranchName(destId)}`))return;
-        const btn=document.getElementById('confirmTransferBtn'); btn.disabled=true; btn.textContent='Processing…';
-        try{
-            for(const c of transferCart){
-                await runTransaction(db,async tx=>{
-                    // Deduct from source
-                    const srcRef=doc(db,'inventory',c.itemId);
-                    const srcDoc=await tx.get(srcRef);
-                    const live=srcDoc.data().stock||0;
-                    if(live<c.qty) throw new Error(`Stock changed for ${c.name}. Live: ${live}`);
-                    tx.update(srcRef,{stock:increment(-c.qty)});
+        document.getElementById('transferForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const code = document.getElementById('transferCode').value.trim().toUpperCase();
+            const quantity = parseInt(document.getElementById('transferQuantity').value);
+            const destBranchId = document.getElementById('transferBranch').value;
+            if(!code || isNaN(quantity) || quantity <= 0 || !destBranchId) { showToast("Fill all fields correctly", "error"); return; }
+            const item = inventory.find(i => i.code === code);
+            if(!item) { showToast("Product not found in this branch", "error"); return; }
+            if(item.stock < quantity) { showToast(`Insufficient stock. Available: ${item.stock}`, "error"); return; }
+            const destName = destBranchId === 'master' ? '⭐ Master Warehouse' : (branches[destBranchId]?.name || destBranchId);
+            if(!confirm(`Transfer ${quantity}x ${item.name} to ${destName}?`)) return;
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transferring...';
 
-                    // Add to destination
-                    const destSnap = await getDocs(
-                        query(collection(db,'inventory'),
-                            where('branchId','==',destId),
-                            where('code','==',c.code))
-                    );
-                    if(!destSnap.empty){
-                        tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(c.qty)});
+            try {
+                await runTransaction(db, async (tx) => {
+                    const srcRef = doc(db, 'inventory', item.id);
+                    const srcSnap = await tx.get(srcRef);
+                    if(srcSnap.data().stock < quantity) throw new Error("Stock changed, refresh and retry");
+                    tx.update(srcRef, { stock: increment(-quantity) });
+                    const destQuery = query(collection(db,'inventory'), where('branchId','==',destBranchId), where('code','==',code));
+                    const destSnap = await getDocs(destQuery);
+                    if(!destSnap.empty) {
+                        tx.update(doc(db,'inventory',destSnap.docs[0].id), { stock: increment(quantity) });
                     } else {
-                        tx.set(doc(collection(db,'inventory')),{
-                            code:  c.code,
-                            name:  c.name,
-                            price: c.price,
-                            stock: c.qty,
-                            sold:  0,
-                            branchId: destId
-                        });
+                        tx.set(doc(collection(db,'inventory')), { code, name:item.name, price:item.price, stock:quantity, sold:0, branchId:destBranchId });
                     }
                 });
+                
+                const now = new Date();
+                await addDoc(collection(db,'transfers'), {
+                    ref: 'TRF-' + Date.now().toString().slice(-6),
+                    date: now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
+                    time: now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
+                    createdAt: now.toISOString(),
+                    srcId: branchId, srcName: currentBranch.name,
+                    destId: destBranchId, destName,
+                    items: [{code, name:item.name, qty:quantity, price:item.price, total:item.price*quantity}],
+                    totalValue: item.price * quantity,
+                    doneBy: loggedInUser,
+                    status: 'active'
+                });
+                
+                showToast(`✅ ${quantity}x ${item.name} transferred to ${destName}`);
+                document.getElementById('transferForm').reset();
+                document.getElementById('productInfoPreview').textContent = 'Product details will appear here';
+            } catch(err) { 
+                showToast("Transfer failed: " + err.message, "error"); 
+            } finally {
+                btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Execute Transfer';
             }
+        });
+    }
 
-            /* Save transfer record with branch context */
-            const now = new Date();
-            const refNumber = 'TRF-' + Date.now().toString().slice(-6);
-            
-            await addDoc(collection(db,'transfers'), {
-                ref: refNumber,
-                date: now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
-                time: now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
-                createdAt: now.toISOString(),
-                srcId, srcName: getBranchName(srcId),
-                destId, destName: getBranchName(destId),
-                items: transferCart.map(c=>({code:c.code,name:c.name,qty:c.qty,price:c.price,total:c.total})),
-                totalValue: transferCart.reduce((s,c)=>s+c.total,0),
-                doneBy: localStorage.getItem('userName') || 'unknown'
-            });
-
-            toast(`✓ ${transferCart.length} item(s) transferred → ${getBranchName(destId)}`);
-            closePanelById('transferPanel'); transferCart=[];
-        }catch(err){
-            toast('Transfer failed: '+err.message,'error');
-        }finally{
-            btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Confirm & Transfer All';
-        }
-    };
-
-    /* MENUS */
-    function closeAllMenus(){if(activeMenu){activeMenu.classList.remove('show');activeMenu=null;}}
-    window.toggleMenu=(e,id)=>{
-        e.stopPropagation(); const menu=document.getElementById(`menu-${id}`);
-        if(activeMenu&&activeMenu!==menu)activeMenu.classList.remove('show');
-        menu.classList.toggle('show'); activeMenu=menu.classList.contains('show')?menu:null;
-    };
-    document.addEventListener('click',closeAllMenus);
-
-    /* EDIT */
-    window.handleEdit=async id=>{
-        closeAllMenus();
-        if(!editUnlocked){const pass=prompt('Enter password to edit:');if(pass!=='1030'){toast('Incorrect password.','error');return;}editUnlocked=true;}
-        const item=inventory.find(i=>i.id===id); if(!item)return;
-        const bg=document.createElement('div'); bg.className='modal-bg';
-        bg.innerHTML=`<div class="modal"><h3><i class="fas fa-pen" style="margin-right:8px;"></i>Edit Product</h3><form id="editForm"><div class="field-group"><label>Product Code</label><input type="text" name="code" required value="${item.code}"></div><div class="field-group" style="margin-top:10px;"><label>Product Name</label><input type="text" name="name" required value="${item.name}"></div><div class="field-group" style="margin-top:10px;"><label>Price (ZMW)</label><input type="number" name="price" min="0" step="0.01" required value="${item.price}"></div><div class="field-group" style="margin-top:10px;"><label>Stock</label><input type="number" name="stock" min="0" required value="${item.stock}"></div><div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button><button type="button" class="btn btn-danger" id="cancelEdit"><i class="fas fa-times"></i> Cancel</button></div></form></div>`;
-        document.body.appendChild(bg);
-        document.getElementById('editForm').onsubmit=async ev=>{
-            ev.preventDefault(); const f=ev.target;
-            const code=f.code.value.trim().toUpperCase(); const name=f.name.value.trim();
-            const price=parseFloat(f.price.value); const stock=parseInt(f.stock.value);
-            if(!code||!name||isNaN(price)||price<0||isNaN(stock)||stock<0){toast('Invalid values.','error');return;}
-            if(code!==item.code&&inventory.some(i=>i.code===code)){toast('Code exists!','error');return;}
-            try{await updateDoc(doc(db,'inventory',item.id),{code,name,price,stock});bg.remove();toast('Updated!');}
-            catch(err){toast('Error: '+err.message,'error');}
-        };
-        document.getElementById('cancelEdit').onclick=()=>bg.remove();
-        bg.onclick=ev=>{if(ev.target===bg)bg.remove();};
-    };
-
-    /* DELETE */
-    window.handleDelete=async id=>{
-        closeAllMenus(); const item=inventory.find(i=>i.id===id); if(!item)return;
-        if(!confirm(`Delete "${item.name}" (${item.code})?`))return;
-        try{await deleteDoc(doc(db,'inventory',id));toast('Deleted.');}
-        catch(err){toast('Error: '+err.message,'error');}
-    };
-
-    /* TABS */
-    window.showTab=function(t){
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.id==='tab-'+t));
-        document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active',c.id==='tab'+t.charAt(0).toUpperCase()+t.slice(1)));
-        if(t==='history') loadTransferHistory();
-    };
-
-    /* TRANSFER HISTORY - ONLY SHOW TRANSACTIONS FOR CURRENT BRANCH */
-    async function loadTransferHistory(){
-        const wrap=document.getElementById('histListWrap');
-        wrap.innerHTML=`<div class="no-history"><i class="fas fa-spinner fa-spin"></i><br>Loading transfers for ${getBranchName(branchId)}...</div>`;
-        try{
-            // Query transfers where current branch is either source OR destination
-            const transfersRef = collection(db,'transfers');
-            const q = query(transfersRef, orderBy('createdAt','desc'));
+    // ── INCOMING TRANSFERS ──
+    async function loadIncomingTransfers() {
+        const tbody = document.getElementById('incomingTbody');
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="7"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+        try {
+            const q = query(collection(db, 'transfers'), orderBy('createdAt', 'desc'));
             const snap = await getDocs(q);
-            
-            // Filter transfers that involve the current branch
-            const branchTransfers = [];
-            snap.forEach(doc => {
-                const transfer = {id:doc.id, ...doc.data()};
-                // Check if current branch is involved in this transfer
-                if(transfer.srcId === branchId || transfer.destId === branchId) {
-                    branchTransfers.push(transfer);
-                }
+            const transfers = [];
+            snap.forEach(d => { 
+                const t = { id: d.id, ...d.data() };
+                if(t.destId === branchId || t.srcId === branchId) transfers.push(t);
             });
-            
-            document.getElementById('histCount').textContent = branchTransfers.length + ' records';
-            
-            if(branchTransfers.length === 0){
-                wrap.innerHTML=`<div class="no-history"><i class="fas fa-box-open"></i><br>No transfers involving ${getBranchName(branchId)} yet.</div>`;
-                return;
-            }
-            
-            wrap.innerHTML='';
-            branchTransfers.forEach(transfer => {
-                const el=document.createElement('div'); el.className='hist-item';
-                const chips=(transfer.items||[]).map(i=>`<div class="hist-chip"><strong>${i.qty}×</strong> ${i.name} <span style="font-family:'DM Mono',monospace;font-size:0.58rem;">${i.code}</span></div>`).join('');
-                
-                // Determine if this is incoming or outgoing for current branch
-                const isIncoming = transfer.destId === branchId;
-                const directionClass = isIncoming ? 'incoming' : 'outgoing';
-                const directionIcon = isIncoming ? '⬅️' : '➡️';
-                const directionText = isIncoming ? 'RECEIVED' : 'SENT';
-                
-                el.innerHTML=`
-                    <div class="hist-top">
-                        <div class="hist-ref">
-                            ${directionIcon} ${transfer.ref||'—'} 
-                            <span style="font-size:0.6rem;background:${isIncoming ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'};padding:2px 6px;border-radius:4px;margin-left:6px;">
-                                ${directionText}
-                            </span>
-                        </div>
-                        <div class="hist-date">${transfer.date||''} ${transfer.time||''}</div>
-                    </div>
-                    <div class="hist-route">
-                        <span class="hist-branch ${isIncoming ? '' : 'outgoing'}">${transfer.srcName||transfer.srcId||'?'}</span>
-                        <span class="hist-arrow"><i class="fas fa-arrow-right"></i></span>
-                        <span class="hist-branch dest ${isIncoming ? 'incoming' : ''}">${transfer.destName||transfer.destId||'?'}</span>
-                    </div>
-                    <div class="hist-chips">${chips}</div>
-                    <div class="hist-bottom">
-                        <div class="hist-total">K ${(transfer.totalValue||0).toFixed(2)}</div>
-                        <div class="hist-by">by ${transfer.doneBy||'—'}</div>
-                    </div>`;
-                wrap.appendChild(el);
+            if(transfers.length === 0) { tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No transfers for this branch yet</td></tr>'; return; }
+            tbody.innerHTML = '';
+            window._branchTransfers = {};
+            transfers.forEach(t => {
+                window._branchTransfers[t.id] = t;
+                const isIncoming = t.destId === branchId;
+                const isReversed = t.status === 'reversed';
+                const from = isIncoming ? (t.srcName || t.srcId) : `→ ${t.destName || t.destId}`;
+                const itemCount = (t.items || []).length;
+                const row = tbody.insertRow();
+                row.style.opacity = isReversed ? '0.6' : '1';
+                row.innerHTML = `
+                    <td style="font-size:0.75rem;white-space:nowrap;">${escapeHtml(t.date||'')} ${escapeHtml(t.time||'')}</td>
+                    <td><span class="transfer-ref">${escapeHtml(t.ref || t.id.slice(-8))}</span></td>
+                    <td style="font-size:0.78rem;">${escapeHtml(from)}</td>
+                    <td style="text-align:center;">${itemCount}</td>
+                    <td style="font-family:'DM Mono',monospace;font-weight:700;">K${(t.totalValue||0).toFixed(2)}</td>
+                    <td><span class="${isReversed ? 'status-reversed' : 'status-active'}">${isReversed ? 'REVERSED' : 'ACTIVE'}</span></td>
+                    <td><button class="btn btn-ghost btn-sm" onclick="window.showBranchTransferDetail('${t.id}')"><i class="fas fa-eye"></i> View</button></td>
+                `;
             });
-        }catch(err){
-            console.error(err);
-            wrap.innerHTML=`<div class="no-history" style="color:var(--danger)"><i class="fas fa-exclamation-circle"></i><br>Error loading history: ${err.message}</div>`;
+        } catch(err) {
+            tbody.innerHTML = `<tr class="empty-row"><td colspan="7" style="color:var(--danger);">Error: ${escapeHtml(err.message)}</td></tr>`;
         }
     }
 
-    /* INIT */
-    window.onload=()=>{setupRoleUI();setupListener();};
+    window.showBranchTransferDetail = (id) => {
+        const t = window._branchTransfers?.[id];
+        if(!t) return;
+        const items = t.items || [];
+        const isReversed = t.status === 'reversed';
+        const md = document.createElement('div'); md.className = 'modal-bg';
+        md.innerHTML = `
+            <div class="modal" style="max-width:600px;width:94vw;max-height:85vh;overflow-y:auto;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                    <h3 style="color:var(--blue);"><i class="fas fa-receipt"></i> Transfer Details</h3>
+                    <button id="closeDetailModal" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-fade);">✕</button>
+                </div>
+                ${isReversed ? `<div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:10px;padding:10px;margin-bottom:12px;color:var(--purple);font-size:0.8rem;font-weight:700;"><i class="fas fa-undo-alt"></i> This transfer was REVERSED</div>` : ''}
+                <div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:14px;font-size:0.8rem;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;">
+                    <div><strong>Ref:</strong> <span style="font-family:'DM Mono',monospace;color:var(--blue);">${escapeHtml(t.ref||t.id)}</span></div>
+                    <div><strong>Date:</strong> ${escapeHtml(t.date||'')} ${escapeHtml(t.time||'')}</div>
+                    <div><strong>By:</strong> ${escapeHtml(t.doneBy||'system')}</div>
+                </div>
+                <div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.85rem;">
+                    <div><strong style="color:var(--orange);">${escapeHtml(t.srcName||t.srcId)}</strong></div>
+                    <div style="color:var(--blue);"><i class="fas fa-arrow-right"></i></div>
+                    <div><strong style="color:var(--green);">${escapeHtml(t.destName||t.destId)}</strong></div>
+                </div>
+                <div class="table-scroll">
+                    <table class="items-table-detail">
+                        <thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th></tr></thead>
+                        <tbody>
+                            ${items.map(i=>`<tr><td><span class="code-chip" style="font-size:0.65rem;">${escapeHtml(i.code)}</span></td><td>${escapeHtml(i.name)}</td><td><strong>${i.qty}</strong></td><td>K${(i.price||0).toFixed(2)}</td><td>K${(i.total||i.qty*(i.price||0)).toFixed(2)}</td></tr>`).join('')}
+                        </tbody>
+                        <tfoot><tr style="background:var(--bg3);"><td colspan="4" style="text-align:right;font-weight:800;padding:10px 8px;">Total:</td><td style="font-weight:800;color:var(--blue);padding:10px 8px;">K${(t.totalValue||0).toFixed(2)}</td></tr></tfoot>
+                    </table>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(md);
+        md.querySelector('#closeDetailModal').onclick = () => md.remove();
+        md.onclick = e => { if(e.target===md) md.remove(); };
+    };
+
+    // TABS
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabName = btn.dataset.tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabName));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab${tabName.charAt(0).toUpperCase()+tabName.slice(1)}`));
+            if(tabName === 'incoming') loadIncomingTransfers();
+        });
+    });
     
-    // Make functions globally available
-    window.removeFromTransferCart = removeFromTransferCart;
-    window.toggleMenu = toggleMenu;
-    window.handleEdit = handleEdit;
-    window.handleDelete = handleDelete;
-    window.showTab = showTab;
-    window.searchInventory = searchInventory;
-    window.openAddPanel = openAddPanel;
-    window.openTransferPanel = openTransferPanel;
-    window.submitAddItem = submitAddItem;
-    window.submitTransfer = submitTransfer;
-    window.addToTransferCart = addToTransferCart;
-    window.handleSourceChange = handleSourceChange;
-    window.closePanelById = closePanelById;
+    // Search
+    document.getElementById('searchInput').addEventListener('input', () => renderInventoryTable());
+    
+    // SIDEBAR
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const menuBtn = document.getElementById('menuBtn');
+    const mainEl = document.getElementById('mainContent');
+    const mobile = () => window.innerWidth <= 600;
+    
+    if(!mobile()) { sidebar.classList.remove('hidden'); mainEl.style.marginLeft = '240px'; }
+    
+    menuBtn.addEventListener('click', () => {
+        if(mobile()) {
+            const open = sidebar.classList.contains('visible');
+            open ? (sidebar.classList.remove('visible'), overlay.classList.remove('show'))
+                 : (sidebar.classList.add('visible'), overlay.classList.add('show'));
+        } else {
+            const hidden = sidebar.classList.contains('hidden');
+            if(hidden) { sidebar.classList.remove('hidden'); mainEl.style.marginLeft = '240px'; }
+            else { sidebar.classList.add('hidden'); mainEl.style.marginLeft = '0'; }
+        }
+    });
+    overlay.addEventListener('click', () => { sidebar.classList.remove('visible'); overlay.classList.remove('show'); });
+    document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.clear(); window.location.href = 'dashboard.html'; });
+    
+    // Clock
+    function updateClock() { document.getElementById('timeBadge').textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+    setInterval(updateClock,1000); updateClock();
+    
+    window.addEventListener('resize', () => {
+        if(window.innerWidth > 600) { sidebar.classList.remove('hidden'); mainEl.style.marginLeft='240px'; }
+        else { sidebar.classList.add('hidden'); mainEl.style.marginLeft='0'; }
+    });
+    
+    document.addEventListener('click', closeAllMenus);
+    setupInventoryListener();
 </script>
 </body>
 </html>
