@@ -23,79 +23,151 @@
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
         body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-        .topbar{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:1100;}
+        .topbar{
+            position:fixed;top:0;left:0;right:0;height:var(--header-h);
+            background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);
+            border-bottom:1px solid var(--border);
+            display:flex;align-items:center;justify-content:space-between;
+            padding:0 20px;z-index:1100;
+        }
         .topbar-left{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
         .logo{display:flex;align-items:center;gap:10px;}
-        .logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.9rem;box-shadow:0 0 18px rgba(79,142,255,0.4);}
-        .logo-text{font-size:1rem;font-weight:800;color:var(--text);}
+        .logo-mark{
+            width:34px;height:34px;
+            background:linear-gradient(135deg,var(--blue),var(--cyan));
+            border-radius:10px;display:flex;align-items:center;justify-content:center;
+            color:white;font-size:0.9rem;
+            box-shadow:0 0 18px rgba(79,142,255,0.4);
+        }
+        .logo-text{font-size:1rem;font-weight:800;color:var(--text);letter-spacing:-0.3px;}
         .logo-text span{color:var(--blue);}
-        .master-badge{background:linear-gradient(135deg,#f59e0b,#f97316);color:white;font-size:0.7rem;font-weight:800;padding:4px 12px;border-radius:100px;letter-spacing:0.5px;}
-        .admin-badge{background:linear-gradient(135deg,var(--blue),var(--cyan));color:white;font-size:0.65rem;font-weight:700;padding:4px 10px;border-radius:100px;}
-        .time-badge{background:var(--bg3);border:1px solid var(--border2);border-radius:100px;padding:5px 14px;font-size:0.7rem;font-family:'DM Mono',monospace;color:var(--text-fade);}
+        .master-badge{
+            background:linear-gradient(135deg,#f59e0b,#f97316);
+            color:white;font-size:0.7rem;font-weight:800;
+            padding:4px 12px;border-radius:100px;letter-spacing:0.5px;
+        }
+        .admin-badge{
+            background:linear-gradient(135deg,var(--blue),var(--cyan));
+            color:white;font-size:0.65rem;font-weight:700;
+            padding:4px 10px;border-radius:100px;
+        }
+        .time-badge{
+            background:var(--bg3);border:1px solid var(--border2);
+            border-radius:100px;padding:5px 14px;
+            font-size:0.7rem;font-family:'DM Mono',monospace;
+            color:var(--text-fade);
+        }
 
-        .main{margin-top:var(--header-h);padding:20px 24px 32px;min-height:calc(100vh - var(--header-h));}
+        .main{
+            margin-top:var(--header-h);
+            padding:20px 24px 32px;
+            min-height:calc(100vh - var(--header-h));
+        }
 
-        .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
-        .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 16px;transition:all 0.2s;}
+        .stats-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:16px;
+            margin-bottom:24px;
+        }
+        .stat-card{
+            background:var(--bg2);
+            border:1px solid var(--border);
+            border-radius:var(--radius-lg);
+            padding:18px 16px;
+            transition:all 0.2s;
+        }
         .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--blue);}
         .stat-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-fade);margin-bottom:8px;}
         .stat-value{font-size:1.8rem;font-weight:800;color:var(--blue);font-family:'DM Mono',monospace;}
         .stat-sub{font-size:0.65rem;color:var(--text-dim);margin-top:6px;}
 
-        .action-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;box-shadow:var(--shadow);}
+        .action-bar{
+            background:var(--bg2);border:1px solid var(--border);
+            border-radius:var(--radius-lg);padding:16px 20px;
+            display:flex;align-items:center;justify-content:space-between;
+            flex-wrap:wrap;gap:12px;margin-bottom:24px;
+            box-shadow:var(--shadow);
+        }
         .action-buttons{display:flex;gap:10px;flex-wrap:wrap;}
         .page-title h1{font-size:1.1rem;font-weight:800;color:var(--blue);}
-        .info-pill{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid rgba(67,97,238,0.2);color:var(--blue);font-size:0.75rem;font-weight:700;padding:6px 14px;border-radius:100px;}
+        .info-pill{
+            background:linear-gradient(135deg,#eef2ff,#e0e7ff);
+            border:1px solid rgba(67,97,238,0.2);
+            color:var(--blue);font-size:0.75rem;font-weight:700;
+            padding:6px 14px;border-radius:100px;
+        }
 
         .search-wrap{position:relative;}
-        .search-wrap input{padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:var(--radius);font-size:0.8rem;background:var(--bg3);width:220px;outline:none;font-family:'DM Sans',sans-serif;}
+        .search-wrap input{
+            padding:8px 12px 8px 32px;
+            border:1px solid var(--border);border-radius:var(--radius);
+            font-size:0.8rem;background:var(--bg3);width:220px;
+            outline:none;font-family:'DM Sans',sans-serif;
+        }
         .search-wrap input:focus{border-color:var(--blue);background:white;}
         .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:0.75rem;}
 
-        .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:var(--radius);cursor:pointer;font-size:0.78rem;font-weight:700;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
+        .btn{
+            display:inline-flex;align-items:center;gap:6px;
+            padding:8px 16px;border:none;border-radius:var(--radius);
+            cursor:pointer;font-size:0.78rem;font-weight:700;
+            transition:all 0.2s;font-family:'DM Sans',sans-serif;
+        }
         .btn-primary{background:linear-gradient(135deg,var(--blue),#3451d1);color:white;}
         .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(67,97,238,0.3);}
         .btn-success{background:linear-gradient(135deg,var(--green),#059669);color:white;}
         .btn-success:hover{transform:translateY(-1px);}
         .btn-warning{background:linear-gradient(135deg,var(--orange),#d97706);color:white;}
         .btn-warning:hover{transform:translateY(-1px);}
+        .btn-danger{background:linear-gradient(135deg,var(--danger),#dc2626);color:white;}
+        .btn-danger:hover{transform:translateY(-1px);}
         .btn-purple{background:linear-gradient(135deg,var(--purple),#6d28d9);color:white;}
         .btn-purple:hover{transform:translateY(-1px);}
         .btn-ghost{background:var(--bg3);color:var(--blue);border:1px solid var(--border);}
         .btn-sm{padding:4px 10px;font-size:0.7rem;}
 
         .tab-bar{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);}
-        .tab-btn{padding:10px 20px;font-size:0.8rem;font-weight:700;background:none;border:none;cursor:pointer;color:var(--text-fade);font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;transition:all 0.2s;}
+        .tab-btn{
+            padding:10px 20px;font-size:0.8rem;font-weight:700;
+            background:none;border:none;cursor:pointer;
+            color:var(--text-fade);font-family:'DM Sans',sans-serif;
+            border-bottom:2px solid transparent;transition:all 0.2s;
+        }
         .tab-btn:hover{color:var(--blue);}
         .tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
         .tab-content{display:none;}
         .tab-content.active{display:block;}
 
-        .table-card{background:var(--bg2);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow);}
+        .table-card{
+            background:var(--bg2);border-radius:var(--radius-lg);
+            border:1px solid var(--border);overflow:hidden;
+            box-shadow:var(--shadow);
+        }
         .table-scroll{overflow-x:auto;}
         table{width:100%;border-collapse:collapse;}
-        thead th{background:#f8f9ff;color:var(--text-fade);font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;padding:12px 16px;border-bottom:1px solid var(--border);text-align:left;}
+        thead th{
+            background:#f8f9ff;color:var(--text-fade);
+            font-size:0.62rem;font-weight:800;text-transform:uppercase;
+            letter-spacing:0.1em;padding:12px 16px;
+            border-bottom:1px solid var(--border);text-align:left;
+        }
         tbody td{padding:10px 16px;font-size:0.8rem;border-bottom:1px solid #f0f2f8;}
         tbody tr:hover td{background:#f8f9ff;}
-        .code-chip{font-family:'DM Mono',monospace;font-size:0.75rem;font-weight:700;background:#eef2ff;color:var(--blue);border-radius:8px;padding:4px 12px;display:inline-block;}
+        .code-chip{
+            font-family:'DM Mono',monospace;font-size:0.75rem;font-weight:700;
+            background:#eef2ff;color:var(--blue);border-radius:8px;padding:4px 12px;display:inline-block;
+        }
         .stock-chip{padding:3px 10px;border-radius:100px;font-size:0.7rem;font-weight:800;display:inline-block;}
         .empty-row td{text-align:center;padding:48px 20px;color:var(--text-dim);}
+        .action-icons{display:flex;gap:8px;align-items:center;}
+        .action-icon{background:none;border:none;cursor:pointer;font-size:0.9rem;padding:4px;border-radius:4px;transition:all 0.2s;}
+        .action-icon.edit{color:var(--blue);}
+        .action-icon.edit:hover{background:rgba(67,97,238,0.1);}
+        .action-icon.delete{color:var(--danger);}
+        .action-icon.delete:hover{background:rgba(239,68,68,0.1);}
 
-        /* ── 3-DOTS MENU ── */
-        .dots-wrap{position:relative;display:inline-block;}
-        .dots-btn{background:none;border:1px solid transparent;cursor:pointer;padding:5px 7px;border-radius:8px;display:flex;flex-direction:column;gap:3px;align-items:center;transition:all 0.15s;}
-        .dots-btn:hover{background:var(--bg3);border-color:var(--border);}
-        .dots-btn .dot{display:block;width:3.5px;height:3.5px;background:var(--text-fade);border-radius:50%;}
-        .dots-menu{position:absolute;right:0;top:calc(100% + 4px);background:white;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:300;min-width:140px;display:none;overflow:hidden;}
-        .dots-menu.open{display:block;animation:menuIn 0.15s ease;}
-        @keyframes menuIn{from{opacity:0;transform:scale(0.95) translateY(-4px);}to{opacity:1;transform:scale(1) translateY(0);}}
-        .dots-menu-item{display:flex;align-items:center;gap:9px;width:100%;padding:10px 14px;background:none;border:none;cursor:pointer;font-size:0.78rem;font-family:'DM Sans',sans-serif;font-weight:600;transition:background 0.12s;text-align:left;}
-        .dots-menu-item:hover{background:var(--bg3);}
-        .dots-menu-item.edit{color:var(--blue);}
-        .dots-menu-item.delete{color:var(--danger);}
-        .dots-menu-item + .dots-menu-item{border-top:1px solid var(--border);}
-
-        /* Transfer history */
+        /* Transfer History */
         .history-table-card{background:var(--bg2);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow);}
         .history-table{width:100%;border-collapse:collapse;}
         .history-table th{background:#f8f9ff;color:var(--text-fade);font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;padding:12px 16px;border-bottom:1px solid var(--border);text-align:left;}
@@ -105,27 +177,46 @@
         .direction-badge-sm{font-size:0.6rem;padding:2px 8px;border-radius:100px;font-weight:700;margin-left:4px;}
         .out-badge{background:rgba(239,68,68,0.15);color:var(--danger);}
         .in-badge{background:rgba(16,185,129,0.15);color:var(--green);}
+        .reversed-badge{background:rgba(124,58,237,0.15);color:var(--purple);text-decoration:line-through;opacity:0.7;}
+
+        /* Status badge for transfers */
         .status-badge{font-size:0.65rem;padding:3px 10px;border-radius:100px;font-weight:800;display:inline-block;}
         .status-active{background:rgba(16,185,129,0.15);color:#065f46;}
         .status-reversed{background:rgba(124,58,237,0.15);color:var(--purple);}
 
         /* Modals */
-        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:2000;display:none;align-items:center;justify-content:center;}
+        .modal-overlay{
+            position:fixed;inset:0;background:rgba(0,0,0,0.5);
+            backdrop-filter:blur(4px);z-index:2000;
+            display:none;align-items:center;justify-content:center;
+        }
         .modal-overlay.show{display:flex;}
-        .modal-detail{background:white;border-radius:var(--radius-lg);max-width:550px;width:90%;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
+        .modal-detail{
+            background:white;border-radius:var(--radius-lg);
+            max-width:550px;width:90%;max-height:85vh;
+            overflow-y:auto;box-shadow:var(--shadow-lg);
+        }
         .modal-lg{max-width:720px;}
-        .modal-xl{max-width:900px;}
-        .modal-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:white;z-index:10;}
+        .modal-header{
+            padding:18px 20px;border-bottom:1px solid var(--border);
+            display:flex;justify-content:space-between;align-items:center;
+            position:sticky;top:0;background:white;z-index:10;
+        }
         .modal-header h3{font-size:1rem;color:var(--blue);}
         .close-modal{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-fade);padding:4px;}
         .modal-body{padding:20px;}
         .field-group{margin-bottom:16px;}
         .field-group label{font-size:0.7rem;font-weight:800;color:var(--text-fade);text-transform:uppercase;display:block;margin-bottom:5px;}
-        .field-group input,.field-group select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:0.85rem;background:var(--bg3);outline:none;font-family:'DM Sans',sans-serif;}
+        .field-group input,.field-group select{
+            width:100%;padding:10px 12px;border:1.5px solid var(--border);
+            border-radius:var(--radius);font-size:0.85rem;background:var(--bg3);outline:none;
+            font-family:'DM Sans',sans-serif;
+        }
         .field-group input:focus,.field-group select:focus{border-color:var(--blue);background:white;}
         .form-actions{display:flex;gap:10px;margin-top:20px;}
         .form-actions button{flex:1;justify-content:center;}
 
+        /* Transfer cart */
         .cart-table{width:100%;font-size:0.75rem;border-collapse:collapse;}
         .cart-table th{text-align:left;padding:8px 10px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:0.65rem;font-weight:800;text-transform:uppercase;color:var(--text-fade);}
         .cart-table td{padding:8px 10px;border-bottom:1px solid #f0f2f8;}
@@ -134,53 +225,31 @@
         .items-table-detail th{text-align:left;padding:10px 8px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:0.65rem;font-weight:800;text-transform:uppercase;color:var(--text-fade);}
         .items-table-detail td{padding:8px;border-bottom:1px solid #f0f2f8;}
 
-        .reverse-warning{background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(239,68,68,0.06));border:1.5px solid rgba(124,58,237,0.25);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;}
+        /* Reverse stock alert */
+        .reverse-warning{
+            background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(239,68,68,0.06));
+            border:1.5px solid rgba(124,58,237,0.25);
+            border-radius:var(--radius);
+            padding:14px 16px;
+            margin-bottom:16px;
+        }
         .reverse-warning h4{color:var(--purple);font-size:0.85rem;margin-bottom:6px;}
         .reverse-warning p{font-size:0.78rem;color:var(--text-fade);}
 
-        .preview-box{background:var(--bg3);padding:10px 14px;border-radius:var(--radius);font-size:0.75rem;margin-bottom:12px;border:1px solid var(--border);}
-
-        /* ── GRV MODAL EMBEDDED ── */
-        .grv-modal-body{padding:0;display:flex;flex-direction:column;height:75vh;}
-        .grv-tabs{display:flex;border-bottom:2px solid var(--border);background:#f8f9ff;flex-shrink:0;}
-        .grv-tab{padding:12px 22px;font-size:0.82rem;font-weight:700;background:none;border:none;cursor:pointer;color:var(--text-fade);font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.18s;}
-        .grv-tab.active{color:var(--orange);border-bottom-color:var(--orange);}
-        .grv-tab-panel{display:none;padding:20px;overflow-y:auto;flex:1;}
-        .grv-tab-panel.active{display:block;}
-
-        .grv-banner{background:linear-gradient(90deg,#f59e0b,#f97316);color:white;text-align:center;padding:10px 16px;border-radius:var(--radius);font-weight:800;font-size:0.8rem;margin-bottom:16px;letter-spacing:0.04em;}
-        .grv-current-label{background:linear-gradient(135deg,#f59e0b,#f97316);color:white;text-align:center;padding:10px 14px;border-radius:var(--radius);font-weight:800;font-size:0.9rem;margin-bottom:16px;}
-
-        .grv-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:14px;}
-        .grv-field{display:flex;flex-direction:column;}
-        .grv-field label{font-size:0.65rem;font-weight:800;color:var(--text-fade);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
-        .grv-field input,.grv-field select{padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:0.85rem;background:var(--bg3);outline:none;font-family:'DM Sans',sans-serif;}
-        .grv-field input:focus,.grv-field select:focus{border-color:var(--orange);background:white;}
-
-        .grv-add-btn{background:linear-gradient(135deg,var(--green),#059669);color:white;border:none;padding:10px 20px;border-radius:var(--radius);cursor:pointer;font-size:0.82rem;font-weight:700;font-family:'DM Sans',sans-serif;display:block;margin:0 auto 16px;transition:all 0.2s;}
-        .grv-add-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(16,185,129,0.3);}
-        .grv-process-btn{background:linear-gradient(135deg,#f59e0b,#f97316);color:white;border:none;padding:14px 28px;border-radius:var(--radius);cursor:pointer;font-size:0.9rem;font-weight:800;font-family:'DM Sans',sans-serif;transition:all 0.2s;display:block;margin:0 auto;}
-        .grv-process-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(245,158,11,0.4);}
-        .grv-process-section{background:#2c3e50;border-radius:var(--radius);padding:20px;text-align:center;margin-top:16px;}
-        .grv-process-section p{color:rgba(255,255,255,0.7);font-size:0.75rem;margin-top:8px;}
-
-        .grv-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;}
-        .grv-table{width:100%;border-collapse:collapse;font-size:0.78rem;}
-        .grv-table th{background:#f8f9ff;color:var(--text-fade);font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;}
-        .grv-table td{padding:9px 12px;border-bottom:1px solid #f0f2f8;}
-        .grv-table tr:hover td{background:#f8f9ff;}
-        .grv-del-btn{background:var(--danger);color:white;border:none;padding:3px 10px;border-radius:5px;cursor:pointer;font-size:0.72rem;font-weight:700;}
-
-        .grv-msg{padding:10px 14px;border-radius:var(--radius);margin-bottom:12px;font-size:0.8rem;text-align:center;}
-        .grv-msg.success{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;}
-        .grv-msg.error{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;}
-
-        .grv-history-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+        .preview-box{
+            background:var(--bg3);padding:10px 14px;border-radius:var(--radius);
+            font-size:0.75rem;margin-bottom:12px;border:1px solid var(--border);
+        }
 
         .toast-wrap{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
-        .toast{background:#1e2029;color:white;padding:10px 18px;border-radius:var(--radius);font-size:0.8rem;animation:toastIn 0.25s;display:flex;align-items:center;gap:8px;max-width:320px;}
-        .toast.error{background:#7f1d1d;}
-        .toast.info{background:#1e3a5f;}
+        .toast{
+            background:#1e2029;color:white;padding:10px 18px;
+            border-radius:var(--radius);font-size:0.8rem;
+            animation:toastIn 0.25s;display:flex;align-items:center;gap:8px;
+            max-width:320px;
+        }
+        .toast.error{background:#7f1d1d;border:1px solid #ef4444;}
+        .toast.info{background:#1e3a5f;border:1px solid var(--blue);}
         @keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
         @media(max-width:600px){
@@ -205,7 +274,7 @@
     <div class="time-badge" id="timeBadge">--:--</div>
 </header>
 
-<main class="main">
+<main class="main" id="mainContent">
     <div class="stats-grid">
         <div class="stat-card"><div class="stat-label"><i class="fas fa-boxes"></i> Total Items</div><div class="stat-value" id="totalItemsCount">0</div><div class="stat-sub">distinct products</div></div>
         <div class="stat-card"><div class="stat-label"><i class="fas fa-cubes"></i> Total Stock Qty</div><div class="stat-value" id="totalStockQty">0</div><div class="stat-sub">units in stock</div></div>
@@ -230,7 +299,7 @@
     <div class="tab-content active" id="tabInventory">
         <div class="table-card">
             <div class="table-scroll">
-                <table>
+                <table id="inventoryTable">
                     <thead><tr><th>Code</th><th>Product Name</th><th>Price (K)</th><th>Stock</th><th>Actions</th></tr></thead>
                     <tbody id="inventoryTbody"><tr class="empty-row"><td colspan="5">Loading master inventory...</td></tr></tbody>
                 </table>
@@ -241,7 +310,7 @@
     <div class="tab-content" id="tabHistory">
         <div class="history-table-card">
             <div class="table-scroll">
-                <table class="history-table">
+                <table class="history-table" id="historyTable">
                     <thead><tr><th>Date & Time</th><th>Reference</th><th>Direction</th><th>Branch</th><th>Items</th><th>Total Value</th><th>Status</th><th>Action</th></tr></thead>
                     <tbody id="historyTbody"><tr><td colspan="8" class="empty-row">Loading transfers...</td></tr></tbody>
                 </table>
@@ -250,7 +319,7 @@
     </div>
 </main>
 
-<!-- ── ADD/EDIT MODAL ── -->
+<!-- ── ADD/EDIT ITEM MODAL ── -->
 <div class="modal-overlay" id="itemModal">
     <div class="modal-detail">
         <div class="modal-header"><h3 id="itemModalTitle"><i class="fas fa-plus-circle"></i> Add New Item</h3><button class="close-modal" onclick="closeModal('itemModal')">✕</button></div>
@@ -261,7 +330,7 @@
                 <div class="field-group"><label>Price (K) *</label><input type="number" id="itemPriceInput" step="0.01" min="0" placeholder="0.00" required></div>
                 <div class="field-group"><label>Stock *</label><input type="number" id="itemStockInput" min="0" placeholder="0" required></div>
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save</button>
+                    <button type="submit" class="btn btn-success" id="saveItemBtn"><i class="fas fa-save"></i> Save</button>
                     <button type="button" class="btn btn-ghost" onclick="closeModal('itemModal')">Cancel</button>
                 </div>
             </form>
@@ -283,21 +352,23 @@
                         <option value="kabana">🏪 Makeni Branch</option>
                     </select>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 100px;gap:10px;align-items:end;">
+                <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;">
                     <div class="field-group" style="margin-bottom:0;">
                         <label>Product Code</label>
                         <input type="text" id="transferCode" list="transferCodesList" placeholder="Type or scan code..." autocomplete="off">
                         <datalist id="transferCodesList"></datalist>
                     </div>
-                    <div class="field-group" style="margin-bottom:0;">
-                        <label>Qty</label>
+                    <div class="field-group" style="margin-bottom:0;width:100px;">
+                        <label>Quantity</label>
                         <input type="number" id="transferQty" min="1" value="1">
                     </div>
                 </div>
-                <div class="preview-box" id="transferPreview" style="margin-top:10px;">Select a product to preview</div>
-                <button type="button" class="btn btn-primary" id="addToTransferBtn" style="width:100%;margin-bottom:16px;justify-content:center;"><i class="fas fa-plus"></i> Add to Transfer List</button>
+                <div class="preview-box" id="transferPreview" style="margin-top:10px;">Select a product to preview details</div>
+                <button type="button" class="btn btn-primary" id="addToTransferBtn" style="width:100%;margin-bottom:16px;justify-content:center;">
+                    <i class="fas fa-plus"></i> Add to Transfer List
+                </button>
                 <div id="transferCart" style="display:none;border-top:1px solid var(--border);padding-top:14px;">
-                    <p style="font-size:0.72rem;font-weight:800;color:var(--text-fade);text-transform:uppercase;margin-bottom:8px;">Items to Transfer:</p>
+                    <p style="font-size:0.72rem;font-weight:800;color:var(--text-fade);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">Items to Transfer:</p>
                     <div class="table-scroll">
                         <table class="cart-table">
                             <thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Subtotal</th><th></th></tr></thead>
@@ -323,14 +394,17 @@
     </div>
 </div>
 
-<!-- ── REVERSE STOCK MODAL ── -->
+<!-- ── REVERSE STOCK CONFIRM MODAL ── -->
 <div class="modal-overlay" id="reverseModal">
     <div class="modal-detail">
-        <div class="modal-header"><h3 style="color:var(--purple);"><i class="fas fa-undo-alt"></i> Reverse Stock Transfer</h3><button class="close-modal" onclick="closeModal('reverseModal')">✕</button></div>
+        <div class="modal-header">
+            <h3 style="color:var(--purple);"><i class="fas fa-undo-alt"></i> Reverse Stock Transfer</h3>
+            <button class="close-modal" onclick="closeModal('reverseModal')">✕</button>
+        </div>
         <div class="modal-body">
             <div class="reverse-warning">
-                <h4><i class="fas fa-exclamation-triangle"></i> Warning — Cannot Be Undone</h4>
-                <p>This will <strong>return all items back to Master Warehouse</strong> and deduct them from the destination branch.</p>
+                <h4><i class="fas fa-exclamation-triangle"></i> Warning — This Cannot Be Undone</h4>
+                <p>Reversing this transfer will <strong>return all items back to Master Warehouse</strong> and deduct them from the destination branch. Only do this if the transfer was a mistake.</p>
             </div>
             <div id="reverseTransferInfo" style="background:var(--bg3);border-radius:var(--radius);padding:14px;margin-bottom:16px;font-size:0.8rem;"></div>
             <div class="form-actions">
@@ -341,687 +415,608 @@
     </div>
 </div>
 
-<!-- ── GRV MODAL (fully embedded, no iframe) ── -->
-<div class="modal-overlay" id="grvModal">
-    <div class="modal-detail modal-xl" style="max-height:90vh;width:95%;">
-        <div class="modal-header" style="border-bottom-color:var(--orange);">
-            <h3 style="color:var(--orange);"><i class="fas fa-file-import"></i> GRV Processing — Master Warehouse Restock</h3>
-            <button class="close-modal" onclick="closeModal('grvModal')">✕</button>
-        </div>
-        <div class="grv-modal-body">
-            <div class="grv-tabs">
-                <button class="grv-tab active" data-grv-tab="process">📦 Process New GRV</button>
-                <button class="grv-tab" data-grv-tab="history">📋 GRV History</button>
-            </div>
-
-            <!-- PROCESS TAB -->
-            <div class="grv-tab-panel active" id="grvPanelProcess">
-                <div class="grv-banner">⭐ MASTER WAREHOUSE — Adding stock to central inventory</div>
-                <div class="grv-current-label" id="grvCurrentLabel">Currently Adding to: MGRV-01</div>
-
-                <div class="grv-form-grid">
-                    <div class="grv-field">
-                        <label>Item Name</label>
-                        <select id="grvItemName" onchange="grvAutoFill()">
-                            <option value="">— Select item —</option>
-                        </select>
-                    </div>
-                    <div class="grv-field">
-                        <label>Item Code</label>
-                        <input type="text" id="grvItemCode" placeholder="Auto-fills" readonly style="background:#f1f3f5;cursor:default;">
-                    </div>
-                    <div class="grv-field">
-                        <label>Quantity</label>
-                        <input type="number" id="grvQty" min="1" value="1" placeholder="Qty">
-                    </div>
-                    <div class="grv-field">
-                        <label>Unit Price (K)</label>
-                        <input type="number" id="grvPrice" min="0" step="0.01" value="0.00" placeholder="Price">
-                    </div>
-                    <div class="grv-field" style="grid-column:1/-1;">
-                        <label>Supplier</label>
-                        <input type="text" id="grvSupplier" placeholder="Supplier name">
-                    </div>
-                </div>
-                <button class="grv-add-btn" onclick="grvAddItem()"><i class="fas fa-plus-circle"></i> Add Item to GRV List</button>
-
-                <div id="grvMsg" class="grv-msg" style="display:none;"></div>
-
-                <div class="grv-table-wrap">
-                    <table class="grv-table">
-                        <thead><tr><th>Code</th><th>Name</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Supplier</th><th>Status</th><th></th></tr></thead>
-                        <tbody id="grvItemsTbody"><tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-dim);">No items added yet</td></tr></tbody>
-                    </table>
-                </div>
-
-                <div class="grv-process-section">
-                    <button class="grv-process-btn" onclick="grvProcess()">
-                        <i class="fas fa-check-double"></i> PROCESS GRV — Add Stock to Master Warehouse
-                    </button>
-                    <p>Processes all items above and updates Master Warehouse inventory</p>
-                </div>
-            </div>
-
-            <!-- HISTORY TAB -->
-            <div class="grv-tab-panel" id="grvPanelHistory">
-                <div class="grv-history-card">
-                    <div class="table-scroll">
-                        <table class="grv-table">
-                            <thead><tr><th>GRV Number</th><th>Date</th><th>Time</th><th>Items</th><th>Total Qty</th><th>Total Value</th><th></th></tr></thead>
-                            <tbody id="grvHistoryTbody"><tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-dim);">Loading history...</td></tr></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- GRV item detail sub-modal -->
-<div class="modal-overlay" id="grvDetailModal" style="z-index:3000;">
-    <div class="modal-detail">
-        <div class="modal-header"><h3 id="grvDetailTitle" style="color:var(--orange);">GRV Items</h3><button class="close-modal" onclick="closeModal('grvDetailModal')">✕</button></div>
-        <div class="modal-body" id="grvDetailBody"></div>
-    </div>
-</div>
-
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { 
-    getFirestore, collection, query, where, orderBy, 
-    getDocs, addDoc, updateDoc, deleteDoc, doc, 
-    increment, onSnapshot, runTransaction, getDoc, setDoc
-} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+    import { 
+        getFirestore, collection, query, where, orderBy, 
+        getDocs, addDoc, updateDoc, deleteDoc, doc, 
+        increment, onSnapshot, runTransaction, getDoc
+    } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
-    authDomain: "trismartstores.firebaseapp.com",
-    projectId: "trismartstores",
-    storageBucket: "trismartstores.appspot.com",
-    messagingSenderId: "416692703333",
-    appId: "1:416692703333:web:d4b60292621435c748f68c"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    const firebaseConfig = {
+        apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+        authDomain: "trismartstores.firebaseapp.com",
+        projectId: "trismartstores",
+        storageBucket: "trismartstores.appspot.com",
+        messagingSenderId: "416692703333",
+        appId: "1:416692703333:web:d4b60292621435c748f68c"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-const loggedInUser = (localStorage.getItem('loggedInUser') || localStorage.getItem('userName') || '').toLowerCase().trim();
-const isChris = loggedInUser === 'chris';
-
-if (!isChris) {
-    document.body.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f4f6fb;">
-            <div style="background:white;border-radius:16px;padding:40px;text-align:center;max-width:400px;border:1px solid #e2e6ef;">
-                <i class="fas fa-lock" style="font-size:3rem;color:#ef4444;margin-bottom:20px;display:block;"></i>
-                <h2 style="color:#ef4444;">Access Denied</h2>
-                <p style="color:#6b7490;margin:12px 0 20px;">Only admin "chris" can access Master Warehouse.</p>
-                <button onclick="window.location.href='index.html'" style="background:#4361ee;color:white;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-weight:700;">Return to Login</button>
-            </div>
-        </div>`;
-    throw new Error('Unauthorized');
-}
-
-document.getElementById('adminBadge').innerHTML = `<i class="fas fa-shield-alt"></i> ${loggedInUser.toUpperCase()}`;
-
-let masterInventory = [];
-let unsubInventory = null;
-let transferCart = [];
-let editingItemId = null;
-let pendingReverseTransfer = null;
-
-// ── GRV STATE ──
-let grvItems = [];
-let grvCurrentNum = 1;
-let grvProcessed = [];
-
-// ── TOAST ──
-function toast(msg, type = 'success') {
-    const wrap = document.getElementById('toastWrap');
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    const icon = type === 'error' ? 'fa-exclamation-triangle' : type === 'info' ? 'fa-info-circle' : 'fa-check-circle';
-    t.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
-    wrap.appendChild(t);
-    setTimeout(() => t.remove(), 3500);
-}
-
-function esc(s) {
-    if (!s) return '';
-    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-
-// ── CLOCK ──
-function updateClock() { document.getElementById('timeBadge').textContent = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); }
-updateClock(); setInterval(updateClock, 30000);
-
-// ── CLOSE ALL DOT MENUS ──
-function closeAllMenus() { document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open')); }
-document.addEventListener('click', closeAllMenus);
-
-window.toggleDotsMenu = function(e, id) {
-    e.stopPropagation();
-    const menu = document.getElementById('dm-' + id);
-    const wasOpen = menu.classList.contains('open');
-    closeAllMenus();
-    if (!wasOpen) menu.classList.add('open');
-};
-
-// ── INVENTORY LISTENER ──
-function loadInventory() {
-    if (unsubInventory) unsubInventory();
-    const q = query(collection(db,'inventory'), where('branchId','==','master'));
-    unsubInventory = onSnapshot(q, snap => {
-        masterInventory = snap.docs.map(d => ({id:d.id,...d.data(),stock:Number(d.data().stock)||0,price:Number(d.data().price)||0}));
-        masterInventory.sort((a,b) => (a.code||'').localeCompare(b.code||''));
-        renderInventoryTable();
-        updateStats();
-        // Transfer datalist
-        const dl = document.getElementById('transferCodesList');
-        if (dl) { dl.innerHTML=''; masterInventory.forEach(i=>{const o=document.createElement('option');o.value=i.code;o.label=i.name;dl.appendChild(o);}); }
-        // GRV dropdown
-        grvPopulateDropdown();
-    }, err => toast('Error loading inventory: '+err.message, 'error'));
-}
-
-function updateStats() {
-    document.getElementById('totalItemsCount').textContent = masterInventory.length;
-    document.getElementById('totalStockQty').textContent = masterInventory.reduce((s,i)=>s+i.stock,0);
-    document.getElementById('totalValueStat').textContent = `K${masterInventory.reduce((s,i)=>s+(i.price*i.stock),0).toFixed(2)}`;
-}
-
-function renderInventoryTable() {
-    const tbody = document.getElementById('inventoryTbody');
-    const sv = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = masterInventory.filter(i => i.name?.toLowerCase().includes(sv) || i.code?.toLowerCase().includes(sv));
-    tbody.innerHTML = '';
-    if (!filtered.length) { tbody.innerHTML='<tr class="empty-row"><td colspan="5">No products found</td></tr>'; return; }
-    filtered.forEach(item => {
-        let bg='', tc='';
-        if (item.stock===0){bg='rgba(239,68,68,0.1)';tc='#991b1b';}
-        else if(item.stock<5){bg='rgba(245,158,11,0.12)';tc='#92400e';}
-        else{bg='rgba(16,185,129,0.1)';tc='#065f46';}
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td><span class="code-chip">${esc(item.code)}</span></td>
-            <td style="font-weight:600;">${esc(item.name)}</td>
-            <td>K${item.price.toFixed(2)}</td>
-            <td><span class="stock-chip" style="background:${bg};color:${tc};">${item.stock}</span></td>
-            <td>
-                <div class="dots-wrap">
-                    <button class="dots-btn" onclick="toggleDotsMenu(event,'${item.id}')" title="Actions">
-                        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                    </button>
-                    <div class="dots-menu" id="dm-${item.id}">
-                        <button class="dots-menu-item edit" onclick="closeAllMenus();openEditModal('${item.id}')">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="dots-menu-item delete" onclick="closeAllMenus();deleteItem('${item.id}')">
-                            <i class="fas fa-trash-alt"></i> Delete
-                        </button>
-                    </div>
+    const loggedInUser = localStorage.getItem('loggedInUser') || '';
+    const userName = (loggedInUser || localStorage.getItem('userName') || '').toLowerCase().trim();
+    const isChris = (userName === 'chris');
+    
+    if (!isChris) {
+        document.body.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f4f6fb;">
+                <div style="background:white;border-radius:16px;padding:40px;text-align:center;max-width:400px;border:1px solid #e2e6ef;box-shadow:0 8px 32px rgba(0,0,0,0.1);">
+                    <i class="fas fa-lock" style="font-size:3rem;color:#ef4444;margin-bottom:20px;display:block;"></i>
+                    <h2 style="color:#ef4444;margin-bottom:12px;">Access Denied</h2>
+                    <p style="color:#6b7490;margin-bottom:20px;">Only user "chris" can access Master Warehouse.</p>
+                    <button onclick="window.location.href='index.html'" style="background:#4361ee;color:white;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-weight:700;">Return to Login</button>
                 </div>
-            </td>`;
-    });
-}
-
-window.openEditModal = (id) => {
-    const item = masterInventory.find(i=>i.id===id);
-    if (!item) return;
-    editingItemId = id;
-    document.getElementById('itemModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Item';
-    document.getElementById('itemCodeInput').value = item.code;
-    document.getElementById('itemNameInput').value = item.name;
-    document.getElementById('itemPriceInput').value = item.price;
-    document.getElementById('itemStockInput').value = item.stock;
-    document.getElementById('itemModal').classList.add('show');
-};
-
-window.deleteItem = async (id) => {
-    const item = masterInventory.find(i=>i.id===id);
-    if (!item) return;
-    if (confirm(`Delete "${item.name}" (${item.code})? This cannot be undone.`)) {
-        try { await deleteDoc(doc(db,'inventory',id)); toast(`${item.code} deleted`); }
-        catch(err) { toast(err.message,'error'); }
+            </div>
+        `;
+        throw new Error('Unauthorized');
     }
-};
 
-document.getElementById('addItemBtn').onclick = () => {
-    editingItemId = null;
-    document.getElementById('itemModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Item';
-    document.getElementById('itemForm').reset();
-    document.getElementById('itemModal').classList.add('show');
-};
+    document.getElementById('adminBadge').innerHTML = `<i class="fas fa-shield-alt"></i> ${userName.toUpperCase()}`;
+    
+    let masterInventory = [];
+    let unsubscribeInventory = null;
+    let transferCart = [];
+    let editingItemId = null;
+    let pendingReverseTransfer = null;
 
-document.getElementById('itemForm').onsubmit = async e => {
-    e.preventDefault();
-    const code=document.getElementById('itemCodeInput').value.trim().toUpperCase();
-    const name=document.getElementById('itemNameInput').value.trim();
-    const price=parseFloat(document.getElementById('itemPriceInput').value);
-    const stock=parseInt(document.getElementById('itemStockInput').value);
-    if (!code||!name||isNaN(price)||price<0||isNaN(stock)||stock<0) { toast('Fill all fields correctly','error'); return; }
-    try {
-        if (editingItemId) {
-            await updateDoc(doc(db,'inventory',editingItemId),{code,name,price,stock});
-            toast(`"${name}" updated`);
-        } else {
-            if (masterInventory.some(i=>i.code===code)) { toast('Code already exists','error'); return; }
-            await addDoc(collection(db,'inventory'),{code,name,price,stock,sold:0,branchId:'master'});
-            toast(`"${name}" added to Master Warehouse`);
-        }
-        closeModal('itemModal');
-    } catch(err) { toast(err.message,'error'); }
-};
+    // ── TOAST ──
+    function toast(msg, type = 'success') {
+        const wrap = document.getElementById('toastWrap');
+        const t = document.createElement('div');
+        t.className = `toast ${type}`;
+        const icon = type === 'success' ? 'fa-check-circle' : type === 'info' ? 'fa-info-circle' : 'fa-exclamation-triangle';
+        t.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
+        wrap.appendChild(t);
+        setTimeout(() => t.remove(), 3500);
+    }
 
-// ── TRANSFER ──
-document.getElementById('transferBtn').onclick = () => {
-    transferCart = [];
-    document.getElementById('transferForm').reset();
-    document.getElementById('transferCart').style.display = 'none';
-    document.getElementById('confirmTransferBtn').disabled = true;
-    document.getElementById('transferPreview').textContent = 'Select a product to preview';
-    document.getElementById('transferModal').classList.add('show');
-    updateCartUI();
-};
+    // ── CLOCK ──
+    function updateClock() { 
+        document.getElementById('timeBadge').textContent = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); 
+    }
+    updateClock(); 
+    setInterval(updateClock, 30000);
 
-document.getElementById('transferCode').addEventListener('input', () => {
-    const code = document.getElementById('transferCode').value.trim().toUpperCase();
-    const item = masterInventory.find(i=>i.code===code);
-    const box = document.getElementById('transferPreview');
-    if (item) { const sc=item.stock===0?'var(--danger)':item.stock<5?'var(--orange)':'var(--green)'; box.innerHTML=`<strong style="color:var(--blue);">${esc(item.name)}</strong> &nbsp;|&nbsp; Stock: <strong style="color:${sc};">${item.stock}</strong> &nbsp;|&nbsp; Price: K${item.price.toFixed(2)}`; }
-    else if (code.length>0) box.innerHTML=`<span style="color:var(--danger);"><i class="fas fa-times-circle"></i> "${esc(code)}" not found</span>`;
-    else box.textContent='Select a product to preview';
-});
+    function escapeHtml(str) { 
+        if(!str) return ''; 
+        return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); 
+    }
 
-document.getElementById('addToTransferBtn').onclick = () => {
-    const code=document.getElementById('transferCode').value.trim().toUpperCase();
-    const qty=parseInt(document.getElementById('transferQty').value);
-    if (!code||isNaN(qty)||qty<1) { toast('Enter valid code and quantity','error'); return; }
-    const item=masterInventory.find(i=>i.code===code);
-    if (!item) { toast(`"${code}" not found in Master Warehouse`,'error'); return; }
-    const existing=transferCart.find(c=>c.code===code);
-    const inCart=existing?existing.qty:0;
-    if ((inCart+qty)>item.stock) { toast(`Not enough stock. Available: ${item.stock}, In cart: ${inCart}`,'error'); return; }
-    if (existing) existing.qty+=qty;
-    else transferCart.push({code:item.code,name:item.name,price:item.price,qty,itemId:item.id});
-    toast(`${qty}x ${item.name} added`);
-    updateCartUI();
-    document.getElementById('transferCode').value='';
-    document.getElementById('transferQty').value='1';
-    document.getElementById('transferPreview').textContent='Select a product to preview';
-};
-
-function updateCartUI() {
-    const cartDiv=document.getElementById('transferCart');
-    const tbody=document.getElementById('transferCartBody');
-    if (!transferCart.length) { cartDiv.style.display='none'; document.getElementById('confirmTransferBtn').disabled=true; return; }
-    cartDiv.style.display='block'; document.getElementById('confirmTransferBtn').disabled=false;
-    tbody.innerHTML=''; let total=0;
-    transferCart.forEach((c,idx)=>{
-        total+=c.price*c.qty;
-        const row=tbody.insertRow();
-        row.innerHTML=`<td><span class="code-chip" style="font-size:0.65rem;">${esc(c.code)}</span></td><td>${esc(c.name)}</td><td><strong>${c.qty}</strong></td><td>K${(c.price*c.qty).toFixed(2)}</td><td><button type="button" onclick="removeFromCart(${idx})" style="background:var(--danger);color:white;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.7rem;">✕</button></td>`;
-    });
-    document.getElementById('cartTotal').innerHTML=`<span style="color:var(--blue);">Total: K${total.toFixed(2)}</span>`;
-}
-
-window.removeFromCart = idx => { transferCart.splice(idx,1); updateCartUI(); };
-
-document.getElementById('transferForm').onsubmit = async e => {
-    e.preventDefault();
-    const destId=document.getElementById('destBranch').value;
-    if (!destId) { toast('Select destination branch','error'); return; }
-    if (!transferCart.length) { toast('Add items to transfer','error'); return; }
-    const branchNames={makeni:'Kabanana Branch',kabana:'Makeni Branch'};
-    const destName=branchNames[destId]||destId;
-    if (!confirm(`Transfer ${transferCart.length} product(s) to ${destName}?`)) return;
-    const btn=document.getElementById('confirmTransferBtn');
-    btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Processing...';
-    try {
-        for (const c of transferCart) {
-            await runTransaction(db, async tx => {
-                const srcRef=doc(db,'inventory',c.itemId);
-                const srcDoc=await tx.get(srcRef);
-                if (!srcDoc.exists()) throw new Error(`${c.code} not found`);
-                if (srcDoc.data().stock<c.qty) throw new Error(`Stock changed for ${c.name}`);
-                tx.update(srcRef,{stock:increment(-c.qty)});
-                const dq=query(collection(db,'inventory'),where('branchId','==',destId),where('code','==',c.code));
-                const ds=await getDocs(dq);
-                if (!ds.empty) tx.update(doc(db,'inventory',ds.docs[0].id),{stock:increment(c.qty)});
-                else tx.set(doc(collection(db,'inventory')),{code:c.code,name:c.name,price:c.price,stock:c.qty,sold:0,branchId:destId});
-            });
-        }
-        const now=new Date(), ref='TRF-'+Date.now().toString().slice(-6);
-        await addDoc(collection(db,'transfers'),{
-            ref,date:now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
-            time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),createdAt:now.toISOString(),
-            srcId:'master',srcName:'⭐ Master Warehouse',destId,destName,
-            items:transferCart.map(c=>({code:c.code,name:c.name,qty:c.qty,price:c.price,total:c.price*c.qty})),
-            totalValue:transferCart.reduce((s,c)=>s+(c.price*c.qty),0),doneBy:loggedInUser,status:'active'
+    // ── LOAD INVENTORY ──
+    function loadInventory() {
+        if (unsubscribeInventory) unsubscribeInventory();
+        const q = query(collection(db, 'inventory'), where('branchId', '==', 'master'));
+        unsubscribeInventory = onSnapshot(q, (snapshot) => {
+            masterInventory = snapshot.docs.map((d) => ({ 
+                id: d.id, ...d.data(), 
+                stock: Number(d.data().stock) || 0, 
+                price: Number(d.data().price) || 0 
+            }));
+            masterInventory.sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+            renderInventoryTable();
+            updateStats();
+            // Populate datalist
+            const datalist = document.getElementById('transferCodesList');
+            if(datalist) { 
+                datalist.innerHTML = ''; 
+                masterInventory.forEach(i => { 
+                    const o = document.createElement('option'); 
+                    o.value = i.code; 
+                    o.label = i.name;
+                    datalist.appendChild(o); 
+                }); 
+            }
+        }, (err) => { 
+            console.error(err); 
+            toast('Error loading inventory: ' + err.message, 'error'); 
         });
-        toast(`✅ Transferred ${transferCart.length} item(s) to ${destName}`);
-        closeModal('transferModal'); transferCart=[];
-    } catch(err) { toast('Transfer failed: '+err.message,'error'); }
-    finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Confirm Transfer'; }
-};
+    }
 
-// ── TRANSFER HISTORY ──
-async function loadTransferHistory() {
-    const tbody=document.getElementById('historyTbody');
-    tbody.innerHTML='<tr><td colspan="8" class="empty-row"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
-    try {
-        const q=query(collection(db,'transfers'),orderBy('createdAt','desc'));
-        const snap=await getDocs(q);
-        const transfers=[];
-        snap.forEach(d=>{ const t={id:d.id,...d.data()}; if(t.srcId==='master'||t.destId==='master') transfers.push(t); });
-        if (!transfers.length) { tbody.innerHTML='<tr><td colspan="8" class="empty-row">No transfers found</td></tr>'; return; }
-        tbody.innerHTML='';
-        window._allTransfers={};
-        transfers.forEach(t => {
-            window._allTransfers[t.id]=t;
-            const isOut=t.srcId==='master', isRev=t.status==='reversed';
-            const dir=isRev?'REVERSED':(isOut?'OUT':'IN');
-            const loc=isOut?(t.destName||t.destId):(t.srcName||t.srcId);
-            const row=tbody.insertRow();
-            row.style.opacity=isRev?'0.65':'1';
-            row.innerHTML=`
-                <td style="white-space:nowrap;font-size:0.75rem;">${esc(t.date||'')} ${esc(t.time||'')}</td>
-                <td><span class="transfer-ref">${esc(t.ref||t.id.slice(-8).toUpperCase())}</span></td>
-                <td><span class="direction-badge-sm ${isRev?'':'isOut?out-badge:in-badge'}" style="background:${isRev?'rgba(124,58,237,0.15)':isOut?'rgba(239,68,68,0.15)':'rgba(16,185,129,0.15)'};color:${isRev?'var(--purple)':isOut?'var(--danger)':'var(--green)'};font-size:0.6rem;padding:2px 8px;border-radius:100px;font-weight:700;">${dir}</span></td>
-                <td style="font-size:0.78rem;">${esc(loc||'—')}</td>
-                <td style="text-align:center;">${(t.items||[]).length}</td>
-                <td style="font-family:'DM Mono',monospace;font-weight:700;">K${(t.totalValue||0).toFixed(2)}</td>
-                <td><span class="status-badge ${isRev?'status-reversed':'status-active'}">${isRev?'REVERSED':'ACTIVE'}</span></td>
-                <td>
-                    <div style="display:flex;gap:5px;">
-                        <button class="btn btn-ghost btn-sm" onclick="showTransferDetails('${t.id}')"><i class="fas fa-eye"></i></button>
-                        ${!isRev&&isOut?`<button class="btn btn-purple btn-sm" onclick="openReverseModal('${t.id}')"><i class="fas fa-undo-alt"></i> Reverse</button>`:''}
-                    </div>
-                </td>`;
-        });
-    } catch(err) { tbody.innerHTML=`<tr><td colspan="8" class="empty-row" style="color:var(--danger);">Error: ${esc(err.message)}</td></tr>`; }
-}
+    // ── STATS ──
+    function updateStats() {
+        document.getElementById('totalItemsCount').textContent = masterInventory.length;
+        document.getElementById('totalStockQty').textContent = masterInventory.reduce((s, i) => s + i.stock, 0);
+        document.getElementById('totalValueStat').textContent = `K${masterInventory.reduce((s, i) => s + (i.price * i.stock), 0).toFixed(2)}`;
+    }
 
-window.showTransferDetails = (id) => {
-    const t=window._allTransfers?.[id]; if(!t) return;
-    const items=t.items||[], isRev=t.status==='reversed';
-    document.getElementById('detailsModalBody').innerHTML=`
-        ${isRev?`<div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:var(--radius);padding:10px;margin-bottom:12px;color:var(--purple);font-size:0.78rem;font-weight:700;"><i class="fas fa-undo-alt"></i> This transfer was REVERSED</div>`:''}
-        <div style="background:var(--bg3);padding:14px;border-radius:var(--radius);margin-bottom:16px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;font-size:0.8rem;">
-            <div><strong>Ref:</strong> <span style="font-family:'DM Mono',monospace;color:var(--blue);">${esc(t.ref||t.id)}</span></div>
-            <div><strong>Date:</strong> ${esc(t.date||'')} ${esc(t.time||'')}</div>
-            <div><strong>By:</strong> ${esc(t.doneBy||'system')}</div>
-        </div>
-        <div style="background:var(--bg3);padding:12px;border-radius:var(--radius);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.85rem;">
-            <strong style="color:var(--orange);">${esc(t.srcName||t.srcId)}</strong>
-            <i class="fas fa-arrow-right" style="color:var(--blue);"></i>
-            <strong style="color:var(--green);">${esc(t.destName||t.destId)}</strong>
-        </div>
-        <div class="table-scroll">
-            <table class="items-table-detail">
-                <thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th></tr></thead>
-                <tbody>${items.map(i=>`<tr><td><span class="code-chip" style="font-size:0.65rem;">${esc(i.code)}</span></td><td>${esc(i.name)}</td><td><strong>${i.qty}</strong></td><td>K${(i.price||0).toFixed(2)}</td><td>K${(i.total||i.qty*(i.price||0)).toFixed(2)}</td></tr>`).join('')}</tbody>
-                <tfoot><tr style="background:var(--bg3);"><td colspan="4" style="text-align:right;font-weight:800;padding:10px 8px;">Total:</td><td style="font-weight:800;color:var(--blue);padding:10px 8px;">K${(t.totalValue||0).toFixed(2)}</td></tr></tfoot>
-            </table>
-        </div>`;
-    document.getElementById('detailsModal').classList.add('show');
-};
-
-window.openReverseModal = (id) => {
-    const t=window._allTransfers?.[id]; if(!t) return;
-    pendingReverseTransfer=t;
-    const items=t.items||[];
-    document.getElementById('reverseTransferInfo').innerHTML=`
-        <div style="margin-bottom:8px;"><strong>Ref:</strong> <span style="font-family:'DM Mono',monospace;color:var(--purple);">${esc(t.ref||id)}</span></div>
-        <div style="margin-bottom:8px;"><strong>To:</strong> ${esc(t.destName||t.destId)}</div>
-        <div style="margin-bottom:8px;"><strong>Date:</strong> ${esc(t.date||'')} ${esc(t.time||'')}</div>
-        <div style="font-weight:700;color:var(--text-fade);font-size:0.7rem;text-transform:uppercase;margin-bottom:6px;">Items returning:</div>
-        ${items.map(i=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:0.78rem;"><span>${esc(i.code)} — ${esc(i.name)}</span><strong>${i.qty} units</strong></div>`).join('')}
-        <div style="margin-top:10px;text-align:right;font-weight:800;">Total Reversed: K${(t.totalValue||0).toFixed(2)}</div>`;
-    document.getElementById('reverseModal').classList.add('show');
-    closeModal('detailsModal');
-};
-
-document.getElementById('confirmReverseBtn').onclick = async () => {
-    const t=pendingReverseTransfer; if(!t) return;
-    const btn=document.getElementById('confirmReverseBtn');
-    btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Reversing...';
-    try {
-        for (const item of (t.items||[])) {
-            await runTransaction(db, async tx => {
-                const dq=query(collection(db,'inventory'),where('branchId','==',t.destId),where('code','==',item.code));
-                const ds=await getDocs(dq);
-                if (!ds.empty) { const cur=Number(ds.docs[0].data().stock)||0; tx.update(doc(db,'inventory',ds.docs[0].id),{stock:increment(-Math.min(item.qty,cur))}); }
-                const mq=query(collection(db,'inventory'),where('branchId','==','master'),where('code','==',item.code));
-                const ms=await getDocs(mq);
-                if (!ms.empty) tx.update(doc(db,'inventory',ms.docs[0].id),{stock:increment(item.qty)});
-                else tx.set(doc(collection(db,'inventory')),{code:item.code,name:item.name,price:item.price,stock:item.qty,sold:0,branchId:'master'});
-            });
+    // ── RENDER TABLE ──
+    function renderInventoryTable() {
+        const tbody = document.getElementById('inventoryTbody');
+        const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || '';
+        let filtered = masterInventory.filter(i => 
+            i.name?.toLowerCase().includes(searchVal) || 
+            i.code?.toLowerCase().includes(searchVal)
+        );
+        tbody.innerHTML = '';
+        if (filtered.length === 0) { 
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No products found</td></tr>'; 
+            return; 
         }
-        await updateDoc(doc(db,'transfers',t.id),{status:'reversed',reversedAt:new Date().toISOString(),reversedBy:loggedInUser});
-        const now=new Date();
-        await addDoc(collection(db,'transfers'),{
-            ref:'REV-'+Date.now().toString().slice(-6),
-            date:now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
-            time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),createdAt:now.toISOString(),
-            srcId:t.destId,srcName:t.destName,destId:'master',destName:'⭐ Master Warehouse',
-            items:t.items,totalValue:t.totalValue,doneBy:loggedInUser,status:'active',isReversal:true,reversalOf:t.ref||t.id
+        filtered.forEach(item => {
+            const stockBg = item.stock === 0 ? 'rgba(239,68,68,0.1)' : (item.stock < 5 ? 'rgba(245,158,11,0.12)' : 'rgba(16,185,129,0.1)');
+            const stockColor = item.stock === 0 ? '#991b1b' : (item.stock < 5 ? '#92400e' : '#065f46');
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td><span class="code-chip">${escapeHtml(item.code)}</span></td>
+                <td style="font-weight:600;">${escapeHtml(item.name)}</td>
+                <td>K${item.price.toFixed(2)}</td>
+                <td><span class="stock-chip" style="background:${stockBg};color:${stockColor};">${item.stock}</span></td>
+                <td class="action-icons">
+                    <button class="action-icon edit" onclick="window.openEditModal('${item.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="action-icon delete" onclick="window.deleteItem('${item.id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            `;
         });
-        toast(`✅ Transfer ${t.ref} reversed! Stock returned.`);
-        closeModal('reverseModal'); pendingReverseTransfer=null;
-        loadTransferHistory();
-    } catch(err) { toast('Reversal failed: '+err.message,'error'); }
-    finally { btn.disabled=false; btn.innerHTML='<i class="fas fa-undo-alt"></i> Yes, Reverse Transfer'; }
-};
+    }
 
-// ── GRV (EMBEDDED) ──
-document.getElementById('grvBtn').onclick = async () => {
-    document.getElementById('grvModal').classList.add('show');
-    await grvInit();
-};
-
-async function grvInit() {
-    try {
-        const counterRef=doc(db,'grvCounter','master');
-        const counterSnap=await getDoc(counterRef);
-        grvCurrentNum=counterSnap.exists()?counterSnap.data().nextGRV:1;
-        if (!counterSnap.exists()) await setDoc(counterRef,{nextGRV:1});
-    } catch(e) { grvCurrentNum=1; }
-    grvUpdateLabel();
-    grvPopulateDropdown();
-    grvRenderItems();
-    await grvLoadHistory();
-}
-
-function grvUpdateLabel() {
-    document.getElementById('grvCurrentLabel').textContent = `Currently Adding to: MGRV-${String(grvCurrentNum).padStart(2,'0')}`;
-}
-
-function grvPopulateDropdown() {
-    const sel=document.getElementById('grvItemName');
-    if (!sel) return;
-    const current=sel.value;
-    sel.innerHTML='<option value="">— Select item —</option>';
-    masterInventory.forEach(item=>{
-        const o=document.createElement('option');
-        o.value=item.name; o.setAttribute('data-code',item.code); sel.appendChild(o);
-    });
-    if (current) sel.value=current;
-}
-
-window.grvAutoFill = () => {
-    const sel=document.getElementById('grvItemName');
-    const code=sel.options[sel.selectedIndex]?.getAttribute('data-code')||'';
-    document.getElementById('grvItemCode').value=code;
-    if (code) { document.getElementById('grvQty').focus(); document.getElementById('grvQty').select(); }
-};
-
-window.grvAddItem = () => {
-    const name=document.getElementById('grvItemName').value.trim();
-    const code=document.getElementById('grvItemCode').value.trim();
-    const qty=parseInt(document.getElementById('grvQty').value);
-    const price=parseFloat(document.getElementById('grvPrice').value);
-    const supplier=document.getElementById('grvSupplier').value.trim();
-    if (!name||!code||isNaN(qty)||qty<1||isNaN(price)||price<0||!supplier) { grvMsg('Fill all fields with valid values','error'); return; }
-    const grvNum=`MGRV-${String(grvCurrentNum).padStart(2,'0')}`;
-    grvItems.push({id:Date.now(),code,name,qty,unitPrice:price,totalPrice:(qty*price).toFixed(2),supplier,status:'pending',grvNumber:grvNum});
-    grvRenderItems();
-    document.getElementById('grvQty').value='1';
-    document.getElementById('grvPrice').value='0.00';
-    document.getElementById('grvSupplier').value='';
-    document.getElementById('grvItemName').value='';
-    document.getElementById('grvItemCode').value='';
-    grvMsg(`"${name}" added to GRV list`,'success');
-    setTimeout(()=>document.getElementById('grvMsg').style.display='none',2500);
-};
-
-function grvRenderItems() {
-    const tbody=document.getElementById('grvItemsTbody');
-    const grvNum=`MGRV-${String(grvCurrentNum).padStart(2,'0')}`;
-    const current=grvItems.filter(i=>i.grvNumber===grvNum);
-    if (!current.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-dim);">No items added yet. Use the form above.</td></tr>'; return; }
-    tbody.innerHTML='';
-    current.forEach(item=>{
-        const row=tbody.insertRow();
-        row.innerHTML=`
-            <td><span class="code-chip" style="font-size:0.65rem;">${esc(item.code)}</span></td>
-            <td style="font-weight:600;">${esc(item.name)}</td>
-            <td><strong>${item.qty}</strong></td>
-            <td>K${parseFloat(item.unitPrice).toFixed(2)}</td>
-            <td>K${item.totalPrice}</td>
-            <td>${esc(item.supplier)}</td>
-            <td><span style="background:${item.status==='pending'?'rgba(245,158,11,0.15)':'rgba(16,185,129,0.15)'};color:${item.status==='pending'?'#92400e':'#065f46'};font-size:0.65rem;padding:2px 8px;border-radius:100px;font-weight:700;">${item.status.toUpperCase()}</span></td>
-            <td>${item.status==='pending'?`<button class="grv-del-btn" onclick="grvDeleteItem(${item.id})"><i class="fas fa-trash"></i></button>`:''}</td>`;
-    });
-}
-
-window.grvDeleteItem = (id) => {
-    if (confirm('Remove this item?')) { grvItems=grvItems.filter(i=>i.id!==id); grvRenderItems(); }
-};
-
-window.grvProcess = async () => {
-    const grvNum=`MGRV-${String(grvCurrentNum).padStart(2,'0')}`;
-    const pending=grvItems.filter(i=>i.grvNumber===grvNum&&i.status==='pending');
-    if (!pending.length) { grvMsg('No pending items to process','error'); return; }
-    if (!confirm(`Process ${pending.length} item(s) as ${grvNum} — stock will be added to Master Warehouse?`)) return;
-    try {
-        const now=new Date();
-        const grvRecord={
-            grvNumber:grvNum,date:now.toISOString().split('T')[0],
-            time:now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
-            items:pending,totalItems:pending.length,
-            totalQuantity:pending.reduce((s,i)=>s+i.qty,0),
-            totalValue:pending.reduce((s,i)=>s+parseFloat(i.totalPrice),0),
-            branchId:'master',isMasterWarehouse:true,status:'processed',createdAt:now.toISOString()
-        };
-        await addDoc(collection(db,'grvRecords'),grvRecord);
-        // Update master inventory
-        for (const item of pending) {
-            const invItem=masterInventory.find(inv=>inv.code===item.code);
-            if (invItem) {
-                await updateDoc(doc(db,'inventory',invItem.id),{stock:increment(item.qty)});
-                await addDoc(collection(db,'restockHistory'),{
-                    date:grvRecord.date,code:item.code,name:item.name,
-                    price:item.unitPrice,quantity:item.qty,total:item.totalPrice,
-                    branchId:'master',grvNumber:grvNum
-                });
+    // ── EDIT / DELETE ──
+    window.openEditModal = (id) => {
+        const item = masterInventory.find(i => i.id === id);
+        if (!item) return;
+        editingItemId = id;
+        document.getElementById('itemModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Item';
+        document.getElementById('itemCodeInput').value = item.code;
+        document.getElementById('itemNameInput').value = item.name;
+        document.getElementById('itemPriceInput').value = item.price;
+        document.getElementById('itemStockInput').value = item.stock;
+        document.getElementById('itemModal').classList.add('show');
+    };
+    
+    window.deleteItem = async (id) => {
+        const item = masterInventory.find(i => i.id === id);
+        if (!item) return;
+        if (confirm(`Delete "${item.name}" (${item.code})? This cannot be undone.`)) {
+            try { 
+                await deleteDoc(doc(db, 'inventory', id)); 
+                toast(`${item.code} deleted`); 
+            } catch (err) { 
+                toast(err.message, 'error'); 
             }
         }
-        // Advance counter
-        await setDoc(doc(db,'grvCounter','master'),{nextGRV:grvCurrentNum+1},{merge:true});
-        // Mark processed
-        grvItems.forEach(i=>{ if(i.grvNumber===grvNum) i.status='processed'; });
-        grvProcessed.push(grvRecord);
-        grvCurrentNum++;
-        grvUpdateLabel();
-        grvRenderItems();
-        await grvLoadHistory();
-        grvMsg(`${grvNum} processed! Stock added to Master Warehouse.`,'success');
-        toast(`✅ ${grvNum} processed — ${pending.length} items restocked`);
-    } catch(err) { grvMsg('Error: '+err.message,'error'); toast('GRV failed: '+err.message,'error'); }
-};
+    };
 
-async function grvLoadHistory() {
-    const tbody=document.getElementById('grvHistoryTbody');
-    try {
-        const q=query(collection(db,'grvRecords'),where('branchId','==','master'));
-        const snap=await getDocs(q);
-        grvProcessed=snap.docs.map(d=>({id:d.id,...d.data()}));
-        grvProcessed.sort((a,b)=>b.createdAt?.localeCompare(a.createdAt||'')||0);
-        if (!grvProcessed.length) { tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-dim);">No GRVs processed yet</td></tr>'; return; }
-        tbody.innerHTML='';
-        grvProcessed.forEach(grv=>{
-            const row=tbody.insertRow();
-            row.innerHTML=`
-                <td style="font-family:'DM Mono',monospace;font-weight:700;color:var(--orange);">${esc(grv.grvNumber)}</td>
-                <td>${esc(grv.date)}</td>
-                <td>${esc(grv.time)}</td>
-                <td>${grv.totalItems}</td>
-                <td>${grv.totalQuantity}</td>
-                <td style="font-family:'DM Mono',monospace;font-weight:700;">K${(grv.totalValue||0).toFixed(2)}</td>
-                <td><button class="btn btn-ghost btn-sm" onclick="grvViewDetail('${grv.id}')"><i class="fas fa-eye"></i> View</button></td>`;
+    document.getElementById('addItemBtn').onclick = () => { 
+        editingItemId = null; 
+        document.getElementById('itemModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Item'; 
+        document.getElementById('itemForm').reset(); 
+        document.getElementById('itemModal').classList.add('show'); 
+    };
+    
+    document.getElementById('itemForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const code = document.getElementById('itemCodeInput').value.trim().toUpperCase();
+        const name = document.getElementById('itemNameInput').value.trim();
+        const price = parseFloat(document.getElementById('itemPriceInput').value);
+        const stock = parseInt(document.getElementById('itemStockInput').value);
+        if (!code || !name || isNaN(price) || price < 0 || isNaN(stock) || stock < 0) { 
+            toast('Please fill all fields correctly', 'error'); 
+            return; 
+        }
+        try {
+            if (editingItemId) {
+                await updateDoc(doc(db, 'inventory', editingItemId), { code, name, price, stock });
+                toast(`"${name}" updated successfully`);
+            } else {
+                if (masterInventory.some(i => i.code === code)) { 
+                    toast('Product code already exists', 'error'); 
+                    return; 
+                }
+                await addDoc(collection(db, 'inventory'), { code, name, price, stock, sold: 0, branchId: 'master' });
+                toast(`"${name}" added to Master Warehouse`);
+            }
+            closeModal('itemModal');
+        } catch (err) { 
+            toast(err.message, 'error'); 
+        }
+    };
+
+    // ── TRANSFER ──
+    document.getElementById('transferBtn').onclick = () => {
+        transferCart = [];
+        document.getElementById('transferForm').reset();
+        document.getElementById('transferCart').style.display = 'none';
+        document.getElementById('confirmTransferBtn').disabled = true;
+        document.getElementById('transferPreview').textContent = 'Select a product to preview details';
+        document.getElementById('transferModal').classList.add('show');
+        updateTransferCartUI();
+    };
+
+    document.getElementById('transferCode').addEventListener('input', () => {
+        const code = document.getElementById('transferCode').value.trim().toUpperCase();
+        const item = masterInventory.find(i => i.code === code);
+        const box = document.getElementById('transferPreview');
+        if (item) {
+            const stockColor = item.stock === 0 ? 'var(--danger)' : item.stock < 5 ? 'var(--orange)' : 'var(--green)';
+            box.innerHTML = `<strong style="color:var(--blue);">${escapeHtml(item.name)}</strong> &nbsp;|&nbsp; Stock: <strong style="color:${stockColor};">${item.stock}</strong> &nbsp;|&nbsp; Price: K${item.price.toFixed(2)}`;
+        } else if (code.length > 0) {
+            box.innerHTML = `<span style="color:var(--danger);"><i class="fas fa-times-circle"></i> Product "${escapeHtml(code)}" not found in Master Warehouse</span>`;
+        } else {
+            box.textContent = 'Select a product to preview details';
+        }
+    });
+
+    document.getElementById('addToTransferBtn').onclick = () => {
+        const code = document.getElementById('transferCode').value.trim().toUpperCase();
+        const qty = parseInt(document.getElementById('transferQty').value);
+        if (!code || isNaN(qty) || qty < 1) { 
+            toast('Enter a valid product code and quantity', 'error'); 
+            return; 
+        }
+        const item = masterInventory.find(i => i.code === code);
+        if (!item) { 
+            toast(`Product "${code}" not found in Master Warehouse`, 'error'); 
+            return; 
+        }
+        // Check total already in cart + new qty
+        const existing = transferCart.find(c => c.code === code);
+        const alreadyInCart = existing ? existing.qty : 0;
+        if ((alreadyInCart + qty) > item.stock) { 
+            toast(`Not enough stock. Available: ${item.stock}, In cart: ${alreadyInCart}`, 'error'); 
+            return; 
+        }
+        if (existing) {
+            existing.qty += qty;
+        } else {
+            transferCart.push({ code: item.code, name: item.name, price: item.price, qty, itemId: item.id });
+        }
+        toast(`${qty}x ${item.name} added to transfer list`);
+        updateTransferCartUI();
+        document.getElementById('transferCode').value = '';
+        document.getElementById('transferQty').value = '1';
+        document.getElementById('transferPreview').textContent = 'Select a product to preview details';
+    };
+
+    function updateTransferCartUI() {
+        const cartDiv = document.getElementById('transferCart');
+        const tbody = document.getElementById('transferCartBody');
+        if (transferCart.length === 0) { 
+            cartDiv.style.display = 'none'; 
+            document.getElementById('confirmTransferBtn').disabled = true; 
+            return; 
+        }
+        cartDiv.style.display = 'block';
+        document.getElementById('confirmTransferBtn').disabled = false;
+        tbody.innerHTML = '';
+        let total = 0;
+        transferCart.forEach((c, idx) => {
+            total += c.price * c.qty;
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td><span class="code-chip" style="font-size:0.65rem;">${escapeHtml(c.code)}</span></td>
+                <td>${escapeHtml(c.name)}</td>
+                <td><strong>${c.qty}</strong></td>
+                <td>K${(c.price * c.qty).toFixed(2)}</td>
+                <td><button type="button" onclick="window.removeFromCart(${idx})" style="background:var(--danger);color:white;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.7rem;">✕</button></td>
+            `;
         });
-    } catch(err) { tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--danger);">Error loading history</td></tr>`; }
-}
+        document.getElementById('cartTotal').innerHTML = `<span style="color:var(--blue);">Total: K${total.toFixed(2)}</span>`;
+    }
 
-window.grvViewDetail = (id) => {
-    const grv=grvProcessed.find(g=>g.id===id); if(!grv) return;
-    document.getElementById('grvDetailTitle').textContent=`${grv.grvNumber} — Details`;
-    const items=grv.items||[];
-    document.getElementById('grvDetailBody').innerHTML=`
-        <div style="background:var(--bg3);border-radius:var(--radius);padding:12px;margin-bottom:14px;font-size:0.8rem;display:flex;flex-wrap:wrap;gap:10px;">
-            <div><strong>GRV:</strong> <span style="font-family:'DM Mono',monospace;color:var(--orange);">${esc(grv.grvNumber)}</span></div>
-            <div><strong>Date:</strong> ${esc(grv.date)}</div>
-            <div><strong>Time:</strong> ${esc(grv.time)}</div>
-        </div>
-        <div class="table-scroll">
-            <table class="items-table-detail">
-                <thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Supplier</th></tr></thead>
-                <tbody>${items.map(i=>`<tr><td><span class="code-chip" style="font-size:0.65rem;">${esc(i.code)}</span></td><td>${esc(i.name)}</td><td><strong>${i.qty||i.quantity}</strong></td><td>K${parseFloat(i.unitPrice||0).toFixed(2)}</td><td>K${i.totalPrice||i.total}</td><td>${esc(i.supplier)}</td></tr>`).join('')}</tbody>
-                <tfoot><tr style="background:var(--bg3);"><td colspan="4" style="text-align:right;font-weight:800;padding:10px 8px;">Total Value:</td><td colspan="2" style="font-weight:800;color:var(--orange);padding:10px 8px;">K${(grv.totalValue||0).toFixed(2)}</td></tr></tfoot>
-            </table>
-        </div>`;
-    document.getElementById('grvDetailModal').classList.add('show');
-};
+    window.removeFromCart = (idx) => { 
+        transferCart.splice(idx, 1); 
+        updateTransferCartUI(); 
+    };
 
-function grvMsg(text, type) {
-    const el=document.getElementById('grvMsg');
-    el.textContent=text; el.className=`grv-msg ${type}`; el.style.display='block';
-}
+    document.getElementById('transferForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const destId = document.getElementById('destBranch').value;
+        if (!destId) { toast('Please select a destination branch', 'error'); return; }
+        if (transferCart.length === 0) { toast('Add at least one item to transfer', 'error'); return; }
+        const branchNames = { makeni: 'Kabanana Branch', kabana: 'Makeni Branch' };
+        const destName = branchNames[destId] || destId;
+        if (!confirm(`Transfer ${transferCart.length} product(s) to ${destName}?`)) return;
+        
+        const btn = document.getElementById('confirmTransferBtn');
+        btn.disabled = true; 
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        
+        try {
+            // Execute all transfers in transactions
+            for (const c of transferCart) {
+                await runTransaction(db, async (tx) => {
+                    const srcRef = doc(db, 'inventory', c.itemId);
+                    const srcDoc = await tx.get(srcRef);
+                    if (!srcDoc.exists()) throw new Error(`${c.code} not found`);
+                    if (srcDoc.data().stock < c.qty) throw new Error(`Stock changed for ${c.name}. Refresh and try again.`);
+                    tx.update(srcRef, { stock: increment(-c.qty) });
+                    
+                    const destQuery = query(collection(db, 'inventory'), where('branchId', '==', destId), where('code', '==', c.code));
+                    const destSnap = await getDocs(destQuery);
+                    if (!destSnap.empty) {
+                        tx.update(doc(db, 'inventory', destSnap.docs[0].id), { stock: increment(c.qty) });
+                    } else {
+                        tx.set(doc(collection(db, 'inventory')), { 
+                            code: c.code, name: c.name, price: c.price, stock: c.qty, sold: 0, branchId: destId 
+                        });
+                    }
+                });
+            }
+            
+            // Save transfer record
+            const now = new Date();
+            const refNum = 'TRF-' + Date.now().toString().slice(-6);
+            await addDoc(collection(db, 'transfers'), {
+                ref: refNum, 
+                date: now.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }),
+                time: now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }), 
+                createdAt: now.toISOString(),
+                srcId: 'master', 
+                srcName: '⭐ Master Warehouse', 
+                destId, 
+                destName,
+                items: transferCart.map(c => ({ 
+                    code: c.code, name: c.name, qty: c.qty, price: c.price, total: c.price * c.qty 
+                })),
+                totalValue: transferCart.reduce((s, c) => s + (c.price * c.qty), 0), 
+                doneBy: userName,
+                status: 'active'   // <-- status field for reverse tracking
+            });
+            
+            toast(`✅ Transferred ${transferCart.length} item(s) to ${destName}`);
+            closeModal('transferModal');
+            transferCart = [];
+        } catch (err) { 
+            toast('Transfer failed: ' + err.message, 'error'); 
+        } finally { 
+            btn.disabled = false; 
+            btn.innerHTML = '<i class="fas fa-check"></i> Confirm Transfer'; 
+        }
+    };
 
-// GRV tabs
-document.querySelectorAll('.grv-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const tn=btn.dataset.grvTab;
-        document.querySelectorAll('.grv-tab').forEach(b=>b.classList.toggle('active',b.dataset.grvTab===tn));
-        document.querySelectorAll('.grv-tab-panel').forEach(p=>p.classList.toggle('active',p.id===`grvPanel${tn.charAt(0).toUpperCase()+tn.slice(1)}`));
-        if (tn==='history') grvLoadHistory();
+    // ── TRANSFER HISTORY ──
+    async function loadTransferHistory() {
+        const tbody = document.getElementById('historyTbody');
+        tbody.innerHTML = '<tr><td colspan="8" class="empty-row"><i class="fas fa-spinner fa-spin"></i> Loading transfers...</td></tr>';
+        try {
+            const q = query(collection(db, 'transfers'), orderBy('createdAt', 'desc'));
+            const snapshot = await getDocs(q);
+            const transfers = [];
+            snapshot.forEach(d => { 
+                const t = { id: d.id, ...d.data() }; 
+                if (t.srcId === 'master' || t.destId === 'master') transfers.push(t); 
+            });
+            
+            if (transfers.length === 0) { 
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-row">No transfers found</td></tr>'; 
+                return; 
+            }
+            
+            tbody.innerHTML = '';
+            transfers.forEach(t => {
+                const isOutgoing = t.srcId === 'master';
+                const isReversed = t.status === 'reversed';
+                const direction = isReversed ? 'REVERSED' : (isOutgoing ? 'OUT' : 'IN');
+                const location = isOutgoing ? (t.destName || t.destId) : (t.srcName || t.srcId);
+                const itemCount = (t.items || []).length;
+                
+                const row = tbody.insertRow();
+                row.style.opacity = isReversed ? '0.65' : '1';
+                row.innerHTML = `
+                    <td style="white-space:nowrap;font-size:0.75rem;">${escapeHtml(t.date || '')} ${escapeHtml(t.time || '')}</td>
+                    <td><span class="transfer-ref">${escapeHtml(t.ref || t.id.slice(-8).toUpperCase())}</span></td>
+                    <td><span class="direction-badge-sm ${isReversed ? 'reversed-badge' : isOutgoing ? 'out-badge' : 'in-badge'}">${direction}</span></td>
+                    <td style="font-size:0.78rem;">${escapeHtml(location || '—')}</td>
+                    <td style="text-align:center;">${itemCount}</td>
+                    <td style="font-family:'DM Mono',monospace;font-weight:700;">K${(t.totalValue || 0).toFixed(2)}</td>
+                    <td><span class="status-badge ${isReversed ? 'status-reversed' : 'status-active'}">${isReversed ? 'REVERSED' : 'ACTIVE'}</span></td>
+                    <td>
+                        <div style="display:flex;gap:6px;">
+                            <button class="btn btn-ghost btn-sm" onclick="window.showTransferDetails('${t.id}', '${escapeHtml(JSON.stringify(t)).replace(/'/g, '&#39;')}')"><i class="fas fa-eye"></i></button>
+                            ${!isReversed && isOutgoing ? `<button class="btn btn-purple btn-sm" onclick="window.openReverseModal('${t.id}')"><i class="fas fa-undo-alt"></i> Reverse</button>` : ''}
+                        </div>
+                    </td>
+                `;
+            });
+
+            // Store transfers globally for quick access
+            window._allTransfers = {};
+            transfers.forEach(t => { window._allTransfers[t.id] = t; });
+
+        } catch (err) { 
+            tbody.innerHTML = `<tr><td colspan="8" class="empty-row" style="color:var(--danger);">Error: ${escapeHtml(err.message)}</td></tr>`; 
+        }
+    }
+
+    // ── VIEW DETAILS ──
+    window.showTransferDetails = (id) => {
+        const transfer = window._allTransfers?.[id];
+        if (!transfer) { toast('Transfer data not available', 'error'); return; }
+        const modal = document.getElementById('detailsModal');
+        const body = document.getElementById('detailsModalBody');
+        const items = transfer.items || [];
+        const isReversed = transfer.status === 'reversed';
+        
+        body.innerHTML = `
+            ${isReversed ? `<div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.25);border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;color:var(--purple);font-size:0.78rem;font-weight:700;"><i class="fas fa-undo-alt"></i> This transfer has been REVERSED</div>` : ''}
+            <div style="background:var(--bg3);padding:14px;border-radius:var(--radius);margin-bottom:16px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                <div style="font-size:0.8rem;"><strong>Reference:</strong> <span style="font-family:'DM Mono',monospace;color:var(--blue);">${escapeHtml(transfer.ref || transfer.id)}</span></div>
+                <div style="font-size:0.8rem;"><strong>Date:</strong> ${escapeHtml(transfer.date || '')} ${escapeHtml(transfer.time || '')}</div>
+                <div style="font-size:0.8rem;"><strong>By:</strong> ${escapeHtml(transfer.doneBy || 'system')}</div>
+            </div>
+            <div style="background:var(--bg3);padding:12px;border-radius:var(--radius);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                <div style="font-size:0.85rem;"><strong style="color:var(--orange);">${escapeHtml(transfer.srcName || transfer.srcId)}</strong></div>
+                <div style="color:var(--blue);"><i class="fas fa-arrow-right fa-lg"></i></div>
+                <div style="font-size:0.85rem;"><strong style="color:var(--green);">${escapeHtml(transfer.destName || transfer.destId)}</strong></div>
+            </div>
+            <h4 style="margin-bottom:10px;font-size:0.85rem;color:var(--text-fade);text-transform:uppercase;letter-spacing:0.08em;">Transferred Items</h4>
+            <div class="table-scroll">
+                <table class="items-table-detail">
+                    <thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th></tr></thead>
+                    <tbody>
+                        ${items.map(i => `
+                            <tr>
+                                <td><span class="code-chip" style="font-size:0.65rem;">${escapeHtml(i.code)}</span></td>
+                                <td>${escapeHtml(i.name)}</td>
+                                <td><strong>${i.qty}</strong></td>
+                                <td>K${(i.price || 0).toFixed(2)}</td>
+                                <td>K${(i.total || i.qty * (i.price || 0)).toFixed(2)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--bg3);">
+                            <td colspan="4" style="text-align:right;font-weight:800;padding:10px 8px;">Grand Total:</td>
+                            <td style="font-weight:800;color:var(--blue);padding:10px 8px;">K${(transfer.totalValue || 0).toFixed(2)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        `;
+        modal.classList.add('show');
+    };
+
+    // ── REVERSE STOCK ──
+    window.openReverseModal = (transferId) => {
+        const transfer = window._allTransfers?.[transferId];
+        if (!transfer) { toast('Transfer not found', 'error'); return; }
+        pendingReverseTransfer = transfer;
+        
+        const items = transfer.items || [];
+        document.getElementById('reverseTransferInfo').innerHTML = `
+            <div style="margin-bottom:10px;"><strong>Reference:</strong> <span style="font-family:'DM Mono',monospace;color:var(--purple);">${escapeHtml(transfer.ref || transferId)}</span></div>
+            <div style="margin-bottom:10px;"><strong>To Branch:</strong> ${escapeHtml(transfer.destName || transfer.destId)}</div>
+            <div style="margin-bottom:10px;"><strong>Date:</strong> ${escapeHtml(transfer.date || '')} ${escapeHtml(transfer.time || '')}</div>
+            <div style="margin-bottom:8px;font-weight:700;color:var(--text-fade);font-size:0.7rem;text-transform:uppercase;">Items that will be returned:</div>
+            ${items.map(i => `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:0.78rem;"><span>${escapeHtml(i.code)} — ${escapeHtml(i.name)}</span><strong>${i.qty} units</strong></div>`).join('')}
+            <div style="margin-top:10px;text-align:right;font-size:0.85rem;font-weight:800;">Total Value Reversed: K${(transfer.totalValue || 0).toFixed(2)}</div>
+        `;
+        
+        document.getElementById('reverseModal').classList.add('show');
+        closeModal('detailsModal');
+    };
+
+    document.getElementById('confirmReverseBtn').onclick = async () => {
+        const transfer = pendingReverseTransfer;
+        if (!transfer) return;
+        
+        const btn = document.getElementById('confirmReverseBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reversing...';
+        
+        try {
+            const items = transfer.items || [];
+            
+            for (const item of items) {
+                await runTransaction(db, async (tx) => {
+                    // 1. Find the item in the destination branch and deduct
+                    const destQuery = query(
+                        collection(db, 'inventory'), 
+                        where('branchId', '==', transfer.destId), 
+                        where('code', '==', item.code)
+                    );
+                    const destSnap = await getDocs(destQuery);
+                    if (!destSnap.empty) {
+                        const destDoc = destSnap.docs[0];
+                        const currentDestStock = Number(destDoc.data().stock) || 0;
+                        const deductQty = Math.min(item.qty, currentDestStock); // don't go negative
+                        tx.update(doc(db, 'inventory', destDoc.id), { stock: increment(-deductQty) });
+                    }
+                    
+                    // 2. Return stock to Master Warehouse
+                    const masterQuery = query(
+                        collection(db, 'inventory'), 
+                        where('branchId', '==', 'master'), 
+                        where('code', '==', item.code)
+                    );
+                    const masterSnap = await getDocs(masterQuery);
+                    if (!masterSnap.empty) {
+                        tx.update(doc(db, 'inventory', masterSnap.docs[0].id), { stock: increment(item.qty) });
+                    } else {
+                        // Re-create master item if it was fully sold/deleted
+                        tx.set(doc(collection(db, 'inventory')), {
+                            code: item.code, name: item.name, price: item.price,
+                            stock: item.qty, sold: 0, branchId: 'master'
+                        });
+                    }
+                });
+            }
+            
+            // Mark transfer as reversed
+            await updateDoc(doc(db, 'transfers', transfer.id), { 
+                status: 'reversed',
+                reversedAt: new Date().toISOString(),
+                reversedBy: userName
+            });
+            
+            // Log a reverse transfer record
+            const now = new Date();
+            await addDoc(collection(db, 'transfers'), {
+                ref: 'REV-' + Date.now().toString().slice(-6),
+                date: now.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }),
+                time: now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }),
+                createdAt: now.toISOString(),
+                srcId: transfer.destId,
+                srcName: transfer.destName,
+                destId: 'master',
+                destName: '⭐ Master Warehouse',
+                items: transfer.items,
+                totalValue: transfer.totalValue,
+                doneBy: userName,
+                status: 'active',
+                isReversal: true,
+                reversalOf: transfer.ref || transfer.id
+            });
+            
+            toast(`✅ Transfer ${transfer.ref} reversed! Stock returned to Master Warehouse.`);
+            closeModal('reverseModal');
+            pendingReverseTransfer = null;
+            loadTransferHistory();
+        } catch (err) {
+            toast('Reversal failed: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-undo-alt"></i> Yes, Reverse Transfer';
+        }
+    };
+
+    // ── GRV ──
+    document.getElementById('grvBtn').onclick = () => {
+        localStorage.setItem('grvBranch', 'master');
+        window.open('grv.html', '_blank');
+        toast('Opening GRV System for Master Warehouse', 'info');
+    };
+
+    // ── MODAL HELPERS ──
+    function closeModal(id) { 
+        document.getElementById(id).classList.remove('show'); 
+    }
+    window.closeModal = closeModal;
+
+    // ── TABS ──
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tabName);
+        });
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.toggle('active', content.id === `tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+        });
+        if (tabName === 'history') loadTransferHistory();
+    }
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
     });
-});
-
-// ── TABS ──
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const tn=btn.dataset.tab;
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tn));
-        document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active',c.id===`tab${tn.charAt(0).toUpperCase()+tn.slice(1)}`));
-        if (tn==='history') loadTransferHistory();
+    
+    document.getElementById('searchInput').addEventListener('input', () => renderInventoryTable());
+    
+    // Close modals on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => { 
+            if (e.target === overlay) overlay.classList.remove('show'); 
+        });
     });
-});
+    
+    document.addEventListener('keydown', (e) => { 
+        if (e.key === 'Escape') { 
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show')); 
+        } 
+    });
 
-document.getElementById('searchInput').addEventListener('input', renderInventoryTable);
-
-// Modal helpers
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-window.closeModal = closeModal;
-
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', e => { if(e.target===overlay) overlay.classList.remove('show'); });
-});
-document.addEventListener('keydown', e => { if(e.key==='Escape') document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('show')); });
-
-loadInventory();
-toast('Welcome back, Master Administrator!');
+    loadInventory();
+    toast('Welcome back, Master Administrator!', 'success');
 </script>
 </body>
 </html>
