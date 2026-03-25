@@ -74,37 +74,49 @@ body{min-height:100vh;display:flex;flex-direction:column;}
 
 /* filter bar */
 .filter-bar{
-  display:flex;align-items:center;gap:12px;
+  display:flex;align-items:center;justify-content:space-between;
   background:var(--surface);padding:12px 18px;
-  border-bottom:1px solid var(--border);flex-wrap:wrap;
+  border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px;
 }
 .filter-group{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.filter-item{
   display:flex;align-items:center;gap:8px;
-  background:var(--bg-lighter);padding:5px 12px;
+  background:var(--bg-lighter);padding:6px 14px;
   border-radius:var(--radius);border:1px solid var(--border);
 }
-.filter-group label{
+.filter-item i{
+  color:var(--primary);font-size:.75rem;
+}
+.filter-item label{
   font-size:.7rem;font-weight:700;color:var(--text-fade);
   text-transform:uppercase;letter-spacing:.05em;
 }
-.filter-group select{
+.filter-item select, .filter-item input{
   background:transparent;border:none;padding:6px 0;
-  font-size:.82rem;font-weight:500;color:var(--text);
+  font-size:.8rem;font-weight:500;color:var(--text);
   outline:none;cursor:pointer;
 }
-.filter-group input{
-  background:transparent;border:none;padding:6px 0;
-  font-size:.82rem;font-weight:500;color:var(--text);
-  outline:none;width:120px;
+.filter-item input{
+  width:140px;
 }
-.filter-group input::placeholder{color:var(--text-fade);}
+.filter-item input::placeholder{
+  color:var(--text-fade);
+}
 .clear-filter{
   background:var(--bg-lighter);border:1px solid var(--border);
-  border-radius:var(--radius);padding:6px 12px;
+  border-radius:var(--radius);padding:6px 16px;
   font-size:.75rem;font-weight:600;color:var(--text-fade);
   cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;gap:6px;
 }
-.clear-filter:hover{background:var(--danger);color:white;border-color:var(--danger);}
+.clear-filter:hover{
+  background:var(--danger);color:white;border-color:var(--danger);
+}
+.filter-stats{
+  font-size:.7rem;color:var(--text-fade);padding:0 8px;
+}
 
 /* buttons */
 .btn{
@@ -253,7 +265,6 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
 .field input:focus,.field select:focus{border-color:var(--primary);background:white;}
 .field select option{background:var(--surface);}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 
 .form-error{color:var(--danger);font-size:.78rem;margin-bottom:10px;min-height:14px;}
 
@@ -298,8 +309,9 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
   .main{padding:12px;}
   .acc-bar{padding:0 12px;}
   .field-row{grid-template-columns:1fr;}
-  .field-row-3{grid-template-columns:1fr;}
   .filter-bar{flex-direction:column;align-items:stretch;}
+  .filter-group{flex-direction:column;align-items:stretch;}
+  .filter-item{justify-content:space-between;}
 }
 </style>
 </head>
@@ -322,33 +334,37 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
   </div>
 </div>
 
-<!-- FILTER BAR -->
+<!-- FILTER BAR - CLEAN VERSION -->
 <div class="filter-bar">
   <div class="filter-group">
-    <label><i class="fas fa-tag"></i> Reference:</label>
-    <select id="filterReference">
-      <option value="">All References</option>
-      <option value="TS-1">TS-1</option>
-      <option value="TS-2">TS-2</option>
-      <option value="TS-3">TS-3</option>
-      <option value="TS-4">TS-4</option>
-      <option value="TS-5">TS-5</option>
-      <option value="Other">Other</option>
-    </select>
+    <div class="filter-item">
+      <i class="fas fa-tag"></i>
+      <label>Reference:</label>
+      <select id="filterReference">
+        <option value="">All References</option>
+        <option value="TS-1">TS-1</option>
+        <option value="TS-2">TS-2</option>
+      </select>
+    </div>
+    <div class="filter-item">
+      <i class="fas fa-search"></i>
+      <label>Search:</label>
+      <input type="text" id="filterSearch" placeholder="Description or ref...">
+    </div>
+    <div class="filter-item">
+      <i class="fas fa-exchange-alt"></i>
+      <label>Type:</label>
+      <select id="filterType">
+        <option value="">All</option>
+        <option value="credit">💰 Credit (In)</option>
+        <option value="debit">💸 Debit (Out)</option>
+      </select>
+    </div>
+    <button class="clear-filter" onclick="clearFilters()">
+      <i class="fas fa-times-circle"></i> Clear All
+    </button>
   </div>
-  <div class="filter-group">
-    <label><i class="fas fa-search"></i> Search:</label>
-    <input type="text" id="filterSearch" placeholder="Description or Ref...">
-  </div>
-  <div class="filter-group">
-    <label><i class="fas fa-exchange-alt"></i> Type:</label>
-    <select id="filterType">
-      <option value="">All</option>
-      <option value="credit">Credit (In)</option>
-      <option value="debit">Debit (Out)</option>
-    </select>
-  </div>
-  <button class="clear-filter" onclick="clearFilters()"><i class="fas fa-times"></i> Clear Filters</button>
+  <div class="filter-stats" id="filterStats"></div>
 </div>
 
 <!-- ACCOUNT TABS -->
@@ -367,7 +383,7 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
     <div class="table-scroll">
       <table>
         <thead>
-           <tr>
+          <tr>
             <th>Date</th>
             <th>Description</th>
             <th>Reference</th>
@@ -375,7 +391,7 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
             <th class="num">Credit</th>
             <th class="num">Balance</th>
             <th></th>
-           </tr>
+          </tr>
         </thead>
         <tbody id="cfTbody">
           <tr class="empty-row"><td colspan="7"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
@@ -397,7 +413,7 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
     <div class="form-error" id="txnErr"></div>
     <form onsubmit="saveTxn(event)" autocomplete="off">
       <input type="hidden" id="txnId">
-      <div class="field-row-3">
+      <div class="field-row">
         <div class="field">
           <label>Date</label>
           <input type="date" id="tDate" required>
@@ -408,18 +424,6 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
             <option value="">— Select —</option>
             <option value="credit">Credit (In)</option>
             <option value="debit">Debit (Out)</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Reference Prefix</label>
-          <select id="tRefPrefix">
-            <option value="">— Select Prefix —</option>
-            <option value="TS-1">TS-1</option>
-            <option value="TS-2">TS-2</option>
-            <option value="TS-3">TS-3</option>
-            <option value="TS-4">TS-4</option>
-            <option value="TS-5">TS-5</option>
-            <option value="Other">Other (Custom)</option>
           </select>
         </div>
       </div>
@@ -438,9 +442,19 @@ tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
         <label>Description</label>
         <input type="text" id="tDesc" placeholder="e.g. Cash sale" required>
       </div>
-      <div class="field">
-        <label>Reference Number</label>
-        <input type="text" id="tRefNum" placeholder="e.g. 001, 002 or custom reference">
+      <div class="field-row">
+        <div class="field">
+          <label>Reference</label>
+          <select id="tReference">
+            <option value="">— Select Reference —</option>
+            <option value="TS-1">TS-1</option>
+            <option value="TS-2">TS-2</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <input type="text" id="tRefCustom" placeholder="Or custom reference">
+        </div>
       </div>
       <div class="field">
         <label>Amount (ZMW)</label>
@@ -563,6 +577,7 @@ monthPicker.value=localStorage.getItem('cf_month')||today.toISOString().substrin
 const filterReference=document.getElementById('filterReference');
 const filterSearch=document.getElementById('filterSearch');
 const filterType=document.getElementById('filterType');
+const filterStats=document.getElementById('filterStats');
 
 // ── HELPERS ──
 function toast(msg,type='success'){
@@ -577,12 +592,13 @@ function toast(msg,type='success'){
 function fmtN(n){return Math.abs(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtK(n){return'ZMW '+fmtN(n);}
 
-// Generate reference from prefix and number
-function generateReference(prefix, num){
-  if(!prefix) return num || '—';
-  if(prefix === 'Other') return num || 'CUSTOM';
-  if(!num) return prefix;
-  return `${prefix}-${num.padStart(3,'0')}`;
+// Get reference from form
+function getReferenceFromForm(){
+  const refSelect = document.getElementById('tReference').value;
+  const refCustom = document.getElementById('tRefCustom').value.trim();
+  if(refCustom) return refCustom;
+  if(refSelect) return refSelect;
+  return '—';
 }
 
 document.addEventListener('click',()=>{
@@ -606,17 +622,10 @@ function applyFilters(){
     t.account === selAcc && t.date && t.date.substring(0,7) === month
   );
   
-  // Filter by reference prefix
+  // Filter by reference (TS-1 or TS-2 only)
   const refFilter = filterReference.value;
   if(refFilter){
-    if(refFilter === 'Other'){
-      filtered = filtered.filter(t => {
-        const ref = t.reference || '';
-        return ref && !ref.startsWith('TS-');
-      });
-    } else {
-      filtered = filtered.filter(t => (t.reference || '').startsWith(refFilter));
-    }
+    filtered = filtered.filter(t => (t.reference || '') === refFilter);
   }
   
   // Filter by search term
@@ -641,6 +650,11 @@ function applyFilters(){
   });
   
   filteredTransactions = filtered;
+  
+  // Update filter stats
+  const totalCount = filtered.length;
+  filterStats.textContent = `${totalCount} transaction${totalCount !== 1 ? 's' : ''} found`;
+  
   renderTableWithFilters();
 }
 
@@ -649,7 +663,7 @@ function clearFilters(){
   filterSearch.value = '';
   filterType.value = '';
   applyFilters();
-  toast('Filters cleared!', 'info');
+  toast('All filters cleared!', 'info');
 }
 
 // Add event listeners for filters
@@ -671,8 +685,8 @@ window.openTxnModal=function(mode,id=null){
     document.getElementById('tType').value='';
     document.getElementById('tAccount').value=selAcc;
     document.getElementById('tDesc').value='';
-    document.getElementById('tRefPrefix').value='';
-    document.getElementById('tRefNum').value='';
+    document.getElementById('tReference').value='';
+    document.getElementById('tRefCustom').value='';
     document.getElementById('tAmount').value='';
   }else if(id){
     const t=allTransactions.find(x=>x.id===id);
@@ -683,19 +697,15 @@ window.openTxnModal=function(mode,id=null){
       document.getElementById('tAccount').value=t.account||selAcc;
       document.getElementById('tDesc').value=t.description||'';
       
-      // Parse reference to prefix and number
+      // Set reference - check if it's TS-1, TS-2, or custom
       const ref = t.reference || '';
-      let prefix = '', num = '';
-      if(ref.startsWith('TS-')) {
-        const parts = ref.split('-');
-        prefix = parts[0] + '-' + parts[1];
-        num = parts[2] || '';
-      } else if(ref !== '—' && ref !== 'CUSTOM') {
-        prefix = 'Other';
-        num = ref;
+      if(ref === 'TS-1' || ref === 'TS-2'){
+        document.getElementById('tReference').value = ref;
+        document.getElementById('tRefCustom').value = '';
+      } else {
+        document.getElementById('tReference').value = '';
+        document.getElementById('tRefCustom').value = ref === '—' ? '' : ref;
       }
-      document.getElementById('tRefPrefix').value = prefix;
-      document.getElementById('tRefNum').value = num;
       document.getElementById('tAmount').value=t.amount||'';
     }
   }
@@ -750,12 +760,8 @@ window.saveTxn=async function(e){
   const type=document.getElementById('tType').value;
   const account=document.getElementById('tAccount').value;
   const desc=document.getElementById('tDesc').value.trim();
-  const refPrefix=document.getElementById('tRefPrefix').value;
-  const refNum=document.getElementById('tRefNum').value.trim();
+  const reference = getReferenceFromForm();
   const amount=parseFloat(document.getElementById('tAmount').value);
-  
-  // Generate reference
-  const reference = generateReference(refPrefix, refNum);
 
   if(!date){errEl.textContent='Select a date.';return;}
   if(!type){errEl.textContent='Select a type.';return;}
@@ -840,7 +846,7 @@ function renderTableWithFilters(){
   let runBal=openBal;
 
   if(!filteredTransactions.length && openBal===0){
-    tbody.innerHTML='<tr class="empty-row"><td colspan="7">No transactions match your filters.  </tr>';
+    tbody.innerHTML='<tr class="empty-row"><td colspan="7">📭 No transactions match your filters</td></tr>';
     return;
   }
 
@@ -848,14 +854,14 @@ function renderTableWithFilters(){
 
   // Opening row
   html.push(`<tr class="opening-row">
-     <td>${month}-01</td>
-     <td>Opening Balance (brought forward)</td>
-     <td>—</td>
+      <td>${month}-01</td>
+      <td>Opening Balance (brought forward)</td>
+      <td>—</td>
     <td class="num"><span class="blank-cell">·</span></td>
     <td class="num"><span class="blank-cell">·</span></td>
     <td class="num bal-val${openBal<0?' neg':''}">${fmtK(openBal)}</td>
     <td></td>
-   </tr>`);
+    </tr>`);
 
   filteredTransactions.forEach(t=>{
     const isCredit=t.type==='credit';
