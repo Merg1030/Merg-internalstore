@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes">
-<title>Trismart · Cash Flow Manager</title>
+<title>Trismart · Compact Cash Flow</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -13,276 +13,93 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 :root {
   --primary: #1e3a8a;
   --primary-light: #3b82f6;
-  --accent: #f97316;
   --danger: #dc2626;
   --success: #10b981;
   --warning: #f59e0b;
-  --bg: #f8fafc;
+  --bg: #f1f5f9;
   --surface: #ffffff;
   --border: #e2e8f0;
   --text: #0f172a;
   --text-muted: #475569;
-  --radius: 12px;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --radius: 10px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.03);
 }
 
 body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
-/* Top Bar */
+/* Compact Top Bar */
 .topbar {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 64px;
+  padding: 0 16px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  box-shadow: var(--shadow-sm);
+  gap: 10px;
   position: sticky;
   top: 0;
   z-index: 20;
 }
 
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
 .logo-area {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.logo-area i {
-  font-size: 24px;
-  color: var(--primary);
-}
-
-.logo-area h1 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.month-picker {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 40px;
-  padding: 6px 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.month-picker input {
-  border: none;
-  background: transparent;
-  font-weight: 500;
-  font-size: 0.85rem;
-  outline: none;
-}
-
-/* STICKY ADD BUTTON - always visible outside collapsible panel */
-.sticky-add-wrapper {
-  padding: 12px 24px 0 24px;
-  background: var(--bg);
-  margin-top: 0;
-  border-bottom: none;
-  z-index: 15;
-}
-.add-transaction-permanent {
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 48px;
-  padding: 12px 24px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-sm);
-  width: 100%;
-  justify-content: center;
-}
-.add-transaction-permanent i {
-  font-size: 1rem;
-}
-.add-transaction-permanent:hover {
-  background: var(--primary-light);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-/* Action Panel - Collapsible (no Add button inside) */
-.action-panel {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  overflow: hidden;
-  transition: max-height 0.35s ease;
-  max-height: 0;
-}
-
-.action-panel.open {
-  max-height: 380px;
-}
-
-.action-panel-content {
-  padding: 16px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: center;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 16px;
-}
-
-.accounts-management {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.accounts-management h3 {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.account-list-manage {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
-.account-badge {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 40px;
-  padding: 6px 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s;
-}
-
-.account-badge i {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-}
-
-.account-badge.hidden-badge {
-  opacity: 0.5;
-  text-decoration: line-through;
-  background: #f1f5f9;
-}
-
-.toggle-vis-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  transition: all 0.2s;
-  color: var(--text-muted);
-}
-
-.toggle-vis-btn:hover {
-  background: var(--border);
-}
-
-.delete-acc-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--danger);
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 20px;
-}
-
-.delete-acc-btn:hover {
-  background: #fee2e2;
-}
-
-.add-account-form {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-  flex-wrap: wrap;
-}
-
-.add-account-form input {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 40px;
-  font-size: 0.8rem;
-  outline: none;
-  background: var(--bg);
-}
-
-.add-account-form button {
-  padding: 8px 16px;
-  background: var(--success);
-  color: white;
-  border: none;
-  border-radius: 40px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
+.logo-area i {
+  font-size: 20px;
+  color: var(--primary);
+}
+
+.logo-area h1 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.month-picker {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.month-picker input {
+  border: none;
+  background: transparent;
+  font-size: 0.75rem;
+  font-weight: 500;
+  outline: none;
+  width: 105px;
+}
+
 .panel-toggle-btn {
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 40px;
-  padding: 8px 16px;
-  font-size: 0.8rem;
+  border-radius: 30px;
+  padding: 5px 12px;
+  font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.2s;
+  gap: 6px;
+  transition: 0.2s;
 }
 
 .panel-toggle-btn:hover {
@@ -291,164 +108,233 @@ body {
   border-color: var(--primary);
 }
 
-.btn {
-  padding: 8px 16px;
-  border-radius: 40px;
-  font-weight: 600;
-  font-size: 0.8rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
+/* PERMANENT ADD BUTTON - compact */
+.sticky-add-wrapper {
+  padding: 8px 16px 0 16px;
   background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
 }
-
-.btn-primary {
+.add-transaction-permanent {
   background: var(--primary);
   color: white;
   border: none;
+  border-radius: 40px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.2s;
+  box-shadow: var(--shadow-sm);
 }
-
-.btn-primary:hover {
+.add-transaction-permanent:hover {
   background: var(--primary-light);
   transform: translateY(-1px);
 }
 
-.btn-outline {
+/* Collapsible Panel - compact */
+.action-panel {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  max-height: 0;
+}
+.action-panel.open {
+  max-height: 320px;
+}
+.action-panel-content {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.btn {
+  padding: 5px 12px;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  background: var(--bg);
   border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn-outline {
   background: white;
 }
-
 .btn-outline:hover {
   background: var(--bg);
   border-color: var(--primary);
   color: var(--primary);
 }
-
-/* Account Bar */
-.account-bar {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 0 24px;
+.accounts-management h3 {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.account-list-manage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.account-badge {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  padding: 3px 8px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.account-badge.hidden-badge {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+.toggle-vis-btn, .delete-acc-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 20px;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+.delete-acc-btn {
+  color: var(--danger);
+}
+.add-account-form {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.add-account-form input {
+  flex: 1;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  font-size: 0.7rem;
+  background: var(--bg);
+  outline: none;
+}
+.add-account-form button {
+  padding: 5px 12px;
+  background: var(--success);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 4px;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: thin;
 }
 
+/* Account Bar - compact */
+.account-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
 .account-tab {
-  padding: 12px 20px;
-  font-size: 0.85rem;
+  padding: 8px 14px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-muted);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: all 0.2s;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
 }
-
-.account-tab i {
-  font-size: 0.75rem;
-}
-
 .account-tab.active {
   color: var(--primary);
   border-bottom-color: var(--primary);
 }
 
-.account-tab:hover:not(.active) {
-  color: var(--text);
-  background: var(--bg);
-}
-
-/* Filter Bar */
+/* Filter Bar - compact */
 .filter-bar {
   background: var(--surface);
-  padding: 12px 24px;
+  padding: 8px 16px;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
 }
-
 .filter-group {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
-
 .filter-chip {
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 32px;
-  padding: 6px 14px;
+  border-radius: 30px;
+  padding: 4px 10px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
+  gap: 5px;
+  font-size: 0.7rem;
 }
-
-.filter-chip i {
-  color: var(--text-muted);
-}
-
 .filter-chip select, .filter-chip input {
   border: none;
   background: transparent;
-  font-weight: 500;
+  font-size: 0.7rem;
   outline: none;
-  font-size: 0.8rem;
+  width: auto;
 }
-
 .filter-chip input {
-  width: 130px;
+  width: 100px;
 }
-
 .clear-filter {
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 32px;
-  padding: 6px 14px;
+  border-radius: 30px;
+  padding: 4px 10px;
+  font-size: 0.65rem;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  transition: all 0.2s;
+  gap: 5px;
 }
-
-.clear-filter:hover {
-  background: var(--danger);
-  color: white;
-  border-color: var(--danger);
-}
-
 .stats-badge {
   background: var(--bg);
-  padding: 6px 12px;
-  border-radius: 32px;
-  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 30px;
+  font-size: 0.65rem;
   font-weight: 500;
-  color: var(--text-muted);
 }
 
-/* Main Table */
+/* Main Table - compact */
 .main-content {
-  flex: 1;
-  padding: 20px 24px;
+  padding: 12px 16px;
 }
-
 .table-wrapper {
   background: var(--surface);
   border-radius: var(--radius);
@@ -456,110 +342,96 @@ body {
   overflow: auto;
   box-shadow: var(--shadow-sm);
 }
-
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.8rem;
-  min-width: 700px;
+  font-size: 0.7rem;
+  min-width: 650px;
 }
-
 th {
-  background: #f1f5f9;
-  padding: 14px 16px;
+  background: #f8fafc;
+  padding: 10px 12px;
   text-align: left;
   font-weight: 600;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
+  font-size: 0.7rem;
 }
-
 td {
-  padding: 12px 16px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }
-
 tr:last-child td {
   border-bottom: none;
 }
-
 .opening-row td {
   background: #fefce8;
   font-style: italic;
-  color: var(--text-muted);
 }
-
 .debit {
   color: var(--danger);
   font-weight: 600;
 }
-
 .credit {
   color: var(--success);
   font-weight: 600;
 }
-
 .balance {
   font-weight: 700;
 }
-
 .balance.negative {
   color: var(--danger);
 }
-
 .transfer-badge {
   background: #ffedd5;
   color: #c2410c;
-  font-size: 0.65rem;
-  padding: 2px 6px;
-  border-radius: 20px;
-  margin-left: 6px;
+  font-size: 0.6rem;
+  padding: 2px 5px;
+  border-radius: 16px;
+  margin-left: 5px;
+  display: inline-block;
 }
-
-/* Menu & Actions */
+.empty-cell {
+  color: #cbd5e1;
+  font-size: 0.65rem;
+}
 .menu-cell {
   text-align: center;
   position: relative;
 }
-
 .action-dots {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
+  padding: 4px 6px;
+  border-radius: 6px;
   color: var(--text-muted);
 }
-
 .action-dots:hover {
   background: var(--bg);
 }
-
 .dropdown {
   position: absolute;
   right: 0;
-  top: 28px;
+  top: 26px;
   background: white;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   z-index: 50;
-  min-width: 120px;
+  min-width: 100px;
   display: none;
 }
-
 .dropdown.show {
   display: block;
 }
-
 .dropdown-item {
-  padding: 8px 16px;
+  padding: 6px 12px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.75rem;
+  gap: 8px;
+  font-size: 0.7rem;
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -567,114 +439,94 @@ tr:last-child td {
   border: none;
   color: var(--text);
 }
-
 .dropdown-item:hover {
   background: var(--bg);
 }
-
 .delete-item:hover {
   color: var(--danger);
 }
 
-/* Modals */
+/* Modals - compact */
 .modal-overlay {
   display: none;
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(2px);
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
-
 .modal-overlay.open {
   display: flex;
 }
-
 .modal-card {
   background: white;
   width: 90%;
-  max-width: 500px;
-  border-radius: 24px;
-  padding: 24px;
-  box-shadow: var(--shadow-md);
-  animation: fadeIn 0.2s ease;
+  max-width: 480px;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
-}
-
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
-
 .modal-header h2 {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
-
 .close-modal {
   background: var(--bg);
   border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 40px;
+  width: 28px;
+  height: 28px;
+  border-radius: 30px;
   cursor: pointer;
 }
-
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
-
 .form-group label {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--text-muted);
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
-
 .form-group input, .form-group select {
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   background: var(--bg);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   outline: none;
 }
-
 .form-row {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
-
 .form-row .form-group {
   flex: 1;
 }
-
 .save-btn {
   width: 100%;
   background: var(--primary);
   color: white;
   border: none;
-  padding: 12px;
-  border-radius: 40px;
-  font-weight: 700;
+  padding: 10px;
+  border-radius: 30px;
+  font-weight: 600;
   margin-top: 8px;
   cursor: pointer;
+  font-size: 0.8rem;
 }
-
 .save-btn.amber {
   background: var(--warning);
 }
-
 .save-btn.red {
   background: var(--danger);
 }
@@ -682,105 +534,92 @@ tr:last-child td {
 /* Toast */
 .toast-area {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 20px;
+  right: 20px;
   z-index: 1100;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
-
 .toast {
   background: white;
-  border-left: 4px solid var(--success);
-  padding: 12px 20px;
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
+  border-left: 3px solid var(--success);
+  padding: 8px 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.85rem;
+  gap: 8px;
+  font-size: 0.75rem;
   animation: slideIn 0.2s ease;
 }
-
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
-
 @media (max-width: 640px) {
   .topbar, .account-bar, .filter-bar { padding: 0 12px; }
-  .main-content { padding: 12px; }
-  .filter-group { flex-direction: column; }
-  .action-panel-content { padding: 12px; }
-  .sticky-add-wrapper { padding: 8px 12px 0 12px; }
+  .main-content { padding: 10px; }
+  .sticky-add-wrapper { padding: 6px 12px 0 12px; }
 }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="topbar-left">
-    <div class="logo-area">
-      <i class="fas fa-coins"></i>
-      <h1>Trismart Flow</h1>
-    </div>
-    <div class="month-picker">
-      <i class="fas fa-calendar-alt"></i>
-      <input type="month" id="monthSelect">
-    </div>
+  <div class="logo-area">
+    <i class="fas fa-coins"></i>
+    <h1>Trismart Flow</h1>
   </div>
-  <div class="topbar-right">
-    <button class="panel-toggle-btn" id="togglePanelBtn">
-      <i class="fas fa-chevron-down" id="panelToggleIcon"></i> Actions & Accounts
-    </button>
+  <div class="month-picker">
+    <i class="fas fa-calendar-alt"></i>
+    <input type="month" id="monthSelect">
   </div>
+  <button class="panel-toggle-btn" id="togglePanelBtn">
+    <i class="fas fa-chevron-down" id="panelToggleIcon"></i> Actions
+  </button>
 </div>
 
-<!-- PERMANENT ADD BUTTON - ALWAYS VISIBLE, OUTSIDE COLLAPSIBLE PANEL -->
+<!-- PERMANENT ADD BUTTON - always visible -->
 <div class="sticky-add-wrapper">
   <button class="add-transaction-permanent" id="permanentAddBtn">
     <i class="fas fa-plus-circle"></i> Add Transaction
   </button>
 </div>
 
-<!-- Collapsible Action Panel - NO ADD BUTTON HERE, only PDF, Transfer, Account Management -->
+<!-- Collapsible Action Panel -->
 <div class="action-panel" id="actionPanel">
   <div class="action-panel-content">
     <div class="action-buttons">
-      <button class="btn btn-outline" id="pdfExportBtn"><i class="fas fa-file-pdf"></i> PDF Export</button>
+      <button class="btn btn-outline" id="pdfExportBtn"><i class="fas fa-file-pdf"></i> PDF</button>
       <button class="btn btn-outline" id="transferBtn"><i class="fas fa-exchange-alt"></i> Transfer</button>
-      <!-- Removed Add Transaction button from here exactly as requested -->
     </div>
-    
     <div class="accounts-management">
-      <h3><i class="fas fa-wallet"></i> Manage Accounts (Hide/Unhide)</h3>
+      <h3><i class="fas fa-wallet"></i> Manage Accounts</h3>
       <div class="account-list-manage" id="accountManageList"></div>
       <div class="add-account-form">
-        <input type="text" id="newAccountName" placeholder="New account name...">
-        <button id="addAccountBtn"><i class="fas fa-plus"></i> Add Account</button>
+        <input type="text" id="newAccountName" placeholder="New account name">
+        <button id="addAccountBtn"><i class="fas fa-plus"></i> Add</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Account Bar - Only visible accounts -->
+<!-- Account Bar -->
 <div class="account-bar" id="accountTabsContainer"></div>
 
 <!-- Filter Bar -->
 <div class="filter-bar">
   <div class="filter-group">
     <div class="filter-chip">
-      <i class="fas fa-hashtag"></i>
-      <select id="refFilter">
-        <option value="">All References</option>
-      </select>
+      <i class="fas fa-tag"></i>
+      <select id="refFilter"><option value="">All References</option></select>
     </div>
     <div class="filter-chip">
       <i class="fas fa-search"></i>
-      <input type="text" id="searchFilter" placeholder="Search description or ref...">
+      <input type="text" id="searchFilter" placeholder="Search...">
     </div>
-    <button class="clear-filter" id="clearFiltersBtn"><i class="fas fa-undo-alt"></i> Clear All</button>
+    <button class="clear-filter" id="clearFiltersBtn"><i class="fas fa-undo-alt"></i> Clear</button>
   </div>
   <div class="stats-badge" id="filterStats">0 transactions</div>
 </div>
@@ -789,10 +628,10 @@ tr:last-child td {
   <div class="table-wrapper">
     <table id="cashTable">
       <thead>
-        <tr><th>Date</th><th>Description</th><th>Reference</th><th>Debit</th><th>Credit</th><th>Balance</th><th></th> </tr>
+        <tr><th>Date</th><th>Description</th><th>Reference</th><th>Debit</th><th>Credit</th><th>Balance</th><th></th></tr>
       </thead>
       <tbody id="tableBody">
-        <tr><td colspan="7" style="text-align:center">Loading...</td> </tr>
+        <tr><td colspan="7" style="text-align:center">Loading...</td></tr>
       </tbody>
     </table>
   </div>
@@ -825,33 +664,32 @@ tr:last-child td {
 <!-- Transfer Modal -->
 <div id="transferModal" class="modal-overlay">
   <div class="modal-card">
-    <div class="modal-header"><h2><i class="fas fa-exchange-alt"></i> Transfer Funds</h2><button class="close-modal" onclick="closeTransferModal()"><i class="fas fa-times"></i></button></div>
+    <div class="modal-header"><h2>Transfer Funds</h2><button class="close-modal" onclick="closeTransferModal()"><i class="fas fa-times"></i></button></div>
     <form id="transferForm">
       <div class="form-group"><label>Date</label><input type="date" id="transferDate" required></div>
       <div class="form-row">
-        <div class="form-group"><label>From Account</label><select id="fromAccount" required></select></div>
-        <div class="form-group"><label>To Account</label><select id="toAccount" required></select></div>
+        <div class="form-group"><label>From</label><select id="fromAccount" required></select></div>
+        <div class="form-group"><label>To</label><select id="toAccount" required></select></div>
       </div>
-      <div class="form-group"><label>Description (optional)</label><input type="text" id="transferDesc" placeholder="Transfer reason"></div>
+      <div class="form-group"><label>Description</label><input type="text" id="transferDesc" placeholder="Optional"></div>
       <div class="form-group"><label>Reference</label><input type="text" id="transferRef" placeholder="TRF-001"></div>
       <div class="form-group"><label>Amount (ZMW)</label><input type="number" id="transferAmount" step="0.01" required></div>
-      <button type="submit" class="save-btn amber"><i class="fas fa-arrow-right-arrow-left"></i> Execute Transfer</button>
+      <button type="submit" class="save-btn amber">Execute Transfer</button>
     </form>
   </div>
 </div>
 
-<!-- Delete confirm modal -->
+<!-- Delete Modal -->
 <div id="deleteConfirmModal" class="modal-overlay">
-  <div class="modal-card" style="max-width: 360px;">
-    <div class="modal-header"><h2>Delete Transaction</h2><button class="close-modal" onclick="closeDeleteConfirm()"><i class="fas fa-times"></i></button></div>
-    <p>Permanently remove this transaction? This action cannot be undone.</p>
+  <div class="modal-card">
+    <div class="modal-header"><h2>Delete</h2><button class="close-modal" onclick="closeDeleteConfirm()"><i class="fas fa-times"></i></button></div>
+    <p style="font-size:0.8rem; margin-bottom:16px;">Permanently delete this transaction?</p>
     <input type="hidden" id="deleteTargetId">
-    <button id="confirmDeleteBtn" class="save-btn red" style="margin-top: 20px;"><i class="fas fa-trash"></i> Delete Forever</button>
+    <button id="confirmDeleteBtn" class="save-btn red">Delete Forever</button>
   </div>
 </div>
 
 <script>
-  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
     authDomain: "trismartstores.firebaseapp.com",
@@ -865,16 +703,13 @@ tr:last-child td {
   db.enablePersistence().catch(e => console.warn(e));
 
   const DEFAULT_ACCOUNTS = ['Expenses A/c', 'Business savings A/c', 'Inventory A/c', 'Personal A/c', 'FnB Account'];
-  let accounts = [];
-  let hiddenAccounts = new Set();
+  let accounts = [], hiddenAccounts = new Set();
   
   function loadAccounts() {
     const stored = localStorage.getItem('trismart_accounts');
     const storedHidden = localStorage.getItem('trismart_hidden_accounts');
-    if (stored) accounts = JSON.parse(stored);
-    else accounts = [...DEFAULT_ACCOUNTS];
-    if (storedHidden) hiddenAccounts = new Set(JSON.parse(storedHidden));
-    else hiddenAccounts = new Set();
+    accounts = stored ? JSON.parse(stored) : [...DEFAULT_ACCOUNTS];
+    hiddenAccounts = storedHidden ? new Set(JSON.parse(storedHidden)) : new Set();
   }
   function saveAccounts() {
     localStorage.setItem('trismart_accounts', JSON.stringify(accounts));
@@ -885,9 +720,7 @@ tr:last-child td {
   let currentAccount = localStorage.getItem('selectedAccount') || accounts[0];
   if (!accounts.includes(currentAccount)) currentAccount = accounts[0];
   let currentMonth = localStorage.getItem('cf_month') || new Date().toISOString().slice(0,7);
-  let allTransactions = [];
-  let unsubscribeTxns = null;
-  let filteredList = [];
+  let allTransactions = [], unsubscribeTxns = null, filteredList = [];
 
   const monthPicker = document.getElementById('monthSelect');
   const refFilter = document.getElementById('refFilter');
@@ -898,20 +731,15 @@ tr:last-child td {
   const tableBody = document.getElementById('tableBody');
   const actionPanel = document.getElementById('actionPanel');
   const panelToggleIcon = document.getElementById('panelToggleIcon');
-
   monthPicker.value = currentMonth;
 
   const isPanelOpen = localStorage.getItem('actionPanelOpen') === 'true';
-  if (isPanelOpen) {
-    actionPanel.classList.add('open');
-    panelToggleIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-  }
+  if (isPanelOpen) { actionPanel.classList.add('open'); panelToggleIcon.classList.replace('fa-chevron-down', 'fa-chevron-up'); }
   document.getElementById('togglePanelBtn').onclick = () => {
     actionPanel.classList.toggle('open');
     const open = actionPanel.classList.contains('open');
     localStorage.setItem('actionPanelOpen', open);
-    if (open) panelToggleIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-    else panelToggleIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+    panelToggleIcon.className = open ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
   };
 
   function showToast(msg, type = 'success') {
@@ -924,81 +752,77 @@ tr:last-child td {
     setTimeout(() => toast.remove(), 3000);
   }
 
-  window.toggleAccountVisibility = function(accountName) {
-    if (hiddenAccounts.has(accountName)) hiddenAccounts.delete(accountName);
-    else hiddenAccounts.add(accountName);
-    if (hiddenAccounts.has(accountName) && currentAccount === accountName) {
-      const visibleAccounts = accounts.filter(acc => !hiddenAccounts.has(acc));
-      if (visibleAccounts.length) currentAccount = visibleAccounts[0];
+  window.toggleAccountVisibility = function(acc) {
+    if (hiddenAccounts.has(acc)) hiddenAccounts.delete(acc);
+    else hiddenAccounts.add(acc);
+    if (hiddenAccounts.has(acc) && currentAccount === acc) {
+      const visible = accounts.filter(a => !hiddenAccounts.has(a));
+      if (visible.length) currentAccount = visible[0];
       localStorage.setItem('selectedAccount', currentAccount);
     }
     saveAccounts();
     renderAllAccountUI();
     applyFiltersAndRender();
-    showToast(`${hiddenAccounts.has(accountName) ? 'Hidden' : 'Visible'}: ${accountName}`, 'info');
   };
 
-  window.deleteAccount = async function(accountName) {
-    if (accountName === 'Expenses A/c') { showToast('Cannot delete default account', 'error'); return; }
-    const hasTransactions = allTransactions.some(t => t.account === accountName);
-    if (hasTransactions) { showToast(`Cannot delete "${accountName}" - it has transactions`, 'error'); return; }
-    accounts = accounts.filter(a => a !== accountName);
-    hiddenAccounts.delete(accountName);
-    if (currentAccount === accountName) { currentAccount = accounts[0]; localStorage.setItem('selectedAccount', currentAccount); }
+  window.deleteAccount = async function(acc) {
+    if (acc === 'Expenses A/c') { showToast('Cannot delete default', 'error'); return; }
+    if (allTransactions.some(t => t.account === acc)) { showToast(`Has transactions`, 'error'); return; }
+    accounts = accounts.filter(a => a !== acc);
+    hiddenAccounts.delete(acc);
+    if (currentAccount === acc) { currentAccount = accounts[0]; localStorage.setItem('selectedAccount', currentAccount); }
     saveAccounts();
     renderAllAccountUI();
     applyFiltersAndRender();
-    showToast(`Account "${accountName}" removed`, 'info');
+    showToast(`Deleted ${acc}`, 'info');
   };
 
   function addNewAccount() {
-    const input = document.getElementById('newAccountName');
-    const newName = input.value.trim();
-    if (!newName) { showToast('Enter account name', 'error'); return; }
-    if (accounts.includes(newName)) { showToast('Account already exists', 'error'); return; }
-    accounts.push(newName);
+    const name = document.getElementById('newAccountName').value.trim();
+    if (!name) return showToast('Enter name', 'error');
+    if (accounts.includes(name)) return showToast('Exists', 'error');
+    accounts.push(name);
     saveAccounts();
     renderAllAccountUI();
-    input.value = '';
-    showToast(`Account "${newName}" added`, 'success');
+    document.getElementById('newAccountName').value = '';
+    showToast(`Added ${name}`, 'success');
   }
   document.getElementById('addAccountBtn').onclick = addNewAccount;
-  document.getElementById('newAccountName').addEventListener('keypress', (e) => { if (e.key === 'Enter') addNewAccount(); });
 
   function renderAllAccountUI() {
-    const visibleAccounts = accounts.filter(acc => !hiddenAccounts.has(acc));
-    accountContainer.innerHTML = visibleAccounts.map(acc => `<div class="account-tab ${currentAccount === acc ? 'active' : ''}" data-acc="${acc}"><i class="fas fa-wallet"></i> ${acc}</div>`).join('');
+    const visible = accounts.filter(a => !hiddenAccounts.has(a));
+    accountContainer.innerHTML = visible.map(a => `<div class="account-tab ${currentAccount === a ? 'active' : ''}" data-acc="${a}"><i class="fas fa-wallet"></i> ${a}</div>`).join('');
     document.querySelectorAll('.account-tab').forEach(tab => {
       tab.addEventListener('click', () => { currentAccount = tab.dataset.acc; localStorage.setItem('selectedAccount', currentAccount); renderAllAccountUI(); applyFiltersAndRender(); });
     });
-    accountManageList.innerHTML = accounts.map(acc => {
-      const isHidden = hiddenAccounts.has(acc);
-      return `<div class="account-badge ${isHidden ? 'hidden-badge' : ''}"><i class="fas ${isHidden ? 'fa-eye-slash' : 'fa-eye'}"></i><span>${acc}</span><button class="toggle-vis-btn" onclick="toggleAccountVisibility('${acc}')" title="${isHidden ? 'Unhide' : 'Hide'}"><i class="fas ${isHidden ? 'fa-eye' : 'fa-eye-slash'}"></i></button>${acc !== 'Expenses A/c' ? `<button class="delete-acc-btn" onclick="deleteAccount('${acc}')" title="Delete"><i class="fas fa-trash"></i></button>` : ''}</div>`;
+    accountManageList.innerHTML = accounts.map(a => {
+      const hidden = hiddenAccounts.has(a);
+      return `<div class="account-badge ${hidden ? 'hidden-badge' : ''}"><i class="fas ${hidden ? 'fa-eye-slash' : 'fa-eye'}"></i><span>${a}</span><button class="toggle-vis-btn" onclick="toggleAccountVisibility('${a}')"><i class="fas ${hidden ? 'fa-eye' : 'fa-eye-slash'}"></i></button>${a !== 'Expenses A/c' ? `<button class="delete-acc-btn" onclick="deleteAccount('${a}')"><i class="fas fa-trash"></i></button>` : ''}</div>`;
     }).join('');
-    const visibleForSelect = accounts.filter(acc => !hiddenAccounts.has(acc));
-    ['txnAccount', 'fromAccount', 'toAccount'].forEach(selId => {
-      const sel = document.getElementById(selId);
-      if (sel) sel.innerHTML = visibleForSelect.map(acc => `<option value="${acc}" ${currentAccount === acc ? 'selected' : ''}>${acc}</option>`).join('');
+    const visibleSelect = accounts.filter(a => !hiddenAccounts.has(a));
+    ['txnAccount', 'fromAccount', 'toAccount'].forEach(id => {
+      const sel = document.getElementById(id);
+      if (sel) sel.innerHTML = visibleSelect.map(a => `<option value="${a}" ${currentAccount === a ? 'selected' : ''}>${a}</option>`).join('');
     });
   }
 
   function updateRefDropdowns() {
-    const refsSet = new Set();
-    allTransactions.forEach(t => { if (t.reference && t.reference !== '—') refsSet.add(t.reference); });
-    refFilter.innerHTML = ['<option value="">All References</option>', ...Array.from(refsSet).map(r => `<option value="${r}">${r}</option>`)].join('');
+    const refs = new Set();
+    allTransactions.forEach(t => { if (t.reference && t.reference !== '—') refs.add(t.reference); });
+    refFilter.innerHTML = '<option value="">All References</option>' + Array.from(refs).map(r => `<option value="${r}">${r}</option>`).join('');
     const txnSelect = document.getElementById('txnRefSelect');
     if (txnSelect) {
-      const currentVal = txnSelect.value;
-      txnSelect.innerHTML = '<option value="">-- Preset --</option><option value="INV-001">INV-001</option><option value="SAL-002">SAL-002</option>' + Array.from(refsSet).filter(r => r !== 'INV-001' && r !== 'SAL-002').map(r => `<option value="${r}">${r}</option>`).join('');
-      txnSelect.value = currentVal;
+      const cur = txnSelect.value;
+      txnSelect.innerHTML = '<option value="">-- Preset --</option><option value="INV-001">INV-001</option><option value="SAL-002">SAL-002</option>' + Array.from(refs).filter(r => r !== 'INV-001' && r !== 'SAL-002').map(r => `<option value="${r}">${r}</option>`).join('');
+      txnSelect.value = cur;
     }
   }
 
-  function getOpeningBalance(account, yearMonth) {
-    const [year, month] = yearMonth.split('-').map(Number);
-    const firstDay = new Date(year, month-1, 1).toISOString().slice(0,10);
+  function getOpeningBalance(acc, ym) {
+    const [y, m] = ym.split('-').map(Number);
+    const first = new Date(y, m-1, 1).toISOString().slice(0,10);
     let bal = 0;
-    allTransactions.filter(t => t.account === account && t.date < firstDay).forEach(t => { if (t.type === 'credit') bal += t.amount; else bal -= t.amount; });
+    allTransactions.filter(t => t.account === acc && t.date < first).forEach(t => { if (t.type === 'credit') bal += t.amount; else bal -= t.amount; });
     return bal;
   }
 
@@ -1006,11 +830,11 @@ tr:last-child td {
   function setFilters(ref, search) { localStorage.setItem('cf_refFilter', ref); localStorage.setItem('cf_searchFilter', search); refFilter.value = ref; searchFilter.value = search; }
   
   function applyFiltersAndRender() {
-    const filters = getFilters();
-    refFilter.value = filters.ref; searchFilter.value = filters.search;
+    const f = getFilters();
+    refFilter.value = f.ref; searchFilter.value = f.search;
     let filtered = allTransactions.filter(t => t.account === currentAccount && t.date && t.date.startsWith(currentMonth));
-    if (filters.ref) filtered = filtered.filter(t => t.reference === filters.ref);
-    if (filters.search) { const kw = filters.search.toLowerCase(); filtered = filtered.filter(t => (t.description || '').toLowerCase().includes(kw) || (t.reference || '').toLowerCase().includes(kw)); }
+    if (f.ref) filtered = filtered.filter(t => t.reference === f.ref);
+    if (f.search) { const kw = f.search.toLowerCase(); filtered = filtered.filter(t => (t.description || '').toLowerCase().includes(kw) || (t.reference || '').toLowerCase().includes(kw)); }
     filtered.sort((a,b) => (a.date < b.date ? -1 : (a.date > b.date ? 1 : (a.createdAt || 0) - (b.createdAt || 0))));
     filteredList = filtered;
     filterStats.innerText = `${filteredList.length} transaction(s)`;
@@ -1018,42 +842,127 @@ tr:last-child td {
   }
 
   function renderTable(filtered) {
-    if (!tableBody) return;
-    const openingBal = getOpeningBalance(currentAccount, currentMonth);
-    let running = openingBal;
-    if (filtered.length === 0 && openingBal === 0) { tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center">✨ No transactions. Click Add ✨</td></tr>'; return; }
-    let html = `<tr class="opening-row"><td>${currentMonth}-01</td><td>Opening Balance</td><td>—</td><td class="debit">—</td><td class="credit">—</td><td class="balance ${openingBal < 0 ? 'negative' : ''}">ZMW ${openingBal.toFixed(2)}</td><td></td></tr>`;
+    const opening = getOpeningBalance(currentAccount, currentMonth);
+    let running = opening;
+    if (filtered.length === 0 && opening === 0) { tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center">✨ No transactions. Click Add ✨</td></tr>'; return; }
+    let html = `<tr class="opening-row"><td>${currentMonth}-01</td><td>Opening Balance</td><td>—</td><td class="empty-cell">—</td><td class="empty-cell">—</td><td class="balance ${opening < 0 ? 'negative' : ''}">ZMW ${opening.toFixed(2)}</td><td></td></tr>`;
     filtered.forEach(t => {
       const isCredit = t.type === 'credit';
       if (isCredit) running += t.amount; else running -= t.amount;
-      const debitCell = !isCredit ? `<td class="debit">ZMW ${t.amount.toFixed(2)}</td>` : `<td>—</td>`;
-      const creditCell = isCredit ? `<td class="credit">ZMW ${t.amount.toFixed(2)}</td>` : `<td>—</td>`;
+      // Only show number in debit/credit, otherwise blank (empty string)
+      const debitCell = !isCredit ? `<td class="debit">ZMW ${t.amount.toFixed(2)}</td>` : `<td class="empty-cell"></td>`;
+      const creditCell = isCredit ? `<td class="credit">ZMW ${t.amount.toFixed(2)}</td>` : `<td class="empty-cell"></td>`;
       const transferBadge = t.isTransfer ? '<span class="transfer-badge"><i class="fas fa-repeat"></i> TRANSFER</span>' : '';
-      html += `<tr><td>${t.date || ''}</td><td>${t.description || ''} ${transferBadge}</td><td>${t.reference || '—'}</td>${debitCell}${creditCell}<td class="balance ${running < 0 ? 'negative' : ''}">ZMW ${running.toFixed(2)}</td><td class="menu-cell"><button class="action-dots" onclick="toggleMenu(event, '${t.id}')"><i class="fas fa-ellipsis-v"></i></button><div class="dropdown" id="menu-${t.id}"><button class="dropdown-item" onclick="editTransaction('${t.id}')"><i class="fas fa-edit"></i> Edit</button><button class="dropdown-item delete-item" onclick="requestDelete('${t.id}')"><i class="fas fa-trash"></i> Delete</button></div></td></tr>`;
+      html += `<tr>
+        <td>${t.date || ''}</td>
+        <td>${t.description || ''} ${transferBadge}</td>
+        <td>${t.reference || '—'}</td>
+        ${debitCell}
+        ${creditCell}
+        <td class="balance ${running < 0 ? 'negative' : ''}">ZMW ${running.toFixed(2)}</td>
+        <td class="menu-cell"><button class="action-dots" onclick="toggleMenu(event, '${t.id}')"><i class="fas fa-ellipsis-v"></i></button><div class="dropdown" id="menu-${t.id}"><button class="dropdown-item" onclick="editTransaction('${t.id}')"><i class="fas fa-edit"></i> Edit</button><button class="dropdown-item delete-item" onclick="requestDelete('${t.id}')"><i class="fas fa-trash"></i> Delete</button></div></td>
+      </tr>`;
     });
     tableBody.innerHTML = html;
   }
 
-  window.toggleMenu = function(event, id) { event.stopPropagation(); document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show')); const menu = document.getElementById(`menu-${id}`); if (menu) menu.classList.toggle('show'); };
+  window.toggleMenu = function(e, id) { e.stopPropagation(); document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show')); const m = document.getElementById(`menu-${id}`); if (m) m.classList.toggle('show'); };
   document.addEventListener('click', () => document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show')));
-  window.editTransaction = (id) => { const tx = allTransactions.find(t => t.id === id); if (!tx) return; document.getElementById('txnDocId').value = tx.id; document.getElementById('txnDate').value = tx.date; document.getElementById('txnType').value = tx.type; document.getElementById('txnAccount').value = tx.account; document.getElementById('txnDesc').value = tx.description || ''; const refVal = tx.reference || ''; if (refVal === 'INV-001' || refVal === 'SAL-002') { document.getElementById('txnRefSelect').value = refVal; document.getElementById('txnRefCustom').value = ''; } else { document.getElementById('txnRefSelect').value = ''; document.getElementById('txnRefCustom').value = refVal === '—' ? '' : refVal; } document.getElementById('txnAmount').value = tx.amount; document.getElementById('txnTitle').innerText = 'Edit Transaction'; document.getElementById('txnModal').classList.add('open'); };
+  window.editTransaction = (id) => {
+    const t = allTransactions.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('txnDocId').value = t.id;
+    document.getElementById('txnDate').value = t.date;
+    document.getElementById('txnType').value = t.type;
+    document.getElementById('txnAccount').value = t.account;
+    document.getElementById('txnDesc').value = t.description || '';
+    const refVal = t.reference || '';
+    if (refVal === 'INV-001' || refVal === 'SAL-002') { document.getElementById('txnRefSelect').value = refVal; document.getElementById('txnRefCustom').value = ''; }
+    else { document.getElementById('txnRefSelect').value = ''; document.getElementById('txnRefCustom').value = refVal === '—' ? '' : refVal; }
+    document.getElementById('txnAmount').value = t.amount;
+    document.getElementById('txnTitle').innerText = 'Edit Transaction';
+    document.getElementById('txnModal').classList.add('open');
+  };
   window.requestDelete = (id) => { document.getElementById('deleteTargetId').value = id; document.getElementById('deleteConfirmModal').classList.add('open'); };
   window.closeDeleteConfirm = () => document.getElementById('deleteConfirmModal').classList.remove('open');
-  document.getElementById('confirmDeleteBtn').onclick = async () => { const id = document.getElementById('deleteTargetId').value; if (!id) return; try { await db.collection('Cashflow transactions').doc(id).delete(); showToast('Transaction deleted', 'success'); closeDeleteConfirm(); } catch(e) { showToast(e.message, 'error'); } };
-  document.getElementById('txnForm').onsubmit = async (e) => { e.preventDefault(); const id = document.getElementById('txnDocId').value; const date = document.getElementById('txnDate').value; const type = document.getElementById('txnType').value; const account = document.getElementById('txnAccount').value; const desc = document.getElementById('txnDesc').value.trim(); let reference = document.getElementById('txnRefSelect').value; const customRef = document.getElementById('txnRefCustom').value.trim(); if (customRef) reference = customRef; if (!reference) reference = '—'; const amount = parseFloat(document.getElementById('txnAmount').value); if (!date || !type || !account || !desc || isNaN(amount) || amount <= 0) { showToast('Please fill all fields correctly', 'error'); return; } const data = { date, type, account, description: desc, reference, amount, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }; try { if (id) await db.collection('Cashflow transactions').doc(id).update(data); else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); await db.collection('Cashflow transactions').add(data); } showToast(id ? 'Updated' : 'Added', 'success'); closeTxnModal(); } catch(e) { showToast(e.message, 'error'); } };
+  document.getElementById('confirmDeleteBtn').onclick = async () => { const id = document.getElementById('deleteTargetId').value; if (!id) return; try { await db.collection('Cashflow transactions').doc(id).delete(); showToast('Deleted', 'success'); closeDeleteConfirm(); } catch(e) { showToast(e.message, 'error'); } };
+  document.getElementById('txnForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('txnDocId').value;
+    const date = document.getElementById('txnDate').value, type = document.getElementById('txnType').value, account = document.getElementById('txnAccount').value, desc = document.getElementById('txnDesc').value.trim();
+    let ref = document.getElementById('txnRefSelect').value;
+    const custom = document.getElementById('txnRefCustom').value.trim();
+    if (custom) ref = custom;
+    if (!ref) ref = '—';
+    const amount = parseFloat(document.getElementById('txnAmount').value);
+    if (!date || !type || !account || !desc || isNaN(amount) || amount <= 0) return showToast('Fill all fields', 'error');
+    const data = { date, type, account, description: desc, reference: ref, amount, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+    try {
+      if (id) await db.collection('Cashflow transactions').doc(id).update(data);
+      else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); await db.collection('Cashflow transactions').add(data); }
+      showToast(id ? 'Updated' : 'Added', 'success');
+      closeTxnModal();
+    } catch(e) { showToast(e.message, 'error'); }
+  };
   function closeTxnModal() { document.getElementById('txnModal').classList.remove('open'); document.getElementById('txnForm').reset(); document.getElementById('txnDocId').value = ''; document.getElementById('txnTitle').innerText = 'Add Transaction'; }
   window.closeTxnModal = closeTxnModal;
-  // PERMANENT ADD BUTTON HANDLER
-  document.getElementById('permanentAddBtn').onclick = () => { closeTxnModal(); const visibleAccs = accounts.filter(acc => !hiddenAccounts.has(acc)); if(visibleAccs.includes(currentAccount)) document.getElementById('txnAccount').value = currentAccount; document.getElementById('txnModal').classList.add('open'); };
-  
-  document.getElementById('transferForm').onsubmit = async (e) => { e.preventDefault(); const date = document.getElementById('transferDate').value; const from = document.getElementById('fromAccount').value; const to = document.getElementById('toAccount').value; const desc = document.getElementById('transferDesc').value.trim() || 'Transfer'; const ref = document.getElementById('transferRef').value.trim() || 'TRF'; const amount = parseFloat(document.getElementById('transferAmount').value); if (!date || !from || !to || from === to || isNaN(amount) || amount <= 0) { showToast('Invalid transfer details', 'error'); return; } const ts = firebase.firestore.FieldValue.serverTimestamp(); const groupId = Date.now().toString(36); try { await db.collection('Cashflow transactions').add({ date, type: 'debit', account: from, description: `${desc} → ${to}`, reference: ref, amount, transferGroup: groupId, isTransfer: true, createdAt: ts }); await db.collection('Cashflow transactions').add({ date, type: 'credit', account: to, description: `${desc} ← ${from}`, reference: ref, amount, transferGroup: groupId, isTransfer: true, createdAt: ts }); showToast(`Transfer ZMW ${amount.toFixed(2)} done`, 'info'); closeTransferModal(); } catch(e) { showToast(e.message, 'error'); } };
+  document.getElementById('permanentAddBtn').onclick = () => { closeTxnModal(); const visible = accounts.filter(a => !hiddenAccounts.has(a)); if(visible.includes(currentAccount)) document.getElementById('txnAccount').value = currentAccount; document.getElementById('txnModal').classList.add('open'); };
+  document.getElementById('transferForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const date = document.getElementById('transferDate').value, from = document.getElementById('fromAccount').value, to = document.getElementById('toAccount').value, desc = document.getElementById('transferDesc').value.trim() || 'Transfer', ref = document.getElementById('transferRef').value.trim() || 'TRF', amount = parseFloat(document.getElementById('transferAmount').value);
+    if (!date || !from || !to || from === to || isNaN(amount) || amount <= 0) return showToast('Invalid transfer', 'error');
+    const ts = firebase.firestore.FieldValue.serverTimestamp(), group = Date.now().toString(36);
+    try {
+      await db.collection('Cashflow transactions').add({ date, type: 'debit', account: from, description: `${desc} → ${to}`, reference: ref, amount, transferGroup: group, isTransfer: true, createdAt: ts });
+      await db.collection('Cashflow transactions').add({ date, type: 'credit', account: to, description: `${desc} ← ${from}`, reference: ref, amount, transferGroup: group, isTransfer: true, createdAt: ts });
+      showToast(`Transferred ZMW ${amount.toFixed(2)}`, 'info');
+      closeTransferModal();
+    } catch(e) { showToast(e.message, 'error'); }
+  };
   window.closeTransferModal = () => document.getElementById('transferModal').classList.remove('open');
   document.getElementById('transferBtn').onclick = () => { document.getElementById('transferModal').classList.add('open'); };
-  
-  function bindFilterListeners() { refFilter.addEventListener('change', () => { setFilters(refFilter.value, searchFilter.value); applyFiltersAndRender(); }); searchFilter.addEventListener('input', () => { setFilters(refFilter.value, searchFilter.value); applyFiltersAndRender(); }); document.getElementById('clearFiltersBtn').onclick = () => { setFilters('', ''); applyFiltersAndRender(); showToast('Filters cleared', 'info'); }; monthPicker.addEventListener('change', () => { currentMonth = monthPicker.value; localStorage.setItem('cf_month', currentMonth); applyFiltersAndRender(); }); }
-  function startFirestoreListener() { if (unsubscribeTxns) unsubscribeTxns(); unsubscribeTxns = db.collection('Cashflow transactions').onSnapshot(snap => { allTransactions = []; snap.forEach(doc => { const d = doc.data(); allTransactions.push({ id: doc.id, ...d, createdAt: d.createdAt?.seconds ? d.createdAt.seconds * 1000 : Date.now() }); }); updateRefDropdowns(); applyFiltersAndRender(); }, err => { console.error(err); showToast('Sync error', 'error'); }); }
-  renderAllAccountUI(); bindFilterListeners(); startFirestoreListener();
-  document.getElementById('pdfExportBtn').onclick = async () => { const { jsPDF } = window.jspdf; const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' }); doc.setFillColor(30,58,138); doc.rect(0,0,doc.internal.pageSize.getWidth(),50,'F'); doc.setTextColor(255,255,255); doc.setFontSize(18); doc.text('Trismart Cash Flow', 40, 32); doc.setFontSize(10); doc.text(`Account: ${currentAccount} | Month: ${currentMonth}`, 40, 48); let y = 70; const headers = ['Date', 'Description', 'Ref', 'Debit', 'Credit', 'Balance']; doc.setFontSize(8); doc.setTextColor(0,0,0); doc.text(headers, 40, y, { baseline: 'top' }); y += 20; let runningBal = getOpeningBalance(currentAccount, currentMonth); const rowsToPrint = filteredList; rowsToPrint.forEach(t => { if (y > doc.internal.pageSize.getHeight() - 40) { doc.addPage(); y = 40; doc.text(headers, 40, y, { baseline: 'top' }); y += 20; } const isCredit = t.type === 'credit'; if (isCredit) runningBal += t.amount; else runningBal -= t.amount; doc.text(t.date || '', 40, y); doc.text((t.description || '').substring(0, 35), 140, y); doc.text((t.reference || '—').substring(0, 12), 300, y); doc.text(!isCredit ? t.amount.toFixed(2) : '', 380, y); doc.text(isCredit ? t.amount.toFixed(2) : '', 460, y); doc.text(runningBal.toFixed(2), 540, y); y += 16; }); doc.save(`CashFlow_${currentAccount}_${currentMonth}.pdf`); showToast('PDF exported', 'success'); };
+  function bindFilters() {
+    refFilter.addEventListener('change', () => { setFilters(refFilter.value, searchFilter.value); applyFiltersAndRender(); });
+    searchFilter.addEventListener('input', () => { setFilters(refFilter.value, searchFilter.value); applyFiltersAndRender(); });
+    document.getElementById('clearFiltersBtn').onclick = () => { setFilters('', ''); applyFiltersAndRender(); showToast('Filters cleared', 'info'); };
+    monthPicker.addEventListener('change', () => { currentMonth = monthPicker.value; localStorage.setItem('cf_month', currentMonth); applyFiltersAndRender(); });
+  }
+  function startListener() {
+    if (unsubscribeTxns) unsubscribeTxns();
+    unsubscribeTxns = db.collection('Cashflow transactions').onSnapshot(snap => {
+      allTransactions = [];
+      snap.forEach(doc => { const d = doc.data(); allTransactions.push({ id: doc.id, ...d, createdAt: d.createdAt?.seconds ? d.createdAt.seconds * 1000 : Date.now() }); });
+      updateRefDropdowns();
+      applyFiltersAndRender();
+    }, err => showToast('Sync error', 'error'));
+  }
+  renderAllAccountUI(); bindFilters(); startListener();
+  document.getElementById('pdfExportBtn').onclick = async () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+    doc.setFillColor(30,58,138); doc.rect(0,0,doc.internal.pageSize.getWidth(),45,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(16); doc.text('Trismart Cash Flow', 40, 28);
+    doc.setFontSize(9); doc.text(`${currentAccount} | ${currentMonth}`, 40, 42);
+    let y = 65;
+    const headers = ['Date', 'Description', 'Ref', 'Debit', 'Credit', 'Balance'];
+    doc.setFontSize(7); doc.setTextColor(0,0,0); doc.text(headers, 40, y, { baseline: 'top' });
+    y += 18;
+    let bal = getOpeningBalance(currentAccount, currentMonth);
+    filteredList.forEach(t => {
+      if (y > doc.internal.pageSize.getHeight() - 40) { doc.addPage(); y = 40; doc.text(headers, 40, y, { baseline: 'top' }); y += 18; }
+      const isCredit = t.type === 'credit';
+      if (isCredit) bal += t.amount; else bal -= t.amount;
+      doc.text(t.date || '', 40, y);
+      doc.text((t.description || '').substring(0, 30), 130, y);
+      doc.text((t.reference || '—').substring(0, 12), 280, y);
+      doc.text(!isCredit ? t.amount.toFixed(2) : '', 360, y);
+      doc.text(isCredit ? t.amount.toFixed(2) : '', 430, y);
+      doc.text(bal.toFixed(2), 500, y);
+      y += 14;
+    });
+    doc.save(`CashFlow_${currentAccount}_${currentMonth}.pdf`);
+    showToast('PDF exported', 'success');
+  };
 </script>
 </body>
 </html>
