@@ -2,1067 +2,1249 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Trismart · Cash Flow</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes">
+<title>Trismart · Cash Flow Manager</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <style>
-/* ── SAME DESIGN SYSTEM AS WAREHOUSE ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
 :root {
-  --primary:   #4361ee;
-  --accent:    #4cc9f0;
-  --danger:    #f72585;
-  --warning:   #f8961e;
-  --success:   #2ecc71;
-  --bg:        #f4f6fb;
-  --surface:   #ffffff;
-  --bg-lighter:#f1f3f5;
-  --border:    #dee2e6;
-  --text:      #212529;
-  --text-fade: #6c757d;
-  --radius:    10px;
-  --radius-lg: 16px;
-  --shadow:    0 2px 12px rgba(67,97,238,0.08);
-  --shadow-lg: 0 8px 32px rgba(67,97,238,0.13);
+  --primary: #1e3a8a;
+  --primary-light: #3b82f6;
+  --accent: #f97316;
+  --danger: #dc2626;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #475569;
+  --radius: 12px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 
-*{margin:0;padding:0;box-sizing:border-box;
-  font-family:'Segoe UI','Poppins',Tahoma,Geneva,Verdana,sans-serif;
-  -webkit-tap-highlight-color:transparent;}
-html,body{height:100%;background:var(--bg);color:var(--text);}
-body{min-height:100vh;display:flex;flex-direction:column;}
-
-/* scrollbar */
-*{scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
-*::-webkit-scrollbar{width:5px;height:5px;}
-*::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
-
-/* ── TOPBAR ── */
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 18px;min-height:60px;
-  background:var(--surface);border-bottom:1px solid var(--border);
-  box-shadow:var(--shadow);position:sticky;top:0;z-index:100;
-  flex-wrap:wrap;gap:10px;
-}
-.topbar-l{display:flex;align-items:center;gap:12px;}
-.topbar-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-
-.back-btn{
-  width:34px;height:34px;border-radius:var(--radius);
-  border:1px solid var(--border);background:var(--bg-lighter);
-  color:var(--text-fade);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;text-decoration:none;font-size:.82rem;transition:all .15s;
-}
-.back-btn:hover{background:var(--primary);color:white;border-color:var(--primary);}
-
-.page-title{font-size:1rem;font-weight:700;color:var(--primary);}
-
-/* month picker */
-.month-pick{
-  display:flex;align-items:center;gap:7px;
-  background:var(--bg-lighter);border:1px solid var(--border);
-  border-radius:var(--radius);padding:7px 12px;font-size:.82rem;color:var(--text-fade);
-}
-.month-pick input[type=month]{
-  background:transparent;border:none;font-family:inherit;
-  font-size:.82rem;font-weight:600;color:var(--text);outline:none;cursor:pointer;
-}
-.month-pick input[type=month]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.6;}
-
-/* filter bar */
-.filter-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--surface);padding:12px 18px;
-  border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px;
-}
-.filter-group{
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-}
-.filter-item{
-  display:flex;align-items:center;gap:8px;
-  background:var(--bg-lighter);padding:6px 14px;
-  border-radius:var(--radius);border:1px solid var(--border);
-}
-.filter-item i{
-  color:var(--primary);font-size:.75rem;
-}
-.filter-item label{
-  font-size:.7rem;font-weight:700;color:var(--text-fade);
-  text-transform:uppercase;letter-spacing:.05em;
-}
-.filter-item select, .filter-item input{
-  background:transparent;border:none;padding:6px 0;
-  font-size:.8rem;font-weight:500;color:var(--text);
-  outline:none;cursor:pointer;
-}
-.filter-item input{
-  width:140px;
-}
-.filter-item input::placeholder{
-  color:var(--text-fade);
-}
-.clear-filter{
-  background:var(--bg-lighter);border:1px solid var(--border);
-  border-radius:var(--radius);padding:6px 16px;
-  font-size:.75rem;font-weight:600;color:var(--text-fade);
-  cursor:pointer;transition:all .15s;
-  display:flex;align-items:center;gap:6px;
-}
-.clear-filter:hover{
-  background:var(--danger);color:white;border-color:var(--danger);
-}
-.filter-stats{
-  font-size:.7rem;color:var(--text-fade);padding:0 8px;
+body {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* buttons */
-.btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:8px 14px;border-radius:var(--radius);
-  font-family:inherit;font-size:.8rem;font-weight:600;
-  cursor:pointer;border:none;transition:all .15s;white-space:nowrap;
-  box-shadow:0 1px 4px rgba(0,0,0,.07);
+/* Top Bar */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
-.btn svg,.btn i{font-size:.8rem;}
-.btn-primary{background:linear-gradient(135deg,var(--primary),#3a56d4);color:white;}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(67,97,238,.3);}
-.btn-ghost{background:var(--bg-lighter);color:var(--text-fade);border:1px solid var(--border);}
-.btn-ghost:hover{border-color:var(--primary);color:var(--primary);}
-.btn-warn{background:var(--bg-lighter);border:1px solid var(--warning);color:var(--warning);}
-.btn-warn:hover{background:rgba(248,150,30,.08);}
-.btn-danger{background:linear-gradient(135deg,var(--danger),#c82333);color:white;}
 
-/* ── ACCOUNT TABS ── */
-.acc-bar{
-  display:flex;align-items:center;
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:0 18px;overflow-x:auto;flex-shrink:0;
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
-.acc-tab{
-  display:flex;align-items:center;gap:8px;
-  padding:13px 18px;font-size:.8rem;font-weight:600;
-  color:var(--text-fade);cursor:pointer;
-  border-bottom:2.5px solid transparent;
-  transition:all .15s;white-space:nowrap;user-select:none;
-}
-.acc-tab:hover{color:var(--text);}
-.acc-tab.active{color:var(--primary);border-bottom-color:var(--primary);}
-.acc-dot{width:7px;height:7px;border-radius:50%;background:var(--border);}
-.acc-tab.active .acc-dot{background:var(--primary);box-shadow:0 0 6px rgba(67,97,238,.4);}
 
-/* ── MAIN ── */
-.main{flex:1;padding:16px 18px;display:flex;flex-direction:column;gap:12px;}
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-/* ── TABLE ── */
-.table-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius-lg);box-shadow:var(--shadow);
-  overflow:hidden;flex:1;display:flex;flex-direction:column;
+.logo-area i {
+  font-size: 24px;
+  color: var(--primary);
 }
-.table-scroll{overflow:auto;flex:1;}
-table{width:100%;border-collapse:collapse;font-size:.84rem;min-width:580px;}
-thead th{
-  background:var(--bg-lighter);color:var(--text-fade);
-  font-size:.64rem;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;padding:11px 14px;text-align:left;
-  border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;
-  white-space:nowrap;
-}
-th.num,td.num{text-align:right;}
-th:last-child,td:last-child{text-align:center;width:50px;}
-td{padding:11px 14px;border-bottom:1px solid #f0f2f8;color:var(--text);vertical-align:middle;}
-tbody tr:last-child td{border-bottom:none;}
-tbody tr{transition:background .1s;}
-tbody tr:hover td{background:#f8f9ff;}
-.empty-row td{text-align:center;padding:52px 20px;color:var(--text-fade);font-size:.88rem;}
-.opening-row td{background:#fafbff;color:var(--text-fade);font-style:italic;border-top:1px solid var(--border);}
 
-/* value colours */
-.debit-val {color:var(--danger) ;font-weight:700;}
-.credit-val{color:var(--success);font-weight:700;}
-.bal-val   {color:var(--text)   ;font-weight:700;}
-.bal-val.neg{color:var(--danger);}
-.blank-cell{color:transparent;user-select:none;}
-.transfer-label{
-  font-size:.63rem;font-weight:700;color:var(--warning);
-  background:rgba(248,150,30,.1);padding:2px 7px;
-  border-radius:4px;border:1px solid rgba(248,150,30,.25);
-  margin-left:5px;
+.logo-area h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
-tbody tr.transfer-row td{color:var(--warning);}
-tbody tr.transfer-row td:first-child,
-tbody tr.transfer-row td:nth-child(2),
-tbody tr.transfer-row td:nth-child(3){color:var(--text-fade);}
 
-/* ── THREE DOTS MENU ── */
-.menu-container{position:relative;display:inline-block;}
-.action-btn{
-  background:none;border:none;color:var(--text-fade);
-  cursor:pointer;padding:6px;border-radius:6px;
-  transition:all .15s;font-size:.9rem;
+.month-picker {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.action-btn:hover{background:var(--bg-lighter);color:var(--text);}
-.dropdown-menu{
-  position:absolute;right:0;top:100%;z-index:1000;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);padding:5px;min-width:120px;
-  box-shadow:var(--shadow-lg);display:none;
-}
-.dropdown-menu.show{display:block;}
-.menu-item{
-  display:flex;align-items:center;gap:8px;padding:9px 12px;
-  color:var(--text);font-size:.82rem;border-radius:7px;
-  transition:all .15s;cursor:pointer;border:none;
-  background:transparent;width:100%;text-align:left;
-}
-.menu-item:hover{background:var(--bg-lighter);}
-.menu-item.delete:hover{color:var(--danger);}
-.menu-item i{width:14px;font-size:.8rem;}
 
-/* ── MODALS ── */
-.overlay{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.45);backdrop-filter:blur(4px);
-  z-index:900;align-items:center;justify-content:center;
+.month-picker input {
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  font-size: 0.85rem;
+  outline: none;
 }
-.overlay.open{display:flex;}
-.modal{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:26px;
-  width:90%;max-width:460px;box-shadow:var(--shadow-lg);
-  animation:mIn .2s ease;max-height:92vh;overflow-y:auto;
-}
-@keyframes mIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-.modal-head h2{font-size:1rem;font-weight:700;color:var(--text);}
-.close-btn{
-  width:28px;height:28px;border-radius:7px;
-  border:1px solid var(--border);background:var(--bg-lighter);
-  color:var(--text-fade);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.8rem;transition:all .15s;
-}
-.close-btn:hover{background:var(--danger);color:white;border-color:var(--danger);}
 
-/* form fields */
-.field{margin-bottom:13px;}
-.field label{
-  display:block;font-size:.64rem;font-weight:700;
-  letter-spacing:.09em;text-transform:uppercase;
-  color:var(--text-fade);margin-bottom:5px;
+/* Action Panel - Collapsible */
+.action-panel {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  max-height: 0;
 }
-.field input,.field select{
-  width:100%;padding:9px 12px;
-  background:var(--bg-lighter);border:1.5px solid var(--border);
-  border-radius:var(--radius);color:var(--text);
-  font-family:inherit;font-size:.88rem;outline:none;
-  transition:border-color .15s;
+
+.action-panel.open {
+  max-height: 400px;
 }
-.field input::placeholder{color:var(--text-fade);}
-.field input:focus,.field select:focus{border-color:var(--primary);background:white;}
-.field select option{background:var(--surface);}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
-.form-error{color:var(--danger);font-size:.78rem;margin-bottom:10px;min-height:14px;}
-
-.save-btn{
-  width:100%;padding:12px;
-  background:linear-gradient(135deg,var(--primary),#3a56d4);
-  color:white;border:none;border-radius:var(--radius);
-  font-family:inherit;font-size:.9rem;font-weight:700;
-  cursor:pointer;transition:all .15s;
-  display:flex;align-items:center;justify-content:center;gap:7px;
-  margin-top:4px;
+.action-panel-content {
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
-.save-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(67,97,238,.3);}
-.save-btn.amber{background:linear-gradient(135deg,var(--warning),#e07b0a);color:white;}
-.save-btn.amber:hover{box-shadow:0 4px 14px rgba(248,150,30,.3);}
-.save-btn.red{background:linear-gradient(135deg,var(--danger),#c82333);}
-.save-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;}
 
-/* ── TOAST ── */
-.toast-wrap{position:fixed;bottom:20px;right:16px;z-index:9999;
-  display:flex;flex-direction:column;gap:6px;pointer-events:none;
-  max-width:calc(100vw - 32px);}
-.toast{
-  background:var(--surface);border:1px solid var(--border);
-  color:var(--text);border-radius:var(--radius);
-  padding:10px 15px;font-size:.82rem;font-weight:600;
-  display:flex;align-items:center;gap:8px;
-  box-shadow:var(--shadow-lg);animation:tIn .2s ease;
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
 }
-.toast.success{border-left:4px solid var(--success);}
-.toast.success i{color:var(--success);}
-.toast.error  {border-left:4px solid var(--danger);}
-.toast.error i{color:var(--danger);}
-.toast.info   {border-left:4px solid var(--warning);}
-.toast.info i {color:var(--warning);}
-.toast.fade-out{animation:tOut .25s ease forwards;}
-@keyframes tIn {from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
-@keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(10px)}}
 
-@media(max-width:640px){
-  .topbar{padding:0 12px;}
-  .main{padding:12px;}
-  .acc-bar{padding:0 12px;}
-  .field-row{grid-template-columns:1fr;}
-  .filter-bar{flex-direction:column;align-items:stretch;}
-  .filter-group{flex-direction:column;align-items:stretch;}
-  .filter-item{justify-content:space-between;}
+.accounts-management {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.accounts-management h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.account-list-manage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.account-badge {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.account-badge i {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.account-badge.hidden-badge {
+  opacity: 0.5;
+  text-decoration: line-through;
+  background: #f1f5f9;
+}
+
+.toggle-vis-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  transition: all 0.2s;
+  color: var(--text-muted);
+}
+
+.toggle-vis-btn:hover {
+  background: var(--border);
+}
+
+.delete-acc-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--danger);
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 20px;
+}
+
+.delete-acc-btn:hover {
+  background: #fee2e2;
+}
+
+.add-account-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.add-account-form input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  font-size: 0.8rem;
+  outline: none;
+  background: var(--bg);
+}
+
+.add-account-form button {
+  padding: 8px 16px;
+  background: var(--success);
+  color: white;
+  border: none;
+  border-radius: 40px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.panel-toggle-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.panel-toggle-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  border: 1px solid var(--border);
+  background: white;
+}
+
+.btn-outline:hover {
+  background: var(--bg);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Account Bar - Only shows visible accounts */
+.account-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: thin;
+}
+
+.account-tab {
+  padding: 12px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.account-tab i {
+  font-size: 0.75rem;
+}
+
+.account-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.account-tab:hover:not(.active) {
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Filter Bar */
+.filter-bar {
+  background: var(--surface);
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.filter-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.filter-chip i {
+  color: var(--text-muted);
+}
+
+.filter-chip select, .filter-chip input {
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  outline: none;
+  font-size: 0.8rem;
+}
+
+.filter-chip input {
+  width: 130px;
+}
+
+.clear-filter {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.clear-filter:hover {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+.stats-badge {
+  background: var(--bg);
+  padding: 6px 12px;
+  border-radius: 32px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Main Table */
+.main-content {
+  flex: 1;
+  padding: 20px 24px;
+}
+
+.table-wrapper {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  min-width: 700px;
+}
+
+th {
+  background: #f1f5f9;
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.opening-row td {
+  background: #fefce8;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.debit {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.credit {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.balance {
+  font-weight: 700;
+}
+
+.balance.negative {
+  color: var(--danger);
+}
+
+.transfer-badge {
+  background: #ffedd5;
+  color: #c2410c;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 20px;
+  margin-left: 6px;
+}
+
+/* Menu & Actions */
+.menu-cell {
+  text-align: center;
+  position: relative;
+}
+
+.action-dots {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+
+.action-dots:hover {
+  background: var(--bg);
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 28px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+  min-width: 120px;
+  display: none;
+}
+
+.dropdown.show {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text);
+}
+
+.dropdown-item:hover {
+  background: var(--bg);
+}
+
+.delete-item:hover {
+  color: var(--danger);
+}
+
+/* Modals */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-card {
+  background: white;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  font-size: 1.2rem;
+}
+
+.close-modal {
+  background: var(--bg);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 40px;
+  cursor: pointer;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.save-btn {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 40px;
+  font-weight: 700;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.save-btn.amber {
+  background: var(--warning);
+}
+
+.save-btn.red {
+  background: var(--danger);
+}
+
+/* Toast */
+.toast-area {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: white;
+  border-left: 4px solid var(--success);
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@media (max-width: 640px) {
+  .topbar, .account-bar, .filter-bar { padding: 0 12px; }
+  .main-content { padding: 12px; }
+  .filter-group { flex-direction: column; }
+  .action-panel-content { padding: 12px; }
 }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
-  <div class="topbar-l">
-    <a href="cashbook.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-    <span class="page-title">Cash Flow</span>
-  </div>
-  <div class="topbar-r">
-    <div class="month-pick">
-      <i class="fas fa-calendar-alt" style="font-size:.72rem"></i>
-      <input type="month" id="monthPicker">
+  <div class="topbar-left">
+    <div class="logo-area">
+      <i class="fas fa-coins"></i>
+      <h1>Trismart Flow</h1>
     </div>
-    <button class="btn btn-ghost" id="pdfBtn"><i class="fas fa-file-pdf"></i> PDF</button>
-    <button class="btn btn-warn" onclick="openTransferModal()"><i class="fas fa-arrow-right-arrow-left"></i> Transfer</button>
-    <button class="btn btn-primary" onclick="openTxnModal('add')"><i class="fas fa-plus"></i> Add</button>
+    <div class="month-picker">
+      <i class="fas fa-calendar-alt"></i>
+      <input type="month" id="monthSelect">
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="panel-toggle-btn" id="togglePanelBtn">
+      <i class="fas fa-chevron-down" id="panelToggleIcon"></i> Actions & Accounts
+    </button>
   </div>
 </div>
 
-<!-- FILTER BAR - CLEAN VERSION -->
+<!-- Collapsible Action Panel - Contains ALL account management -->
+<div class="action-panel" id="actionPanel">
+  <div class="action-panel-content">
+    <div class="action-buttons">
+      <button class="btn btn-outline" id="pdfExportBtn"><i class="fas fa-file-pdf"></i> PDF Export</button>
+      <button class="btn btn-outline" id="transferBtn"><i class="fas fa-exchange-alt"></i> Transfer</button>
+      <button class="btn btn-primary" id="addTxnBtn"><i class="fas fa-plus"></i> Add Transaction</button>
+    </div>
+    
+    <div class="accounts-management">
+      <h3><i class="fas fa-wallet"></i> Manage Accounts (Hide/Unhide)</h3>
+      <div class="account-list-manage" id="accountManageList"></div>
+      <div class="add-account-form">
+        <input type="text" id="newAccountName" placeholder="New account name...">
+        <button id="addAccountBtn"><i class="fas fa-plus"></i> Add Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Account Bar - Only visible accounts -->
+<div class="account-bar" id="accountTabsContainer"></div>
+
+<!-- Filter Bar -->
 <div class="filter-bar">
   <div class="filter-group">
-    <div class="filter-item">
-      <i class="fas fa-tag"></i>
-      <label>Reference:</label>
-      <select id="filterReference">
+    <div class="filter-chip">
+      <i class="fas fa-hashtag"></i>
+      <select id="refFilter">
         <option value="">All References</option>
-        <option value="TS-1">TS-1</option>
-        <option value="TS-2">TS-2</option>
       </select>
     </div>
-    <div class="filter-item">
+    <div class="filter-chip">
       <i class="fas fa-search"></i>
-      <label>Search:</label>
-      <input type="text" id="filterSearch" placeholder="Description or ref...">
+      <input type="text" id="searchFilter" placeholder="Search description or ref...">
     </div>
-    <div class="filter-item">
-      <i class="fas fa-exchange-alt"></i>
-      <label>Type:</label>
-      <select id="filterType">
-        <option value="">All</option>
-        <option value="credit">💰 Credit (In)</option>
-        <option value="debit">💸 Debit (Out)</option>
-      </select>
-    </div>
-    <button class="clear-filter" onclick="clearFilters()">
-      <i class="fas fa-times-circle"></i> Clear All
-    </button>
+    <button class="clear-filter" id="clearFiltersBtn"><i class="fas fa-undo-alt"></i> Clear All</button>
   </div>
-  <div class="filter-stats" id="filterStats"></div>
+  <div class="stats-badge" id="filterStats">0 transactions</div>
 </div>
 
-<!-- ACCOUNT TABS -->
-<div class="acc-bar" id="accBar">
-  <div class="acc-tab active" data-acc="Expenses A/c"        onclick="switchAcc(this)"><span class="acc-dot"></span> Expenses A/c</div>
-  <div class="acc-tab"        data-acc="Business savings A/c" onclick="switchAcc(this)"><span class="acc-dot"></span> Business Savings A/c</div>
-  <div class="acc-tab"        data-acc="Inventory A/c"        onclick="switchAcc(this)"><span class="acc-dot"></span> Inventory A/c</div>
-  <div class="acc-tab"        data-acc="Personal A/c"         onclick="switchAcc(this)"><span class="acc-dot"></span> Personal A/c</div>
-  <div class="acc-tab"        data-acc="Loan A/c"             onclick="switchAcc(this)"><span class="acc-dot"></span> Loan A/c</div>
-</div>
-
-<!-- MAIN -->
-<div class="main">
-
-  <div class="table-card">
-    <div class="table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Reference</th>
-            <th class="num">Debit</th>
-            <th class="num">Credit</th>
-            <th class="num">Balance</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="cfTbody">
-          <tr class="empty-row"><td colspan="7"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>
-        </tbody>
-      </table>
-    </div>
+<div class="main-content">
+  <div class="table-wrapper">
+    <table id="cashTable">
+      <thead>
+        <tr><th>Date</th><th>Description</th><th>Reference</th><th>Debit</th><th>Credit</th><th>Balance</th><th></th> </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td colspan="7" style="text-align:center">Loading...</td></tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
-<div class="toast-wrap" id="toastWrap"></div>
+<div class="toast-area" id="toastRoot"></div>
 
-<!-- ── ADD/EDIT MODAL ── -->
-<div class="overlay" id="txnOverlay" onclick="bgClick(event,'txnOverlay')">
-  <div class="modal">
-    <div class="modal-head">
-      <h2 id="txnModalTitle">Add Transaction</h2>
-      <button class="close-btn" onclick="closeTxnModal()"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="form-error" id="txnErr"></div>
-    <form onsubmit="saveTxn(event)" autocomplete="off">
-      <input type="hidden" id="txnId">
-      <div class="field-row">
-        <div class="field">
-          <label>Date</label>
-          <input type="date" id="tDate" required>
-        </div>
-        <div class="field">
-          <label>Type</label>
-          <select id="tType" required>
-            <option value="">— Select —</option>
-            <option value="credit">Credit (In)</option>
-            <option value="debit">Debit (Out)</option>
-          </select>
-        </div>
+<!-- Transaction Modal -->
+<div id="txnModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header"><h2 id="txnTitle">Add Transaction</h2><button class="close-modal" onclick="closeTxnModal()"><i class="fas fa-times"></i></button></div>
+    <form id="txnForm">
+      <input type="hidden" id="txnDocId">
+      <div class="form-row">
+        <div class="form-group"><label>Date</label><input type="date" id="txnDate" required></div>
+        <div class="form-group"><label>Type</label><select id="txnType" required><option value="">Select</option><option value="credit">Credit (+)</option><option value="debit">Debit (-)</option></select></div>
       </div>
-      <div class="field">
-        <label>Account</label>
-        <select id="tAccount" required>
-          <option value="">— Select Account —</option>
-          <option value="Expenses A/c">Expenses A/c</option>
-          <option value="Business savings A/c">Business Savings A/c</option>
-          <option value="Inventory A/c">Inventory A/c</option>
-          <option value="Personal A/c">Personal A/c</option>
-          <option value="Loan A/c">Loan A/c</option>
-        </select>
+      <div class="form-group"><label>Account</label><select id="txnAccount" required></select></div>
+      <div class="form-group"><label>Description</label><input type="text" id="txnDesc" placeholder="e.g., Sales, Purchase" required></div>
+      <div class="form-row">
+        <div class="form-group"><label>Reference</label><select id="txnRefSelect"><option value="">-- Preset --</option><option value="INV-001">INV-001</option><option value="SAL-002">SAL-002</option></select></div>
+        <div class="form-group"><label>Or Custom</label><input type="text" id="txnRefCustom" placeholder="Custom ref"></div>
       </div>
-      <div class="field">
-        <label>Description</label>
-        <input type="text" id="tDesc" placeholder="e.g. Cash sale" required>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label>Reference</label>
-          <select id="tReference">
-            <option value="">— Select Reference —</option>
-            <option value="TS-1">TS-1</option>
-            <option value="TS-2">TS-2</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>&nbsp;</label>
-          <input type="text" id="tRefCustom" placeholder="Or custom reference">
-        </div>
-      </div>
-      <div class="field">
-        <label>Amount (ZMW)</label>
-        <input type="number" id="tAmount" min="0.01" step="0.01" placeholder="0.00" required>
-      </div>
-      <button type="submit" class="save-btn" id="txnBtn">
-        <i class="fas fa-check"></i> Save Transaction
-      </button>
+      <div class="form-group"><label>Amount (ZMW)</label><input type="number" id="txnAmount" step="0.01" min="0.01" required></div>
+      <button type="submit" class="save-btn"><i class="fas fa-save"></i> Save</button>
     </form>
   </div>
 </div>
 
-<!-- ── TRANSFER MODAL ── -->
-<div class="overlay" id="trOverlay" onclick="bgClick(event,'trOverlay')">
-  <div class="modal">
-    <div class="modal-head">
-      <h2><i class="fas fa-arrow-right-arrow-left" style="color:var(--warning);margin-right:8px"></i>Transfer Funds</h2>
-      <button class="close-btn" onclick="closeTransferModal()"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="form-error" id="trErr"></div>
-    <form onsubmit="saveTransfer(event)" autocomplete="off">
-      <div class="field">
-        <label>Date</label>
-        <input type="date" id="trDate" required>
+<!-- Transfer Modal -->
+<div id="transferModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header"><h2><i class="fas fa-exchange-alt"></i> Transfer Funds</h2><button class="close-modal" onclick="closeTransferModal()"><i class="fas fa-times"></i></button></div>
+    <form id="transferForm">
+      <div class="form-group"><label>Date</label><input type="date" id="transferDate" required></div>
+      <div class="form-row">
+        <div class="form-group"><label>From Account</label><select id="fromAccount" required></select></div>
+        <div class="form-group"><label>To Account</label><select id="toAccount" required></select></div>
       </div>
-      <div class="field-row">
-        <div class="field">
-          <label>From Account</label>
-          <select id="trFrom" required>
-            <option value="">— From —</option>
-            <option value="Expenses A/c">Expenses A/c</option>
-            <option value="Business savings A/c">Business Savings A/c</option>
-            <option value="Inventory A/c">Inventory A/c</option>
-            <option value="Personal A/c">Personal A/c</option>
-            <option value="Loan A/c">Loan A/c</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>To Account</label>
-          <select id="trTo" required>
-            <option value="">— To —</option>
-            <option value="Expenses A/c">Expenses A/c</option>
-            <option value="Business savings A/c">Business Savings A/c</option>
-            <option value="Inventory A/c">Inventory A/c</option>
-            <option value="Personal A/c">Personal A/c</option>
-            <option value="Loan A/c">Loan A/c</option>
-          </select>
-        </div>
-      </div>
-      <div class="field">
-        <label>Description</label>
-        <input type="text" id="trDesc" placeholder="e.g. Cash to bank">
-      </div>
-      <div class="field">
-        <label>Reference</label>
-        <input type="text" id="trRef" placeholder="e.g. TRF-001">
-      </div>
-      <div class="field">
-        <label>Amount (ZMW)</label>
-        <input type="number" id="trAmount" min="0.01" step="0.01" placeholder="0.00" required>
-      </div>
-      <button type="submit" class="save-btn amber" id="trBtn">
-        <i class="fas fa-arrow-right-arrow-left"></i> Confirm Transfer
-      </button>
+      <div class="form-group"><label>Description (optional)</label><input type="text" id="transferDesc" placeholder="Transfer reason"></div>
+      <div class="form-group"><label>Reference</label><input type="text" id="transferRef" placeholder="TRF-001"></div>
+      <div class="form-group"><label>Amount (ZMW)</label><input type="number" id="transferAmount" step="0.01" required></div>
+      <button type="submit" class="save-btn amber"><i class="fas fa-arrow-right-arrow-left"></i> Execute Transfer</button>
     </form>
   </div>
 </div>
 
-<!-- ── DELETE MODAL ── -->
-<div class="overlay" id="deleteOverlay" onclick="if(event.target===this)closeDeleteModal()">
-  <div class="modal" style="max-width:360px;">
-    <div class="modal-head">
-      <h2>Delete Transaction</h2>
-      <button class="close-btn" onclick="closeDeleteModal()"><i class="fas fa-times"></i></button>
-    </div>
-    <p style="margin:16px 0;color:var(--text-fade);font-size:.86rem;line-height:1.6;">
-      Are you sure you want to delete this transaction? This cannot be undone.
-    </p>
-    <input type="hidden" id="deleteId">
-    <button class="save-btn red" onclick="confirmDelete()">
-      <i class="fas fa-trash"></i> Delete Permanently
-    </button>
+<!-- Delete confirm modal -->
+<div id="deleteConfirmModal" class="modal-overlay">
+  <div class="modal-card" style="max-width: 360px;">
+    <div class="modal-header"><h2>Delete Transaction</h2><button class="close-modal" onclick="closeDeleteConfirm()"><i class="fas fa-times"></i></button></div>
+    <p>Permanently remove this transaction? This action cannot be undone.</p>
+    <input type="hidden" id="deleteTargetId">
+    <button id="confirmDeleteBtn" class="save-btn red" style="margin-top: 20px;"><i class="fas fa-trash"></i> Delete Forever</button>
   </div>
 </div>
 
 <script>
-// ── FIREBASE ──
-firebase.initializeApp({
-  apiKey:"AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
-  authDomain:"trismartstores.firebaseapp.com",
-  projectId:"trismartstores",
-  storageBucket:"trismartstores.appspot.com",
-  messagingSenderId:"416692703333",
-  appId:"1:416692703333:web:d4b60292621435c748f68c"
-});
-const db=firebase.firestore();
-db.enablePersistence().catch(()=>{});
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+    authDomain: "trismartstores.firebaseapp.com",
+    projectId: "trismartstores",
+    storageBucket: "trismartstores.appspot.com",
+    messagingSenderId: "416692703333",
+    appId: "1:416692703333:web:d4b60292621435c748f68c"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  db.enablePersistence().catch(e => console.warn(e));
 
-// ── ACCOUNTS LIST ──
-const ACCOUNTS=[
-  'Expenses A/c',
-  'Business savings A/c',
-  'Inventory A/c',
-  'Personal A/c',
-  'Loan A/c'
-];
-
-// ── STATE ──
-let selAcc=ACCOUNTS[0];
-let allTransactions=[];
-let unsubscribeListener=null;
-let filteredTransactions=[];
-
-// Month picker
-const monthPicker=document.getElementById('monthPicker');
-const today=new Date();
-monthPicker.value=localStorage.getItem('cf_month')||today.toISOString().substring(0,7);
-
-// Filter elements
-const filterReference=document.getElementById('filterReference');
-const filterSearch=document.getElementById('filterSearch');
-const filterType=document.getElementById('filterType');
-const filterStats=document.getElementById('filterStats');
-
-// ── HELPERS ──
-function toast(msg,type='success'){
-  const w=document.getElementById('toastWrap'),el=document.createElement('div');
-  el.className=`toast ${type}`;
-  const icons={success:'check-circle',error:'times-circle',info:'info-circle'};
-  el.innerHTML=`<i class="fas fa-${icons[type]||'info-circle'}"></i>${msg}`;
-  w.appendChild(el);
-  setTimeout(()=>{el.classList.add('fade-out');setTimeout(()=>el.remove(),280);},3500);
-}
-
-function fmtN(n){return Math.abs(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function fmtK(n){return'ZMW '+fmtN(n);}
-
-// Get reference from form
-function getReferenceFromForm(){
-  const refSelect = document.getElementById('tReference').value;
-  const refCustom = document.getElementById('tRefCustom').value.trim();
-  if(refCustom) return refCustom;
-  if(refSelect) return refSelect;
-  return '—';
-}
-
-document.addEventListener('click',()=>{
-  document.querySelectorAll('.dropdown-menu.show').forEach(m=>m.classList.remove('show'));
-});
-
-// ── SWITCH ACCOUNT ──
-window.switchAcc=function(el){
-  document.querySelectorAll('.acc-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  selAcc=el.dataset.acc;
-  applyFilters();
-};
-
-// ── FILTER FUNCTIONS ──
-function applyFilters(){
-  const month=monthPicker.value;
-  if(!month) return;
+  // Default accounts
+  const DEFAULT_ACCOUNTS = ['Expenses A/c', 'Business savings A/c', 'Inventory A/c', 'Personal A/c', 'FnB Account'];
   
-  let filtered = allTransactions.filter(t =>
-    t.account === selAcc && t.date && t.date.substring(0,7) === month
-  );
+  let accounts = [];
+  let hiddenAccounts = new Set();
   
-  // Filter by reference (TS-1 or TS-2 only)
-  const refFilter = filterReference.value;
-  if(refFilter){
-    filtered = filtered.filter(t => (t.reference || '') === refFilter);
-  }
-  
-  // Filter by search term
-  const searchTerm = filterSearch.value.toLowerCase().trim();
-  if(searchTerm){
-    filtered = filtered.filter(t => 
-      (t.description || '').toLowerCase().includes(searchTerm) || 
-      (t.reference || '').toLowerCase().includes(searchTerm)
-    );
-  }
-  
-  // Filter by type
-  const typeFilter = filterType.value;
-  if(typeFilter){
-    filtered = filtered.filter(t => t.type === typeFilter);
-  }
-  
-  // Sort by date
-  filtered.sort((a,b)=>{
-    if((a.date||'')===(b.date||'')) return (a.createdAt||0)-(b.createdAt||0);
-    return (a.date||'')<(b.date||'')?-1:1;
-  });
-  
-  filteredTransactions = filtered;
-  
-  // Update filter stats
-  const totalCount = filtered.length;
-  filterStats.textContent = `${totalCount} transaction${totalCount !== 1 ? 's' : ''} found`;
-  
-  renderTableWithFilters();
-}
-
-function clearFilters(){
-  filterReference.value = '';
-  filterSearch.value = '';
-  filterType.value = '';
-  applyFilters();
-  toast('All filters cleared!', 'info');
-}
-
-// Add event listeners for filters
-filterReference.addEventListener('change', applyFilters);
-filterSearch.addEventListener('input', applyFilters);
-filterType.addEventListener('change', applyFilters);
-
-// ── MODAL HELPERS ──
-window.bgClick=function(e,id){if(e.target.id===id)document.getElementById(id).classList.remove('open');};
-
-window.openTxnModal=function(mode,id=null){
-  const ov=document.getElementById('txnOverlay');
-  document.getElementById('txnModalTitle').textContent=mode==='add'?'Add Transaction':'Edit Transaction';
-  document.getElementById('txnErr').textContent='';
-
-  if(mode==='add'){
-    document.getElementById('txnId').value='';
-    document.getElementById('tDate').value=new Date().toISOString().substring(0,10);
-    document.getElementById('tType').value='';
-    document.getElementById('tAccount').value=selAcc;
-    document.getElementById('tDesc').value='';
-    document.getElementById('tReference').value='';
-    document.getElementById('tRefCustom').value='';
-    document.getElementById('tAmount').value='';
-  }else if(id){
-    const t=allTransactions.find(x=>x.id===id);
-    if(t){
-      document.getElementById('txnId').value=t.id;
-      document.getElementById('tDate').value=t.date||'';
-      document.getElementById('tType').value=t.type||'';
-      document.getElementById('tAccount').value=t.account||selAcc;
-      document.getElementById('tDesc').value=t.description||'';
-      
-      // Set reference - check if it's TS-1, TS-2, or custom
-      const ref = t.reference || '';
-      if(ref === 'TS-1' || ref === 'TS-2'){
-        document.getElementById('tReference').value = ref;
-        document.getElementById('tRefCustom').value = '';
-      } else {
-        document.getElementById('tReference').value = '';
-        document.getElementById('tRefCustom').value = ref === '—' ? '' : ref;
-      }
-      document.getElementById('tAmount').value=t.amount||'';
-    }
-  }
-  ov.classList.add('open');
-};
-
-window.closeTxnModal=function(){document.getElementById('txnOverlay').classList.remove('open');};
-
-window.openTransferModal=function(){
-  document.getElementById('trOverlay').classList.add('open');
-  document.getElementById('trErr').textContent='';
-  document.getElementById('trDate').value=new Date().toISOString().substring(0,10);
-  document.getElementById('trFrom').value=selAcc;
-  document.getElementById('trTo').value='';
-  document.getElementById('trDesc').value='';
-  document.getElementById('trRef').value='';
-  document.getElementById('trAmount').value='';
-};
-window.closeTransferModal=function(){document.getElementById('trOverlay').classList.remove('open');};
-
-window.openDeleteModal=function(id){
-  document.getElementById('deleteId').value=id;
-  document.getElementById('deleteOverlay').classList.add('open');
-};
-window.closeDeleteModal=function(){
-  document.getElementById('deleteOverlay').classList.remove('open');
-  document.getElementById('deleteId').value='';
-};
-window.confirmDelete=async function(){
-  const id=document.getElementById('deleteId').value;if(!id)return;
-  try{
-    await db.collection('Cashflow transactions').doc(id).delete();
-    toast('Transaction deleted.','success');closeDeleteModal();
-  }catch(e){toast('Error: '+e.message,'error');}
-};
-
-window.toggleMenu=function(event,id){
-  event.stopPropagation();
-  const menu=event.currentTarget.nextElementSibling;
-  document.querySelectorAll('.dropdown-menu.show').forEach(m=>{if(m!==menu)m.classList.remove('show');});
-  menu.classList.toggle('show');
-};
-
-// ── SAVE TRANSACTION ──
-window.saveTxn=async function(e){
-  e.preventDefault();
-  const errEl=document.getElementById('txnErr'),btn=document.getElementById('txnBtn');
-  const id=document.getElementById('txnId').value;
-  errEl.textContent='';
-
-  const date=document.getElementById('tDate').value;
-  const type=document.getElementById('tType').value;
-  const account=document.getElementById('tAccount').value;
-  const desc=document.getElementById('tDesc').value.trim();
-  const reference = getReferenceFromForm();
-  const amount=parseFloat(document.getElementById('tAmount').value);
-
-  if(!date){errEl.textContent='Select a date.';return;}
-  if(!type){errEl.textContent='Select a type.';return;}
-  if(!account){errEl.textContent='Select an account.';return;}
-  if(!desc){errEl.textContent='Enter a description.';return;}
-  if(isNaN(amount)||amount<=0){errEl.textContent='Enter a valid amount.';return;}
-
-  btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving…';
-  try{
-    const data={date,type,account,description:desc,reference,amount,
-                updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
-    if(id){
-      await db.collection('Cashflow transactions').doc(id).update(data);
-      toast('Transaction updated!','success');
-    }else{
-      data.createdAt=firebase.firestore.FieldValue.serverTimestamp();
-      await db.collection('Cashflow transactions').add(data);
-      toast('Transaction saved!','success');
-    }
-    closeTxnModal();
-  }catch(e){toast('Error: '+e.message,'error');errEl.textContent=e.message;}
-  finally{btn.disabled=false;btn.innerHTML='<i class="fas fa-check"></i> Save Transaction';}
-};
-
-// ── SAVE TRANSFER ──
-window.saveTransfer=async function(e){
-  e.preventDefault();
-  const errEl=document.getElementById('trErr'),btn=document.getElementById('trBtn');
-  errEl.textContent='';
-
-  const date=document.getElementById('trDate').value;
-  const from=document.getElementById('trFrom').value;
-  const to=document.getElementById('trTo').value;
-  const desc=document.getElementById('trDesc').value.trim()||'Transfer';
-  const ref=document.getElementById('trRef').value.trim()||'—';
-  const amount=parseFloat(document.getElementById('trAmount').value);
-
-  if(!date){errEl.textContent='Select a date.';return;}
-  if(!from){errEl.textContent='Select source account.';return;}
-  if(!to){errEl.textContent='Select destination account.';return;}
-  if(from===to){errEl.textContent='Accounts must be different.';return;}
-  if(isNaN(amount)||amount<=0){errEl.textContent='Enter a valid amount.';return;}
-
-  btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Processing…';
-  try{
-    const ts=firebase.firestore.FieldValue.serverTimestamp();
-    const grp=Date.now().toString(36);
-    await db.collection('Cashflow transactions').add({
-      date,type:'debit',account:from,
-      description:desc+' → '+to,reference:ref,amount,
-      transferGroup:grp,isTransfer:true,createdAt:ts
-    });
-    await db.collection('Cashflow transactions').add({
-      date,type:'credit',account:to,
-      description:desc+' ← '+from,reference:ref,amount,
-      transferGroup:grp,isTransfer:true,createdAt:ts
-    });
-    closeTransferModal();
-    toast(`ZMW ${fmtN(amount)} transferred from ${from} to ${to}`,'info');
-  }catch(e){toast('Error: '+e.message,'error');errEl.textContent=e.message;}
-  finally{btn.disabled=false;btn.innerHTML='<i class="fas fa-arrow-right-arrow-left"></i> Confirm Transfer';}
-};
-
-// ── OPENING BALANCE ──
-function getOpeningBalance(account,yearMonth){
-  const[year,month]=yearMonth.split('-').map(Number);
-  const firstDay=new Date(year,month-1,1).toISOString().substring(0,10);
-  let bal=0;
-  allTransactions
-    .filter(t=>t.account===account&&t.date&&t.date<firstDay)
-    .forEach(t=>{if(t.type==='credit')bal+=(t.amount||0);else bal-=(t.amount||0);});
-  return bal;
-}
-
-// ── RENDER TABLE WITH FILTERS ──
-function renderTableWithFilters(){
-  const tbody=document.getElementById('cfTbody');
-  const month=monthPicker.value;
-  if(!month)return;
-
-  const openBal=getOpeningBalance(selAcc,month);
-  let runBal=openBal;
-
-  if(!filteredTransactions.length && openBal===0){
-    tbody.innerHTML='<tr class="empty-row"><td colspan="7">📭 No transactions match your filters</td></tr>';
-    return;
-  }
-
-  const html=[];
-
-  // Opening row
-  html.push(`<tr class="opening-row">
-      <td>${month}-01</td>
-      <td>Opening Balance (brought forward)</td>
-      <td>—</td>
-    <td class="num"><span class="blank-cell">·</span></td>
-    <td class="num"><span class="blank-cell">·</span></td>
-    <td class="num bal-val${openBal<0?' neg':''}">${fmtK(openBal)}</td>
-    <td></td>
-    </tr>`);
-
-  filteredTransactions.forEach(t=>{
-    const isCredit=t.type==='credit';
-    if(isCredit){
-      runBal+=(t.amount||0);
+  function loadAccounts() {
+    const stored = localStorage.getItem('trismart_accounts');
+    const storedHidden = localStorage.getItem('trismart_hidden_accounts');
+    if (stored) {
+      accounts = JSON.parse(stored);
     } else {
-      runBal-=(t.amount||0);
+      accounts = [...DEFAULT_ACCOUNTS];
     }
-
-    const dCell=!isCredit
-      ?`<td class="num debit-val">${fmtK(t.amount||0)}</td>`
-      :`<td class="num"><span class="blank-cell">·</span></td>`;
-    const cCell=isCredit
-      ?`<td class="num credit-val">${fmtK(t.amount||0)}</td>`
-      :`<td class="num"><span class="blank-cell">·</span></td>`;
-
-    const trLabel=t.isTransfer?'<span class="transfer-label">TRANSFER</span>':'';
-    const rowCls=t.isTransfer?'transfer-row':'';
-    const balCls=runBal<0?'bal-val neg':'bal-val';
-
-    html.push(`<tr class="${rowCls}">
-      <td>${t.date||'—'}</td>
-      <td>${t.description||'—'}${trLabel}</td>
-      <td style="color:var(--text-fade)">${t.reference||'—'}</td>
-      ${dCell}${cCell}
-      <td class="num ${balCls}">${fmtK(runBal)}</td>
-      <td style="text-align:center">
-        <div class="menu-container" onclick="event.stopPropagation()">
-          <button class="action-btn" onclick="toggleMenu(event,'${t.id}')">
-            <i class="fas fa-ellipsis-v"></i>
-          </button>
-          <div class="dropdown-menu">
-            <button class="menu-item" onclick="openTxnModal('edit','${t.id}');event.stopPropagation()">
-              <i class="fas fa-edit"></i> Edit
-            </button>
-            <button class="menu-item delete" onclick="openDeleteModal('${t.id}');event.stopPropagation()">
-              <i class="fas fa-trash"></i> Delete
-            </button>
-          </div>
-        </div>
-      </td>
-    </tr>`);
-  });
-
-  tbody.innerHTML=html.join('');
-}
-
-// ── FIREBASE LISTENER ──
-function setupListener(){
-  document.getElementById('cfTbody').innerHTML=
-    '<tr class="empty-row"><td colspan="7"><i class="fas fa-spinner fa-spin"></i> Loading…</td></tr>';
-  if(unsubscribeListener)unsubscribeListener();
-
-  unsubscribeListener=db.collection('Cashflow transactions').onSnapshot(snap=>{
-    allTransactions=[];
-    snap.forEach(doc=>{
-      const d=doc.data();
-      allTransactions.push({
-        id:doc.id,...d,
-        createdAt:d.createdAt?.seconds?d.createdAt.seconds*1000:Date.now()
-      });
-    });
-    applyFilters();
-  },err=>{
-    document.getElementById('cfTbody').innerHTML=
-      `<tr class="empty-row"><td colspan="7"><i class="fas fa-exclamation-triangle" style="color:var(--danger)"></i> ${err.message}</td></tr>`;
-    toast('Sync error: '+err.message,'error');
-  });
-}
-
-monthPicker.addEventListener('change',()=>{
-  localStorage.setItem('cf_month',monthPicker.value);
-  applyFilters();
-});
-
-// ── PDF EXPORT ──
-document.getElementById('pdfBtn').addEventListener('click',()=>{
-  try{
-    const{jsPDF}=window.jspdf;
-    const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
-    const PW=doc.internal.pageSize.getWidth();
-    const PH=doc.internal.pageSize.getHeight();
-    const ML=30,MR=30,MT=30,MB=30;
-    const CW=PW-ML-MR;
-
-    doc.setFillColor(67,97,238);
-    doc.rect(0,0,PW,54,'F');
-    doc.setTextColor(255,255,255);
-    doc.setFontSize(18);doc.setFont('helvetica','bold');
-    doc.text('TRISMART STORES',ML,34);
-    doc.setFontSize(10);doc.setFont('helvetica','normal');
-    doc.text('Cash Flow Statement · '+selAcc,ML,48);
-
-    const mo=monthPicker.value||'All';
-    doc.setFontSize(9);
-    doc.text('Month: '+mo,PW-MR,34,{align:'right'});
-    doc.text('Generated: '+new Date().toLocaleDateString('en-GB'),PW-MR,46,{align:'right'});
-
-    let y=MT+54+14;
-
-    const cols=[
-      {lbl:'Date',       w:0.10},
-      {lbl:'Description',w:0.33},
-      {lbl:'Reference',  w:0.14},
-      {lbl:'Debit',      w:0.13,r:true},
-      {lbl:'Credit',     w:0.13,r:true},
-      {lbl:'Balance',    w:0.17,r:true},
-    ];
-    cols.forEach(c=>c.pw=c.w*CW);
-
-    const ROW_H=18;
-    const HDR_H=22;
-
-    function drawHeader(yy){
-      doc.setFillColor(67,97,238);
-      doc.rect(ML,yy,CW,HDR_H,'F');
-      let xx=ML;
-      doc.setFontSize(7.5);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
-      cols.forEach(c=>{
-        const tx=c.r?xx+c.pw-5:xx+5;
-        doc.text(c.lbl.toUpperCase(),tx,yy+14,{align:c.r?'right':'left'});
-        xx+=c.pw;
-      });
-      return yy+HDR_H;
+    if (storedHidden) {
+      hiddenAccounts = new Set(JSON.parse(storedHidden));
+    } else {
+      hiddenAccounts = new Set();
     }
-
-    y=drawHeader(y);
-
-    const tableRows=[];
-    document.querySelectorAll('#cfTbody tr').forEach(tr=>{
-      if(tr.classList.contains('empty-row'))return;
-      const cells=[...tr.querySelectorAll('td')].map(td=>td.textContent.replace(/·/g,'').trim());
-      tableRows.push({cells,isOpening:tr.classList.contains('opening-row'),
-                      isTransfer:tr.classList.contains('transfer-row')});
-    });
-
-    let rowIdx=0;
-    tableRows.forEach(row=>{
-      if(y+ROW_H>PH-MB){
-        doc.addPage();
-        y=MT;
-        y=drawHeader(y);
-      }
-
-      if(row.isOpening){
-        doc.setFillColor(240,242,255);
-        doc.rect(ML,y,CW,ROW_H,'F');
-      }else if(rowIdx%2===0){
-        doc.setFillColor(250,251,254);
-        doc.rect(ML,y,CW,ROW_H,'F');
-      }
-
-      doc.setDrawColor(230,232,240);
-      doc.line(ML,y+ROW_H,ML+CW,y+ROW_H);
-
-      let xx=ML;
-      doc.setFontSize(8);doc.setFont('helvetica','normal');
-
-      row.cells.slice(0,6).forEach((cell,i)=>{
-        const c=cols[i];
-        let r=0,g=0,b=0;
-
-        if(i===3&&cell&&!cell.includes('·'))    {r=247;g=37;b=133;}
-        if(i===4&&cell&&!cell.includes('·'))    {r=46;g=204;b=113;}
-        if(i===5)                                {r=67;g=97;b=238;}
-        if(i===5&&cell.includes('-'))           {r=247;g=37;b=133;}
-        if(row.isOpening)                       {r=107;g=117;b=128;}
-        if(row.isTransfer&&i>2)                 {r=248;g=150;b=30;}
-
-        doc.setTextColor(r,g,b);
-
-        let txt=cell;
-        if(i===1&&txt.length>42)txt=txt.substring(0,42)+'…';
-        if(i===2&&txt.length>20)txt=txt.substring(0,20)+'…';
-
-        const tx=c.r?xx+c.pw-5:xx+5;
-        doc.text(txt,tx,y+12,{align:c.r?'right':'left'});
-        xx+=c.pw;
-      });
-
-      y+=ROW_H;
-      rowIdx++;
-    });
-
-    doc.setDrawColor(67,97,238);
-    doc.setLineWidth(1);
-    doc.line(ML,PH-MB-12,PW-MR,PH-MB-12);
-    doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(150,150,160);
-    doc.text('Trismart Stores · Cash Flow · '+selAcc,ML,PH-MB-4);
-    doc.text('Page 1 of '+doc.internal.getNumberOfPages(),PW-MR,PH-MB-4,{align:'right'});
-
-    doc.save(`Trismart_CashFlow_${selAcc.replace(/[\s/]+/g,'_')}_${monthPicker.value||'all'}.pdf`);
-    toast('PDF generated!','success');
-  }catch(err){
-    console.error(err);
-    toast('PDF error: '+err.message,'error');
   }
-});
+  
+  function saveAccounts() {
+    localStorage.setItem('trismart_accounts', JSON.stringify(accounts));
+    localStorage.setItem('trismart_hidden_accounts', JSON.stringify([...hiddenAccounts]));
+  }
+  
+  loadAccounts();
+  
+  let currentAccount = localStorage.getItem('selectedAccount') || accounts[0];
+  if (!accounts.includes(currentAccount)) currentAccount = accounts[0];
+  let currentMonth = localStorage.getItem('cf_month') || new Date().toISOString().slice(0,7);
+  let allTransactions = [];
+  let unsubscribeTxns = null;
+  let filteredList = [];
 
-document.addEventListener('DOMContentLoaded',setupListener);
-window.addEventListener('beforeunload',()=>{if(unsubscribeListener)unsubscribeListener();});
+  // DOM refs
+  const monthPicker = document.getElementById('monthSelect');
+  const refFilter = document.getElementById('refFilter');
+  const searchFilter = document.getElementById('searchFilter');
+  const filterStats = document.getElementById('filterStats');
+  const accountContainer = document.getElementById('accountTabsContainer');
+  const accountManageList = document.getElementById('accountManageList');
+  const tableBody = document.getElementById('tableBody');
+  const actionPanel = document.getElementById('actionPanel');
+  const panelToggleIcon = document.getElementById('panelToggleIcon');
+
+  monthPicker.value = currentMonth;
+
+  // Panel persistence
+  const isPanelOpen = localStorage.getItem('actionPanelOpen') === 'true';
+  if (isPanelOpen) {
+    actionPanel.classList.add('open');
+    panelToggleIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+  }
+
+  document.getElementById('togglePanelBtn').onclick = () => {
+    actionPanel.classList.toggle('open');
+    const open = actionPanel.classList.contains('open');
+    localStorage.setItem('actionPanelOpen', open);
+    if (open) {
+      panelToggleIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+    } else {
+      panelToggleIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+    }
+  };
+
+  function showToast(msg, type = 'success') {
+    const toastDiv = document.getElementById('toastRoot');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.style.borderLeftColor = type === 'error' ? '#dc2626' : type === 'info' ? '#f59e0b' : '#10b981';
+    toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${msg}`;
+    toastDiv.appendChild(toast);
+    setTimeout(() => { toast.remove(); }, 3000);
+  }
+
+  // Toggle account visibility (hide/unhide)
+  window.toggleAccountVisibility = function(accountName) {
+    if (hiddenAccounts.has(accountName)) {
+      hiddenAccounts.delete(accountName);
+      showToast(`Account "${accountName}" is now visible`, 'info');
+    } else {
+      hiddenAccounts.add(accountName);
+      if (currentAccount === accountName) {
+        const visibleAccounts = accounts.filter(acc => !hiddenAccounts.has(acc));
+        if (visibleAccounts.length > 0) {
+          currentAccount = visibleAccounts[0];
+          localStorage.setItem('selectedAccount', currentAccount);
+        }
+      }
+      showToast(`Account "${accountName}" hidden from view`, 'info');
+    }
+    saveAccounts();
+    renderAllAccountUI();
+    applyFiltersAndRender();
+  };
+
+  // Delete account
+  window.deleteAccount = async function(accountName) {
+    if (accountName === 'Expenses A/c') { 
+      showToast('Cannot delete default account', 'error'); 
+      return; 
+    }
+    const hasTransactions = allTransactions.some(t => t.account === accountName);
+    if (hasTransactions) { 
+      showToast(`Cannot delete "${accountName}" - it has transactions`, 'error'); 
+      return; 
+    }
+    accounts = accounts.filter(a => a !== accountName);
+    hiddenAccounts.delete(accountName);
+    if (currentAccount === accountName) {
+      currentAccount = accounts[0];
+      localStorage.setItem('selectedAccount', currentAccount);
+    }
+    saveAccounts();
+    renderAllAccountUI();
+    applyFiltersAndRender();
+    showToast(`Account "${accountName}" removed`, 'info');
+  };
+
+  // Add new account
+  function addNewAccount() {
+    const input = document.getElementById('newAccountName');
+    const newName = input.value.trim();
+    if (!newName) { showToast('Enter account name', 'error'); return; }
+    if (accounts.includes(newName)) { showToast('Account already exists', 'error'); return; }
+    accounts.push(newName);
+    saveAccounts();
+    renderAllAccountUI();
+    input.value = '';
+    showToast(`Account "${newName}" added`, 'success');
+  }
+
+  document.getElementById('addAccountBtn').onclick = addNewAccount;
+  document.getElementById('newAccountName').addEventListener('keypress', (e) => { if (e.key === 'Enter') addNewAccount(); });
+
+  // Render both account bar (visible only) and management list (all with hide/unhide)
+  function renderAllAccountUI() {
+    // Render account tabs (only visible accounts)
+    const visibleAccounts = accounts.filter(acc => !hiddenAccounts.has(acc));
+    accountContainer.innerHTML = visibleAccounts.map(acc => `
+      <div class="account-tab ${currentAccount === acc ? 'active' : ''}" data-acc="${acc}">
+        <i class="fas fa-wallet"></i> ${acc}
+      </div>
+    `).join('');
+    
+    document.querySelectorAll('.account-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        currentAccount = tab.dataset.acc;
+        localStorage.setItem('selectedAccount', currentAccount);
+        renderAllAccountUI();
+        applyFiltersAndRender();
+      });
+    });
+    
+    // Render management list (all accounts with hide/unhide controls)
+    accountManageList.innerHTML = accounts.map(acc => {
+      const isHidden = hiddenAccounts.has(acc);
+      return `
+        <div class="account-badge ${isHidden ? 'hidden-badge' : ''}">
+          <i class="fas ${isHidden ? 'fa-eye-slash' : 'fa-eye'}"></i>
+          <span>${acc}</span>
+          <button class="toggle-vis-btn" onclick="toggleAccountVisibility('${acc}')" title="${isHidden ? 'Unhide' : 'Hide'}">
+            <i class="fas ${isHidden ? 'fa-eye' : 'fa-eye-slash'}"></i>
+          </button>
+          ${acc !== 'Expenses A/c' ? `<button class="delete-acc-btn" onclick="deleteAccount('${acc}')" title="Delete"><i class="fas fa-trash"></i></button>` : ''}
+        </div>
+      `;
+    }).join('');
+    
+    // Update select dropdowns in modals
+    const visibleForSelect = accounts.filter(acc => !hiddenAccounts.has(acc));
+    const accountSelects = ['txnAccount', 'fromAccount', 'toAccount'];
+    accountSelects.forEach(selId => {
+      const sel = document.getElementById(selId);
+      if (sel) sel.innerHTML = visibleForSelect.map(acc => `<option value="${acc}" ${currentAccount === acc ? 'selected' : ''}>${acc}</option>`).join('');
+    });
+  }
+
+  function updateRefDropdowns() {
+    const refsSet = new Set();
+    allTransactions.forEach(t => { if (t.reference && t.reference !== '—') refsSet.add(t.reference); });
+    const refOptions = ['<option value="">All References</option>', ...Array.from(refsSet).map(r => `<option value="${r}">${r}</option>`)].join('');
+    refFilter.innerHTML = refOptions;
+    const txnSelect = document.getElementById('txnRefSelect');
+    if (txnSelect) {
+      const currentVal = txnSelect.value;
+      txnSelect.innerHTML = '<option value="">-- Preset --</option><option value="INV-001">INV-001</option><option value="SAL-002">SAL-002</option>' + 
+        Array.from(refsSet).filter(r => r !== 'INV-001' && r !== 'SAL-002').map(r => `<option value="${r}">${r}</option>`).join('');
+      txnSelect.value = currentVal;
+    }
+  }
+
+  function getOpeningBalance(account, yearMonth) {
+    const [year, month] = yearMonth.split('-').map(Number);
+    const firstDay = new Date(year, month-1, 1).toISOString().slice(0,10);
+    let bal = 0;
+    allTransactions.filter(t => t.account === account && t.date < firstDay).forEach(t => {
+      if (t.type === 'credit') bal += t.amount;
+      else bal -= t.amount;
+    });
+    return bal;
+  }
+
+  // Filter persistence
+  function getFilters() {
+    return {
+      ref: localStorage.getItem('cf_refFilter') || '',
+      search: localStorage.getItem('cf_searchFilter') || ''
+    };
+  }
+  function setFilters(ref, search) {
+    localStorage.setItem('cf_refFilter', ref);
+    localStorage.setItem('cf_searchFilter', search);
+    refFilter.value = ref;
+    searchFilter.value = search;
+  }
+  
+  function applyFiltersAndRender() {
+    const filters = getFilters();
+    refFilter.value = filters.ref;
+    searchFilter.value = filters.search;
+    
+    let filtered = allTransactions.filter(t => 
+      t.account === currentAccount && 
+      t.date && 
+      t.date.startsWith(currentMonth)
+    );
+    
+    if (filters.ref) filtered = filtered.filter(t => t.reference === filters.ref);
+    if (filters.search) {
+      const kw = filters.search.toLowerCase();
+      filtered = filtered.filter(t => (t.description || '').toLowerCase().includes(kw) || (t.reference || '').toLowerCase().includes(kw));
+    }
+    filtered.sort((a,b) => (a.date < b.date ? -1 : (a.date > b.date ? 1 : (a.createdAt || 0) - (b.createdAt || 0))));
+    filteredList = filtered;
+    filterStats.innerText = `${filteredList.length} transaction(s)`;
+    renderTable(filteredList);
+  }
+
+  function renderTable(filtered) {
+    if (!tableBody) return;
+    const openingBal = getOpeningBalance(currentAccount, currentMonth);
+    let running = openingBal;
+    if (filtered.length === 0 && openingBal === 0) {
+      tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center">✨ No transactions. Click Add ✨</td></tr>';
+      return;
+    }
+    let html = `<tr class="opening-row"><td>${currentMonth}-01</td><td>Opening Balance</td><td>—</td>
+      <td class="debit">—</td><td class="credit">—</td><td class="balance ${openingBal < 0 ? 'negative' : ''}">ZMW ${openingBal.toFixed(2)}</td><td></td></tr>`;
+    filtered.forEach(t => {
+      const isCredit = t.type === 'credit';
+      if (isCredit) running += t.amount;
+      else running -= t.amount;
+      const debitCell = !isCredit ? `<td class="debit">ZMW ${t.amount.toFixed(2)}</td>` : `<td>—</td>`;
+      const creditCell = isCredit ? `<td class="credit">ZMW ${t.amount.toFixed(2)}</td>` : `<td>—</td>`;
+      const transferBadge = t.isTransfer ? '<span class="transfer-badge"><i class="fas fa-repeat"></i> TRANSFER</span>' : '';
+      html += `<tr>
+        <td>${t.date || ''}</td>
+        <td>${t.description || ''} ${transferBadge}</td>
+        <td>${t.reference || '—'}</td>
+        ${debitCell}${creditCell}
+        <td class="balance ${running < 0 ? 'negative' : ''}">ZMW ${running.toFixed(2)}</td>
+        <td class="menu-cell">
+          <button class="action-dots" onclick="toggleMenu(event, '${t.id}')"><i class="fas fa-ellipsis-v"></i></button>
+          <div class="dropdown" id="menu-${t.id}">
+            <button class="dropdown-item" onclick="editTransaction('${t.id}')"><i class="fas fa-edit"></i> Edit</button>
+            <button class="dropdown-item delete-item" onclick="requestDelete('${t.id}')"><i class="fas fa-trash"></i> Delete</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+    tableBody.innerHTML = html;
+  }
+
+  window.toggleMenu = function(event, id) {
+    event.stopPropagation();
+    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show'));
+    const menu = document.getElementById(`menu-${id}`);
+    if (menu) menu.classList.toggle('show');
+  };
+  document.addEventListener('click', () => document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show')));
+
+  window.editTransaction = (id) => {
+    const tx = allTransactions.find(t => t.id === id);
+    if (!tx) return;
+    document.getElementById('txnDocId').value = tx.id;
+    document.getElementById('txnDate').value = tx.date;
+    document.getElementById('txnType').value = tx.type;
+    document.getElementById('txnAccount').value = tx.account;
+    document.getElementById('txnDesc').value = tx.description || '';
+    const refVal = tx.reference || '';
+    if (refVal === 'INV-001' || refVal === 'SAL-002') {
+      document.getElementById('txnRefSelect').value = refVal;
+      document.getElementById('txnRefCustom').value = '';
+    } else {
+      document.getElementById('txnRefSelect').value = '';
+      document.getElementById('txnRefCustom').value = refVal === '—' ? '' : refVal;
+    }
+    document.getElementById('txnAmount').value = tx.amount;
+    document.getElementById('txnTitle').innerText = 'Edit Transaction';
+    document.getElementById('txnModal').classList.add('open');
+  };
+
+  window.requestDelete = (id) => {
+    document.getElementById('deleteTargetId').value = id;
+    document.getElementById('deleteConfirmModal').classList.add('open');
+  };
+  window.closeDeleteConfirm = () => document.getElementById('deleteConfirmModal').classList.remove('open');
+  document.getElementById('confirmDeleteBtn').onclick = async () => {
+    const id = document.getElementById('deleteTargetId').value;
+    if (!id) return;
+    try {
+      await db.collection('Cashflow transactions').doc(id).delete();
+      showToast('Transaction deleted', 'success');
+      closeDeleteConfirm();
+    } catch(e) { showToast(e.message, 'error'); }
+  };
+
+  document.getElementById('txnForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('txnDocId').value;
+    const date = document.getElementById('txnDate').value;
+    const type = document.getElementById('txnType').value;
+    const account = document.getElementById('txnAccount').value;
+    const desc = document.getElementById('txnDesc').value.trim();
+    let reference = document.getElementById('txnRefSelect').value;
+    const customRef = document.getElementById('txnRefCustom').value.trim();
+    if (customRef) reference = customRef;
+    if (!reference) reference = '—';
+    const amount = parseFloat(document.getElementById('txnAmount').value);
+    if (!date || !type || !account || !desc || isNaN(amount) || amount <= 0) {
+      showToast('Please fill all fields correctly', 'error');
+      return;
+    }
+    const data = { date, type, account, description: desc, reference, amount, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+    try {
+      if (id) await db.collection('Cashflow transactions').doc(id).update(data);
+      else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); await db.collection('Cashflow transactions').add(data); }
+      showToast(id ? 'Updated' : 'Added', 'success');
+      closeTxnModal();
+    } catch(e) { showToast(e.message, 'error'); }
+  };
+  function closeTxnModal() { document.getElementById('txnModal').classList.remove('open'); document.getElementById('txnForm').reset(); document.getElementById('txnDocId').value = ''; document.getElementById('txnTitle').innerText = 'Add Transaction'; }
+  window.closeTxnModal = closeTxnModal;
+  document.getElementById('addTxnBtn').onclick = () => { closeTxnModal(); const visibleAccs = accounts.filter(acc => !hiddenAccounts.has(acc)); if(visibleAccs.includes(currentAccount)) document.getElementById('txnAccount').value = currentAccount; document.getElementById('txnModal').classList.add('open'); };
+
+  document.getElementById('transferForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const date = document.getElementById('transferDate').value;
+    const from = document.getElementById('fromAccount').value;
+    const to = document.getElementById('toAccount').value;
+    const desc = document.getElementById('transferDesc').value.trim() || 'Transfer';
+    const ref = document.getElementById('transferRef').value.trim() || 'TRF';
+    const amount = parseFloat(document.getElementById('transferAmount').value);
+    if (!date || !from || !to || from === to || isNaN(amount) || amount <= 0) {
+      showToast('Invalid transfer details', 'error');
+      return;
+    }
+    const ts = firebase.firestore.FieldValue.serverTimestamp();
+    const groupId = Date.now().toString(36);
+    try {
+      await db.collection('Cashflow transactions').add({ date, type: 'debit', account: from, description: `${desc} → ${to}`, reference: ref, amount, transferGroup: groupId, isTransfer: true, createdAt: ts });
+      await db.collection('Cashflow transactions').add({ date, type: 'credit', account: to, description: `${desc} ← ${from}`, reference: ref, amount, transferGroup: groupId, isTransfer: true, createdAt: ts });
+      showToast(`Transfer ZMW ${amount.toFixed(2)} done`, 'info');
+      closeTransferModal();
+    } catch(e) { showToast(e.message, 'error'); }
+  };
+  window.closeTransferModal = () => document.getElementById('transferModal').classList.remove('open');
+  document.getElementById('transferBtn').onclick = () => { document.getElementById('transferModal').classList.add('open'); };
+
+  function bindFilterListeners() {
+    refFilter.addEventListener('change', () => { setFilters(refFilter.value, searchFilter.value); applyFiltersAndRender(); });
+    searchFilter.addEventListener('input', () => { setFilters(refFilter.value, searchFilter.value); applyFiltersAndRender(); });
+    document.getElementById('clearFiltersBtn').onclick = () => { setFilters('', ''); applyFiltersAndRender(); showToast('Filters cleared', 'info'); };
+    monthPicker.addEventListener('change', () => { currentMonth = monthPicker.value; localStorage.setItem('cf_month', currentMonth); applyFiltersAndRender(); });
+  }
+
+  function startFirestoreListener() {
+    if (unsubscribeTxns) unsubscribeTxns();
+    unsubscribeTxns = db.collection('Cashflow transactions').onSnapshot(snap => {
+      allTransactions = [];
+      snap.forEach(doc => {
+        const d = doc.data();
+        allTransactions.push({ id: doc.id, ...d, createdAt: d.createdAt?.seconds ? d.createdAt.seconds * 1000 : Date.now() });
+      });
+      updateRefDropdowns();
+      applyFiltersAndRender();
+    }, err => { console.error(err); showToast('Sync error', 'error'); });
+  }
+
+  renderAllAccountUI();
+  bindFilterListeners();
+  startFirestoreListener();
+
+  document.getElementById('pdfExportBtn').onclick = async () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+    doc.setFillColor(30,58,138); doc.rect(0,0,doc.internal.pageSize.getWidth(),50,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(18); doc.text('Trismart Cash Flow', 40, 32);
+    doc.setFontSize(10); doc.text(`Account: ${currentAccount} | Month: ${currentMonth}`, 40, 48);
+    let y = 70;
+    const headers = ['Date', 'Description', 'Ref', 'Debit', 'Credit', 'Balance'];
+    doc.setFontSize(8); doc.setTextColor(0,0,0);
+    doc.text(headers, 40, y, { baseline: 'top' });
+    y += 20;
+    let runningBal = getOpeningBalance(currentAccount, currentMonth);
+    const rowsToPrint = filteredList;
+    rowsToPrint.forEach(t => {
+      if (y > doc.internal.pageSize.getHeight() - 40) { doc.addPage(); y = 40; doc.text(headers, 40, y, { baseline: 'top' }); y += 20; }
+      const isCredit = t.type === 'credit';
+      if (isCredit) runningBal += t.amount; else runningBal -= t.amount;
+      doc.text(t.date || '', 40, y);
+      doc.text((t.description || '').substring(0, 35), 140, y);
+      doc.text((t.reference || '—').substring(0, 12), 300, y);
+      doc.text(!isCredit ? t.amount.toFixed(2) : '', 380, y);
+      doc.text(isCredit ? t.amount.toFixed(2) : '', 460, y);
+      doc.text(runningBal.toFixed(2), 540, y);
+      y += 16;
+    });
+    doc.save(`CashFlow_${currentAccount}_${currentMonth}.pdf`);
+    showToast('PDF exported', 'success');
+  };
 </script>
 </body>
 </html>
