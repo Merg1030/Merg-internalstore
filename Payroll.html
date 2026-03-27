@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes">
+<title>Trismart · Payroll Management</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --primary: #1e3a8a;
+  --primary-light: #3b82f6;
+  --accent: #f97316;
+  --danger: #dc2626;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #475569;
+  --radius: 12px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Bar */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-area i {
+  font-size: 24px;
+  color: var(--primary);
+}
+
+.logo-area h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.month-picker {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.month-picker input {
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.back-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.back-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  border: 1px solid var(--border);
+  background: white;
+}
+
+.btn-outline:hover {
+  background: var(--bg);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+/* Stats Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card h3 {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.stat-card .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-card .sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Filter Bar */
+.filter-bar {
+  background: var(--surface);
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.filter-chip i {
+  color: var(--text-muted);
+}
+
+.filter-chip select, .filter-chip input {
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  outline: none;
+  font-size: 0.8rem;
+}
+
+.filter-chip input {
+  width: 130px;
+}
+
+.clear-filter {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.clear-filter:hover {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+/* Main Table */
+.main-content {
+  flex: 1;
+  padding: 0 24px 24px 24px;
+}
+
+.table-wrapper {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  min-width: 800px;
+}
+
+th {
+  background: #f1f5f9;
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: #f8fafc;
+}
+
+.status-paid {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.status-pending {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+/* Menu & Actions */
+.menu-cell {
+  text-align: center;
+  position: relative;
+}
+
+.action-dots {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+
+.action-dots:hover {
+  background: var(--bg);
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 28px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+  min-width: 120px;
+  display: none;
+}
+
+.dropdown.show {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text);
+}
+
+.dropdown-item:hover {
+  background: var(--bg);
+}
+
+.delete-item:hover {
+  color: var(--danger);
+}
+
+/* Modals */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-card {
+  background: white;
+  width: 90%;
+  max-width: 550px;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  animation: fadeIn 0.2s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  font-size: 1.2rem;
+}
+
+.close-modal {
+  background: var(--bg);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 40px;
+  cursor: pointer;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.save-btn {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 40px;
+  font-weight: 700;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.save-btn.red {
+  background: var(--danger);
+}
+
+/* Toast */
+.toast-area {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: white;
+  border-left: 4px solid var(--success);
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@media (max-width: 640px) {
+  .topbar, .filter-bar { padding: 0 12px; }
+  .main-content { padding: 0 12px 12px 12px; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .filter-group { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="cashbook.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Cash Flow</a>
+    <div class="logo-area">
+      <i class="fas fa-users"></i>
+      <h1>Trismart Payroll</h1>
+    </div>
+    <div class="month-picker">
+      <i class="fas fa-calendar-alt"></i>
+      <input type="month" id="monthSelect">
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn btn-primary" id="addEmployeeBtn"><i class="fas fa-user-plus"></i> Add Employee</button>
+    <button class="btn btn-outline" id="processPayrollBtn"><i class="fas fa-calculator"></i> Process Payroll</button>
+    <button class="btn btn-outline" id="pdfExportBtn"><i class="fas fa-file-pdf"></i> Export PDF</button>
+  </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="main-content">
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card">
+      <h3>Total Employees</h3>
+      <div class="value" id="totalEmployees">0</div>
+      <div class="sub">Active staff</div>
+    </div>
+    <div class="stat-card">
+      <h3>Total Payroll (Month)</h3>
+      <div class="value" id="totalPayroll">ZMW 0</div>
+      <div class="sub">Gross salary</div>
+    </div>
+    <div class="stat-card">
+      <h3>Paid This Month</h3>
+      <div class="value" id="totalPaid">ZMW 0</div>
+      <div class="sub">Processed payments</div>
+    </div>
+    <div class="stat-card">
+      <h3>Pending Payment</h3>
+      <div class="value" id="totalPending">ZMW 0</div>
+      <div class="sub">Unpaid salaries</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+  <div class="filter-group">
+    <div class="filter-chip">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchFilter" placeholder="Search employee...">
+    </div>
+    <div class="filter-chip">
+      <i class="fas fa-flag-checkered"></i>
+      <select id="statusFilter">
+        <option value="">All Status</option>
+        <option value="paid">Paid</option>
+        <option value="pending">Pending</option>
+      </select>
+    </div>
+    <button class="clear-filter" id="clearFiltersBtn"><i class="fas fa-undo-alt"></i> Clear</button>
+  </div>
+  <div class="stats-badge" id="filterStats">0 records</div>
+</div>
+
+<div class="main-content">
+  <div class="table-wrapper">
+    <table id="payrollTable">
+      <thead>
+        <tr>
+          <th>Employee Name</th>
+          <th>Position</th>
+          <th>Basic Salary (ZMW)</th>
+          <th>Allowances (ZMW)</th>
+          <th>Deductions (ZMW)</th>
+          <th>Net Salary (ZMW)</th>
+          <th>Month</th>
+          <th>Status</th>
+          <th>Payment Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td colspan="10" style="text-align:center">Loading payroll data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="toast-area" id="toastRoot"></div>
+
+<!-- Add/Edit Employee Modal -->
+<div id="employeeModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="employeeModalTitle">Add Employee</h2>
+      <button class="close-modal" onclick="closeEmployeeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="employeeForm">
+      <input type="hidden" id="employeeId">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="empName" required placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label>Position/Department</label>
+          <input type="text" id="empPosition" required placeholder="Sales Manager">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Basic Salary (ZMW)</label>
+          <input type="number" id="empBasic" step="0.01" min="0" required placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label>Allowances (ZMW)</label>
+          <input type="number" id="empAllowances" step="0.01" min="0" placeholder="0.00">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Deductions (ZMW)</label>
+          <input type="number" id="empDeductions" step="0.01" min="0" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label>Email (Optional)</label>
+          <input type="email" id="empEmail" placeholder="employee@trismart.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="text" id="empPhone" placeholder="+260 XXX XXX XXX">
+      </div>
+      <button type="submit" class="save-btn"><i class="fas fa-save"></i> Save Employee</button>
+    </form>
+  </div>
+</div>
+
+<!-- Process Payroll Modal -->
+<div id="payrollModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2><i class="fas fa-calculator"></i> Process Monthly Payroll</h2>
+      <button class="close-modal" onclick="closePayrollModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="payrollPreview"></div>
+    <button id="confirmPayrollBtn" class="save-btn" style="background: var(--warning);"><i class="fas fa-check-circle"></i> Confirm & Record Payment</button>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div id="deleteConfirmModal" class="modal-overlay">
+  <div class="modal-card" style="max-width: 360px;">
+    <div class="modal-header">
+      <h2>Delete Employee Record</h2>
+      <button class="close-modal" onclick="closeDeleteConfirm()"><i class="fas fa-times"></i></button>
+    </div>
+    <p>Are you sure you want to delete this employee? This will remove all payroll records for this employee.</p>
+    <input type="hidden" id="deleteTargetId">
+    <button id="confirmDeleteBtn" class="save-btn red" style="margin-top: 20px;"><i class="fas fa-trash"></i> Delete Permanently</button>
+  </div>
+</div>
+
+<script>
+  // Firebase config (same as cash flow)
+  const firebaseConfig = {
+    apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
+    authDomain: "trismartstores.firebaseapp.com",
+    projectId: "trismartstores",
+    storageBucket: "trismartstores.appspot.com",
+    messagingSenderId: "416692703333",
+    appId: "1:416692703333:web:d4b60292621435c748f68c"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  db.enablePersistence().catch(e => console.warn(e));
+
+  let employees = [];
+  let payrollRecords = [];
+  let currentMonth = localStorage.getItem('payroll_month') || new Date().toISOString().slice(0, 7);
+  let filteredRecords = [];
+
+  const monthPicker = document.getElementById('monthSelect');
+  const searchFilter = document.getElementById('searchFilter');
+  const statusFilter = document.getElementById('statusFilter');
+  const filterStats = document.getElementById('filterStats');
+  const tableBody = document.getElementById('tableBody');
+
+  monthPicker.value = currentMonth;
+
+  function showToast(msg, type = 'success') {
+    const toastDiv = document.getElementById('toastRoot');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.style.borderLeftColor = type === 'error' ? '#dc2626' : type === 'info' ? '#f59e0b' : '#10b981';
+    toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${msg}`;
+    toastDiv.appendChild(toast);
+    setTimeout(() => { toast.remove(); }, 3000);
+  }
+
+  // Load employees from Firestore
+  async function loadEmployees() {
+    const snapshot = await db.collection('payroll_employees').orderBy('name').get();
+    employees = [];
+    snapshot.forEach(doc => {
+      employees.push({ id: doc.id, ...doc.data() });
+    });
+    await loadPayrollRecords();
+  }
+
+  // Load payroll records for current month
+  async function loadPayrollRecords() {
+    const snapshot = await db.collection('payroll_records')
+      .where('month', '==', currentMonth)
+      .get();
+    payrollRecords = [];
+    snapshot.forEach(doc => {
+      payrollRecords.push({ id: doc.id, ...doc.data() });
+    });
+    applyFiltersAndRender();
+    updateStats();
+  }
+
+  function updateStats() {
+    const totalEmployees = employees.length;
+    let totalPayroll = 0;
+    let totalPaid = 0;
+    let totalPending = 0;
+    
+    payrollRecords.forEach(record => {
+      totalPayroll += record.netSalary || 0;
+      if (record.status === 'paid') {
+        totalPaid += record.netSalary || 0;
+      } else {
+        totalPending += record.netSalary || 0;
+      }
+    });
+    
+    // Also include employees without records (pending)
+    const employeesWithRecords = new Set(payrollRecords.map(r => r.employeeId));
+    employees.forEach(emp => {
+      if (!employeesWithRecords.has(emp.id)) {
+        const netSalary = (emp.basicSalary || 0) + (emp.allowances || 0) - (emp.deductions || 0);
+        totalPayroll += netSalary;
+        totalPending += netSalary;
+      }
+    });
+    
+    document.getElementById('totalEmployees').textContent = totalEmployees;
+    document.getElementById('totalPayroll').textContent = `ZMW ${totalPayroll.toFixed(2)}`;
+    document.getElementById('totalPaid').textContent = `ZMW ${totalPaid.toFixed(2)}`;
+    document.getElementById('totalPending').textContent = `ZMW ${totalPending.toFixed(2)}`;
+  }
+
+  function applyFiltersAndRender() {
+    let filtered = [];
+    const searchTerm = searchFilter.value.toLowerCase().trim();
+    const status = statusFilter.value;
+    
+    // Combine employees with their payroll records for the current month
+    employees.forEach(emp => {
+      const record = payrollRecords.find(r => r.employeeId === emp.id);
+      const netSalary = record ? record.netSalary : (emp.basicSalary + emp.allowances - emp.deductions);
+      const statusVal = record ? record.status : 'pending';
+      const paymentDate = record ? record.paymentDate : null;
+      
+      // Apply filters
+      if (searchTerm && !emp.name.toLowerCase().includes(searchTerm) && !emp.position.toLowerCase().includes(searchTerm)) {
+        return;
+      }
+      if (status && statusVal !== status) {
+        return;
+      }
+      
+      filtered.push({
+        id: emp.id,
+        name: emp.name,
+        position: emp.position,
+        basicSalary: emp.basicSalary || 0,
+        allowances: emp.allowances || 0,
+        deductions: emp.deductions || 0,
+        netSalary: netSalary,
+        month: currentMonth,
+        status: statusVal,
+        paymentDate: paymentDate,
+        recordId: record ? record.id : null
+      });
+    });
+    
+    filteredRecords = filtered;
+    filterStats.textContent = `${filteredRecords.length} employee(s)`;
+    renderTable(filteredRecords);
+  }
+
+  function renderTable(records) {
+    if (!tableBody) return;
+    if (records.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center">📭 No employees found. Click "Add Employee" to get started.</td></tr>';
+      return;
+    }
+    
+    let html = '';
+    records.forEach(emp => {
+      const statusClass = emp.status === 'paid' ? 'status-paid' : 'status-pending';
+      const statusText = emp.status === 'paid' ? '✓ Paid' : '⏳ Pending';
+      const paymentDate = emp.paymentDate ? new Date(emp.paymentDate).toLocaleDateString() : '—';
+      
+      html += `
+        <tr>
+          <td><strong>${escapeHtml(emp.name)}</strong></td>
+          <td>${escapeHtml(emp.position)}</td>
+          <td>ZMW ${emp.basicSalary.toFixed(2)}</td>
+          <td>ZMW ${emp.allowances.toFixed(2)}</td>
+          <td>ZMW ${emp.deductions.toFixed(2)}</td>
+          <td><strong>ZMW ${emp.netSalary.toFixed(2)}</strong></td>
+          <td>${emp.month}</td>
+          <td class="${statusClass}">${statusText}</td>
+          <td>${paymentDate}</td>
+          <td class="menu-cell">
+            <button class="action-dots" onclick="toggleMenu(event, '${emp.id}')"><i class="fas fa-ellipsis-v"></i></button>
+            <div class="dropdown" id="menu-${emp.id}">
+              <button class="dropdown-item" onclick="editEmployee('${emp.id}')"><i class="fas fa-edit"></i> Edit</button>
+              ${emp.status === 'pending' ? `<button class="dropdown-item" onclick="markAsPaid('${emp.id}')"><i class="fas fa-check-circle"></i> Mark Paid</button>` : ''}
+              <button class="dropdown-item delete-item" onclick="deleteEmployee('${emp.id}')"><i class="fas fa-trash"></i> Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+    tableBody.innerHTML = html;
+  }
+  
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  window.toggleMenu = function(event, id) {
+    event.stopPropagation();
+    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show'));
+    const menu = document.getElementById(`menu-${id}`);
+    if (menu) menu.classList.toggle('show');
+  };
+  document.addEventListener('click', () => document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show')));
+
+  // Employee CRUD
+  window.editEmployee = async (id) => {
+    const emp = employees.find(e => e.id === id);
+    if (!emp) return;
+    document.getElementById('employeeId').value = emp.id;
+    document.getElementById('empName').value = emp.name || '';
+    document.getElementById('empPosition').value = emp.position || '';
+    document.getElementById('empBasic').value = emp.basicSalary || 0;
+    document.getElementById('empAllowances').value = emp.allowances || 0;
+    document.getElementById('empDeductions').value = emp.deductions || 0;
+    document.getElementById('empEmail').value = emp.email || '';
+    document.getElementById('empPhone').value = emp.phone || '';
+    document.getElementById('employeeModalTitle').textContent = 'Edit Employee';
+    document.getElementById('employeeModal').classList.add('open');
+  };
+  
+  window.deleteEmployee = (id) => {
+    document.getElementById('deleteTargetId').value = id;
+    document.getElementById('deleteConfirmModal').classList.add('open');
+  };
+  
+  window.markAsPaid = async (employeeId) => {
+    const emp = employees.find(e => e.id === employeeId);
+    if (!emp) return;
+    const netSalary = (emp.basicSalary || 0) + (emp.allowances || 0) - (emp.deductions || 0);
+    
+    try {
+      const existingRecord = payrollRecords.find(r => r.employeeId === employeeId);
+      const paymentData = {
+        employeeId: employeeId,
+        employeeName: emp.name,
+        month: currentMonth,
+        basicSalary: emp.basicSalary || 0,
+        allowances: emp.allowances || 0,
+        deductions: emp.deductions || 0,
+        netSalary: netSalary,
+        status: 'paid',
+        paymentDate: new Date().toISOString(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      if (existingRecord) {
+        await db.collection('payroll_records').doc(existingRecord.id).update(paymentData);
+      } else {
+        paymentData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        await db.collection('payroll_records').add(paymentData);
+      }
+      
+      // Also create a transaction in cash flow (debit from Expenses/Payroll account)
+      await db.collection('Cashflow transactions').add({
+        date: new Date().toISOString().slice(0, 10),
+        type: 'debit',
+        account: 'Expenses A/c',
+        description: `Payroll - ${emp.name} (${currentMonth})`,
+        reference: `PAY-${currentMonth}`,
+        amount: netSalary,
+        isPayroll: true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      showToast(`Salary for ${emp.name} marked as paid!`, 'success');
+      await loadPayrollRecords();
+      await loadEmployees();
+    } catch (e) {
+      showToast(e.message, 'error');
+    }
+  };
+  
+  document.getElementById('employeeForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('employeeId').value;
+    const name = document.getElementById('empName').value.trim();
+    const position = document.getElementById('empPosition').value.trim();
+    const basicSalary = parseFloat(document.getElementById('empBasic').value) || 0;
+    const allowances = parseFloat(document.getElementById('empAllowances').value) || 0;
+    const deductions = parseFloat(document.getElementById('empDeductions').value) || 0;
+    const email = document.getElementById('empEmail').value.trim();
+    const phone = document.getElementById('empPhone').value.trim();
+    
+    if (!name || !position) {
+      showToast('Name and position are required', 'error');
+      return;
+    }
+    
+    const data = { name, position, basicSalary, allowances, deductions, email, phone, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+    
+    try {
+      if (id) {
+        await db.collection('payroll_employees').doc(id).update(data);
+        showToast('Employee updated', 'success');
+      } else {
+        data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        await db.collection('payroll_employees').add(data);
+        showToast('Employee added', 'success');
+      }
+      closeEmployeeModal();
+      await loadEmployees();
+    } catch (e) {
+      showToast(e.message, 'error');
+    }
+  };
+  
+  document.getElementById('confirmDeleteBtn').onclick = async () => {
+    const id = document.getElementById('deleteTargetId').value;
+    if (!id) return;
+    try {
+      // Delete associated payroll records
+      const recordsToDelete = payrollRecords.filter(r => r.employeeId === id);
+      for (const record of recordsToDelete) {
+        await db.collection('payroll_records').doc(record.id).delete();
+      }
+      await db.collection('payroll_employees').doc(id).delete();
+      showToast('Employee deleted', 'success');
+      closeDeleteConfirm();
+      await loadEmployees();
+    } catch (e) {
+      showToast(e.message, 'error');
+    }
+  };
+  
+  // Process payroll for all pending employees
+  document.getElementById('processPayrollBtn').onclick = async () => {
+    const previewDiv = document.getElementById('payrollPreview');
+    const pendingEmployees = employees.filter(emp => {
+      const record = payrollRecords.find(r => r.employeeId === emp.id);
+      return !record || record.status !== 'paid';
+    });
+    
+    if (pendingEmployees.length === 0) {
+      showToast('All salaries for this month have been processed!', 'info');
+      return;
+    }
+    
+    let total = 0;
+    let previewHtml = '<div style="margin-bottom: 16px;"><strong>Pending Payroll:</strong></div><ul style="margin-bottom: 16px; max-height: 300px; overflow-y: auto;">';
+    pendingEmployees.forEach(emp => {
+      const net = (emp.basicSalary || 0) + (emp.allowances || 0) - (emp.deductions || 0);
+      total += net;
+      previewHtml += `<li style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;">${emp.name} - ZMW ${net.toFixed(2)}</li>`;
+    });
+    previewHtml += `</ul><div style="font-size: 1.2rem; font-weight: bold; padding-top: 12px;">Total: ZMW ${total.toFixed(2)}</div>`;
+    previewDiv.innerHTML = previewHtml;
+    document.getElementById('payrollModal').classList.add('open');
+  };
+  
+  document.getElementById('confirmPayrollBtn').onclick = async () => {
+    const pendingEmployees = employees.filter(emp => {
+      const record = payrollRecords.find(r => r.employeeId === emp.id);
+      return !record || record.status !== 'paid';
+    });
+    
+    let totalProcessed = 0;
+    try {
+      for (const emp of pendingEmployees) {
+        const netSalary = (emp.basicSalary || 0) + (emp.allowances || 0) - (emp.deductions || 0);
+        const paymentData = {
+          employeeId: emp.id,
+          employeeName: emp.name,
+          month: currentMonth,
+          basicSalary: emp.basicSalary || 0,
+          allowances: emp.allowances || 0,
+          deductions: emp.deductions || 0,
+          netSalary: netSalary,
+          status: 'paid',
+          paymentDate: new Date().toISOString(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        const existingRecord = payrollRecords.find(r => r.employeeId === emp.id);
+        if (existingRecord) {
+          await db.collection('payroll_records').doc(existingRecord.id).update(paymentData);
+        } else {
+          paymentData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          await db.collection('payroll_records').add(paymentData);
+        }
+        
+        // Add to cash flow
+        await db.collection('Cashflow transactions').add({
+          date: new Date().toISOString().slice(0, 10),
+          type: 'debit',
+          account: 'Expenses A/c',
+          description: `Payroll - ${emp.name} (${currentMonth})`,
+          reference: `PAYROLL-${currentMonth}`,
+          amount: netSalary,
+          isPayroll: true,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        totalProcessed += netSalary;
+      }
+      
+      showToast(`Payroll processed! Total: ZMW ${totalProcessed.toFixed(2)}`, 'success');
+      closePayrollModal();
+      await loadPayrollRecords();
+      await loadEmployees();
+    } catch (e) {
+      showToast(e.message, 'error');
+    }
+  };
+  
+  document.getElementById('addEmployeeBtn').onclick = () => {
+    document.getElementById('employeeForm').reset();
+    document.getElementById('employeeId').value = '';
+    document.getElementById('employeeModalTitle').textContent = 'Add Employee';
+    document.getElementById('employeeModal').classList.add('open');
+  };
+  
+  function closeEmployeeModal() { document.getElementById('employeeModal').classList.remove('open'); }
+  function closePayrollModal() { document.getElementById('payrollModal').classList.remove('open'); }
+  function closeDeleteConfirm() { document.getElementById('deleteConfirmModal').classList.remove('open'); }
+  window.closeEmployeeModal = closeEmployeeModal;
+  window.closePayrollModal = closePayrollModal;
+  window.closeDeleteConfirm = closeDeleteConfirm;
+  
+  function bindFilterListeners() {
+    searchFilter.addEventListener('input', () => applyFiltersAndRender());
+    statusFilter.addEventListener('change', () => applyFiltersAndRender());
+    document.getElementById('clearFiltersBtn').onclick = () => {
+      searchFilter.value = '';
+      statusFilter.value = '';
+      applyFiltersAndRender();
+      showToast('Filters cleared', 'info');
+    };
+    monthPicker.addEventListener('change', () => {
+      currentMonth = monthPicker.value;
+      localStorage.setItem('payroll_month', currentMonth);
+      loadPayrollRecords();
+    });
+  }
+  
+  // PDF Export
+  document.getElementById('pdfExportBtn').onclick = async () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+    doc.setFillColor(30, 58, 138);
+    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.text('Trismart Payroll Report', 40, 32);
+    doc.setFontSize(10);
+    doc.text(`Month: ${currentMonth} | Generated: ${new Date().toLocaleDateString()}`, 40, 48);
+    
+    let y = 80;
+    const headers = ['Employee', 'Position', 'Basic', 'Allowances', 'Deductions', 'Net Salary', 'Status'];
+    doc.setFontSize(8);
+    doc.setTextColor(0, 0, 0);
+    doc.text(headers, 40, y, { baseline: 'top' });
+    y += 20;
+    
+    filteredRecords.forEach(emp => {
+      if (y > doc.internal.pageSize.getHeight() - 40) {
+        doc.addPage();
+        y = 40;
+        doc.text(headers, 40, y, { baseline: 'top' });
+        y += 20;
+      }
+      doc.text(emp.name.substring(0, 25), 40, y);
+      doc.text(emp.position.substring(0, 20), 180, y);
+      doc.text(emp.basicSalary.toFixed(2), 280, y);
+      doc.text(emp.allowances.toFixed(2), 350, y);
+      doc.text(emp.deductions.toFixed(2), 420, y);
+      doc.text(emp.netSalary.toFixed(2), 490, y);
+      doc.text(emp.status.toUpperCase(), 560, y);
+      y += 18;
+    });
+    
+    doc.save(`Trismart_Payroll_${currentMonth}.pdf`);
+    showToast('PDF exported', 'success');
+  };
+  
+  bindFilterListeners();
+  loadEmployees();
+</script>
+</body>
+</html>
