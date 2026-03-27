@@ -73,6 +73,7 @@ tr:hover td{background:#f8fafc}
 .lb{background:#dbeafe;color:var(--p);padding:1px 6px;border-radius:10px;font-size:.6rem;font-weight:700;display:inline-block}
 .emp-name{font-weight:700;font-size:.76rem}
 .emp-pos{font-size:.62rem;color:var(--tm)}
+.empty-cell{color:transparent;font-size:.7rem;user-select:none}
 
 /* DOTS MENU */
 .mc{text-align:right;position:relative;width:30px}
@@ -88,8 +89,8 @@ tr:hover td{background:#f8fafc}
 /* MODALS */
 .mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);align-items:center;justify-content:center;z-index:1000;padding:12px}
 .mo.open{display:flex}
-.mc2{background:#fff;width:100%;max-width:480px;border-radius:18px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,.15);animation:pop .18s ease;max-height:92vh;overflow-y:auto}
-.mc2.lg{max-width:600px}
+.mc2{background:#fff;width:100%;max-width:520px;border-radius:18px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,.15);animation:pop .18s ease;max-height:92vh;overflow-y:auto}
+.mc2.lg{max-width:640px}
 @keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 .mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .mh h2{font-size:.9rem;font-weight:800}
@@ -110,7 +111,7 @@ tr:hover td{background:#f8fafc}
 .sv.grn{background:var(--g)}
 .sv.org{background:var(--o)}
 
-/* EMPLOYEE DETAIL PANEL (inline in modal) */
+/* EMPLOYEE DETAIL PANEL */
 .emp-detail-tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:12px;gap:2px}
 .edt{padding:6px 12px;background:none;border:none;font-size:.7rem;font-weight:700;color:var(--tm);cursor:pointer;border-bottom:2px solid transparent}
 .edt.act{color:var(--p);border-bottom-color:var(--p)}
@@ -183,7 +184,7 @@ tr:hover td{background:#f8fafc}
 <div class="topbar">
   <div class="tl">
     <a href="cashbook.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
-    <div class="logo"><i class="fas fa-users"></i><h1>Payroll</h1></div>
+    <div class="logo"><i class="fas fa-users"></i><h1>Trismart</h1></div>
     <div class="month-pick"><i class="fas fa-calendar" style="color:var(--tm);font-size:.65rem"></i><input type="month" id="monthSelect"></div>
   </div>
   <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -248,7 +249,7 @@ tr:hover td{background:#f8fafc}
 <!-- PRINT AREA -->
 <div id="printArea"></div>
 
-<!-- ===================== EMPLOYEE MODAL ===================== -->
+<!-- EMPLOYEE MODAL -->
 <div id="employeeModal" class="mo">
   <div class="mc2">
     <div class="mh"><h2 id="empModalTitle"><i class="fas fa-user"></i> Add Employee</h2><button class="cx" onclick="closeModal('employeeModal')"><i class="fas fa-times"></i></button></div>
@@ -256,22 +257,23 @@ tr:hover td{background:#f8fafc}
       <input type="hidden" id="employeeId">
       <div class="fr">
         <div class="fg2"><label>Full Name</label><input type="text" id="empName" required placeholder="e.g. John Banda"></div>
+        <div class="fg2"><label>NRC Number</label><input type="text" id="empNrc" placeholder="e.g. 123456/78/1"></div>
+      </div>
+      <div class="fr">
         <div class="fg2"><label>Position</label><input type="text" id="empPosition" required placeholder="e.g. Sales Rep"></div>
-      </div>
-      <div class="fr">
         <div class="fg2"><label>Basic Salary (ZMW)</label><input type="number" id="empBasic" step="0.01" min="0" required placeholder="0.00"></div>
-        <div class="fg2"><label>Phone</label><input type="text" id="empPhone" placeholder="+260…"></div>
       </div>
       <div class="fr">
+        <div class="fg2"><label>Phone</label><input type="text" id="empPhone" placeholder="+260…"></div>
         <div class="fg2"><label>Bank / Account No.</label><input type="text" id="empBankAccount" placeholder="Account number"></div>
-        <div class="fg2"><label>Email (optional)</label><input type="email" id="empEmail" placeholder="email@…"></div>
       </div>
+      <div class="fg2"><label>Email (optional)</label><input type="email" id="empEmail" placeholder="email@…"></div>
       <button type="submit" class="sv"><i class="fas fa-save"></i> Save Employee</button>
     </form>
   </div>
 </div>
 
-<!-- ===================== EMPLOYEE DETAIL MODAL (bonus/advance/loan tabs) ===================== -->
+<!-- EMPLOYEE DETAIL MODAL -->
 <div id="detailModal" class="mo">
   <div class="mc2 lg">
     <div class="mh"><h2 id="detailModalTitle"><i class="fas fa-user-edit"></i> Employee Details</h2><button class="cx" onclick="closeModal('detailModal')"><i class="fas fa-times"></i></button></div>
@@ -281,66 +283,14 @@ tr:hover td{background:#f8fafc}
       <button class="edt" onclick="switchTab('loan')">🏦 Loan</button>
       <button class="edt" onclick="switchTab('history')">📋 History</button>
     </div>
-
-    <!-- BONUS TAB -->
-    <div class="tab-panel act" id="tab-bonus">
-      <div class="add-inline">
-        <h4><i class="fas fa-plus"></i> Add Bonus</h4>
-        <form id="bonusForm">
-          <div class="fr">
-            <div class="fg2"><label>Amount (ZMW)</label><input type="number" id="bonusAmount" step="0.01" min="0" required placeholder="0.00"></div>
-            <div class="fg2"><label>Month</label><input type="month" id="bonusMonth" required></div>
-          </div>
-          <div class="fg2"><label>Reason</label><input type="text" id="bonusReason" placeholder="e.g. Performance bonus, 13th month…"></div>
-          <button type="submit" class="sv org" style="margin-top:8px"><i class="fas fa-gift"></i> Add Bonus</button>
-        </form>
-      </div>
-      <div id="bonusHistoryList"><div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No bonuses recorded</div></div>
-    </div>
-
-    <!-- ADVANCE TAB -->
-    <div class="tab-panel" id="tab-advance">
-      <div class="add-inline">
-        <h4><i class="fas fa-plus"></i> Record Advance</h4>
-        <form id="advanceForm">
-          <div class="fr">
-            <div class="fg2"><label>Amount (ZMW)</label><input type="number" id="advanceAmount" step="0.01" min="0" required placeholder="0.00"></div>
-            <div class="fg2"><label>Month</label><input type="month" id="advanceMonth" required></div>
-          </div>
-          <div class="fg2"><label>Reason</label><input type="text" id="advanceReason" placeholder="Reason for advance…"></div>
-          <button type="submit" class="sv"><i class="fas fa-hand-holding-usd"></i> Record Advance</button>
-        </form>
-      </div>
-      <div id="advanceHistoryList"><div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No advances recorded</div></div>
-    </div>
-
-    <!-- LOAN TAB -->
-    <div class="tab-panel" id="tab-loan">
-      <div class="add-inline">
-        <h4><i class="fas fa-plus"></i> Register Loan</h4>
-        <form id="loanForm">
-          <div class="fr">
-            <div class="fg2"><label>Loan Amount (ZMW)</label><input type="number" id="loanAmount" step="0.01" min="0" required placeholder="0.00"></div>
-            <div class="fg2"><label>Monthly Deduction</label><input type="number" id="loanMonthlyDeduction" step="0.01" min="0" required placeholder="0.00"></div>
-          </div>
-          <div class="fr">
-            <div class="fg2"><label>Start Month</label><input type="month" id="loanStartMonth" required></div>
-            <div class="fg2"><label>Purpose</label><input type="text" id="loanPurpose" placeholder="Purpose…"></div>
-          </div>
-          <button type="submit" class="sv"><i class="fas fa-file-invoice-dollar"></i> Register Loan</button>
-        </form>
-      </div>
-      <div id="loanHistoryList"><div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No loans recorded</div></div>
-    </div>
-
-    <!-- HISTORY TAB -->
-    <div class="tab-panel" id="tab-history">
-      <div id="fullHistoryList"><div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No records</div></div>
-    </div>
+    <div class="tab-panel act" id="tab-bonus"><div class="add-inline"><h4><i class="fas fa-plus"></i> Add Bonus</h4><form id="bonusForm"><div class="fr"><div class="fg2"><label>Amount (ZMW)</label><input type="number" id="bonusAmount" step="0.01" min="0" required></div><div class="fg2"><label>Month</label><input type="month" id="bonusMonth" required></div></div><div class="fg2"><label>Reason</label><input type="text" id="bonusReason" placeholder="e.g. Performance bonus"></div><button type="submit" class="sv org"><i class="fas fa-gift"></i> Add Bonus</button></form></div><div id="bonusHistoryList"><div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No bonuses recorded</div></div></div>
+    <div class="tab-panel" id="tab-advance"><div class="add-inline"><h4><i class="fas fa-plus"></i> Record Advance</h4><form id="advanceForm"><div class="fr"><div class="fg2"><label>Amount (ZMW)</label><input type="number" id="advanceAmount" step="0.01" min="0" required></div><div class="fg2"><label>Month</label><input type="month" id="advanceMonth" required></div></div><div class="fg2"><label>Reason</label><input type="text" id="advanceReason" placeholder="Reason for advance"></div><button type="submit" class="sv"><i class="fas fa-hand-holding-usd"></i> Record Advance</button></form></div><div id="advanceHistoryList"><div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No advances recorded</div></div></div>
+    <div class="tab-panel" id="tab-loan"><div class="add-inline"><h4><i class="fas fa-plus"></i> Register Loan</h4><form id="loanForm"><div class="fr"><div class="fg2"><label>Loan Amount (ZMW)</label><input type="number" id="loanAmount" step="0.01" min="0" required></div><div class="fg2"><label>Monthly Deduction</label><input type="number" id="loanMonthlyDeduction" step="0.01" min="0" required></div></div><div class="fr"><div class="fg2"><label>Start Month</label><input type="month" id="loanStartMonth" required></div><div class="fg2"><label>Purpose</label><input type="text" id="loanPurpose" placeholder="Purpose"></div></div><button type="submit" class="sv"><i class="fas fa-file-invoice-dollar"></i> Register Loan</button></form></div><div id="loanHistoryList"><div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No loans recorded</div></div></div>
+    <div class="tab-panel" id="tab-history"><div id="fullHistoryList"><div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No records</div></div></div>
   </div>
 </div>
 
-<!-- ===================== PAYSLIP MODAL ===================== -->
+<!-- PAYSLIP MODAL -->
 <div id="payslipModal" class="mo">
   <div class="mc2 lg">
     <div class="mh"><h2><i class="fas fa-receipt"></i> Payslip</h2><button class="cx" onclick="closeModal('payslipModal')"><i class="fas fa-times"></i></button></div>
@@ -352,7 +302,7 @@ tr:hover td{background:#f8fafc}
   </div>
 </div>
 
-<!-- ===================== DELETE MODAL ===================== -->
+<!-- DELETE MODAL -->
 <div id="deleteModal" class="mo">
   <div class="mc2" style="max-width:320px">
     <div class="mh"><h2><i class="fas fa-trash" style="color:var(--r)"></i> Confirm Delete</h2><button class="cx" onclick="closeModal('deleteModal')"><i class="fas fa-times"></i></button></div>
@@ -383,7 +333,6 @@ let currentPayslipEmp = null;
 
 document.getElementById('monthSelect').value = currentMonth;
 
-/* ─── UTILS ─── */
 function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function zmw(n){return 'ZMW '+parseFloat(n||0).toFixed(2)}
 function toast(msg,type='success'){
@@ -398,7 +347,6 @@ function closeModal(id){document.getElementById(id).classList.remove('open')}
 function openModal(id){document.getElementById(id).classList.add('open')}
 window.closeModal=closeModal;
 
-/* ─── TABS in detail modal ─── */
 function switchTab(name){
   document.querySelectorAll('.edt').forEach(b=>b.classList.remove('act'));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('act'));
@@ -407,7 +355,6 @@ function switchTab(name){
 }
 window.switchTab=switchTab;
 
-/* ─── LOAD DATA ─── */
 async function loadAllData(){
   const [eSnap,bSnap,aSnap,lSnap,pSnap] = await Promise.all([
     db.collection('payroll_employees').orderBy('name').get(),
@@ -425,12 +372,10 @@ async function loadAllData(){
   updateStats();
 }
 
-/* ─── CALC HELPERS ─── */
 function empBonus(id,month){return bonuses.filter(b=>b.employeeId===id&&b.month===month).reduce((s,b)=>s+(b.amount||0),0)}
 function empAdvance(id,month){return advances.filter(a=>a.employeeId===id&&a.month===month).reduce((s,a)=>s+(a.amount||0),0)}
 function empLoan(id,month){return loans.filter(l=>l.employeeId===id&&l.startMonth<=month&&(l.remainingBalance??l.amount)>0).reduce((s,l)=>s+(l.monthlyDeduction||0),0)}
 
-/* ─── STATS ─── */
 function updateStats(){
   let gross=0,paid=0,pend=0;
   employees.forEach(emp=>{
@@ -445,7 +390,6 @@ function updateStats(){
   document.getElementById('totalPending').textContent='K'+pend.toFixed(0);
 }
 
-/* ─── FILTER + RENDER ─── */
 function applyAndRender(){
   const srch=document.getElementById('searchFilter').value.toLowerCase().trim();
   const stat=document.getElementById('statusFilter').value;
@@ -470,38 +414,27 @@ function renderTable(){
   if(!filteredRecords.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--tm)">📭 No employees found</td></tr>';return;}
   tb.innerHTML=filteredRecords.map(e=>`
     <tr>
-      <td><div class="emp-name">${esc(e.name)}</div><div class="emp-pos">${esc(e.position)}</div></td>
+      <td><div class="emp-name">${esc(e.name)}</div><div class="emp-pos">${esc(e.position||'')}</div></td>
       <td>${zmw(e.basicSalary)}</td>
-      <td>${e.bonus>0?`<span class="bb">+${zmw(e.bonus)}</span>`:'—'}</td>
-      <td>${e.advance>0?`<span class="ab">-${zmw(e.advance)}</span>`:'—'}</td>
-      <td>${e.loanDeduction>0?`<span class="lb">-${zmw(e.loanDeduction)}</span>`:'—'}</td>
+      <td>${e.bonus>0?`<span class="bb">+${zmw(e.bonus)}</span>`:'<span class="empty-cell"> </span>'}</td>
+      <td>${e.advance>0?`<span class="ab">-${zmw(e.advance)}</span>`:'<span class="empty-cell"> </span>'}</td>
+      <td>${e.loanDeduction>0?`<span class="lb">-${zmw(e.loanDeduction)}</span>`:'<span class="empty-cell"> </span>'}</td>
       <td><strong>${zmw(e.netSalary)}</strong></td>
       <td class="${e.status==='paid'?'paid':'pend'}">${e.status==='paid'?'✓ Paid':'⏳ Pending'}</td>
-      <td class="mc">
-        <button class="dots" onclick="toggleDots(event,'${e.id}')"><i class="fas fa-ellipsis-v"></i></button>
-        <div class="dd" id="dd-${e.id}">
-          <button class="di" onclick="viewPayslip('${e.id}')"><i class="fas fa-receipt"></i> Payslip</button>
-          <button class="di" onclick="openDetailModal('${e.id}')"><i class="fas fa-wallet"></i> Bonus / Advance / Loan</button>
-          <button class="di" onclick="editEmployee('${e.id}')"><i class="fas fa-edit"></i> Edit</button>
-          ${e.status==='pending'?`<button class="di" onclick="markPaid('${e.id}')"><i class="fas fa-check-circle"></i> Mark Paid</button>`:''}
-          <button class="di del" onclick="confirmDelete('${e.id}','payroll_employees','Delete ${esc(e.name)}?')"><i class="fas fa-trash"></i> Delete</button>
-        </div>
+      <td class="mc"><button class="dots" onclick="toggleDots(event,'${e.id}')"><i class="fas fa-ellipsis-v"></i></button>
+        <div class="dd" id="dd-${e.id}"><button class="di" onclick="viewPayslip('${e.id}')"><i class="fas fa-receipt"></i> Payslip</button>
+        <button class="di" onclick="openDetailModal('${e.id}')"><i class="fas fa-wallet"></i> Bonus / Advance / Loan</button>
+        <button class="di" onclick="editEmployee('${e.id}')"><i class="fas fa-edit"></i> Edit</button>
+        ${e.status==='pending'?`<button class="di" onclick="markPaid('${e.id}')"><i class="fas fa-check-circle"></i> Mark Paid</button>`:''}
+        <button class="di del" onclick="confirmDelete('${e.id}','payroll_employees','Delete ${esc(e.name)}?')"><i class="fas fa-trash"></i> Delete</button></div>
       </td>
     </tr>`).join('');
 }
 
-/* ─── DOTS MENU ─── */
-function toggleDots(e,id){
-  e.stopPropagation();
-  const m=document.getElementById('dd-'+id);
-  const open=m.classList.contains('show');
-  document.querySelectorAll('.dd').forEach(d=>d.classList.remove('show'));
-  if(!open) m.classList.add('show');
-}
+function toggleDots(e,id){e.stopPropagation();document.querySelectorAll('.dd').forEach(d=>d.classList.remove('show'));document.getElementById('dd-'+id).classList.toggle('show');}
 window.toggleDots=toggleDots;
 document.addEventListener('click',()=>document.querySelectorAll('.dd').forEach(d=>d.classList.remove('show')));
 
-/* ─── EMPLOYEE FORM ─── */
 document.getElementById('addEmployeeBtn').onclick=()=>{
   document.getElementById('employeeForm').reset();
   document.getElementById('employeeId').value='';
@@ -514,6 +447,7 @@ window.editEmployee=id=>{
   if(!e) return;
   document.getElementById('employeeId').value=e.id;
   document.getElementById('empName').value=e.name||'';
+  document.getElementById('empNrc').value=e.nrc||'';
   document.getElementById('empPosition').value=e.position||'';
   document.getElementById('empBasic').value=e.basicSalary||0;
   document.getElementById('empPhone').value=e.phone||'';
@@ -528,6 +462,7 @@ document.getElementById('employeeForm').onsubmit=async e=>{
   const id=document.getElementById('employeeId').value;
   const data={
     name:document.getElementById('empName').value.trim(),
+    nrc:document.getElementById('empNrc').value.trim(),
     position:document.getElementById('empPosition').value.trim(),
     basicSalary:parseFloat(document.getElementById('empBasic').value)||0,
     phone:document.getElementById('empPhone').value.trim(),
@@ -544,7 +479,6 @@ document.getElementById('employeeForm').onsubmit=async e=>{
   }catch(err){toast(err.message,'error');}
 };
 
-/* ─── DETAIL MODAL (bonus/advance/loan for specific employee) ─── */
 window.openDetailModal=async (empId)=>{
   activeDetailEmpId=empId;
   const emp=employees.find(e=>e.id===empId);
@@ -559,227 +493,33 @@ window.openDetailModal=async (empId)=>{
 };
 
 function renderDetailLists(empId){
-  // BONUSES
   const empBonuses=bonuses.filter(b=>b.employeeId===empId).sort((a,b)=>b.month?.localeCompare(a.month||'')||0);
   const bl=document.getElementById('bonusHistoryList');
-  bl.innerHTML=empBonuses.length?empBonuses.map(b=>`
-    <div class="hist-item">
-      <div class="hi-left"><div class="hi-label">🎁 ${b.reason||'Bonus'}</div><div class="hi-sub">${b.month||''}</div></div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="hi-amt pos">+${zmw(b.amount)}</div>
-        <button class="hist-del" onclick="deleteRecord('${b.id}','payroll_bonuses')"><i class="fas fa-trash"></i></button>
-      </div>
-    </div>`).join(''):'<div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No bonuses yet</div>';
-
-  // ADVANCES
+  bl.innerHTML=empBonuses.length?empBonuses.map(b=>`<div class="hist-item"><div class="hi-left"><div class="hi-label">🎁 ${b.reason||'Bonus'}</div><div class="hi-sub">${b.month||''}</div></div><div style="display:flex;align-items:center;gap:8px"><div class="hi-amt pos">+${zmw(b.amount)}</div><button class="hist-del" onclick="deleteRecord('${b.id}','payroll_bonuses')"><i class="fas fa-trash"></i></button></div></div>`).join(''):'<div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No bonuses yet</div>';
   const empAdvances=advances.filter(a=>a.employeeId===empId).sort((a,b)=>b.month?.localeCompare(a.month||'')||0);
   const al=document.getElementById('advanceHistoryList');
-  al.innerHTML=empAdvances.length?empAdvances.map(a=>`
-    <div class="hist-item">
-      <div class="hi-left"><div class="hi-label">💵 ${a.reason||'Advance'}</div><div class="hi-sub">${a.month||''}</div></div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="hi-amt neg">-${zmw(a.amount)}</div>
-        <button class="hist-del" onclick="deleteRecord('${a.id}','payroll_advances')"><i class="fas fa-trash"></i></button>
-      </div>
-    </div>`).join(''):'<div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No advances yet</div>';
-
-  // LOANS
+  al.innerHTML=empAdvances.length?empAdvances.map(a=>`<div class="hist-item"><div class="hi-left"><div class="hi-label">💵 ${a.reason||'Advance'}</div><div class="hi-sub">${a.month||''}</div></div><div style="display:flex;align-items:center;gap:8px"><div class="hi-amt neg">-${zmw(a.amount)}</div><button class="hist-del" onclick="deleteRecord('${a.id}','payroll_advances')"><i class="fas fa-trash"></i></button></div></div>`).join(''):'<div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No advances yet</div>';
   const empLoans=loans.filter(l=>l.employeeId===empId).sort((a,b)=>b.startMonth?.localeCompare(a.startMonth||'')||0);
   const ll=document.getElementById('loanHistoryList');
-  ll.innerHTML=empLoans.length?empLoans.map(l=>`
-    <div class="hist-item">
-      <div class="hi-left">
-        <div class="hi-label">🏦 ${l.purpose||'Loan'}</div>
-        <div class="hi-sub">From ${l.startMonth||''} · ZMW ${(l.monthlyDeduction||0).toFixed(2)}/mo</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="hi-amt neg">ZMW ${((l.remainingBalance??l.amount)||0).toFixed(2)} left</div>
-        <button class="hist-del" onclick="deleteRecord('${l.id}','payroll_loans')"><i class="fas fa-trash"></i></button>
-      </div>
-    </div>`).join(''):'<div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No loans yet</div>';
-
-  // FULL HISTORY
-  const all=[
-    ...empBonuses.map(b=>({...b,_type:'bonus',_date:b.month||''})),
-    ...empAdvances.map(a=>({...a,_type:'advance',_date:a.month||''})),
-    ...empLoans.map(l=>({...l,_type:'loan',_date:l.startMonth||''}))
-  ].sort((a,b)=>b._date.localeCompare(a._date));
+  ll.innerHTML=empLoans.length?empLoans.map(l=>`<div class="hist-item"><div class="hi-left"><div class="hi-label">🏦 ${l.purpose||'Loan'}</div><div class="hi-sub">From ${l.startMonth||''} · ${zmw(l.monthlyDeduction)}/mo</div></div><div style="display:flex;align-items:center;gap:8px"><div class="hi-amt neg">${zmw(l.remainingBalance??l.amount)} left</div><button class="hist-del" onclick="deleteRecord('${l.id}','payroll_loans')"><i class="fas fa-trash"></i></button></div></div>`).join(''):'<div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No loans yet</div>';
+  const all=[...empBonuses.map(b=>({...b,_type:'bonus',_date:b.month||''})),...empAdvances.map(a=>({...a,_type:'advance',_date:a.month||''})),...empLoans.map(l=>({...l,_type:'loan',_date:l.startMonth||''}))].sort((a,b)=>b._date.localeCompare(a._date));
   const hl=document.getElementById('fullHistoryList');
-  hl.innerHTML=all.length?all.map(r=>{
-    if(r._type==='bonus') return `<div class="hist-item"><div class="hi-left"><div class="hi-label">🎁 Bonus — ${r.reason||''}</div><div class="hi-sub">${r.month||''}</div></div><div class="hi-amt pos">+${zmw(r.amount)}</div></div>`;
-    if(r._type==='advance') return `<div class="hist-item"><div class="hi-left"><div class="hi-label">💵 Advance — ${r.reason||''}</div><div class="hi-sub">${r.month||''}</div></div><div class="hi-amt neg">-${zmw(r.amount)}</div></div>`;
-    return `<div class="hist-item"><div class="hi-left"><div class="hi-label">🏦 Loan — ${r.purpose||''}</div><div class="hi-sub">From ${r.startMonth||''}</div></div><div class="hi-amt neg">-${zmw(r.monthlyDeduction)}/mo</div></div>`;
-  }).join(''):'<div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No records</div>';
+  hl.innerHTML=all.length?all.map(r=>{if(r._type==='bonus')return `<div class="hist-item"><div class="hi-left"><div class="hi-label">🎁 Bonus — ${r.reason||''}</div><div class="hi-sub">${r.month||''}</div></div><div class="hi-amt pos">+${zmw(r.amount)}</div></div>`;if(r._type==='advance')return `<div class="hist-item"><div class="hi-left"><div class="hi-label">💵 Advance — ${r.reason||''}</div><div class="hi-sub">${r.month||''}</div></div><div class="hi-amt neg">-${zmw(r.amount)}</div></div>`;return `<div class="hist-item"><div class="hi-left"><div class="hi-label">🏦 Loan — ${r.purpose||''}</div><div class="hi-sub">From ${r.startMonth||''}</div></div><div class="hi-amt neg">-${zmw(r.monthlyDeduction)}/mo</div></div>`;}).join(''):'<div style="text-align:center;color:var(--tm);font-size:.7rem;padding:10px">No records</div>';
 }
 
-/* ─── BONUS FORM ─── */
-document.getElementById('bonusForm').onsubmit=async e=>{
-  e.preventDefault();
-  if(!activeDetailEmpId) return;
-  try{
-    await db.collection('payroll_bonuses').add({
-      employeeId:activeDetailEmpId,
-      amount:parseFloat(document.getElementById('bonusAmount').value)||0,
-      month:document.getElementById('bonusMonth').value,
-      reason:document.getElementById('bonusReason').value.trim(),
-      createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    toast('Bonus added!');
-    document.getElementById('bonusForm').reset();
-    document.getElementById('bonusMonth').value=currentMonth;
-    await loadAllData();
-    renderDetailLists(activeDetailEmpId);
-  }catch(err){toast(err.message,'error');}
-};
+document.getElementById('bonusForm').onsubmit=async e=>{e.preventDefault();if(!activeDetailEmpId)return;try{await db.collection('payroll_bonuses').add({employeeId:activeDetailEmpId,amount:parseFloat(document.getElementById('bonusAmount').value)||0,month:document.getElementById('bonusMonth').value,reason:document.getElementById('bonusReason').value.trim(),createdAt:firebase.firestore.FieldValue.serverTimestamp()});toast('Bonus added!');document.getElementById('bonusForm').reset();document.getElementById('bonusMonth').value=currentMonth;await loadAllData();renderDetailLists(activeDetailEmpId);}catch(err){toast(err.message,'error');}};
+document.getElementById('advanceForm').onsubmit=async e=>{e.preventDefault();if(!activeDetailEmpId)return;try{await db.collection('payroll_advances').add({employeeId:activeDetailEmpId,amount:parseFloat(document.getElementById('advanceAmount').value)||0,month:document.getElementById('advanceMonth').value,reason:document.getElementById('advanceReason').value.trim(),createdAt:firebase.firestore.FieldValue.serverTimestamp()});toast('Advance recorded!');document.getElementById('advanceForm').reset();document.getElementById('advanceMonth').value=currentMonth;await loadAllData();renderDetailLists(activeDetailEmpId);}catch(err){toast(err.message,'error');}};
+document.getElementById('loanForm').onsubmit=async e=>{e.preventDefault();if(!activeDetailEmpId)return;const amount=parseFloat(document.getElementById('loanAmount').value)||0;const monthly=parseFloat(document.getElementById('loanMonthlyDeduction').value)||0;try{await db.collection('payroll_loans').add({employeeId:activeDetailEmpId,amount:amount,monthlyDeduction:monthly,startMonth:document.getElementById('loanStartMonth').value,remainingBalance:amount,purpose:document.getElementById('loanPurpose').value.trim(),createdAt:firebase.firestore.FieldValue.serverTimestamp()});toast('Loan registered!');document.getElementById('loanForm').reset();document.getElementById('loanStartMonth').value=currentMonth;await loadAllData();renderDetailLists(activeDetailEmpId);}catch(err){toast(err.message,'error');}};
+document.getElementById('addBonusBtn').onclick=()=>{if(!employees.length){toast('Add employees first','info');return;}openDetailModal(filteredRecords[0]?.id||employees[0]?.id);setTimeout(()=>switchTab('bonus'),50);};
+document.getElementById('addAdvanceBtn').onclick=()=>{if(!employees.length){toast('Add employees first','info');return;}openDetailModal(filteredRecords[0]?.id||employees[0]?.id);setTimeout(()=>switchTab('advance'),50);};
+document.getElementById('addLoanBtn').onclick=()=>{if(!employees.length){toast('Add employees first','info');return;}openDetailModal(filteredRecords[0]?.id||employees[0]?.id);setTimeout(()=>switchTab('loan'),50);};
+window.deleteRecord=async(id,col)=>{if(!confirm('Delete this record?'))return;try{await db.collection(col).doc(id).delete();toast('Deleted');await loadAllData();if(activeDetailEmpId)renderDetailLists(activeDetailEmpId);}catch(err){toast(err.message,'error');}};
+window.confirmDelete=(id,col,msg)=>{document.getElementById('deleteTargetId').value=id;document.getElementById('deleteCollection').value=col;document.getElementById('deleteMsg').textContent=msg||'Are you sure?';openModal('deleteModal');};
+document.getElementById('confirmDeleteBtn').onclick=async()=>{const id=document.getElementById('deleteTargetId').value;const col=document.getElementById('deleteCollection').value;if(!id||!col)return;try{await db.collection(col).doc(id).delete();toast('Deleted');closeModal('deleteModal');await loadAllData();}catch(err){toast(err.message,'error');}};
+window.markPaid=async(empId)=>{const emp=employees.find(e=>e.id===empId);if(!emp)return;const bonus=empBonus(empId,currentMonth);const advance=empAdvance(empId,currentMonth);const loanDed=empLoan(empId,currentMonth);const net=(emp.basicSalary||0)+bonus-advance-loanDed;try{const existing=payrollRecords.find(r=>r.employeeId===empId);const data={employeeId:empId,employeeName:emp.name,month:currentMonth,basicSalary:emp.basicSalary||0,bonus,advance,loanDeduction:loanDed,netSalary:net,status:'paid',paymentDate:new Date().toISOString(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()};if(existing)await db.collection('payroll_records').doc(existing.id).update(data);else{data.createdAt=firebase.firestore.FieldValue.serverTimestamp();await db.collection('payroll_records').add(data);}await db.collection('Cashflow transactions').add({date:new Date().toISOString().slice(0,10),type:'debit',account:'Expenses A/c',description:`Payroll - ${emp.name} (${currentMonth})`,reference:`PAY-${currentMonth}`,amount:net,isPayroll:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()});toast(`${emp.name} marked as paid`);await loadAllData();}catch(err){toast(err.message,'error');}};
+document.getElementById('processPayrollBtn').onclick=async()=>{const pending=employees.filter(emp=>!payrollRecords.find(r=>r.employeeId===emp.id&&r.status==='paid'));if(!pending.length){toast('All salaries already processed!','info');return;}for(const emp of pending){const bonus=empBonus(emp.id,currentMonth);const advance=empAdvance(emp.id,currentMonth);const loanDed=empLoan(emp.id,currentMonth);const net=(emp.basicSalary||0)+bonus-advance-loanDed;await db.collection('payroll_records').add({employeeId:emp.id,employeeName:emp.name,month:currentMonth,basicSalary:emp.basicSalary||0,bonus,advance,loanDeduction:loanDed,netSalary:net,status:'paid',paymentDate:new Date().toISOString(),createdAt:firebase.firestore.FieldValue.serverTimestamp()});await db.collection('Cashflow transactions').add({date:new Date().toISOString().slice(0,10),type:'debit',account:'Expenses A/c',description:`Payroll - ${emp.name} (${currentMonth})`,reference:`PAYROLL-${currentMonth}`,amount:net,isPayroll:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()});}toast(`✅ Processed ${pending.length} payrolls!`);await loadAllData();};
 
-/* ─── ADVANCE FORM ─── */
-document.getElementById('advanceForm').onsubmit=async e=>{
-  e.preventDefault();
-  if(!activeDetailEmpId) return;
-  try{
-    await db.collection('payroll_advances').add({
-      employeeId:activeDetailEmpId,
-      amount:parseFloat(document.getElementById('advanceAmount').value)||0,
-      month:document.getElementById('advanceMonth').value,
-      reason:document.getElementById('advanceReason').value.trim(),
-      createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    toast('Advance recorded!');
-    document.getElementById('advanceForm').reset();
-    document.getElementById('advanceMonth').value=currentMonth;
-    await loadAllData();
-    renderDetailLists(activeDetailEmpId);
-  }catch(err){toast(err.message,'error');}
-};
-
-/* ─── LOAN FORM ─── */
-document.getElementById('loanForm').onsubmit=async e=>{
-  e.preventDefault();
-  if(!activeDetailEmpId) return;
-  const amount=parseFloat(document.getElementById('loanAmount').value)||0;
-  const monthly=parseFloat(document.getElementById('loanMonthlyDeduction').value)||0;
-  try{
-    await db.collection('payroll_loans').add({
-      employeeId:activeDetailEmpId,
-      amount:amount,
-      monthlyDeduction:monthly,
-      startMonth:document.getElementById('loanStartMonth').value,
-      remainingBalance:amount,
-      purpose:document.getElementById('loanPurpose').value.trim(),
-      createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    toast('Loan registered!');
-    document.getElementById('loanForm').reset();
-    document.getElementById('loanStartMonth').value=currentMonth;
-    await loadAllData();
-    renderDetailLists(activeDetailEmpId);
-  }catch(err){toast(err.message,'error');}
-};
-
-/* Shortcut buttons at top of page */
-document.getElementById('addBonusBtn').onclick=()=>{
-  if(!employees.length){toast('Add employees first','info');return;}
-  // Open first employee's detail at bonus tab
-  openDetailModal(filteredRecords[0]?.id||employees[0]?.id);
-  setTimeout(()=>switchTab('bonus'),50);
-};
-document.getElementById('addAdvanceBtn').onclick=()=>{
-  if(!employees.length){toast('Add employees first','info');return;}
-  openDetailModal(filteredRecords[0]?.id||employees[0]?.id);
-  setTimeout(()=>switchTab('advance'),50);
-};
-document.getElementById('addLoanBtn').onclick=()=>{
-  if(!employees.length){toast('Add employees first','info');return;}
-  openDetailModal(filteredRecords[0]?.id||employees[0]?.id);
-  setTimeout(()=>switchTab('loan'),50);
-};
-
-/* ─── DELETE RECORD (bonus/advance/loan row delete) ─── */
-window.deleteRecord=async(id,col)=>{
-  if(!confirm('Delete this record?')) return;
-  try{
-    await db.collection(col).doc(id).delete();
-    toast('Deleted');
-    await loadAllData();
-    if(activeDetailEmpId) renderDetailLists(activeDetailEmpId);
-  }catch(err){toast(err.message,'error');}
-};
-
-/* ─── DELETE EMPLOYEE ─── */
-window.confirmDelete=(id,col,msg)=>{
-  document.getElementById('deleteTargetId').value=id;
-  document.getElementById('deleteCollection').value=col;
-  document.getElementById('deleteMsg').textContent=msg||'Are you sure?';
-  openModal('deleteModal');
-};
-document.getElementById('confirmDeleteBtn').onclick=async()=>{
-  const id=document.getElementById('deleteTargetId').value;
-  const col=document.getElementById('deleteCollection').value;
-  if(!id||!col) return;
-  try{
-    await db.collection(col).doc(id).delete();
-    toast('Deleted');
-    closeModal('deleteModal');
-    await loadAllData();
-  }catch(err){toast(err.message,'error');}
-};
-
-/* ─── MARK PAID ─── */
-window.markPaid=async(empId)=>{
-  const emp=employees.find(e=>e.id===empId);
-  if(!emp) return;
-  const bonus=empBonus(empId,currentMonth);
-  const advance=empAdvance(empId,currentMonth);
-  const loanDed=empLoan(empId,currentMonth);
-  const net=(emp.basicSalary||0)+bonus-advance-loanDed;
-  try{
-    const existing=payrollRecords.find(r=>r.employeeId===empId);
-    const data={
-      employeeId:empId, employeeName:emp.name, month:currentMonth,
-      basicSalary:emp.basicSalary||0, bonus, advance, loanDeduction:loanDed,
-      netSalary:net, status:'paid', paymentDate:new Date().toISOString(),
-      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
-    };
-    if(existing) await db.collection('payroll_records').doc(existing.id).update(data);
-    else{data.createdAt=firebase.firestore.FieldValue.serverTimestamp();await db.collection('payroll_records').add(data);}
-    await db.collection('Cashflow transactions').add({
-      date:new Date().toISOString().slice(0,10),type:'debit',account:'Expenses A/c',
-      description:`Payroll - ${emp.name} (${currentMonth})`,reference:`PAY-${currentMonth}`,
-      amount:net,isPayroll:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    toast(`${emp.name} marked as paid`);
-    await loadAllData();
-  }catch(err){toast(err.message,'error');}
-};
-
-/* ─── PROCESS ALL ─── */
-document.getElementById('processPayrollBtn').onclick=async()=>{
-  const pending=employees.filter(emp=>!payrollRecords.find(r=>r.employeeId===emp.id&&r.status==='paid'));
-  if(!pending.length){toast('All salaries already processed!','info');return;}
-  for(const emp of pending){
-    const bonus=empBonus(emp.id,currentMonth);
-    const advance=empAdvance(emp.id,currentMonth);
-    const loanDed=empLoan(emp.id,currentMonth);
-    const net=(emp.basicSalary||0)+bonus-advance-loanDed;
-    const data={
-      employeeId:emp.id,employeeName:emp.name,month:currentMonth,
-      basicSalary:emp.basicSalary||0,bonus,advance,loanDeduction:loanDed,
-      netSalary:net,status:'paid',paymentDate:new Date().toISOString(),
-      createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    };
-    await db.collection('payroll_records').add(data);
-    await db.collection('Cashflow transactions').add({
-      date:new Date().toISOString().slice(0,10),type:'debit',account:'Expenses A/c',
-      description:`Payroll - ${emp.name} (${currentMonth})`,reference:`PAYROLL-${currentMonth}`,
-      amount:net,isPayroll:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-  }
-  toast(`✅ Processed ${pending.length} payrolls!`);
-  await loadAllData();
-};
-
-/* ─── PAYSLIP ─── */
-function buildPayslipHTML(emp, forPrint=false){
+function buildPayslipHTML(emp){
   const bonus=empBonus(emp.id,currentMonth);
   const advance=empAdvance(emp.id,currentMonth);
   const loanDed=empLoan(emp.id,currentMonth);
@@ -790,256 +530,21 @@ function buildPayslipHTML(emp, forPrint=false){
   const rec=payrollRecords.find(r=>r.employeeId===emp.id);
   const status=rec&&rec.status==='paid'?'✓ PAID':'⏳ PENDING';
   const statusColor=rec&&rec.status==='paid'?'#10b981':'#f59e0b';
-
-  // get detail records for display
   const empBonusList=bonuses.filter(b=>b.employeeId===emp.id&&b.month===currentMonth);
   const empAdvList=advances.filter(a=>a.employeeId===emp.id&&a.month===currentMonth);
   const empLoanList=loans.filter(l=>l.employeeId===emp.id&&l.startMonth<=currentMonth&&(l.remainingBalance??l.amount)>0);
-
-  return `
-  <div class="ps" id="payslipPrintContent">
-    <div class="ps-hdr">
-      <h2>TRISMART STORES</h2>
-      <p>Employee Payslip — ${currentMonth}</p>
-    </div>
-    <div class="ps-info">
-      <div class="ps-info-item"><strong>Employee</strong>${esc(emp.name)}</div>
-      <div class="ps-info-item"><strong>Position</strong>${esc(emp.position||'—')}</div>
-      <div class="ps-info-item"><strong>Account</strong>${esc(emp.bankAccount||'—')}</div>
-      <div class="ps-info-item"><strong>Status</strong><span style="font-weight:800;color:${statusColor}">${status}</span></div>
-    </div>
-
-    <div class="ps-section">
-      <div class="ps-section-title">Earnings</div>
-      <div class="ps-row"><span class="lbl">Basic Salary</span><span class="amt pos">+${zmw(gross)}</span></div>
-      ${empBonusList.map(b=>`<div class="ps-row"><span class="lbl">Bonus (${esc(b.reason||'bonus')})</span><span class="amt pos">+${zmw(b.amount)}</span></div>`).join('')}
-      <div class="ps-row" style="border-top:1px solid var(--bd);font-weight:700"><span class="lbl">Total Earnings</span><span class="amt pos">${zmw(totalEarnings)}</span></div>
-    </div>
-
-    <div class="ps-section">
-      <div class="ps-section-title">Deductions</div>
-      ${advance>0||loanDed>0?[
-        ...empAdvList.map(a=>`<div class="ps-row"><span class="lbl">Salary Advance (${esc(a.reason||'advance')})</span><span class="amt neg">-${zmw(a.amount)}</span></div>`),
-        ...empLoanList.map(l=>`<div class="ps-row"><span class="lbl">Loan (${esc(l.purpose||'loan')})</span><span class="amt neg">-${zmw(l.monthlyDeduction)}</span></div>`)
-      ].join(''):'<div class="ps-row"><span class="lbl" style="font-style:italic">No deductions</span><span class="amt">—</span></div>'}
-      ${(advance+loanDed)>0?`<div class="ps-row" style="border-top:1px solid var(--bd);font-weight:700"><span class="lbl">Total Deductions</span><span class="amt neg">-${zmw(totalDeductions)}</span></div>`:''}
-    </div>
-
-    <div class="ps-total">
-      <span>NET PAY</span>
-      <span>${zmw(net)}</span>
-    </div>
-    <div style="text-align:center;font-size:.58rem;color:var(--tm);padding:8px 0;border-left:1px solid var(--bd);border-right:1px solid var(--bd)">
-      Generated ${new Date().toLocaleDateString('en-GB')} · Trismart Stores Payroll System
-    </div>
-  </div>`;
+  return `<div class="ps" id="payslipPrintContent"><div class="ps-hdr"><h2>TRISMART</h2><p>Employee Payslip — ${currentMonth}</p></div><div class="ps-info"><div class="ps-info-item"><strong>Employee</strong>${esc(emp.name)}</div><div class="ps-info-item"><strong>NRC</strong>${esc(emp.nrc||'—')}</div><div class="ps-info-item"><strong>Position</strong>${esc(emp.position||'—')}</div><div class="ps-info-item"><strong>Account</strong>${esc(emp.bankAccount||'—')}</div><div class="ps-info-item"><strong>Status</strong><span style="font-weight:800;color:${statusColor}">${status}</span></div></div><div class="ps-section"><div class="ps-section-title">Earnings</div><div class="ps-row"><span class="lbl">Basic Salary</span><span class="amt pos">+${zmw(gross)}</span></div>${empBonusList.map(b=>`<div class="ps-row"><span class="lbl">Bonus (${esc(b.reason||'bonus')})</span><span class="amt pos">+${zmw(b.amount)}</span></div>`).join('')}<div class="ps-row" style="border-top:1px solid var(--bd);font-weight:700"><span class="lbl">Total Earnings</span><span class="amt pos">${zmw(totalEarnings)}</span></div></div><div class="ps-section"><div class="ps-section-title">Deductions</div>${advance>0||loanDed>0?[...empAdvList.map(a=>`<div class="ps-row"><span class="lbl">Salary Advance (${esc(a.reason||'advance')})</span><span class="amt neg">-${zmw(a.amount)}</span></div>`),...empLoanList.map(l=>`<div class="ps-row"><span class="lbl">Loan (${esc(l.purpose||'loan')})</span><span class="amt neg">-${zmw(l.monthlyDeduction)}</span></div>`)]:'<div class="ps-row"><span class="lbl" style="font-style:italic">No deductions</span><span class="amt">—</span></div>'}<div class="ps-row" style="border-top:1px solid var(--bd);font-weight:700"><span class="lbl">Total Deductions</span><span class="amt neg">-${zmw(totalDeductions)}</span></div></div><div class="ps-total"><span>NET PAY</span><span>${zmw(net)}</span></div><div style="text-align:center;font-size:.58rem;color:var(--tm);padding:8px 0;border-left:1px solid var(--bd);border-right:1px solid var(--bd)">Generated ${new Date().toLocaleDateString('en-GB')} · Trismart Payroll</div></div>`;
 }
 
-window.viewPayslip=async(empId)=>{
-  const emp=employees.find(e=>e.id===empId);
-  if(!emp) return;
-  currentPayslipEmp=emp;
-  document.getElementById('payslipContent').innerHTML=buildPayslipHTML(emp);
-  openModal('payslipModal');
-};
-
-// Print
-document.getElementById('printPayslipBtn').onclick=()=>{
-  if(!currentPayslipEmp) return;
-  const area=document.getElementById('printArea');
-  area.innerHTML=buildPayslipHTML(currentPayslipEmp,true);
-  window.print();
-};
-
-// Download PDF for single employee
-document.getElementById('downloadPayslipBtn').onclick=()=>{
-  if(!currentPayslipEmp) downloadPayslipPDF(currentPayslipEmp);
-  else downloadPayslipPDF(currentPayslipEmp);
-};
-
-function downloadPayslipPDF(emp){
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a5'});
-  const pw=doc.internal.pageSize.getWidth();
-  let y=30;
-
-  // Header
-  doc.setFillColor(30,58,138);
-  doc.roundedRect(20,y,pw-40,55,4,4,'F');
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(16); doc.setFont(undefined,'bold');
-  doc.text('TRISMART STORES',pw/2,y+22,{align:'center'});
-  doc.setFontSize(9); doc.setFont(undefined,'normal');
-  doc.text(`Employee Payslip — ${currentMonth}`,pw/2,y+40,{align:'center'});
-  y+=70;
-
-  // Info grid
-  doc.setTextColor(0);
-  doc.setFontSize(8);
-  const infoItems=[['Employee',emp.name],['Position',emp.position||'—'],['Account',emp.bankAccount||'—'],['Phone',emp.phone||'—']];
-  infoItems.forEach((item,i)=>{
-    const x=i%2===0?25:pw/2;
-    if(i%2===0&&i>0) y+=22;
-    doc.setFont(undefined,'bold'); doc.text(item[0]+':',x,y);
-    doc.setFont(undefined,'normal'); doc.text(item[1],x+55,y);
-  });
-  y+=30;
-
-  // Earnings
-  doc.setFillColor(240,245,255);
-  doc.roundedRect(20,y,pw-40,16,3,3,'F');
-  doc.setFont(undefined,'bold'); doc.setFontSize(8); doc.setTextColor(30,58,138);
-  doc.text('EARNINGS',25,y+11);
-  y+=22;
-
-  const bonus=empBonus(emp.id,currentMonth);
-  const empBonusList=bonuses.filter(b=>b.employeeId===emp.id&&b.month===currentMonth);
-  doc.setTextColor(0); doc.setFont(undefined,'normal'); doc.setFontSize(8);
-  doc.text('Basic Salary',25,y); doc.setFont(undefined,'bold'); doc.setTextColor(16,185,129); doc.text(`+ZMW ${(emp.basicSalary||0).toFixed(2)}`,pw-25,y,{align:'right'}); y+=14;
-  doc.setTextColor(0); doc.setFont(undefined,'normal');
-  empBonusList.forEach(b=>{
-    doc.text(`Bonus (${b.reason||'bonus'})`,25,y);
-    doc.setFont(undefined,'bold'); doc.setTextColor(16,185,129);
-    doc.text(`+ZMW ${(b.amount||0).toFixed(2)}`,pw-25,y,{align:'right'});
-    doc.setTextColor(0); doc.setFont(undefined,'normal'); y+=14;
-  });
-  const totalEarnings=(emp.basicSalary||0)+bonus;
-  doc.setFont(undefined,'bold'); doc.setFillColor(220,252,231);
-  doc.roundedRect(20,y,pw-40,14,2,2,'F');
-  doc.text('Total Earnings',25,y+10);
-  doc.setTextColor(16,185,129); doc.text(`ZMW ${totalEarnings.toFixed(2)}`,pw-25,y+10,{align:'right'});
-  y+=22; doc.setTextColor(0);
-
-  // Deductions
-  doc.setFillColor(240,245,255);
-  doc.roundedRect(20,y,pw-40,16,3,3,'F');
-  doc.setFont(undefined,'bold'); doc.setFontSize(8); doc.setTextColor(30,58,138);
-  doc.text('DEDUCTIONS',25,y+11);
-  y+=22;
-
-  const advance=empAdvance(emp.id,currentMonth);
-  const loanDed=empLoan(emp.id,currentMonth);
-  const empAdvList=advances.filter(a=>a.employeeId===emp.id&&a.month===currentMonth);
-  const empLoanList=loans.filter(l=>l.employeeId===emp.id&&l.startMonth<=currentMonth&&(l.remainingBalance??l.amount)>0);
-
-  doc.setTextColor(0); doc.setFont(undefined,'normal'); doc.setFontSize(8);
-  if(advance===0&&loanDed===0){
-    doc.text('No deductions this month',25,y); y+=14;
-  } else {
-    empAdvList.forEach(a=>{
-      doc.text(`Salary Advance (${a.reason||'advance'})`,25,y);
-      doc.setFont(undefined,'bold'); doc.setTextColor(220,38,38);
-      doc.text(`-ZMW ${(a.amount||0).toFixed(2)}`,pw-25,y,{align:'right'});
-      doc.setTextColor(0); doc.setFont(undefined,'normal'); y+=14;
-    });
-    empLoanList.forEach(l=>{
-      doc.text(`Loan (${l.purpose||'loan'})`,25,y);
-      doc.setFont(undefined,'bold'); doc.setTextColor(220,38,38);
-      doc.text(`-ZMW ${(l.monthlyDeduction||0).toFixed(2)}`,pw-25,y,{align:'right'});
-      doc.setTextColor(0); doc.setFont(undefined,'normal'); y+=14;
-    });
-  }
-  const totalDed=advance+loanDed;
-  if(totalDed>0){
-    doc.setFont(undefined,'bold'); doc.setFillColor(254,226,226);
-    doc.roundedRect(20,y,pw-40,14,2,2,'F');
-    doc.setTextColor(0); doc.text('Total Deductions',25,y+10);
-    doc.setTextColor(220,38,38); doc.text(`-ZMW ${totalDed.toFixed(2)}`,pw-25,y+10,{align:'right'});
-    y+=22;
-  }
-
-  // Net Pay
-  y+=6;
-  doc.setFillColor(30,58,138);
-  doc.roundedRect(20,y,pw-40,30,4,4,'F');
-  doc.setTextColor(255); doc.setFont(undefined,'bold'); doc.setFontSize(12);
-  doc.text('NET PAY',30,y+20);
-  const net=totalEarnings-totalDed;
-  doc.text(`ZMW ${net.toFixed(2)}`,pw-25,y+20,{align:'right'});
-  y+=45;
-
-  doc.setFontSize(7); doc.setTextColor(150);
-  doc.text(`Generated ${new Date().toLocaleDateString('en-GB')} · Trismart Stores`,pw/2,y,{align:'center'});
-
-  doc.save(`Payslip_${emp.name.replace(/\s+/g,'_')}_${currentMonth}.pdf`);
-  toast(`Payslip downloaded for ${emp.name}`);
-}
-
-/* ─── EXPORT ALL PDF ─── */
-document.getElementById('exportAllPdfBtn').onclick=async()=>{
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
-  const pw=doc.internal.pageSize.getWidth();
-
-  doc.setFillColor(30,58,138);
-  doc.rect(0,0,pw,45,'F');
-  doc.setTextColor(255); doc.setFont(undefined,'bold'); doc.setFontSize(16);
-  doc.text('TRISMART STORES — Payroll Report',20,28);
-  doc.setFontSize(9); doc.setFont(undefined,'normal');
-  doc.text(`Month: ${currentMonth} | Exported: ${new Date().toLocaleDateString()}`,pw-20,28,{align:'right'});
-
-  let y=65;
-  const cols=['#','Employee','Position','Basic','Bonus','Advance','Loan Ded.','Net Pay','Status'];
-  const colX=[15,40,130,220,290,350,415,480,565];
-
-  // Header row
-  doc.setFillColor(241,245,249);
-  doc.rect(15,y-10,pw-30,16,'F');
-  doc.setTextColor(100); doc.setFontSize(7); doc.setFont(undefined,'bold');
-  cols.forEach((c,i)=>doc.text(c,colX[i],y));
-  y+=12;
-
-  doc.setFont(undefined,'normal'); doc.setFontSize(7.5);
-  filteredRecords.forEach((emp,idx)=>{
-    if(y>doc.internal.pageSize.getHeight()-40){doc.addPage();y=30;}
-    if(idx%2===0){doc.setFillColor(248,250,252);doc.rect(15,y-9,pw-30,14,'F');}
-    doc.setTextColor(0);
-    doc.text(String(idx+1),colX[0],y);
-    doc.text(emp.name.substring(0,22),colX[1],y);
-    doc.text((emp.position||'').substring(0,18),colX[2],y);
-    doc.text(emp.basicSalary.toFixed(2),colX[3],y);
-    doc.setTextColor(emp.bonus>0?16:0,emp.bonus>0?185:0,emp.bonus>0?129:0);
-    doc.text(emp.bonus>0?'+'+emp.bonus.toFixed(2):'—',colX[4],y);
-    doc.setTextColor(emp.advance>0?220:0,emp.advance>0?38:0,emp.advance>0?38:0);
-    doc.text(emp.advance>0?'-'+emp.advance.toFixed(2):'—',colX[5],y);
-    doc.text(emp.loanDeduction>0?'-'+emp.loanDeduction.toFixed(2):'—',colX[6],y);
-    doc.setTextColor(0,0,0); doc.setFont(undefined,'bold');
-    doc.text(emp.netSalary.toFixed(2),colX[7],y);
-    doc.setTextColor(emp.status==='paid'?16:245,emp.status==='paid'?185:158,emp.status==='paid'?129:11);
-    doc.setFont(undefined,'normal');
-    doc.text(emp.status.toUpperCase(),colX[8],y);
-    doc.setTextColor(0); y+=14;
-  });
-
-  // Totals row
-  y+=4;
-  doc.setFillColor(30,58,138); doc.setTextColor(255); doc.setFont(undefined,'bold');
-  doc.rect(15,y-9,pw-30,16,'F');
-  const totNet=filteredRecords.reduce((s,e)=>s+e.netSalary,0);
-  const totBasic=filteredRecords.reduce((s,e)=>s+e.basicSalary,0);
-  doc.text(`TOTAL (${filteredRecords.length} employees)`,colX[0],y);
-  doc.text(totBasic.toFixed(2),colX[3],y);
-  doc.text('ZMW '+totNet.toFixed(2),colX[7]-10,y);
-
-  doc.save(`Trismart_Payroll_${currentMonth}.pdf`);
-  toast('All payrolls exported to PDF');
-};
-
-/* ─── FILTERS ─── */
+window.viewPayslip=async(empId)=>{const emp=employees.find(e=>e.id===empId);if(!emp)return;currentPayslipEmp=emp;document.getElementById('payslipContent').innerHTML=buildPayslipHTML(emp);openModal('payslipModal');};
+document.getElementById('printPayslipBtn').onclick=()=>{if(!currentPayslipEmp)return;const area=document.getElementById('printArea');area.innerHTML=buildPayslipHTML(currentPayslipEmp);window.print();};
+function downloadPayslipPDF(emp){const{jsPDF}=window.jspdf;const doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a5'});const pw=doc.internal.pageSize.getWidth();let y=30;doc.setFillColor(30,58,138);doc.roundedRect(20,y,pw-40,55,4,4,'F');doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont(undefined,'bold');doc.text('TRISMART',pw/2,y+22,{align:'center'});doc.setFontSize(9);doc.setFont(undefined,'normal');doc.text(`Employee Payslip — ${currentMonth}`,pw/2,y+40,{align:'center'});y+=70;doc.setTextColor(0);doc.setFontSize(8);const infoItems=[['Employee',emp.name],['NRC',emp.nrc||'—'],['Position',emp.position||'—'],['Account',emp.bankAccount||'—']];infoItems.forEach((item,i)=>{const x=i%2===0?25:pw/2;if(i%2===0&&i>0)y+=22;doc.setFont(undefined,'bold');doc.text(item[0]+':',x,y);doc.setFont(undefined,'normal');doc.text(item[1],x+55,y);});y+=30;doc.setFillColor(240,245,255);doc.roundedRect(20,y,pw-40,16,3,3,'F');doc.setFont(undefined,'bold');doc.setFontSize(8);doc.setTextColor(30,58,138);doc.text('EARNINGS',25,y+11);y+=22;const bonus=empBonus(emp.id,currentMonth);const empBonusList=bonuses.filter(b=>b.employeeId===emp.id&&b.month===currentMonth);doc.setTextColor(0);doc.setFont(undefined,'normal');doc.setFontSize(8);doc.text('Basic Salary',25,y);doc.setFont(undefined,'bold');doc.setTextColor(16,185,129);doc.text(`+ZMW ${(emp.basicSalary||0).toFixed(2)}`,pw-25,y,{align:'right'});y+=14;doc.setTextColor(0);doc.setFont(undefined,'normal');empBonusList.forEach(b=>{doc.text(`Bonus (${b.reason||'bonus'})`,25,y);doc.setFont(undefined,'bold');doc.setTextColor(16,185,129);doc.text(`+ZMW ${(b.amount||0).toFixed(2)}`,pw-25,y,{align:'right'});doc.setTextColor(0);doc.setFont(undefined,'normal');y+=14;});const totalEarnings=(emp.basicSalary||0)+bonus;doc.setFont(undefined,'bold');doc.setFillColor(220,252,231);doc.roundedRect(20,y,pw-40,14,2,2,'F');doc.text('Total Earnings',25,y+10);doc.setTextColor(16,185,129);doc.text(`ZMW ${totalEarnings.toFixed(2)}`,pw-25,y+10,{align:'right'});y+=22;doc.setTextColor(0);doc.setFillColor(240,245,255);doc.roundedRect(20,y,pw-40,16,3,3,'F');doc.setFont(undefined,'bold');doc.setFontSize(8);doc.setTextColor(30,58,138);doc.text('DEDUCTIONS',25,y+11);y+=22;const advance=empAdvance(emp.id,currentMonth);const loanDed=empLoan(emp.id,currentMonth);const empAdvList=advances.filter(a=>a.employeeId===emp.id&&a.month===currentMonth);const empLoanList=loans.filter(l=>l.employeeId===emp.id&&l.startMonth<=currentMonth&&(l.remainingBalance??l.amount)>0);doc.setTextColor(0);doc.setFont(undefined,'normal');doc.setFontSize(8);if(advance===0&&loanDed===0){doc.text('No deductions this month',25,y);y+=14;}else{empAdvList.forEach(a=>{doc.text(`Salary Advance (${a.reason||'advance'})`,25,y);doc.setFont(undefined,'bold');doc.setTextColor(220,38,38);doc.text(`-ZMW ${(a.amount||0).toFixed(2)}`,pw-25,y,{align:'right'});doc.setTextColor(0);doc.setFont(undefined,'normal');y+=14;});empLoanList.forEach(l=>{doc.text(`Loan (${l.purpose||'loan'})`,25,y);doc.setFont(undefined,'bold');doc.setTextColor(220,38,38);doc.text(`-ZMW ${(l.monthlyDeduction||0).toFixed(2)}`,pw-25,y,{align:'right'});doc.setTextColor(0);doc.setFont(undefined,'normal');y+=14;});}const totalDed=advance+loanDed;if(totalDed>0){doc.setFont(undefined,'bold');doc.setFillColor(254,226,226);doc.roundedRect(20,y,pw-40,14,2,2,'F');doc.setTextColor(0);doc.text('Total Deductions',25,y+10);doc.setTextColor(220,38,38);doc.text(`-ZMW ${totalDed.toFixed(2)}`,pw-25,y+10,{align:'right'});y+=22;}y+=6;doc.setFillColor(30,58,138);doc.roundedRect(20,y,pw-40,30,4,4,'F');doc.setTextColor(255);doc.setFont(undefined,'bold');doc.setFontSize(12);doc.text('NET PAY',30,y+20);const net=totalEarnings-totalDed;doc.text(`ZMW ${net.toFixed(2)}`,pw-25,y+20,{align:'right'});y+=45;doc.setFontSize(7);doc.setTextColor(150);doc.text(`Generated ${new Date().toLocaleDateString('en-GB')} · Trismart`,pw/2,y,{align:'center'});doc.save(`Payslip_${emp.name.replace(/\s+/g,'_')}_${currentMonth}.pdf`);toast(`Payslip downloaded for ${emp.name}`);}
+document.getElementById('downloadPayslipBtn').onclick=()=>{if(currentPayslipEmp)downloadPayslipPDF(currentPayslipEmp);};
+document.getElementById('exportAllPdfBtn').onclick=async()=>{const{jsPDF}=window.jspdf;const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});const pw=doc.internal.pageSize.getWidth();doc.setFillColor(30,58,138);doc.rect(0,0,pw,45,'F');doc.setTextColor(255);doc.setFont(undefined,'bold');doc.setFontSize(16);doc.text('TRISMART — Payroll Report',20,28);doc.setFontSize(9);doc.setFont(undefined,'normal');doc.text(`Month: ${currentMonth} | Exported: ${new Date().toLocaleDateString()}`,pw-20,28,{align:'right'});let y=65;const cols=['#','Employee','NRC','Position','Basic','Bonus','Advance','Loan Ded.','Net Pay','Status'];const colX=[15,40,125,200,270,330,385,445,510,580];doc.setFillColor(241,245,249);doc.rect(15,y-10,pw-30,16,'F');doc.setTextColor(100);doc.setFontSize(7);doc.setFont(undefined,'bold');cols.forEach((c,i)=>doc.text(c,colX[i],y));y+=12;doc.setFont(undefined,'normal');doc.setFontSize(7.5);filteredRecords.forEach((emp,idx)=>{if(y>doc.internal.pageSize.getHeight()-40){doc.addPage();y=30;}if(idx%2===0){doc.setFillColor(248,250,252);doc.rect(15,y-9,pw-30,14,'F');}doc.setTextColor(0);doc.text(String(idx+1),colX[0],y);doc.text(emp.name.substring(0,20),colX[1],y);doc.text((emp.nrc||'—').substring(0,18),colX[2],y);doc.text((emp.position||'').substring(0,15),colX[3],y);doc.text(emp.basicSalary.toFixed(2),colX[4],y);doc.setTextColor(emp.bonus>0?16:0,emp.bonus>0?185:0,emp.bonus>0?129:0);doc.text(emp.bonus>0?'+'+emp.bonus.toFixed(2):'',colX[5],y);doc.setTextColor(emp.advance>0?220:0,emp.advance>0?38:0,emp.advance>0?38:0);doc.text(emp.advance>0?'-'+emp.advance.toFixed(2):'',colX[6],y);doc.text(emp.loanDeduction>0?'-'+emp.loanDeduction.toFixed(2):'',colX[7],y);doc.setTextColor(0,0,0);doc.setFont(undefined,'bold');doc.text(emp.netSalary.toFixed(2),colX[8],y);doc.setTextColor(emp.status==='paid'?16:245,emp.status==='paid'?185:158,emp.status==='paid'?129:11);doc.setFont(undefined,'normal');doc.text(emp.status.toUpperCase(),colX[9],y);doc.setTextColor(0);y+=14;});y+=4;doc.setFillColor(30,58,138);doc.setTextColor(255);doc.setFont(undefined,'bold');doc.rect(15,y-9,pw-30,16,'F');const totNet=filteredRecords.reduce((s,e)=>s+e.netSalary,0);const totBasic=filteredRecords.reduce((s,e)=>s+e.basicSalary,0);doc.text(`TOTAL (${filteredRecords.length} employees)`,colX[0],y);doc.text(totBasic.toFixed(2),colX[4],y);doc.text('ZMW '+totNet.toFixed(2),colX[8]-10,y);doc.save(`Trismart_Payroll_${currentMonth}.pdf`);toast('All payrolls exported to PDF');};
 document.getElementById('searchFilter').addEventListener('input',applyAndRender);
 document.getElementById('statusFilter').addEventListener('change',applyAndRender);
-document.getElementById('clearFiltersBtn').onclick=()=>{
-  document.getElementById('searchFilter').value='';
-  document.getElementById('statusFilter').value='';
-  applyAndRender();
-  toast('Filters cleared','info');
-};
-document.getElementById('monthSelect').addEventListener('change',()=>{
-  currentMonth=document.getElementById('monthSelect').value;
-  localStorage.setItem('payroll_month',currentMonth);
-  loadAllData();
-});
-
+document.getElementById('clearFiltersBtn').onclick=()=>{document.getElementById('searchFilter').value='';document.getElementById('statusFilter').value='';applyAndRender();toast('Filters cleared','info');};
+document.getElementById('monthSelect').addEventListener('change',()=>{currentMonth=document.getElementById('monthSelect').value;localStorage.setItem('payroll_month',currentMonth);loadAllData();});
 loadAllData();
 </script>
 </body>
