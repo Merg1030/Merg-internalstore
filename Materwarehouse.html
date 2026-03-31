@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trismart · Master Vault | Redirect Transfers</title>
+    <title>Trismart · Master Vault | Infinite Redirect & Reverse</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'DM Sans', sans-serif; background: #f0f2f8; color: #111827; min-height: 100vh; }
-        :root { --blue: #3b5bdb; --cyan: #0ea5e9; --green: #0e9f6e; --orange: #f97316; --danger: #e11d48; --purple: #7c3aed; --amber: #f59e0b; --border: #e2e8f0; --bg-card: #ffffff; --text-muted: #5b6e8c; --radius: 12px; --header-h: 54px; }
+        :root { --blue: #3b5bdb; --green: #0e9f6e; --orange: #f97316; --danger: #e11d48; --purple: #7c3aed; --amber: #f59e0b; --teal: #14b8a6; --border: #e2e8f0; --bg-card: #ffffff; --text-muted: #5b6e8c; --header-h: 54px; }
         .topbar { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1100; }
         .logo { display: flex; align-items: center; gap: 10px; }
         .logo-mark { width: 30px; height: 30px; background: linear-gradient(135deg, var(--blue), #2563eb); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; }
@@ -39,6 +39,7 @@
         .btn-warning { background: linear-gradient(135deg, var(--orange), #ea580c); color: white; }
         .btn-purple { background: var(--purple); color: white; }
         .btn-amber { background: var(--amber); color: white; }
+        .btn-teal { background: var(--teal); color: white; }
         .btn-ghost { background: #f1f5f9; color: #1f2a44; border: 1px solid #e2e8f0; }
         .tab-bar { display: flex; gap: 2px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
         .tab-btn { background: none; border: none; padding: 8px 18px; font-size: 0.75rem; font-weight: 700; color: #5b6e8c; cursor: pointer; border-bottom: 2px solid transparent; }
@@ -80,13 +81,16 @@
         .item-dropdown-list.show { display: block; }
         .item-option { padding: 10px 14px; font-size: 0.75rem; border-bottom: 1px solid #f0f2f5; cursor: pointer; }
         .item-option:hover { background: #eef2ff; }
-        .redirect-badge { background: #fef3c7; color: #b45309; padding: 2px 8px; border-radius: 20px; font-size: 0.6rem; font-weight: 700; margin-left: 8px; }
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 12px; font-size: 0.6rem; font-weight: 700; margin-left: 6px; }
+        .badge-redirect { background: #fef3c7; color: #b45309; }
+        .badge-reverse { background: #ede9fe; color: #5b21b6; }
+        .badge-active { background: #dcfce7; color: #166534; }
         @media (max-width: 550px) { .stats-grid { grid-template-columns: 1fr; } .action-panel.open { flex-direction: column; } .search-wrap { width: 100%; } }
     </style>
 </head>
 <body>
 <header class="topbar">
-    <div class="logo"><div class="logo-mark"><i class="fas fa-crown"></i></div><div class="logo-text">Tri<span>smart</span> · Master</div><div class="master-badge"><i class="fas fa-warehouse"></i> MASTER</div><div class="admin-badge" id="adminBadge"><i class="fas fa-shield-alt"></i> ADMIN</div></div>
+    <div class="logo"><div class="logo-mark"><i class="fas fa-crown"></i></div><div class="logo-text">Tri<span>smart</span> · Master</div><div class="master-badge"><i class="fas fa-warehouse"></i> MASTER</div><div class="admin-badge" id="adminBadge"></div></div>
     <div class="time-badge" id="timeBadge">--:--</div>
 </header>
 <main class="main">
@@ -94,7 +98,7 @@
     <div class="action-wrapper"><div class="action-dot-bar" id="actionDotBtn"><i class="fas fa-ellipsis-h"></i><span class="dot-text">Actions</span><i class="fas fa-chevron-down"></i></div><div class="action-panel" id="actionPanel"><div class="btn-group"><button class="btn btn-success" id="addItemBtn"><i class="fas fa-plus-circle"></i> Add Item</button><button class="btn btn-primary" id="transferBtn"><i class="fas fa-exchange-alt"></i> Transfer</button><button class="btn btn-warning" id="grvBtn"><i class="fas fa-file-import"></i> GRV</button></div></div></div>
     <div class="search-standalone"><div class="search-wrap"><i class="fas fa-search search-icon"></i><input type="text" id="searchInput" placeholder="Search code or name..."></div></div>
     <div class="tab-bar"><button class="tab-btn active" data-tab="inventory"><i class="fas fa-boxes"></i> Master Stock</button><button class="tab-btn" data-tab="history"><i class="fas fa-exchange-alt"></i> Transfer Logs</button></div>
-    <div class="tab-content active" id="tabInventory"><div class="table-card"><div class="table-scroll"><table id="inventoryTable"><thead><tr><th>Code</th><th>Product</th><th>Price</th><th>Stock</th><th></th></tr></thead><tbody id="inventoryTbody"><tr><td colspan="5">Loading...</td></tr></tbody></table></div></div></div>
+    <div class="tab-content active" id="tabInventory"><div class="table-card"><div class="table-scroll"><table id="inventoryTable"><thead><tr><th>Code</th><th>Product</th><th>Price</th><th>Stock</th><th></th></thead><tbody id="inventoryTbody"><tr><td colspan="5">Loading...</td></tr></tbody></table></div></div></div>
     <div class="tab-content" id="tabHistory"><div class="table-card"><div class="table-scroll"><table><thead><tr><th>Date</th><th>Ref</th><th>Direction</th><th>Warehouse</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody id="historyTbody"><tr><td colspan="8">Loading...</td></tr></tbody></table></div></div></div>
 </main>
 
@@ -108,12 +112,12 @@
 <div id="transferCartDiv" style="display:none;"><table class="cart-table"><thead><tr><th>Code</th><th>Name</th><th>Qty</th><th>Subtotal</th><th></th></tr></thead><tbody id="transferCartBody"></tbody></table><div style="text-align:right; margin:12px 0;"><strong id="cartTotalVal">K0.00</strong></div></div>
 <div class="form-actions"><button type="submit" class="btn btn-primary" id="confirmTransferBtn" disabled>✅ Confirm Transfer</button><button type="button" class="btn btn-ghost" onclick="closeModal('transferModal')">Cancel</button></div></form></div></div></div>
 
-<!-- REDIRECT MODAL - NEW FEATURE! -->
-<div id="redirectModal" class="modal-overlay"><div class="modal-detail modal-lg"><div class="modal-header"><h3><i class="fas fa-share-alt"></i> 🔄 Redirect Transfer to Correct Warehouse</h3><button onclick="closeModal('redirectModal')">✕</button></div><div class="modal-body"><div id="redirectInfo" style="background:#fef3c7; padding:12px; border-radius:16px; margin-bottom:16px;"></div>
-<div class="field-group"><label>🚚 Current Wrong Warehouse</label><input type="text" id="currentWarehouseDisplay" readonly style="background:#f3f4f6;"></div>
-<div class="field-group"><label>🎯 Redirect To (Correct Warehouse)</label><select id="redirectTargetWarehouse" required><option value="">— Select correct destination —</option><option value="makeni">🏭 Kabanana Warehouse</option><option value="kabana">🏭 Makeni Warehouse</option><option value="northside">🏭 Northside Depot</option></select></div>
+<!-- REDIRECT MODAL - WORKS FOR ANY ACTIVE TRANSFER (including already redirected ones!) -->
+<div id="redirectModal" class="modal-overlay"><div class="modal-detail modal-lg"><div class="modal-header"><h3><i class="fas fa-share-alt"></i> 🔄 Redirect to Correct Warehouse</h3><button onclick="closeModal('redirectModal')">✕</button></div><div class="modal-body"><div id="redirectInfo" style="background:#fef3c7; padding:12px; border-radius:16px; margin-bottom:16px;"></div>
+<div class="field-group"><label>📍 Current Location</label><input type="text" id="currentWarehouseDisplay" readonly style="background:#f3f4f6;"></div>
+<div class="field-group"><label>🎯 Redirect To (New Destination)</label><select id="redirectTargetWarehouse" required><option value="">— Select new destination —</option><option value="makeni">🏭 Kabanana Warehouse</option><option value="kabana">🏭 Makeni Warehouse</option><option value="northside">🏭 Northside Depot</option></select></div>
 <div id="redirectItemsPreview" style="margin:16px 0;"></div>
-<div class="form-actions"><button class="btn btn-amber" id="confirmRedirectBtn"><i class="fas fa-random"></i> Redirect Items Now</button><button class="btn btn-ghost" onclick="closeModal('redirectModal')">Cancel</button></div></div></div></div>
+<div class="form-actions"><button class="btn btn-amber" id="confirmRedirectBtn"><i class="fas fa-random"></i> Redirect Items</button><button class="btn btn-ghost" onclick="closeModal('redirectModal')">Cancel</button></div></div></div></div>
 
 <div id="detailsModal" class="modal-overlay"><div class="modal-detail modal-lg"><div class="modal-header"><h3>Transfer Details</h3><button onclick="closeModal('detailsModal')">✕</button></div><div class="modal-body" id="detailsModalBody"></div></div></div>
 <div class="toast-wrap" id="toastWrap"></div>
@@ -222,18 +226,20 @@
     window.removeFromCart = (idx) => { transferCart.splice(idx,1); updateTransferUI(); };
     document.getElementById('transferForm').onsubmit = async(e) => { e.preventDefault(); const destId=document.getElementById('destBranch').value; if(!destId){ toast('Select destination','error'); return; } if(transferCart.length===0){ toast('Add items','error'); return; } const destName = destId==='makeni'?'Kabanana Warehouse':(destId==='kabana'?'Makeni Warehouse':'Northside Depot'); const btn=document.getElementById('confirmTransferBtn'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Processing'; try{ for(const c of transferCart){ await runTransaction(db, async(tx)=>{ const srcRef=doc(db,'inventory',c.itemId); const srcDoc=await tx.get(srcRef); if(srcDoc.data().stock < c.qty) throw new Error(`Stock changed`); tx.update(srcRef,{stock:increment(-c.qty)}); const destQuery=query(collection(db,'inventory'),where('branchId','==',destId),where('code','==',c.code)); const destSnap=await getDocs(destQuery); if(!destSnap.empty){ tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(c.qty)}); } else { tx.set(doc(collection(db,'inventory')),{code:c.code,name:c.name,price:c.price,stock:c.qty,sold:0,branchId:destId}); } }); } const now=new Date(); const refNum='TRF-'+Date.now().toString().slice(-6); await addDoc(collection(db,'transfers'),{ ref:refNum, date:now.toLocaleDateString('en-GB'), time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}), createdAt:now.toISOString(), srcId:'master', srcName:'⭐ Master Warehouse', destId,destName, items:transferCart.map(c=>({code:c.code,name:c.name,qty:c.qty,price:c.price,total:c.price*c.qty})), totalValue:transferCart.reduce((s,c)=>s+(c.price*c.qty),0), doneBy:userName, status:'active' }); toast(`✓ Transferred to ${destName}`); closeModal('transferModal'); transferCart=[]; loadTransferHistory(); }catch(err){ toast('Transfer failed: '+err.message,'error'); }finally{ btn.disabled=false; btn.innerHTML='✅ Confirm Transfer'; } };
     
-    // REDIRECT FUNCTION - THE FEATURE YOU WANTED!
+    // REDIRECT FUNCTION - NOW WORKS FOR ANY ACTIVE TRANSFER (including previously redirected!)
     window.redirectTransfer = (transferId) => { 
         const transfer = window._transfersMap?.[transferId]; 
         if(!transfer) return;
-        if(transfer.status === 'redirected'){ toast('Already redirected','error'); return; }
-        if(transfer.srcId !== 'master'){ toast('Can only redirect transfers FROM Master','error'); return; }
+        if(transfer.status === 'reversed'){ toast('Cannot redirect a reversed transfer','error'); return; }
+        if(transfer.srcId === 'master' && transfer.destId === 'master'){ toast('Invalid transfer','error'); return; }
         pendingRedirect = transfer;
-        document.getElementById('currentWarehouseDisplay').value = transfer.destName;
+        const currentLocation = transfer.destId === 'master' ? transfer.srcName : transfer.destName;
+        document.getElementById('currentWarehouseDisplay').value = currentLocation;
         document.getElementById('redirectTargetWarehouse').value = '';
         const itemsHtml = transfer.items.map(i => `<div style="padding:8px; background:#f9fafb; margin:4px 0; border-radius:12px;"><strong>${escapeHtml(i.code)}</strong> ${escapeHtml(i.name)} — Qty: ${i.qty}</div>`).join('');
         document.getElementById('redirectItemsPreview').innerHTML = `<div style="font-weight:700; margin-bottom:8px;">📦 Items to redirect:</div>${itemsHtml}`;
-        document.getElementById('redirectInfo').innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> <strong>Wrong destination!</strong> These items were sent to ${transfer.destName} but you want to redirect them to the correct warehouse.`;
+        const redirectCount = transfer.redirectCount || 0;
+        document.getElementById('redirectInfo').innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#f59e0b;"></i> <strong>Redirect Transfer</strong><br>These items are currently at: <strong>${currentLocation}</strong><br>You can redirect them to any other warehouse. ${redirectCount > 0 ? `<span class="badge badge-redirect">Already redirected ${redirectCount} time(s)</span>` : ''}`;
         document.getElementById('redirectModal').classList.add('show');
     };
     
@@ -241,31 +247,32 @@
         const transfer = pendingRedirect;
         if(!transfer) return;
         const newDestId = document.getElementById('redirectTargetWarehouse').value;
-        if(!newDestId){ toast('Select correct destination','error'); return; }
+        if(!newDestId){ toast('Select new destination','error'); return; }
         const newDestName = newDestId==='makeni'?'Kabanana Warehouse':(newDestId==='kabana'?'Makeni Warehouse':'Northside Depot');
-        if(newDestId === transfer.destId){ toast('That\'s the same warehouse!','error'); return; }
+        const currentLocationId = transfer.destId === 'master' ? transfer.srcId : transfer.destId;
+        if(newDestId === currentLocationId){ toast('That\'s the current location!','error'); return; }
         const btn = document.getElementById('confirmRedirectBtn');
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirecting...';
         try {
-            // Step 1: Remove items from WRONG warehouse
+            // Remove items from CURRENT location
             for(const item of transfer.items){
                 await runTransaction(db, async(tx) => {
-                    const wrongWarehouseQuery = query(collection(db,'inventory'), where('branchId','==',transfer.destId), where('code','==',item.code));
-                    const wrongSnap = await getDocs(wrongWarehouseQuery);
-                    if(!wrongSnap.empty){
-                        const wrongDoc = wrongSnap.docs[0];
-                        const currentStock = wrongDoc.data().stock;
-                        if(currentStock < item.qty) throw new Error(`Not enough stock at ${transfer.destName} to redirect`);
-                        tx.update(doc(db,'inventory',wrongDoc.id), {stock: increment(-item.qty)});
+                    const currentQuery = query(collection(db,'inventory'), where('branchId','==',currentLocationId), where('code','==',item.code));
+                    const currentSnap = await getDocs(currentQuery);
+                    if(!currentSnap.empty){
+                        const currentDoc = currentSnap.docs[0];
+                        const currentStock = currentDoc.data().stock;
+                        if(currentStock < item.qty) throw new Error(`Not enough stock at current location`);
+                        tx.update(doc(db,'inventory',currentDoc.id), {stock: increment(-item.qty)});
                     } else {
-                        throw new Error(`Item ${item.code} not found at ${transfer.destName}`);
+                        throw new Error(`Item ${item.code} not found at current location`);
                     }
-                    // Step 2: Add items to CORRECT warehouse
-                    const correctQuery = query(collection(db,'inventory'), where('branchId','==',newDestId), where('code','==',item.code));
-                    const correctSnap = await getDocs(correctQuery);
-                    if(!correctSnap.empty){
-                        tx.update(doc(db,'inventory',correctSnap.docs[0].id), {stock: increment(item.qty)});
+                    // Add items to NEW destination
+                    const newQuery = query(collection(db,'inventory'), where('branchId','==',newDestId), where('code','==',item.code));
+                    const newSnap = await getDocs(newQuery);
+                    if(!newSnap.empty){
+                        tx.update(doc(db,'inventory',newSnap.docs[0].id), {stock: increment(item.qty)});
                     } else {
                         tx.set(doc(collection(db,'inventory')), {
                             code: item.code, name: item.name, price: item.price, stock: item.qty, sold: 0, branchId: newDestId
@@ -273,19 +280,72 @@
                     }
                 });
             }
-            // Step 3: Mark original transfer as redirected and create redirect log
-            await updateDoc(doc(db,'transfers',transfer.id), { status: 'redirected', redirectedAt: new Date().toISOString(), redirectedTo: newDestName, redirectedBy: userName });
+            // Update original transfer with redirect info
+            const newRedirectCount = (transfer.redirectCount || 0) + 1;
+            await updateDoc(doc(db,'transfers',transfer.id), { 
+                status: 'redirected', 
+                redirectedAt: new Date().toISOString(), 
+                redirectedTo: newDestName,
+                redirectedBy: userName,
+                redirectCount: newRedirectCount,
+                currentLocation: newDestId
+            });
+            // Create redirect log
             const now = new Date();
             await addDoc(collection(db,'transfers'), {
-                ref: 'RDR-'+Date.now().toString().slice(-6), date: now.toLocaleDateString('en-GB'), time: now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
-                createdAt: now.toISOString(), srcId: transfer.destId, srcName: transfer.destName, destId: newDestId, destName: newDestName,
-                items: transfer.items, totalValue: transfer.totalValue, doneBy: userName, status: 'active', isRedirect: true, originalTransfer: transfer.ref
+                ref: 'RDR-'+Date.now().toString().slice(-6), 
+                date: now.toLocaleDateString('en-GB'), 
+                time: now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
+                createdAt: now.toISOString(), 
+                srcId: currentLocationId, 
+                srcName: transfer.destName || transfer.srcName,
+                destId: newDestId, 
+                destName: newDestName,
+                items: transfer.items, 
+                totalValue: transfer.totalValue, 
+                doneBy: userName, 
+                status: 'active', 
+                isRedirect: true, 
+                originalTransfer: transfer.ref,
+                redirectNumber: newRedirectCount
             });
-            toast(`✅ Redirected from ${transfer.destName} → ${newDestName} successfully!`);
+            toast(`✅ Redirected from ${transfer.destName || transfer.srcName} → ${newDestName} (Redirect #${newRedirectCount})`);
             closeModal('redirectModal');
             loadTransferHistory();
         } catch(err) { toast('Redirect error: ' + err.message, 'error'); }
-        finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-random"></i> Redirect Items Now'; }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-random"></i> Redirect Items'; }
+    };
+    
+    // REVERSE FUNCTION - NOW WORKS ON ANY TRANSFER (including redirected ones!)
+    window.reverseTransfer = async(transferId) => {
+        const transfer = window._transfersMap?.[transferId];
+        if(!transfer) return;
+        if(transfer.status === 'reversed'){ toast('Already reversed','error'); return; }
+        const currentLocationId = transfer.destId === 'master' ? transfer.srcId : transfer.destId;
+        const locationName = transfer.destId === 'master' ? transfer.srcName : transfer.destName;
+        if(!confirm(`Return items from ${locationName} back to Master Warehouse?`)) return;
+        try{
+            for(const item of transfer.items){
+                await runTransaction(db, async(tx)=>{
+                    const locQuery = query(collection(db,'inventory'),where('branchId','==',currentLocationId),where('code','==',item.code));
+                    const locSnap = await getDocs(locQuery);
+                    if(!locSnap.empty) tx.update(doc(db,'inventory',locSnap.docs[0].id),{stock:increment(-item.qty)});
+                    const masterQuery = query(collection(db,'inventory'),where('branchId','==','master'),where('code','==',item.code));
+                    const masterSnap = await getDocs(masterQuery);
+                    if(!masterSnap.empty){ tx.update(doc(db,'inventory',masterSnap.docs[0].id),{stock:increment(item.qty)}); }
+                    else { tx.set(doc(collection(db,'inventory')),{code:item.code,name:item.name,price:item.price,stock:item.qty,sold:0,branchId:'master'}); }
+                });
+            }
+            await updateDoc(doc(db,'transfers',transfer.id),{status:'reversed',reversedAt:new Date().toISOString(),reversedBy:userName});
+            const now=new Date();
+            await addDoc(collection(db,'transfers'),{
+                ref:'REV-'+Date.now().toString().slice(-6), date:now.toLocaleDateString('en-GB'), time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
+                createdAt:now.toISOString(), srcId:currentLocationId, srcName:locationName, destId:'master', destName:'⭐ Master Warehouse',
+                items:transfer.items, totalValue:transfer.totalValue, doneBy:userName, status:'active', isReversal:true, originalTransfer:transfer.ref
+            });
+            toast(`✅ Items returned from ${locationName} to Master`);
+            loadTransferHistory();
+        } catch(err){ toast('Reverse failed: '+err.message,'error'); }
     };
     
     async function loadTransferHistory(){ 
@@ -295,24 +355,44 @@
             const q=query(collection(db,'transfers'),orderBy('createdAt','desc')); 
             const snap=await getDocs(q); 
             const transfers=[]; 
-            snap.forEach(d=>{ const t={id:d.id,...d.data()}; if(t.srcId==='master' || t.destId==='master') transfers.push(t); }); 
+            snap.forEach(d=>{ const t={id:d.id,...d.data()}; transfers.push(t); }); 
             if(!transfers.length){ tbody.innerHTML='<tr><td colspan="8">No transfers</td></tr>'; return; } 
             tbody.innerHTML=''; 
             transfers.forEach(t=>{ 
-                const isOut=t.srcId==='master'; 
-                const isRedirected=t.status==='redirected';
-                const isRev=t.status==='reversed';
-                let dir = isRev?'REVERSED':(isRedirected?'🔄 REDIRECTED':(isOut?'OUT →':'IN ←'));
-                const branch = isOut ? (t.destName||t.destId) : (t.srcName||t.srcId);
+                const isMasterRelated = (t.srcId==='master' || t.destId==='master' || t.isRedirect || t.isReversal);
+                if(!isMasterRelated && !t.isRedirect) return;
+                const isOut = (t.srcId==='master' && t.destId!=='master');
+                const isRedirected = t.status==='redirected';
+                const isReversed = t.status==='reversed';
+                let dir = '';
+                let statusBadge = '';
+                if(isReversed) { dir = '↩️ REVERSED'; statusBadge = '<span class="badge badge-reverse">Reversed</span>'; }
+                else if(isRedirected) { dir = '🔄 REDIRECTED'; statusBadge = `<span class="badge badge-redirect">Redirected ${t.redirectCount || 1}x</span>`; }
+                else if(isOut) { dir = '📤 OUT →'; statusBadge = '<span class="badge badge-active">Active</span>'; }
+                else { dir = '📥 IN ←'; statusBadge = '<span class="badge badge-active">Active</span>'; }
+                const branch = t.destId==='master' ? t.srcName : t.destName;
                 const row = tbody.insertRow();
-                row.innerHTML = `<td>${t.date||''} ${t.time||''}</td><td><span class="code-chip">${t.ref||t.id.slice(-6)}</span></td><td><span class="stock-chip" style="background:${isRedirected?'#fef3c7':(isRev?'#ede9fe':(isOut?'#ffe4e6':'#dcfce7'))}">${dir}</span></td><td>${escapeHtml(branch)}</td><td>${t.items?.length||0}</td><td>K${(t.totalValue||0).toFixed(2)}</td><td>${t.status||'active'}</td>
-                <td><button class="btn btn-ghost" onclick="window.showTransferDetail('${t.id}')"><i class="fas fa-eye"></i></button>${!isRev && !isRedirected && isOut ? `<button class="btn btn-amber" style="margin-left:6px;" onclick="window.redirectTransfer('${t.id}')"><i class="fas fa-share-alt"></i> Redirect</button>` : ''}${!isRev && isOut && !isRedirected ? `<button class="btn btn-purple" style="margin-left:6px;" onclick="window.openReverse('${t.id}')"><i class="fas fa-undo-alt"></i></button>` : ''}</td>`;
+                const canRedirect = !isReversed && (t.destId !== 'master' || t.srcId !== 'master');
+                const canReverse = !isReversed && (t.destId !== 'master' || t.srcId !== 'master');
+                row.innerHTML = `
+                    <td style="font-size:0.7rem;">${t.date||''} ${t.time||''}</td>
+                    <td><span class="code-chip">${t.ref||t.id.slice(-6)}</span></td>
+                    <td>${dir}</td>
+                    <td>${escapeHtml(branch||'—')}</td>
+                    <td>${t.items?.length||0}</td>
+                    <td>K${(t.totalValue||0).toFixed(2)}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button class="btn btn-ghost" onclick="window.showTransferDetail('${t.id}')"><i class="fas fa-eye"></i></button>
+                        ${canRedirect ? `<button class="btn btn-amber" style="margin-left:6px;" onclick="window.redirectTransfer('${t.id}')"><i class="fas fa-share-alt"></i> Redirect</button>` : ''}
+                        ${canReverse ? `<button class="btn btn-purple" style="margin-left:6px;" onclick="window.reverseTransfer('${t.id}')"><i class="fas fa-undo-alt"></i> Reverse</button>` : ''}
+                    </td>
+                `;
             });
             window._transfersMap = transfers.reduce((acc,cur)=>{ acc[cur.id]=cur; return acc; },{});
-        } catch(e){ tbody.innerHTML='<tr><td colspan="8">Error</td></tr>'; }
+        } catch(e){ tbody.innerHTML='<tr><td colspan="8">Error loading transfers</td></tr>'; console.error(e); }
     }
-    window.showTransferDetail = (id) => { const t = window._transfersMap?.[id]; if(!t) return; const body=document.getElementById('detailsModalBody'); const items=t.items||[]; body.innerHTML=`<div><strong>Ref:</strong> ${t.ref||id}<br><strong>Date:</strong> ${t.date} ${t.time}<br><strong>From:</strong> ${t.srcName} → ${t.destName}</div><table class="cart-table"><thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Subtotal</th></tr></thead><tbody>${items.map(i=>`<tr><td>${escapeHtml(i.code)}</td><td>${escapeHtml(i.name)}</td><td>${i.qty}</td><td>K${(i.total||i.qty*i.price).toFixed(2)}</td></tr>`).join('')}</tbody></table><div style="margin-top:12px;"><strong>Total: K${(t.totalValue||0).toFixed(2)}</strong></div>`; document.getElementById('detailsModal').classList.add('show'); };
-    window.openReverse = async(id) => { const t = window._transfersMap?.[id]; if(!t|| t.status==='reversed'){ toast('Already reversed','error'); return; } if(confirm(`Return items from ${t.destName} back to Master?`)){ try{ for(const item of t.items){ await runTransaction(db, async(tx)=>{ const destQ=query(collection(db,'inventory'),where('branchId','==',t.destId),where('code','==',item.code)); const destSnap=await getDocs(destQ); if(!destSnap.empty) tx.update(doc(db,'inventory',destSnap.docs[0].id),{stock:increment(-item.qty)}); const masterQ=query(collection(db,'inventory'),where('branchId','==','master'),where('code','==',item.code)); const masterSnap=await getDocs(masterQ); if(!masterSnap.empty){ tx.update(doc(db,'inventory',masterSnap.docs[0].id),{stock:increment(item.qty)}); } else { tx.set(doc(collection(db,'inventory')),{code:item.code,name:item.name,price:item.price,stock:item.qty,sold:0,branchId:'master'}); } }); } await updateDoc(doc(db,'transfers',t.id),{status:'reversed'}); const now=new Date(); await addDoc(collection(db,'transfers'),{ref:'RET-'+Date.now().toString().slice(-6), date:now.toLocaleDateString('en-GB'), time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}), createdAt:now.toISOString(), srcId:t.destId, srcName:t.destName, destId:'master', destName:'⭐ Master Warehouse', items:t.items, totalValue:t.totalValue, doneBy:userName, status:'active', isReversal:true }); toast('Items returned to Master'); loadTransferHistory(); }catch(err){ toast('Return failed: '+err.message,'error'); } } };
+    window.showTransferDetail = (id) => { const t = window._transfersMap?.[id]; if(!t) return; const body=document.getElementById('detailsModalBody'); const items=t.items||[]; body.innerHTML=`<div><strong>Ref:</strong> ${t.ref||id}<br><strong>Date:</strong> ${t.date} ${t.time}<br><strong>From:</strong> ${t.srcName} → ${t.destName}${t.redirectCount ? `<br><strong>Redirect Count:</strong> ${t.redirectCount}` : ''}</div><table class="cart-table"><thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Subtotal</th></tr></thead><tbody>${items.map(i=>`<tr><td>${escapeHtml(i.code)}</td><td>${escapeHtml(i.name)}</td><td>${i.qty}</td><td>K${(i.total||i.qty*i.price).toFixed(2)}</td></tr>`).join('')}</tbody></table><div style="margin-top:12px;"><strong>Total: K${(t.totalValue||0).toFixed(2)}</strong></div>`; document.getElementById('detailsModal').classList.add('show'); };
     document.getElementById('grvBtn').onclick = () => { localStorage.setItem('grvBranch','master'); window.open('grv.html','_blank'); toast('GRV for master','info'); };
     document.getElementById('searchInput').addEventListener('input',()=>renderInventory());
     document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>{ const tab=btn.dataset.tab; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active')); document.getElementById(`tab${tab.charAt(0).toUpperCase()+tab.slice(1)}`).classList.add('active'); if(tab==='history') loadTransferHistory(); }));
