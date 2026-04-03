@@ -21,7 +21,6 @@
             font-size: 13px;
         }
         
-        /* Top Bar */
         .topbar {
             position: fixed;
             top: 0;
@@ -94,7 +93,6 @@
             font-size: 0.6rem;
         }
         
-        /* Sidebar */
         .sidebar {
             position: fixed;
             top: 52px;
@@ -180,7 +178,6 @@
             display: block;
         }
         
-        /* Main Content */
         main {
             margin-top: 52px;
             margin-left: 220px;
@@ -188,7 +185,6 @@
             transition: margin-left 0.28s ease;
         }
         
-        /* Stats */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -218,7 +214,6 @@
             font-family: monospace;
         }
         
-        /* Content Bar */
         .content-bar {
             background: white;
             border: 1px solid #e2e6ef;
@@ -237,7 +232,6 @@
             font-size: 0.85rem;
         }
         
-        /* Search */
         .action-flex {
             display: flex;
             gap: 8px;
@@ -268,7 +262,6 @@
             color: #a0a8c0;
         }
         
-        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -297,7 +290,6 @@
             border: 1px solid #e2e6ef;
         }
         
-        /* Table */
         .table-card {
             background: white;
             border-radius: 16px;
@@ -359,7 +351,6 @@
             color: #6b7490;
         }
         
-        /* 3-dot menu */
         .dots-wrap {
             position: relative;
             display: inline-block;
@@ -430,7 +421,6 @@
             border-top: 1px solid #e2e6ef;
         }
         
-        /* Modal */
         .modal-bg {
             position: fixed;
             inset: 0;
@@ -493,7 +483,6 @@
             justify-content: center;
         }
         
-        /* Toast */
         .toast-wrap {
             position: fixed;
             bottom: 14px;
@@ -525,7 +514,6 @@
             background: #10b981;
         }
         
-        /* Password Overlay */
         .pw-overlay {
             position: fixed;
             inset: 0;
@@ -672,7 +660,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
     import { getFirestore, collection, query, where, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-    // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
         authDomain: "trismartstores.firebaseapp.com",
@@ -685,23 +672,32 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Auth
-    const branchId = localStorage.getItem('branchId');
+    // Get branch ID from localStorage - MUST match master file branch IDs
+    let branchId = localStorage.getItem('branchId');
     const loggedInUser = (localStorage.getItem('loggedInUser') || localStorage.getItem('userName') || '').toLowerCase().trim();
     
+    // Branch mapping for display - MUST match master file
+    const branchMap = {
+        'kabanana': { id: 'kabanana', name: 'Kabanana Branch', display: '🏪 KABANANA' },
+        'makeni': { id: 'makeni', name: 'Makeni Branch', display: '🏪 MAKENI' }
+    };
+    
+    // Validate branch ID
     if (!branchId) {
         alert("Missing branch. Please login.");
         window.location.href = "dashboard.html";
     }
-
-    const branches = {
-        makeni: { id: 'makeni', name: 'Kabanana Branch' },
-        kabana: { id: 'kabana', name: 'Makeni Branch' }
-    };
-    const currentBranch = branches[branchId] || { name: branchId, id: branchId };
     
+    // Ensure branchId is valid
+    if (!branchMap[branchId]) {
+        console.warn(`Unknown branch ID: ${branchId}, defaulting to kabanana`);
+        branchId = 'kabanana';
+        localStorage.setItem('branchId', branchId);
+    }
+    
+    const currentBranch = branchMap[branchId];
     document.getElementById('branchNameDisplay').innerText = currentBranch.name;
-    document.getElementById('branchBadge').innerHTML = `<i class="fas fa-store"></i> ${currentBranch.name.toUpperCase()}`;
+    document.getElementById('branchBadge').innerHTML = `<i class="fas fa-store"></i> ${currentBranch.display}`;
     
     const isAdmin = loggedInUser === 'chris';
     const isWarehouseMan = loggedInUser === 'warehouseman';
@@ -714,7 +710,6 @@
         document.getElementById('actionsTh').style.display = 'table-cell';
     }
 
-    // Password system
     let editUnlocked = false;
     const EDIT_PASSWORD = 'Abc12345';
     
@@ -775,11 +770,9 @@
         }
     }
     
-    // Inventory data
     let inventory = [];
     let unsubscribe = null;
     
-    // Edit function
     window.editItem = function(itemId) {
         withAuth(async () => {
             const item = inventory.find(i => i.id === itemId);
@@ -864,7 +857,6 @@
         });
     };
     
-    // Delete function
     window.deleteItem = function(itemId) {
         withAuth(async () => {
             const item = inventory.find(i => i.id === itemId);
@@ -995,6 +987,7 @@
     
     function startListener() {
         if (unsubscribe) unsubscribe();
+        // IMPORTANT: Filter by the correct branch ID
         const q = query(collection(db, 'inventory'), where('branchId', '==', branchId));
         unsubscribe = onSnapshot(q, (snap) => {
             inventory = snap.docs.map(d => ({
@@ -1006,12 +999,14 @@
             inventory.sort((a, b) => (a.code || '').localeCompare(b.code || ''));
             updateStats();
             renderTable();
+        }, (error) => {
+            console.error('Firestore error:', error);
+            showToast('Error loading inventory: ' + error.message, 'error');
         });
     }
     
     document.getElementById('searchInput').addEventListener('input', renderTable);
     
-    // Sidebar
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sbOverlay');
     const menuBtn = document.getElementById('menuBtn');
@@ -1059,6 +1054,10 @@
     });
     
     startListener();
+    
+    // Show current branch info on load
+    console.log(`Loaded branch: ${currentBranch.name} (ID: ${branchId})`);
+    showToast(`Welcome to ${currentBranch.name}`, 'success');
 </script>
 </body>
 </html>
