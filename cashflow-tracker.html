@@ -37,7 +37,6 @@ body {
   min-height: 100vh;
 }
 
-/* Compact Top Bar */
 .topbar {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -108,11 +107,11 @@ body {
   border-color: var(--primary);
 }
 
-/* PERMANENT ADD BUTTON - compact */
 .sticky-add-wrapper {
   padding: 8px 16px 0 16px;
   background: var(--bg);
 }
+
 .add-transaction-permanent {
   background: var(--primary);
   color: white;
@@ -130,12 +129,12 @@ body {
   transition: 0.2s;
   box-shadow: var(--shadow-sm);
 }
+
 .add-transaction-permanent:hover {
   background: var(--primary-light);
   transform: translateY(-1px);
 }
 
-/* Collapsible Panel - compact */
 .action-panel {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -143,15 +142,18 @@ body {
   transition: max-height 0.3s ease;
   max-height: 0;
 }
+
 .action-panel.open {
-  max-height: 320px;
+  max-height: 380px;
 }
+
 .action-panel-content {
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
+
 .action-buttons {
   display: flex;
   gap: 10px;
@@ -159,6 +161,7 @@ body {
   padding-bottom: 10px;
   border-bottom: 1px solid var(--border);
 }
+
 .btn {
   padding: 5px 12px;
   border-radius: 30px;
@@ -172,14 +175,17 @@ body {
   border: 1px solid var(--border);
   color: var(--text);
 }
+
 .btn-outline {
   background: white;
 }
+
 .btn-outline:hover {
   background: var(--bg);
   border-color: var(--primary);
   color: var(--primary);
 }
+
 .accounts-management h3 {
   font-size: 0.7rem;
   font-weight: 600;
@@ -189,12 +195,16 @@ body {
   gap: 6px;
   margin-bottom: 6px;
 }
+
 .account-list-manage {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 8px;
+  max-height: 150px;
+  overflow-y: auto;
 }
+
 .account-badge {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -206,10 +216,12 @@ body {
   align-items: center;
   gap: 5px;
 }
+
 .account-badge.hidden-badge {
   opacity: 0.5;
   text-decoration: line-through;
 }
+
 .toggle-vis-btn, .delete-acc-btn {
   background: none;
   border: none;
@@ -219,14 +231,17 @@ body {
   font-size: 0.6rem;
   color: var(--text-muted);
 }
+
 .delete-acc-btn {
   color: var(--danger);
 }
+
 .add-account-form {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
+
 .add-account-form input {
   flex: 1;
   padding: 5px 10px;
@@ -236,6 +251,7 @@ body {
   background: var(--bg);
   outline: none;
 }
+
 .add-account-form button {
   padding: 5px 12px;
   background: var(--success);
@@ -250,7 +266,6 @@ body {
   gap: 4px;
 }
 
-/* Account Bar - compact */
 .account-bar {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -260,6 +275,7 @@ body {
   overflow-x: auto;
   white-space: nowrap;
 }
+
 .account-tab {
   padding: 8px 14px;
   font-size: 0.75rem;
@@ -271,12 +287,12 @@ body {
   align-items: center;
   gap: 5px;
 }
+
 .account-tab.active {
   color: var(--primary);
   border-bottom-color: var(--primary);
 }
 
-/* Filter Bar - compact */
 .filter-bar {
   background: var(--surface);
   padding: 8px 16px;
@@ -287,11 +303,13 @@ body {
   justify-content: space-between;
   gap: 8px;
 }
+
 .filter-group {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
+
 .filter-chip {
   background: var(--bg);
   border: 1px solid var(--border);
@@ -302,6 +320,7 @@ body {
   gap: 5px;
   font-size: 0.7rem;
 }
+
 .filter-chip select, .filter-chip input {
   border: none;
   background: transparent;
@@ -309,9 +328,11 @@ body {
   outline: none;
   width: auto;
 }
+
 .filter-chip input {
   width: 100px;
 }
+
 .clear-filter {
   background: transparent;
   border: 1px solid var(--border);
@@ -323,6 +344,7 @@ body {
   align-items: center;
   gap: 5px;
 }
+
 .stats-badge {
   background: var(--bg);
   padding: 4px 10px;
@@ -331,10 +353,10 @@ body {
   font-weight: 500;
 }
 
-/* Main Table - compact */
 .main-content {
   padding: 12px 16px;
 }
+
 .table-wrapper {
   background: var(--surface);
   border-radius: var(--radius);
@@ -342,12 +364,14 @@ body {
   overflow: auto;
   box-shadow: var(--shadow-sm);
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.7rem;
   min-width: 650px;
 }
+
 th {
   background: #f8fafc;
   padding: 10px 12px;
@@ -357,32 +381,40 @@ th {
   border-bottom: 1px solid var(--border);
   font-size: 0.7rem;
 }
+
 td {
   padding: 8px 12px;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }
+
 tr:last-child td {
   border-bottom: none;
 }
+
 .opening-row td {
   background: #fefce8;
   font-style: italic;
 }
+
 .debit {
   color: var(--danger);
   font-weight: 600;
 }
+
 .credit {
   color: var(--success);
   font-weight: 600;
 }
+
 .balance {
   font-weight: 700;
 }
+
 .balance.negative {
   color: var(--danger);
 }
+
 .transfer-badge {
   background: #ffedd5;
   color: #c2410c;
@@ -392,14 +424,17 @@ tr:last-child td {
   margin-left: 5px;
   display: inline-block;
 }
+
 .empty-cell {
   color: #cbd5e1;
   font-size: 0.65rem;
 }
+
 .menu-cell {
   text-align: center;
   position: relative;
 }
+
 .action-dots {
   background: none;
   border: none;
@@ -408,9 +443,11 @@ tr:last-child td {
   border-radius: 6px;
   color: var(--text-muted);
 }
+
 .action-dots:hover {
   background: var(--bg);
 }
+
 .dropdown {
   position: absolute;
   right: 0;
@@ -423,9 +460,11 @@ tr:last-child td {
   min-width: 100px;
   display: none;
 }
+
 .dropdown.show {
   display: block;
 }
+
 .dropdown-item {
   padding: 6px 12px;
   display: flex;
@@ -439,14 +478,15 @@ tr:last-child td {
   border: none;
   color: var(--text);
 }
+
 .dropdown-item:hover {
   background: var(--bg);
 }
+
 .delete-item:hover {
   color: var(--danger);
 }
 
-/* Modals - compact */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -457,9 +497,11 @@ tr:last-child td {
   justify-content: center;
   z-index: 1000;
 }
+
 .modal-overlay.open {
   display: flex;
 }
+
 .modal-card {
   background: white;
   width: 90%;
@@ -468,15 +510,18 @@ tr:last-child td {
   padding: 20px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
+
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
+
 .modal-header h2 {
   font-size: 1.1rem;
 }
+
 .close-modal {
   background: var(--bg);
   border: none;
@@ -485,9 +530,11 @@ tr:last-child td {
   border-radius: 30px;
   cursor: pointer;
 }
+
 .form-group {
   margin-bottom: 12px;
 }
+
 .form-group label {
   font-size: 0.65rem;
   font-weight: 700;
@@ -496,6 +543,7 @@ tr:last-child td {
   display: block;
   margin-bottom: 4px;
 }
+
 .form-group input, .form-group select {
   width: 100%;
   padding: 8px 10px;
@@ -505,13 +553,16 @@ tr:last-child td {
   font-size: 0.8rem;
   outline: none;
 }
+
 .form-row {
   display: flex;
   gap: 10px;
 }
+
 .form-row .form-group {
   flex: 1;
 }
+
 .save-btn {
   width: 100%;
   background: var(--primary);
@@ -524,14 +575,15 @@ tr:last-child td {
   cursor: pointer;
   font-size: 0.8rem;
 }
+
 .save-btn.amber {
   background: var(--warning);
 }
+
 .save-btn.red {
   background: var(--danger);
 }
 
-/* Toast */
 .toast-area {
   position: fixed;
   bottom: 20px;
@@ -541,6 +593,7 @@ tr:last-child td {
   flex-direction: column;
   gap: 6px;
 }
+
 .toast {
   background: white;
   border-left: 3px solid var(--success);
@@ -553,10 +606,21 @@ tr:last-child td {
   font-size: 0.75rem;
   animation: slideIn 0.2s ease;
 }
+
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
+
+.sync-indicator {
+  background: var(--success);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  margin-left: 8px;
+}
+
 @media (max-width: 640px) {
   .topbar, .account-bar, .filter-bar { padding: 0 12px; }
   .main-content { padding: 10px; }
@@ -580,35 +644,32 @@ tr:last-child td {
   </button>
 </div>
 
-<!-- PERMANENT ADD BUTTON - always visible -->
 <div class="sticky-add-wrapper">
   <button class="add-transaction-permanent" id="permanentAddBtn">
     <i class="fas fa-plus-circle"></i> Add Transaction
   </button>
 </div>
 
-<!-- Collapsible Action Panel -->
 <div class="action-panel" id="actionPanel">
   <div class="action-panel-content">
     <div class="action-buttons">
       <button class="btn btn-outline" id="pdfExportBtn"><i class="fas fa-file-pdf"></i> PDF</button>
       <button class="btn btn-outline" id="transferBtn"><i class="fas fa-exchange-alt"></i> Transfer</button>
+      <button class="btn btn-outline" id="syncAccountsBtn"><i class="fas fa-sync-alt"></i> Sync Accounts</button>
     </div>
     <div class="accounts-management">
-      <h3><i class="fas fa-wallet"></i> Manage Accounts</h3>
+      <h3><i class="fas fa-wallet"></i> Manage Accounts <span id="syncStatus" class="sync-indicator" style="display:none">Synced</span></h3>
       <div class="account-list-manage" id="accountManageList"></div>
       <div class="add-account-form">
-        <input type="text" id="newAccountName" placeholder="New account name">
+        <input type="text" id="newAccountName" placeholder="New account name (e.g., Airtel money sales sim)">
         <button id="addAccountBtn"><i class="fas fa-plus"></i> Add</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Account Bar -->
 <div class="account-bar" id="accountTabsContainer"></div>
 
-<!-- Filter Bar -->
 <div class="filter-bar">
   <div class="filter-group">
     <div class="filter-chip">
@@ -639,7 +700,6 @@ tr:last-child td {
 
 <div class="toast-area" id="toastRoot"></div>
 
-<!-- Transaction Modal -->
 <div id="txnModal" class="modal-overlay">
   <div class="modal-card">
     <div class="modal-header"><h2 id="txnTitle">Add Transaction</h2><button class="close-modal" onclick="closeTxnModal()"><i class="fas fa-times"></i></button></div>
@@ -661,7 +721,6 @@ tr:last-child td {
   </div>
 </div>
 
-<!-- Transfer Modal -->
 <div id="transferModal" class="modal-overlay">
   <div class="modal-card">
     <div class="modal-header"><h2>Transfer Funds</h2><button class="close-modal" onclick="closeTransferModal()"><i class="fas fa-times"></i></button></div>
@@ -679,7 +738,6 @@ tr:last-child td {
   </div>
 </div>
 
-<!-- Delete Modal -->
 <div id="deleteConfirmModal" class="modal-overlay">
   <div class="modal-card">
     <div class="modal-header"><h2>Delete</h2><button class="close-modal" onclick="closeDeleteConfirm()"><i class="fas fa-times"></i></button></div>
@@ -702,23 +760,72 @@ tr:last-child td {
   const db = firebase.firestore();
   db.enablePersistence().catch(e => console.warn(e));
 
-  const DEFAULT_ACCOUNTS = ['Expenses A/c', 'Business savings A/c', 'Inventory A/c', 'Personal A/c', 'FnB Account'];
+  const DEFAULT_ACCOUNTS = ['Expenses A/c', 'Business savings A/c', 'Inventory A/c', 'FnB Account'];
   let accounts = [], hiddenAccounts = new Set();
+  let accountsListener = null;
   
-  function loadAccounts() {
-    const stored = localStorage.getItem('trismart_accounts');
-    const storedHidden = localStorage.getItem('trismart_hidden_accounts');
-    accounts = stored ? JSON.parse(stored) : [...DEFAULT_ACCOUNTS];
-    hiddenAccounts = storedHidden ? new Set(JSON.parse(storedHidden)) : new Set();
+  // REAL-TIME SYNC from Firestore - This ensures all devices see the same accounts!
+  function setupAccountsRealtimeSync() {
+    if (accountsListener) accountsListener();
+    
+    accountsListener = db.collection('AppSettings').doc('accounts')
+      .onSnapshot(async (doc) => {
+        if (doc.exists) {
+          const data = doc.data();
+          accounts = data.accounts || [...DEFAULT_ACCOUNTS];
+          hiddenAccounts = new Set(data.hiddenAccounts || []);
+          
+          // Update current account if needed
+          let storedAccount = localStorage.getItem('selectedAccount');
+          if (!storedAccount || !accounts.includes(storedAccount)) {
+            const visible = accounts.filter(a => !hiddenAccounts.has(a));
+            if (visible.length) {
+              currentAccount = visible[0];
+              localStorage.setItem('selectedAccount', currentAccount);
+            } else if (accounts.length) {
+              currentAccount = accounts[0];
+              localStorage.setItem('selectedAccount', currentAccount);
+            }
+          } else {
+            currentAccount = storedAccount;
+          }
+          
+          renderAllAccountUI();
+          showToast('Accounts synced from cloud', 'info');
+        } else {
+          // First time - create default accounts
+          accounts = [...DEFAULT_ACCOUNTS];
+          hiddenAccounts = new Set();
+          await saveAccountsToFirestore();
+          renderAllAccountUI();
+        }
+      }, (error) => {
+        console.error('Account sync error:', error);
+        showToast('Error syncing accounts', 'error');
+      });
   }
-  function saveAccounts() {
-    localStorage.setItem('trismart_accounts', JSON.stringify(accounts));
-    localStorage.setItem('trismart_hidden_accounts', JSON.stringify([...hiddenAccounts]));
-  }
-  loadAccounts();
   
-  let currentAccount = localStorage.getItem('selectedAccount') || accounts[0];
-  if (!accounts.includes(currentAccount)) currentAccount = accounts[0];
+  async function saveAccountsToFirestore() {
+    try {
+      await db.collection('AppSettings').doc('accounts').set({
+        accounts: accounts,
+        hiddenAccounts: [...hiddenAccounts],
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      
+      const syncStatus = document.getElementById('syncStatus');
+      syncStatus.style.display = 'inline-block';
+      setTimeout(() => { syncStatus.style.display = 'none'; }, 2000);
+      
+      return true;
+    } catch (error) {
+      console.error('Save error:', error);
+      showToast('Failed to save accounts to cloud', 'error');
+      return false;
+    }
+  }
+  
+  let currentAccount = 'Expenses A/c';
   let currentMonth = localStorage.getItem('cf_month') || new Date().toISOString().slice(0,7);
   let allTransactions = [], unsubscribeTxns = null, filteredList = [];
 
@@ -752,57 +859,87 @@ tr:last-child td {
     setTimeout(() => toast.remove(), 3000);
   }
 
-  window.toggleAccountVisibility = function(acc) {
+  window.toggleAccountVisibility = async function(acc) {
     if (hiddenAccounts.has(acc)) hiddenAccounts.delete(acc);
     else hiddenAccounts.add(acc);
     if (hiddenAccounts.has(acc) && currentAccount === acc) {
       const visible = accounts.filter(a => !hiddenAccounts.has(a));
-      if (visible.length) currentAccount = visible[0];
-      localStorage.setItem('selectedAccount', currentAccount);
+      if (visible.length) {
+        currentAccount = visible[0];
+        localStorage.setItem('selectedAccount', currentAccount);
+      }
     }
-    saveAccounts();
-    renderAllAccountUI();
-    applyFiltersAndRender();
+    await saveAccountsToFirestore();
   };
 
   window.deleteAccount = async function(acc) {
-    if (acc === 'Expenses A/c') { showToast('Cannot delete default', 'error'); return; }
-    if (allTransactions.some(t => t.account === acc)) { showToast(`Has transactions`, 'error'); return; }
+    if (acc === 'Expenses A/c') { showToast('Cannot delete default account', 'error'); return; }
+    if (allTransactions.some(t => t.account === acc)) { 
+      showToast(`Cannot delete "${acc}" - it has transactions`, 'error'); 
+      return; 
+    }
     accounts = accounts.filter(a => a !== acc);
     hiddenAccounts.delete(acc);
-    if (currentAccount === acc) { currentAccount = accounts[0]; localStorage.setItem('selectedAccount', currentAccount); }
-    saveAccounts();
-    renderAllAccountUI();
-    applyFiltersAndRender();
-    showToast(`Deleted ${acc}`, 'info');
+    if (currentAccount === acc) { 
+      currentAccount = accounts[0]; 
+      localStorage.setItem('selectedAccount', currentAccount);
+    }
+    await saveAccountsToFirestore();
+    showToast(`Deleted "${acc}"`, 'success');
   };
 
-  function addNewAccount() {
+  async function addNewAccount() {
     const name = document.getElementById('newAccountName').value.trim();
-    if (!name) return showToast('Enter name', 'error');
-    if (accounts.includes(name)) return showToast('Exists', 'error');
+    if (!name) return showToast('Enter account name', 'error');
+    if (accounts.includes(name)) return showToast('Account already exists', 'error');
     accounts.push(name);
-    saveAccounts();
-    renderAllAccountUI();
+    await saveAccountsToFirestore();
     document.getElementById('newAccountName').value = '';
-    showToast(`Added ${name}`, 'success');
+    showToast(`Added "${name}" - synced to cloud`, 'success');
   }
   document.getElementById('addAccountBtn').onclick = addNewAccount;
+  
+  // Manual sync button
+  document.getElementById('syncAccountsBtn').onclick = async () => {
+    showToast('Syncing accounts from cloud...', 'info');
+    const accountsDoc = await db.collection('AppSettings').doc('accounts').get();
+    if (accountsDoc.exists) {
+      const data = accountsDoc.data();
+      accounts = data.accounts || [...DEFAULT_ACCOUNTS];
+      hiddenAccounts = new Set(data.hiddenAccounts || []);
+      renderAllAccountUI();
+      showToast('Accounts synced successfully!', 'success');
+    } else {
+      showToast('No accounts found in cloud', 'error');
+    }
+  };
 
   function renderAllAccountUI() {
     const visible = accounts.filter(a => !hiddenAccounts.has(a));
-    accountContainer.innerHTML = visible.map(a => `<div class="account-tab ${currentAccount === a ? 'active' : ''}" data-acc="${a}"><i class="fas fa-wallet"></i> ${a}</div>`).join('');
+    accountContainer.innerHTML = visible.map(a => `<div class="account-tab ${currentAccount === a ? 'active' : ''}" data-acc="${a.replace(/"/g, '&quot;')}"><i class="fas fa-wallet"></i> ${a}</div>`).join('');
     document.querySelectorAll('.account-tab').forEach(tab => {
-      tab.addEventListener('click', () => { currentAccount = tab.dataset.acc; localStorage.setItem('selectedAccount', currentAccount); renderAllAccountUI(); applyFiltersAndRender(); });
+      tab.addEventListener('click', () => { 
+        currentAccount = tab.dataset.acc; 
+        localStorage.setItem('selectedAccount', currentAccount); 
+        renderAllAccountUI(); 
+        applyFiltersAndRender(); 
+      });
     });
+    
     accountManageList.innerHTML = accounts.map(a => {
       const hidden = hiddenAccounts.has(a);
-      return `<div class="account-badge ${hidden ? 'hidden-badge' : ''}"><i class="fas ${hidden ? 'fa-eye-slash' : 'fa-eye'}"></i><span>${a}</span><button class="toggle-vis-btn" onclick="toggleAccountVisibility('${a}')"><i class="fas ${hidden ? 'fa-eye' : 'fa-eye-slash'}"></i></button>${a !== 'Expenses A/c' ? `<button class="delete-acc-btn" onclick="deleteAccount('${a}')"><i class="fas fa-trash"></i></button>` : ''}</div>`;
+      const safeAcc = a.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      return `<div class="account-badge ${hidden ? 'hidden-badge' : ''}"><i class="fas ${hidden ? 'fa-eye-slash' : 'fa-eye'}"></i><span title="${a}">${a.length > 20 ? a.substring(0, 18) + '...' : a}</span><button class="toggle-vis-btn" onclick="toggleAccountVisibility('${safeAcc}')"><i class="fas ${hidden ? 'fa-eye' : 'fa-eye-slash'}"></i></button>${a !== 'Expenses A/c' ? `<button class="delete-acc-btn" onclick="deleteAccount('${safeAcc}')"><i class="fas fa-trash"></i></button>` : ''}</div>`;
     }).join('');
+    
     const visibleSelect = accounts.filter(a => !hiddenAccounts.has(a));
     ['txnAccount', 'fromAccount', 'toAccount'].forEach(id => {
       const sel = document.getElementById(id);
-      if (sel) sel.innerHTML = visibleSelect.map(a => `<option value="${a}" ${currentAccount === a ? 'selected' : ''}>${a}</option>`).join('');
+      if (sel) {
+        const currentVal = sel.value;
+        sel.innerHTML = visibleSelect.map(a => `<option value="${a.replace(/"/g, '&quot;')}" ${currentAccount === a ? 'selected' : ''}>${a}</option>`).join('');
+        if (currentVal && visibleSelect.includes(currentVal)) sel.value = currentVal;
+      }
     });
   }
 
@@ -820,10 +957,22 @@ tr:last-child td {
 
   function getOpeningBalance(acc, ym) {
     const [y, m] = ym.split('-').map(Number);
-    const first = new Date(y, m-1, 1).toISOString().slice(0,10);
-    let bal = 0;
-    allTransactions.filter(t => t.account === acc && t.date < first).forEach(t => { if (t.type === 'credit') bal += t.amount; else bal -= t.amount; });
-    return bal;
+    const firstDayOfMonth = new Date(y, m-1, 1);
+    
+    let balance = 0;
+    const transactionsBefore = allTransactions.filter(t => {
+      if (t.account !== acc) return false;
+      const tDate = new Date(t.date);
+      return tDate < firstDayOfMonth;
+    });
+    
+    transactionsBefore.sort((a,b) => new Date(a.date) - new Date(b.date));
+    transactionsBefore.forEach(t => {
+      if (t.type === 'credit') balance += t.amount;
+      else balance -= t.amount;
+    });
+    
+    return balance;
   }
 
   function getFilters() { return { ref: localStorage.getItem('cf_refFilter') || '', search: localStorage.getItem('cf_searchFilter') || '' }; }
@@ -831,10 +980,17 @@ tr:last-child td {
   
   function applyFiltersAndRender() {
     const f = getFilters();
-    refFilter.value = f.ref; searchFilter.value = f.search;
+    refFilter.value = f.ref; 
+    searchFilter.value = f.search;
+    
     let filtered = allTransactions.filter(t => t.account === currentAccount && t.date && t.date.startsWith(currentMonth));
+    
     if (f.ref) filtered = filtered.filter(t => t.reference === f.ref);
-    if (f.search) { const kw = f.search.toLowerCase(); filtered = filtered.filter(t => (t.description || '').toLowerCase().includes(kw) || (t.reference || '').toLowerCase().includes(kw)); }
+    if (f.search) { 
+      const kw = f.search.toLowerCase(); 
+      filtered = filtered.filter(t => (t.description || '').toLowerCase().includes(kw) || (t.reference || '').toLowerCase().includes(kw)); 
+    }
+    
     filtered.sort((a,b) => (a.date < b.date ? -1 : (a.date > b.date ? 1 : (a.createdAt || 0) - (b.createdAt || 0))));
     filteredList = filtered;
     filterStats.innerText = `${filteredList.length} transaction(s)`;
@@ -842,17 +998,45 @@ tr:last-child td {
   }
 
   function renderTable(filtered) {
-    const opening = getOpeningBalance(currentAccount, currentMonth);
-    let running = opening;
-    if (filtered.length === 0 && opening === 0) { tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center">✨ No transactions. Click Add ✨</td></tr>'; return; }
-    let html = `<tr class="opening-row"><td>${currentMonth}-01</td><td>Opening Balance</td><td>—</td><td class="empty-cell">—</td><td class="empty-cell">—</td><td class="balance ${opening < 0 ? 'negative' : ''}">ZMW ${opening.toFixed(2)}</td><td></td></tr>`;
+    const prevMonth = new Date(currentMonth + '-01');
+    prevMonth.setMonth(prevMonth.getMonth() - 1);
+    const prevMonthStr = prevMonth.toISOString().slice(0,7);
+    
+    let prevClosing = getOpeningBalance(currentAccount, prevMonthStr);
+    const prevTransactions = allTransactions.filter(t => t.account === currentAccount && t.date && t.date.startsWith(prevMonthStr));
+    prevTransactions.sort((a,b) => new Date(a.date) - new Date(b.date));
+    prevTransactions.forEach(t => {
+      if (t.type === 'credit') prevClosing += t.amount;
+      else prevClosing -= t.amount;
+    });
+    
+    const displayOpening = prevClosing;
+    let running = displayOpening;
+    
+    if (filtered.length === 0 && displayOpening === 0) { 
+      tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center">✨ No transactions. Click Add ✨</td></tr>'; 
+      return; 
+    }
+    
+    let html = `<tr class="opening-row">
+      <td>${currentMonth}-01</td>
+      <td>Opening Balance (from ${prevMonthStr} closing)</td>
+      <td>—</td>
+      <td class="empty-cell">—</td>
+      <td class="empty-cell">—</td>
+      <td class="balance ${displayOpening < 0 ? 'negative' : ''}">ZMW ${displayOpening.toFixed(2)}</td>
+      <td></td>
+    </tr>`;
+    
     filtered.forEach(t => {
       const isCredit = t.type === 'credit';
-      if (isCredit) running += t.amount; else running -= t.amount;
-      // Only show number in debit/credit, otherwise blank (empty string)
+      if (isCredit) running += t.amount; 
+      else running -= t.amount;
+      
       const debitCell = !isCredit ? `<td class="debit">ZMW ${t.amount.toFixed(2)}</td>` : `<td class="empty-cell"></td>`;
       const creditCell = isCredit ? `<td class="credit">ZMW ${t.amount.toFixed(2)}</td>` : `<td class="empty-cell"></td>`;
       const transferBadge = t.isTransfer ? '<span class="transfer-badge"><i class="fas fa-repeat"></i> TRANSFER</span>' : '';
+      
       html += `<tr>
         <td>${t.date || ''}</td>
         <td>${t.description || ''} ${transferBadge}</td>
@@ -866,8 +1050,15 @@ tr:last-child td {
     tableBody.innerHTML = html;
   }
 
-  window.toggleMenu = function(e, id) { e.stopPropagation(); document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show')); const m = document.getElementById(`menu-${id}`); if (m) m.classList.toggle('show'); };
+  window.toggleMenu = function(e, id) { 
+    e.stopPropagation(); 
+    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show')); 
+    const m = document.getElementById(`menu-${id}`); 
+    if (m) m.classList.toggle('show'); 
+  };
+  
   document.addEventListener('click', () => document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show')));
+  
   window.editTransaction = (id) => {
     const t = allTransactions.find(x => x.id === id);
     if (!t) return;
@@ -877,19 +1068,44 @@ tr:last-child td {
     document.getElementById('txnAccount').value = t.account;
     document.getElementById('txnDesc').value = t.description || '';
     const refVal = t.reference || '';
-    if (refVal === 'INV-001' || refVal === 'SAL-002') { document.getElementById('txnRefSelect').value = refVal; document.getElementById('txnRefCustom').value = ''; }
-    else { document.getElementById('txnRefSelect').value = ''; document.getElementById('txnRefCustom').value = refVal === '—' ? '' : refVal; }
+    if (refVal === 'INV-001' || refVal === 'SAL-002') { 
+      document.getElementById('txnRefSelect').value = refVal; 
+      document.getElementById('txnRefCustom').value = ''; 
+    } else { 
+      document.getElementById('txnRefSelect').value = ''; 
+      document.getElementById('txnRefCustom').value = refVal === '—' ? '' : refVal; 
+    }
     document.getElementById('txnAmount').value = t.amount;
     document.getElementById('txnTitle').innerText = 'Edit Transaction';
     document.getElementById('txnModal').classList.add('open');
   };
-  window.requestDelete = (id) => { document.getElementById('deleteTargetId').value = id; document.getElementById('deleteConfirmModal').classList.add('open'); };
+  
+  window.requestDelete = (id) => { 
+    document.getElementById('deleteTargetId').value = id; 
+    document.getElementById('deleteConfirmModal').classList.add('open'); 
+  };
+  
   window.closeDeleteConfirm = () => document.getElementById('deleteConfirmModal').classList.remove('open');
-  document.getElementById('confirmDeleteBtn').onclick = async () => { const id = document.getElementById('deleteTargetId').value; if (!id) return; try { await db.collection('Cashflow transactions').doc(id).delete(); showToast('Deleted', 'success'); closeDeleteConfirm(); } catch(e) { showToast(e.message, 'error'); } };
+  
+  document.getElementById('confirmDeleteBtn').onclick = async () => { 
+    const id = document.getElementById('deleteTargetId').value; 
+    if (!id) return; 
+    try { 
+      await db.collection('Cashflow transactions').doc(id).delete(); 
+      showToast('Transaction deleted', 'success'); 
+      closeDeleteConfirm(); 
+    } catch(e) { 
+      showToast(e.message, 'error'); 
+    } 
+  };
+  
   document.getElementById('txnForm').onsubmit = async (e) => {
     e.preventDefault();
     const id = document.getElementById('txnDocId').value;
-    const date = document.getElementById('txnDate').value, type = document.getElementById('txnType').value, account = document.getElementById('txnAccount').value, desc = document.getElementById('txnDesc').value.trim();
+    const date = document.getElementById('txnDate').value, 
+          type = document.getElementById('txnType').value, 
+          account = document.getElementById('txnAccount').value, 
+          desc = document.getElementById('txnDesc').value.trim();
     let ref = document.getElementById('txnRefSelect').value;
     const custom = document.getElementById('txnRefCustom').value.trim();
     if (custom) ref = custom;
@@ -900,16 +1116,35 @@ tr:last-child td {
     try {
       if (id) await db.collection('Cashflow transactions').doc(id).update(data);
       else { data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); await db.collection('Cashflow transactions').add(data); }
-      showToast(id ? 'Updated' : 'Added', 'success');
+      showToast(id ? 'Transaction updated' : 'Transaction added', 'success');
       closeTxnModal();
     } catch(e) { showToast(e.message, 'error'); }
   };
-  function closeTxnModal() { document.getElementById('txnModal').classList.remove('open'); document.getElementById('txnForm').reset(); document.getElementById('txnDocId').value = ''; document.getElementById('txnTitle').innerText = 'Add Transaction'; }
+  
+  function closeTxnModal() { 
+    document.getElementById('txnModal').classList.remove('open'); 
+    document.getElementById('txnForm').reset(); 
+    document.getElementById('txnDocId').value = ''; 
+    document.getElementById('txnTitle').innerText = 'Add Transaction'; 
+  }
+  
   window.closeTxnModal = closeTxnModal;
-  document.getElementById('permanentAddBtn').onclick = () => { closeTxnModal(); const visible = accounts.filter(a => !hiddenAccounts.has(a)); if(visible.includes(currentAccount)) document.getElementById('txnAccount').value = currentAccount; document.getElementById('txnModal').classList.add('open'); };
+  
+  document.getElementById('permanentAddBtn').onclick = () => { 
+    closeTxnModal(); 
+    const visible = accounts.filter(a => !hiddenAccounts.has(a)); 
+    if(visible.includes(currentAccount)) document.getElementById('txnAccount').value = currentAccount; 
+    document.getElementById('txnModal').classList.add('open'); 
+  };
+  
   document.getElementById('transferForm').onsubmit = async (e) => {
     e.preventDefault();
-    const date = document.getElementById('transferDate').value, from = document.getElementById('fromAccount').value, to = document.getElementById('toAccount').value, desc = document.getElementById('transferDesc').value.trim() || 'Transfer', ref = document.getElementById('transferRef').value.trim() || 'TRF', amount = parseFloat(document.getElementById('transferAmount').value);
+    const date = document.getElementById('transferDate').value, 
+          from = document.getElementById('fromAccount').value, 
+          to = document.getElementById('toAccount').value, 
+          desc = document.getElementById('transferDesc').value.trim() || 'Transfer', 
+          ref = document.getElementById('transferRef').value.trim() || 'TRF', 
+          amount = parseFloat(document.getElementById('transferAmount').value);
     if (!date || !from || !to || from === to || isNaN(amount) || amount <= 0) return showToast('Invalid transfer', 'error');
     const ts = firebase.firestore.FieldValue.serverTimestamp(), group = Date.now().toString(36);
     try {
@@ -919,24 +1154,38 @@ tr:last-child td {
       closeTransferModal();
     } catch(e) { showToast(e.message, 'error'); }
   };
+  
   window.closeTransferModal = () => document.getElementById('transferModal').classList.remove('open');
-  document.getElementById('transferBtn').onclick = () => { document.getElementById('transferModal').classList.add('open'); };
+  document.getElementById('transferBtn').onclick = () => { 
+    document.getElementById('transferDate').value = new Date().toISOString().slice(0,10);
+    document.getElementById('transferModal').classList.add('open'); 
+  };
+  
   function bindFilters() {
     refFilter.addEventListener('change', () => { setFilters(refFilter.value, searchFilter.value); applyFiltersAndRender(); });
     searchFilter.addEventListener('input', () => { setFilters(refFilter.value, searchFilter.value); applyFiltersAndRender(); });
     document.getElementById('clearFiltersBtn').onclick = () => { setFilters('', ''); applyFiltersAndRender(); showToast('Filters cleared', 'info'); };
     monthPicker.addEventListener('change', () => { currentMonth = monthPicker.value; localStorage.setItem('cf_month', currentMonth); applyFiltersAndRender(); });
   }
-  function startListener() {
+  
+  function startTransactionListener() {
     if (unsubscribeTxns) unsubscribeTxns();
     unsubscribeTxns = db.collection('Cashflow transactions').onSnapshot(snap => {
       allTransactions = [];
-      snap.forEach(doc => { const d = doc.data(); allTransactions.push({ id: doc.id, ...d, createdAt: d.createdAt?.seconds ? d.createdAt.seconds * 1000 : Date.now() }); });
+      snap.forEach(doc => { 
+        const d = doc.data(); 
+        allTransactions.push({ id: doc.id, ...d, createdAt: d.createdAt?.seconds ? d.createdAt.seconds * 1000 : Date.now() }); 
+      });
       updateRefDropdowns();
       applyFiltersAndRender();
-    }, err => showToast('Sync error', 'error'));
+    }, err => showToast('Sync error: ' + err.message, 'error'));
   }
-  renderAllAccountUI(); bindFilters(); startListener();
+  
+  // Initialize everything
+  setupAccountsRealtimeSync();
+  bindFilters();
+  startTransactionListener();
+  
   document.getElementById('pdfExportBtn').onclick = async () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
@@ -947,7 +1196,18 @@ tr:last-child td {
     const headers = ['Date', 'Description', 'Ref', 'Debit', 'Credit', 'Balance'];
     doc.setFontSize(7); doc.setTextColor(0,0,0); doc.text(headers, 40, y, { baseline: 'top' });
     y += 18;
-    let bal = getOpeningBalance(currentAccount, currentMonth);
+    
+    const prevMonth = new Date(currentMonth + '-01');
+    prevMonth.setMonth(prevMonth.getMonth() - 1);
+    const prevMonthStr = prevMonth.toISOString().slice(0,7);
+    let bal = getOpeningBalance(currentAccount, prevMonthStr);
+    const prevTransactions = allTransactions.filter(t => t.account === currentAccount && t.date && t.date.startsWith(prevMonthStr));
+    prevTransactions.sort((a,b) => new Date(a.date) - new Date(b.date));
+    prevTransactions.forEach(t => {
+      if (t.type === 'credit') bal += t.amount;
+      else bal -= t.amount;
+    });
+    
     filteredList.forEach(t => {
       if (y > doc.internal.pageSize.getHeight() - 40) { doc.addPage(); y = 40; doc.text(headers, 40, y, { baseline: 'top' }); y += 18; }
       const isCredit = t.type === 'credit';
