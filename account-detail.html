@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Account Detail · Trismart Accounts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --p: #4361ee;
+  --p2: #3a56d4;
+  --ok: #2ecc71;
+  --ok2: #27ae60;
+  --warn: #f8961e;
+  --danger: #ef4444;
+  --purple: #7c3aed;
+  --bg: #f4f6fb;
+  --sur: #ffffff;
+  --lite: #f1f3f5;
+  --bdr: #dee2e6;
+  --txt: #212529;
+  --fade: #6c757d;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --sh: 0 1px 6px rgba(0,0,0,0.05);
+  --shl: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  background: var(--sur);
+  border-bottom: 1px solid var(--bdr);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  box-shadow: var(--sh);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--p), var(--p2));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.logo-text {
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: var(--lite);
+  border: 1px solid var(--bdr);
+  border-radius: 40px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--txt);
+  transition: 0.15s;
+}
+
+.back-btn:hover {
+  border-color: var(--p);
+  color: var(--p);
+}
+
+.main-content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.account-header-card {
+  background: var(--sur);
+  border: 1px solid var(--bdr);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--sh);
+}
+
+.account-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.account-name-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.account-icon-large {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.icon-revenue { background: rgba(46,204,113,0.1); color: var(--ok); }
+.icon-expense { background: rgba(239,68,68,0.1); color: var(--danger); }
+.icon-asset { background: rgba(67,97,238,0.1); color: var(--p); }
+.icon-liability { background: rgba(245,158,11,0.1); color: var(--warn); }
+.icon-equity { background: rgba(124,58,237,0.1); color: var(--purple); }
+
+.account-name h1 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.account-type-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 40px;
+  display: inline-block;
+}
+
+.balance-section {
+  text-align: right;
+}
+
+.balance-label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.balance-amount {
+  font-size: 2rem;
+  font-weight: 800;
+  font-family: 'DM Mono', monospace;
+}
+
+.balance-amount.positive { color: var(--ok); }
+.balance-amount.negative { color: var(--danger); }
+
+.account-stats-row {
+  display: flex;
+  gap: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bdr);
+  margin-top: 8px;
+}
+
+.stat-item {
+  flex: 1;
+}
+
+.stat-item-label {
+  font-size: 0.55rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--fade);
+}
+
+.stat-item-value {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  margin-top: 8px;
+}
+
+.section-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--fade);
+  letter-spacing: 0.08em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 40px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: 0.15s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--p), var(--p2));
+  color: white;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--bdr);
+  color: var(--txt);
+}
+
+.btn-outline:hover {
+  border-color: var(--p);
+  color: var(--p);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--danger), #dc2626);
+  color: white;
+}
+
+.table-container {
+  background: var(--sur);
+  border: 1px solid var(--bdr);
+  border-radius: var(--radius);
+  overflow: auto;
+  max-height: 500px;
+  box-shadow: var(--sh);
+}
+
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.7rem;
+  min-width: 600px;
+}
+
+.transaction-table th {
+  background: #fafcff;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 0.55rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--fade);
+  border-bottom: 1px solid var(--bdr);
+  position: sticky;
+  top: 0;
+  background: white;
+}
+
+.transaction-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eff3f8;
+}
+
+.transaction-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.6rem;
+  font-weight: 600;
+}
+
+.type-income { background: rgba(46,204,113,0.1); color: var(--ok); }
+.type-expense { background: rgba(239,68,68,0.1); color: var(--danger); }
+
+.empty-row td {
+  text-align: center;
+  padding: 40px;
+  color: var(--fade);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 24px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: auto;
+  padding: 20px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--bdr);
+}
+
+.modal-header h3 {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.close-modal {
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--fade);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--fade);
+  margin-bottom: 5px;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--bdr);
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-family: inherit;
+}
+
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: var(--p);
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.toast-wrap {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: #1e293b;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 40px;
+  font-size: 0.7rem;
+  animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 700px) {
+  .account-title {
+    flex-direction: column;
+  }
+  .balance-section {
+    text-align: left;
+  }
+  .account-stats-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .main-content {
+    padding: 16px;
+  }
+  .topbar {
+    padding: 0 12px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark"><i class="fas fa-book"></i></div>
+      <div class="logo-text">Trismart · Account Detail</div>
+    </div>
+    <a href="accounts-dashboard.html" class="back-btn">
+      <i class="fas fa-arrow-left"></i> Back to Accounts
+    </a>
+  </div>
+
+  <div class="main-content">
+
+    <!-- Account Header -->
+    <div class="account-header-card" id="accountHeader">
+      <div style="text-align:center; padding:40px;">Loading account details...</div>
+    </div>
+
+    <!-- Transactions Section -->
+    <div class="section-header">
+      <div class="section-title"><i class="fas fa-list"></i> Transaction History</div>
+      <button class="btn btn-primary" onclick="openAddTransactionModal()">
+        <i class="fas fa-plus"></i> Add Transaction
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table class="transaction-table">
+        <thead>
+          <tr><th>Date</th><th>Description</th><th>Type</th><th>Amount</th><th>Reference</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="transactionsTbody">
+          <tr class="empty-row"><td colspan="6">Loading transactions...</tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- Add Transaction Modal -->
+<div id="transactionModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Add Transaction</h3>
+      <span class="close-modal" onclick="closeModal('transactionModal')">&times;</span>
+    </div>
+    <form id="transactionForm">
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="transDate" required>
+      </div>
+      <div class="form-group">
+        <label>Transaction Type</label>
+        <select id="transType" required>
+          <option value="income">Income / Credit</option>
+          <option value="expense">Expense / Debit</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Amount (K)</label>
+        <input type="number" id="transAmount" step="0.01" required>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" id="transDesc" required placeholder="e.g., Rent payment, Sales revenue">
+      </div>
+      <div class="form-group">
+        <label>Reference / Invoice No</label>
+        <input type="text" id="transRef" placeholder="Optional reference">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Add Transaction</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal('transactionModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+import { getFirestore, collection, query, where, orderBy, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+const firebaseConfig = { 
+  apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k", 
+  authDomain: "trismartstores.firebaseapp.com", 
+  projectId: "trismartstores", 
+  storageBucket: "trismartstores.appspot.com", 
+  messagingSenderId: "416692703333", 
+  appId: "1:416692703333:web:d4b60292621435c748f68c" 
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const loggedInUser = localStorage.getItem('loggedInUser') || '';
+const userName = (loggedInUser || localStorage.getItem('userName') || '').toLowerCase().trim();
+
+if (userName !== 'chris') { 
+  document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><div style="background:white;padding:30px;border-radius:24px;">Access Denied.</div></div>`; 
+  throw new Error('unauth'); 
+}
+
+const accountId = localStorage.getItem('selectedAccountId');
+if (!accountId) {
+  window.location.href = 'accounts-dashboard.html';
+}
+
+let currentAccount = null;
+let accountTransactions = [];
+let unsubscribeAccount = null;
+let unsubscribeTransactions = null;
+
+function toast(msg, type = 'success') {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.style.background = type === 'error' ? '#b91c1c' : '#1e293b';
+  t.innerHTML = `<i class="fas ${type === 'error' ? 'fa-times-circle' : 'fa-check-circle'}"></i> ${msg}`;
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('show');
+}
+
+window.closeModal = closeModal;
+
+function openAddTransactionModal() {
+  document.getElementById('transactionForm').reset();
+  document.getElementById('transDate').valueAsDate = new Date();
+  document.getElementById('transactionModal').classList.add('show');
+}
+window.openAddTransactionModal = openAddTransactionModal;
+
+// Load account details
+function loadAccount() {
+  if (unsubscribeAccount) unsubscribeAccount();
+  unsubscribeAccount = onSnapshot(doc(db, 'accounts', accountId), (docSnap) => {
+    if (docSnap.exists()) {
+      currentAccount = { id: docSnap.id, ...docSnap.data() };
+      renderAccountHeader();
+    } else {
+      toast('Account not found', 'error');
+      setTimeout(() => window.location.href = 'accounts-dashboard.html', 1500);
+    }
+  });
+}
+
+// Load transactions for this account
+function loadTransactions() {
+  if (unsubscribeTransactions) unsubscribeTransactions();
+  const q = query(collection(db, 'account_transactions'), where('accountId', '==', accountId), orderBy('date', 'desc'));
+  unsubscribeTransactions = onSnapshot(q, (snap) => {
+    accountTransactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderTransactions();
+  });
+}
+
+function renderAccountHeader() {
+  if (!currentAccount) return;
+  
+  const typeIcons = {
+    revenue: { icon: 'fa-chart-line', class: 'icon-revenue', label: 'Revenue' },
+    expense: { icon: 'fa-shopping-cart', class: 'icon-expense', label: 'Expense' },
+    asset: { icon: 'fa-coins', class: 'icon-asset', label: 'Asset' },
+    liability: { icon: 'fa-hand-holding-usd', class: 'icon-liability', label: 'Liability' },
+    equity: { icon: 'fa-chart-pie', class: 'icon-equity', label: 'Equity' }
+  };
+  
+  const typeInfo = typeIcons[currentAccount.type] || typeIcons.asset;
+  const isPositive = currentAccount.type === 'revenue' || currentAccount.type === 'asset';
+  const balanceClass = (currentAccount.type === 'expense' || currentAccount.type === 'liability') && currentAccount.balance > 0 ? 'negative' : 'positive';
+  
+  // Calculate totals from transactions
+  const totalIncome = accountTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+  const totalExpense = accountTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+  
+  document.getElementById('accountHeader').innerHTML = `
+    <div class="account-title">
+      <div class="account-name-section">
+        <div class="account-icon-large ${typeInfo.class}">
+          <i class="fas ${typeInfo.icon}"></i>
+        </div>
+        <div class="account-name">
+          <h1>${escapeHtml(currentAccount.name)}</h1>
+          <span class="account-type-badge" style="background:${typeInfo.class.split(' ')[1] === 'icon-revenue' ? 'rgba(46,204,113,0.1)' : 'rgba(67,97,238,0.1)'}; color:${typeInfo.class === 'icon-revenue' ? '#2ecc71' : '#4361ee'}">
+            ${typeInfo.label}
+          </span>
+        </div>
+      </div>
+      <div class="balance-section">
+        <div class="balance-label">Current Balance</div>
+        <div class="balance-amount ${balanceClass}">K${(currentAccount.balance || 0).toFixed(2)}</div>
+      </div>
+    </div>
+    <div class="account-stats-row">
+      <div class="stat-item">
+        <div class="stat-item-label">Total Income</div>
+        <div class="stat-item-value" style="color: var(--ok);">K${totalIncome.toFixed(2)}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-item-label">Total Expenses</div>
+        <div class="stat-item-value" style="color: var(--danger);">K${totalExpense.toFixed(2)}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-item-label">Net Flow</div>
+        <div class="stat-item-value" style="color: ${totalIncome - totalExpense >= 0 ? 'var(--ok)' : 'var(--danger)'};">K${(totalIncome - totalExpense).toFixed(2)}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-item-label">Transactions</div>
+        <div class="stat-item-value">${accountTransactions.length}</div>
+      </div>
+    </div>
+    ${currentAccount.description ? `<div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--bdr); font-size: 0.7rem; color: var(--fade);">${escapeHtml(currentAccount.description)}</div>` : ''}
+  `;
+}
+
+function renderTransactions() {
+  const tbody = document.getElementById('transactionsTbody');
+  
+  if (accountTransactions.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No transactions for this account</tr>';
+    return;
+  }
+  
+  tbody.innerHTML = accountTransactions.map(trans => {
+    const typeClass = trans.type === 'income' ? 'type-income' : 'type-expense';
+    const typeIcon = trans.type === 'income' ? 'fa-arrow-down' : 'fa-arrow-up';
+    const amountClass = trans.type === 'income' ? 'positive' : 'negative';
+    const amountPrefix = trans.type === 'income' ? '+' : '-';
+    
+    return `
+      <tr>
+        <td>${trans.date || '-'}</td>
+        <td>${escapeHtml(trans.description || '-')}</td>
+        <td><span class="transaction-type ${typeClass}"><i class="fas ${typeIcon}"></i> ${trans.type === 'income' ? 'Income' : 'Expense'}</span></td>
+        <td class="${amountClass}">${amountPrefix} K${(trans.amount || 0).toFixed(2)}</td>
+        <td><span style="font-family:monospace;">${escapeHtml(trans.reference || '-')}</span></td>
+        <td>
+          <button class="btn btn-outline" style="padding:4px 8px;" onclick="deleteTransaction('${trans.id}')">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+window.deleteTransaction = async function(transactionId) {
+  if (!confirm('Delete this transaction? This will affect the account balance.')) return;
+  
+  const transaction = accountTransactions.find(t => t.id === transactionId);
+  if (!transaction) return;
+  
+  try {
+    // Reverse the balance change
+    let balanceChange = transaction.amount;
+    if (transaction.type === 'expense') {
+      balanceChange = transaction.amount; // Adding back to balance
+    } else if (transaction.type === 'income') {
+      balanceChange = -transaction.amount; // Subtracting from balance
+    }
+    
+    const newBalance = (currentAccount.balance || 0) + balanceChange;
+    
+    // Update account balance
+    await updateDoc(doc(db, 'accounts', accountId), { balance: newBalance });
+    // Delete transaction
+    await deleteDoc(doc(db, 'account_transactions', transactionId));
+    
+    toast('Transaction deleted');
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+};
+
+// Add transaction
+document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const amount = parseFloat(document.getElementById('transAmount').value);
+  const type = document.getElementById('transType').value;
+  
+  // Calculate new balance
+  let newBalance = currentAccount.balance || 0;
+  if (type === 'income') {
+    newBalance += amount;
+  } else {
+    newBalance -= amount;
+  }
+  
+  const transactionData = {
+    accountId: accountId,
+    accountName: currentAccount.name,
+    date: document.getElementById('transDate').value,
+    type: type,
+    amount: amount,
+    description: document.getElementById('transDesc').value,
+    reference: document.getElementById('transRef').value || '',
+    createdAt: new Date().toISOString()
+  };
+  
+  try {
+    // Add transaction
+    await addDoc(collection(db, 'account_transactions'), transactionData);
+    // Update account balance
+    await updateDoc(doc(db, 'accounts', accountId), { balance: newBalance });
+    toast('Transaction added');
+    closeModal('transactionModal');
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+});
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
+}
+
+loadAccount();
+loadTransactions();
+</script>
+</body>
+</html>
