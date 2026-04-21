@@ -193,6 +193,15 @@ html, body {
   align-items: center;
   margin-bottom: 16px;
   margin-top: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.section-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .section-title {
@@ -201,6 +210,70 @@ html, body {
   text-transform: uppercase;
   color: var(--fade);
   letter-spacing: 0.08em;
+}
+
+/* Monthly filter styles */
+.month-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--sur);
+  border: 1.5px solid var(--bdr);
+  border-radius: 40px;
+  padding: 5px 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--txt);
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.month-filter:hover {
+  border-color: var(--p);
+  color: var(--p);
+}
+
+.month-filter input[type="month"] {
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--p);
+  background: transparent;
+  cursor: pointer;
+  width: 110px;
+}
+
+.clear-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: rgba(239,68,68,0.1);
+  color: var(--danger);
+  border: 1.5px solid rgba(239,68,68,0.2);
+  border-radius: 40px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.clear-filter-btn:hover {
+  background: rgba(239,68,68,0.2);
+}
+
+.filter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(67,97,238,0.1);
+  color: var(--p);
+  border-radius: 40px;
+  font-size: 0.65rem;
+  font-weight: 700;
 }
 
 .btn {
@@ -239,7 +312,7 @@ html, body {
   overflow: auto;
   flex: 1;
   min-height: 300px;
-  max-height: calc(100vh - 280px);
+  max-height: calc(100vh - 320px);
   box-shadow: var(--sh);
 }
 
@@ -251,7 +324,6 @@ html, body {
 }
 
 .transaction-table th {
-  background: #fafcff;
   padding: 12px 12px;
   text-align: left;
   font-size: 0.55rem;
@@ -445,7 +517,21 @@ html, body {
     </div>
 
     <div class="section-header">
-      <div class="section-title"><i class="fas fa-list"></i> Transaction History</div>
+      <div class="section-header-left">
+        <div class="section-title"><i class="fas fa-list"></i> Transaction History</div>
+
+        <!-- Monthly Filter -->
+        <div class="month-filter" title="Filter by month">
+          <i class="fas fa-calendar-alt" style="color:var(--p); font-size:0.7rem;"></i>
+          <input type="month" id="monthFilter" title="Select month to filter">
+        </div>
+        <button class="clear-filter-btn" id="clearFilterBtn" onclick="clearMonthFilter()" style="display:none;">
+          <i class="fas fa-times"></i> All Months
+        </button>
+        <span class="filter-badge" id="filterBadge" style="display:none;">
+          <i class="fas fa-filter"></i> <span id="filterBadgeText"></span>
+        </span>
+      </div>
       <button class="btn btn-primary" onclick="openTransactionModal()">
         <i class="fas fa-plus"></i> Add Transaction
       </button>
@@ -478,7 +564,7 @@ html, body {
       <h3>Add Transaction</h3>
       <span class="close-modal" onclick="closeModal('transactionModal')">&times;</span>
     </div>
-    <form id="transactionForm">
+    <div id="transactionFormWrap">
       <div class="form-group">
         <label>Date</label>
         <input type="date" id="transDate" required>
@@ -499,10 +585,10 @@ html, body {
         <input type="text" id="transDesc" required placeholder="e.g., Rent payment, Sales revenue">
       </div>
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Add Transaction</button>
+        <button id="submitTransBtn" class="btn btn-primary">Add Transaction</button>
         <button type="button" class="btn btn-outline" onclick="closeModal('transactionModal')">Cancel</button>
       </div>
-    </form>
+    </div>
   </div>
 </div>
 
@@ -510,7 +596,7 @@ html, body {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, collection, query, where, orderBy, addDoc, updateDoc, deleteDoc, doc, onSnapshot, runTransaction, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, addDoc, updateDoc, deleteDoc, doc, onSnapshot, runTransaction, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 const firebaseConfig = { 
   apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k", 
@@ -543,6 +629,72 @@ let accountTransactions = [];
 let unsubscribeAccount = null;
 let unsubscribeTransactions = null;
 
+// ── MONTHLY FILTER (persisted in localStorage) ──────────────────────────────
+// Key is per-account so filters don't bleed between accounts
+const FILTER_KEY = `trismart_month_filter_${accountId}`;
+
+function getSavedFilter() {
+  return localStorage.getItem(FILTER_KEY) || '';
+}
+
+function saveFilter(value) {
+  if (value) {
+    localStorage.setItem(FILTER_KEY, value);
+  } else {
+    localStorage.removeItem(FILTER_KEY);
+  }
+}
+
+function initMonthFilter() {
+  const saved = getSavedFilter();
+  const input = document.getElementById('monthFilter');
+  if (saved) {
+    input.value = saved;
+    showFilterBadge(saved);
+  }
+
+  input.addEventListener('change', () => {
+    saveFilter(input.value);
+    if (input.value) {
+      showFilterBadge(input.value);
+    } else {
+      hideFilterBadge();
+    }
+    renderTransactions();
+    renderAccountHeader();
+  });
+}
+
+function showFilterBadge(yearMonth) {
+  // yearMonth = "2025-04" → format nicely
+  const [year, month] = yearMonth.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const label = `${months[parseInt(month, 10) - 1]} ${year}`;
+  document.getElementById('filterBadgeText').textContent = label;
+  document.getElementById('filterBadge').style.display = 'inline-flex';
+  document.getElementById('clearFilterBtn').style.display = 'inline-flex';
+}
+
+function hideFilterBadge() {
+  document.getElementById('filterBadge').style.display = 'none';
+  document.getElementById('clearFilterBtn').style.display = 'none';
+}
+
+window.clearMonthFilter = function() {
+  document.getElementById('monthFilter').value = '';
+  saveFilter('');
+  hideFilterBadge();
+  renderTransactions();
+  renderAccountHeader();
+};
+
+function getFilteredTransactions() {
+  const filter = getSavedFilter(); // e.g. "2025-04"
+  if (!filter) return accountTransactions;
+  return accountTransactions.filter(t => t.date && t.date.startsWith(filter));
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function toast(msg, type = 'success') {
   const wrap = document.getElementById('toastWrap');
   const t = document.createElement('div');
@@ -559,7 +711,9 @@ function closeModal(modalId) {
 window.closeModal = closeModal;
 
 function openTransactionModal() {
-  document.getElementById('transactionForm').reset();
+  document.getElementById('transactionFormWrap').querySelectorAll('input, select').forEach(el => {
+    if (el.type !== 'submit') el.value = '';
+  });
   document.getElementById('transDate').valueAsDate = new Date();
   document.getElementById('transactionModal').classList.add('show');
 }
@@ -583,22 +737,30 @@ function loadAccount() {
 
 function loadTransactions() {
   if (unsubscribeTransactions) unsubscribeTransactions();
-  
-  const q = query(collection(db, 'account_transactions'), where('accountId', '==', accountId), orderBy('date', 'desc'));
+
+  // FIX: Removed orderBy('date','desc') — that requires a composite Firestore index
+  // which may not exist yet and causes silent query failures.
+  // We sort in JavaScript instead (see renderTransactions).
+  const q = query(
+    collection(db, 'account_transactions'),
+    where('accountId', '==', accountId)
+  );
+
   unsubscribeTransactions = onSnapshot(q, (snap) => {
-    accountTransactions = snap.docs.map(doc => ({ 
-      id: doc.id, 
-      ...doc.data(), 
-      amount: Number(doc.data().amount) || 0 
+    accountTransactions = snap.docs.map(d => ({
+      id: d.id,
+      ...d.data(),
+      amount: Number(d.data().amount) || 0
     }));
-    
+
     console.log('Transactions loaded:', accountTransactions.length);
     renderTransactions();
     renderAccountHeader();
   }, (error) => {
     console.error('Transactions load error:', error);
     toast('Error loading transactions: ' + error.message, 'error');
-    document.getElementById('transactionsTbody').innerHTML = '<tr class="empty-row"><td colspan="6">Error loading transactions. Check console.</td></tr>';
+    document.getElementById('transactionsTbody').innerHTML =
+      '<tr class="empty-row"><td colspan="6">Error loading transactions. Check console for details.</td></tr>';
   });
 }
 
@@ -614,11 +776,13 @@ function renderAccountHeader() {
   };
   
   const typeInfo = typeIcons[currentAccount.type] || typeIcons.asset;
-  const isPositive = currentAccount.type === 'revenue' || currentAccount.type === 'asset' || currentAccount.type === 'equity';
   const balanceClass = (currentAccount.type === 'expense' || currentAccount.type === 'liability') && currentAccount.balance > 0 ? 'negative' : 'positive';
-  
-  const totalCredit = accountTransactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
-  const totalDebit = accountTransactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
+
+  // Summary stats use the FILTERED set so the header reflects the active filter
+  const filtered = getFilteredTransactions();
+  const totalCredit = filtered.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
+  const totalDebit  = filtered.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
+  const filterNote  = getSavedFilter() ? ` <span style="font-size:0.55rem;color:var(--p);">(filtered period)</span>` : '';
   
   document.getElementById('accountHeader').innerHTML = `
     <div class="account-row">
@@ -638,7 +802,7 @@ function renderAccountHeader() {
         <div class="balance-label">Current Balance</div>
         <div class="balance-amount ${balanceClass}">K${(currentAccount.balance || 0).toFixed(2)}</div>
         <div style="font-size:0.6rem; color:var(--fade); margin-top:4px;">
-          Credits: K${totalCredit.toFixed(2)} | Debits: K${totalDebit.toFixed(2)}
+          Credits: K${totalCredit.toFixed(2)} | Debits: K${totalDebit.toFixed(2)}${filterNote}
         </div>
       </div>
     </div>
@@ -647,38 +811,48 @@ function renderAccountHeader() {
 
 function renderTransactions() {
   const tbody = document.getElementById('transactionsTbody');
-  
-  if (accountTransactions.length === 0) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No transactions for this account. Click "Add Transaction" to get started.</td></tr>';
+  const filtered = getFilteredTransactions();
+
+  if (filtered.length === 0) {
+    const msg = getSavedFilter()
+      ? 'No transactions for the selected month. Try a different month or clear the filter.'
+      : 'No transactions for this account. Click "Add Transaction" to get started.';
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">${msg}</td></tr>`;
     return;
   }
-  
-  const sortedAsc = [...accountTransactions].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  // Sort descending by date (newest first) — done in JS, no Firestore index needed
+  const sortedDesc = [...filtered].sort((a, b) => {
+    if (a.date < b.date) return 1;
+    if (a.date > b.date) return -1;
+    return 0;
+  });
+
+  // Running balance computed in ascending order, then mapped back
+  const sortedAsc = [...filtered].sort((a, b) => {
+    if (a.date < b.date) return -1;
+    if (a.date > b.date) return 1;
+    return 0;
+  });
   let runningBalance = 0;
   const balanceMap = new Map();
-  
   for (const trans of sortedAsc) {
-    if (trans.type === 'credit') {
-      runningBalance += trans.amount;
-    } else {
-      runningBalance -= trans.amount;
-    }
+    runningBalance += trans.type === 'credit' ? trans.amount : -trans.amount;
     balanceMap.set(trans.id, runningBalance);
   }
-  
-  tbody.innerHTML = accountTransactions.map(trans => {
-    const isDebit = trans.type === 'debit';
-    const isCredit = trans.type === 'credit';
-    const debitAmount = isDebit ? `K${trans.amount.toFixed(2)}` : '-';
-    const creditAmount = isCredit ? `K${trans.amount.toFixed(2)}` : '-';
-    const balance = balanceMap.get(trans.id) || 0;
-    
+
+  tbody.innerHTML = sortedDesc.map(trans => {
+    const isDebit  = trans.type === 'debit';
+    const debitAmt  = isDebit  ? `K${trans.amount.toFixed(2)}` : '-';
+    const creditAmt = !isDebit ? `K${trans.amount.toFixed(2)}` : '-';
+    const balance   = balanceMap.get(trans.id) || 0;
+
     return `
       <tr>
         <td>${trans.date || '-'}</td>
         <td><strong>${escapeHtml(trans.description || '-')}</strong></td>
-        <td class="debit-amount">${debitAmount}</td>
-        <td class="credit-amount">${creditAmount}</td>
+        <td class="debit-amount">${debitAmt}</td>
+        <td class="credit-amount">${creditAmt}</td>
         <td class="balance-amount-table">K${balance.toFixed(2)}</td>
         <td>
           <button class="btn btn-outline" style="padding:4px 8px;" onclick="deleteTransaction('${trans.id}')">
@@ -697,87 +871,78 @@ window.deleteTransaction = async function(transactionId) {
   if (!transaction) return;
   
   try {
-    await runTransaction(db, async (transactionRef) => {
+    await runTransaction(db, async (txRef) => {
       const accountRef = doc(db, 'accounts', accountId);
-      const accountDoc = await transactionRef.get(accountRef);
+      const accountDoc = await txRef.get(accountRef);
       if (!accountDoc.exists()) throw new Error('Account not found');
       
-      let currentBalance = accountDoc.data().balance || 0;
-      let newBalance = currentBalance;
+      let currentBalance = Number(accountDoc.data().balance) || 0;
+      let newBalance = transaction.type === 'credit'
+        ? currentBalance - transaction.amount
+        : currentBalance + transaction.amount;
       
-      if (transaction.type === 'credit') {
-        newBalance = currentBalance - transaction.amount;
-      } else {
-        newBalance = currentBalance + transaction.amount;
-      }
-      
-      transactionRef.update(accountRef, { balance: newBalance });
-      transactionRef.delete(doc(db, 'account_transactions', transactionId));
+      txRef.update(accountRef, { balance: newBalance });
+      txRef.delete(doc(db, 'account_transactions', transactionId));
     });
-    
     toast('Transaction deleted');
   } catch (err) {
+    console.error('Delete error:', err);
     toast(err.message, 'error');
   }
 };
 
-document.getElementById('transactionForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
+// Submit transaction via button click (avoids form submit issues)
+document.getElementById('submitTransBtn').addEventListener('click', async () => {
   const amount = parseFloat(document.getElementById('transAmount').value);
-  const type = document.getElementById('transType').value;
-  
-  if (isNaN(amount) || amount <= 0) {
-    toast('Enter a valid amount', 'error');
-    return;
-  }
-  
+  const type   = document.getElementById('transType').value;
+  const date   = document.getElementById('transDate').value;
+  const desc   = document.getElementById('transDesc').value;
+
+  if (!date) { toast('Pick a date', 'error'); return; }
+  if (isNaN(amount) || amount <= 0) { toast('Enter a valid amount', 'error'); return; }
+  if (!desc.trim()) { toast('Enter a description', 'error'); return; }
+
   const transactionData = {
-    accountId: accountId,
+    accountId,
     accountName: currentAccount.name,
-    date: document.getElementById('transDate').value,
-    type: type,
-    amount: amount,
-    description: document.getElementById('transDesc').value,
+    date,
+    type,
+    amount,
+    description: desc.trim(),
     createdAt: new Date().toISOString()
   };
-  
+
   try {
-    await runTransaction(db, async (transactionRef) => {
+    await runTransaction(db, async (txRef) => {
       const accountRef = doc(db, 'accounts', accountId);
-      const accountDoc = await transactionRef.get(accountRef);
+      const accountDoc = await txRef.get(accountRef);
       if (!accountDoc.exists()) throw new Error('Account not found');
       
-      let currentBalance = accountDoc.data().balance || 0;
-      let newBalance = currentBalance;
+      let currentBalance = Number(accountDoc.data().balance) || 0;
+      let newBalance = type === 'credit'
+        ? currentBalance + amount
+        : currentBalance - amount;
       
-      if (type === 'credit') {
-        newBalance = currentBalance + amount;
-      } else {
-        newBalance = currentBalance - amount;
-      }
-      
-      transactionRef.update(accountRef, { balance: newBalance });
-      transactionRef.set(doc(collection(db, 'account_transactions')), transactionData);
+      txRef.update(accountRef, { balance: newBalance });
+      txRef.set(doc(collection(db, 'account_transactions')), transactionData);
     });
-    
-    toast('Transaction added');
+    toast('Transaction added ✓');
     closeModal('transactionModal');
   } catch (err) {
+    console.error('Add transaction error:', err);
     toast(err.message, 'error');
   }
 });
 
 function escapeHtml(str) {
   if (!str) return '';
-  return String(str).replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    return m;
-  });
+  return String(str).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[m]));
 }
 
+// Init
+initMonthFilter();
 loadAccount();
 loadTransactions();
 </script>
