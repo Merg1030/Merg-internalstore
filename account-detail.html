@@ -49,6 +49,7 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'DM Sans'
 .section-header-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .section-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--fade); letter-spacing: 0.08em; }
 .month-filter { display: flex; align-items: center; gap: 8px; background: var(--sur); border: 1.5px solid var(--bdr); border-radius: 40px; padding: 5px 12px; font-size: 0.7rem; font-weight: 700; cursor: pointer; }
+.month-filter input { border: none; outline: none; background: transparent; font-family: inherit; font-size: 0.7rem; font-weight: 700; width: 110px; cursor: pointer; }
 .clear-filter-btn { padding: 5px 10px; background: rgba(239,68,68,0.1); color: var(--danger); border-radius: 40px; font-size: 0.65rem; font-weight: 700; cursor: pointer; border: none; }
 .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 40px; font-size: 0.7rem; font-weight: 700; cursor: pointer; border: none; background: linear-gradient(135deg, var(--p), var(--p2)); color: white; }
 .table-container { background: var(--sur); border: 1px solid var(--bdr); border-radius: var(--radius); overflow: auto; max-height: calc(100vh - 340px); box-shadow: var(--sh); }
@@ -74,12 +75,13 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'DM Sans'
 .action-cell { position: relative; }
 .action-btn { background: transparent; border: none; cursor: pointer; padding: 6px 8px; border-radius: 30px; color: var(--fade); font-size: 0.9rem; }
 .action-btn:hover { background: var(--lite); color: var(--txt); }
-.hide-header-btn { cursor: pointer; background: transparent; border: none; margin-left: 12px; color: var(--fade); font-size: 0.8rem; transition: 0.1s; }
-.hide-header-btn:hover { color: var(--p); }
+.hide-header-btn { cursor: pointer; background: transparent; border: none; margin-left: 12px; color: var(--fade); font-size: 0.8rem; transition: 0.1s; padding: 5px 10px; border-radius: 40px; }
+.hide-header-btn:hover { background: var(--lite); color: var(--p); }
 .filter-badge { background: rgba(67,97,238,0.1); padding: 4px 10px; border-radius: 40px; font-size: 0.65rem; font-weight: 700; color: var(--p); display: inline-flex; align-items: center; gap: 5px; }
-.collapsed-section { display: none; }
-.section-header-collapsed { margin-bottom: 12px; }
-.unhide-trigger { cursor: pointer; background: var(--lite); padding: 8px 16px; border-radius: 40px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; border: 1px dashed var(--bdr); }
+/* hidden state for the header row (title + filter bar) */
+.header-controls-hidden { display: none !important; }
+.unhide-trigger { cursor: pointer; background: var(--lite); padding: 6px 14px; border-radius: 40px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; border: 1px solid var(--bdr); margin-bottom: 16px; }
+.unhide-trigger:hover { background: var(--sur); border-color: var(--p); }
 @media (max-width: 700px) { .main-content { padding: 12px; } .balance-display { text-align: left; } }
 </style>
 </head>
@@ -90,33 +92,41 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'DM Sans'
     <div class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Back to Accounts</div>
   </div>
   <div class="main-content">
+    <!-- Account Header Card (Balance removed as requested) -->
     <div class="account-header-card" id="accountHeader">Loading account...</div>
 
-    <!-- Transaction History Section: can be hidden/unhidden -->
-    <div id="transactionHistorySection">
-      <div class="section-header" id="historyHeaderContainer">
+    <!-- Transaction History Section: only the header/filter bar can be hidden, table always visible -->
+    <div id="historyHeaderWrapper">
+      <!-- This is the bar that can be hidden/unhidden (Title + month filter + add button + hide button) -->
+      <div id="transactionHistoryHeader" class="section-header">
         <div class="section-header-left">
           <div class="section-title"><i class="fas fa-list"></i> Transaction History</div>
-          <div class="month-filter"><i class="fas fa-calendar-alt"></i><input type="month" id="monthFilter"></div>
+          <div class="month-filter">
+            <i class="fas fa-calendar-alt"></i>
+            <input type="month" id="monthFilter">
+          </div>
           <button class="clear-filter-btn" id="clearFilterBtn" style="display:none;"><i class="fas fa-times"></i> All Months</button>
           <span class="filter-badge" id="filterBadge" style="display:none;"><i class="fas fa-filter"></i> <span id="filterBadgeText"></span></span>
         </div>
         <div style="display: flex; gap: 8px;">
           <button class="btn" id="addTransactionBtn"><i class="fas fa-plus"></i> Add Transaction</button>
-          <button class="hide-header-btn" id="hideSectionBtn" title="Hide Transaction History"><i class="fas fa-eye-slash"></i> Hide</button>
+          <button class="hide-header-btn" id="hideHeaderBtn" title="Hide Transaction History header"><i class="fas fa-eye-slash"></i> Hide</button>
         </div>
       </div>
-      <div class="table-container" id="transactionTableContainer">
-        <table class="transaction-table">
-          <thead><tr><th>Date</th><th>Description</th><th>Debit</th><th>Credit</th><th>Balance</th><th style="width:60px;">Action</th></tr></thead>
-          <tbody id="transactionsTbody"><tr><td colspan="6">Loading transactions...</td></tr></tbody>
-        </table>
+      <!-- Unhide button appears only when header is hidden -->
+      <div id="unhideHeaderTrigger" style="display: none; margin-bottom: 16px;">
+        <div class="unhide-trigger" id="unhideHeaderBtn"><i class="fas fa-eye"></i> Show Transaction History</div>
       </div>
     </div>
 
-    <!-- Unhide button (appears only when section is hidden) -->
-    <div id="unhideSectionTrigger" style="display: none; margin-top: 20px; text-align: center;">
-      <div class="unhide-trigger" id="unhideSectionBtn"><i class="fas fa-eye"></i> Show Transaction History</div>
+    <!-- Transaction Table - always visible -->
+    <div class="table-container">
+      <table class="transaction-table">
+        <thead>
+          <tr><th>Date</th><th>Description</th><th>Debit</th><th>Credit</th><th>Balance</th><th style="width:60px;">Action</th></tr>
+        </thead>
+        <tbody id="transactionsTbody"><tr><td colspan="6">Loading transactions...</td></tr></tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -164,31 +174,31 @@ let unsubscribeAccount = null;
 let unsubscribeTransactions = null;
 let activeDropdown = null;
 
-// Hide/Unhide state management (localStorage per account)
-const HIDE_KEY = `trismart_hide_history_${accountId}`;
-function isSectionHidden() { return localStorage.getItem(HIDE_KEY) === 'true'; }
-function setSectionHidden(hidden) { 
-  if (hidden) localStorage.setItem(HIDE_KEY, 'true');
-  else localStorage.removeItem(HIDE_KEY);
-  updateSectionVisibility();
+// ========== HIDE/UNHIDE for Transaction History HEADER only (not the table) ==========
+const HIDE_HEADER_KEY = `trismart_hide_history_header_${accountId}`;
+function isHeaderHidden() { return localStorage.getItem(HIDE_HEADER_KEY) === 'true'; }
+function setHeaderHidden(hidden) { 
+  if (hidden) localStorage.setItem(HIDE_HEADER_KEY, 'true');
+  else localStorage.removeItem(HIDE_HEADER_KEY);
+  updateHeaderVisibility();
 }
-function updateSectionVisibility() {
-  const hidden = isSectionHidden();
-  const section = document.getElementById('transactionHistorySection');
-  const unhideTrigger = document.getElementById('unhideSectionTrigger');
+function updateHeaderVisibility() {
+  const hidden = isHeaderHidden();
+  const headerDiv = document.getElementById('transactionHistoryHeader');
+  const unhideTrigger = document.getElementById('unhideHeaderTrigger');
   if (hidden) {
-    if (section) section.style.display = 'none';
+    if (headerDiv) headerDiv.classList.add('header-controls-hidden');
     if (unhideTrigger) unhideTrigger.style.display = 'block';
   } else {
-    if (section) section.style.display = 'block';
+    if (headerDiv) headerDiv.classList.remove('header-controls-hidden');
     if (unhideTrigger) unhideTrigger.style.display = 'none';
   }
 }
 // unhide action
-document.getElementById('unhideSectionBtn')?.addEventListener('click', () => { setSectionHidden(false); toast('Transaction history is now visible'); });
-document.getElementById('hideSectionBtn')?.addEventListener('click', () => { setSectionHidden(true); toast('Transaction history hidden'); });
+document.getElementById('unhideHeaderBtn')?.addEventListener('click', () => { setHeaderHidden(false); toast('Transaction history bar is now visible'); });
+document.getElementById('hideHeaderBtn')?.addEventListener('click', () => { setHeaderHidden(true); toast('Transaction history header hidden (click "Show" to bring back)'); });
 
-// monthly filter
+// ========== MONTHLY FILTER ==========
 const FILTER_KEY = `trismart_month_filter_${accountId}`;
 function getSavedFilter() { return localStorage.getItem(FILTER_KEY) || ''; }
 function saveFilter(value) { if (value) localStorage.setItem(FILTER_KEY, value); else localStorage.removeItem(FILTER_KEY); }
@@ -201,7 +211,7 @@ function initMonthFilter() {
     if (input.value) showFilterBadge(input.value);
     else hideFilterBadge();
     renderTransactions();
-    renderAccountHeader();
+    renderAccountHeader(); // update credits/debits summary
   });
 }
 function showFilterBadge(yearMonth) {
@@ -254,7 +264,7 @@ function openTransactionModalForAdd(transactionToEdit = null) {
   document.getElementById('transactionModal').classList.add('show');
 }
 
-// submit for add or edit
+// Submit add/edit
 document.getElementById('submitTransBtn').onclick = async () => {
   const amount = parseFloat(document.getElementById('transAmount').value);
   const type = document.getElementById('transType').value;
@@ -266,15 +276,11 @@ document.getElementById('submitTransBtn').onclick = async () => {
   const editingId = window._editingId;
   try {
     if (editingId) {
-      // EDIT flow: fetch original transaction, adjust balance accordingly, update
       const oldTransaction = accountTransactions.find(t => t.id === editingId);
       if (!oldTransaction) throw new Error('Transaction not found');
-      // compute delta
-      let delta = 0;
-      // remove old effect
       const oldEffect = oldTransaction.type === 'credit' ? oldTransaction.amount : -oldTransaction.amount;
       const newEffect = type === 'credit' ? amount : -amount;
-      delta = newEffect - oldEffect;
+      const delta = newEffect - oldEffect;
       await runTransaction(db, async (tx) => {
         const accRef = doc(db, 'accounts', accountId);
         const accSnap = await tx.get(accRef);
@@ -287,7 +293,6 @@ document.getElementById('submitTransBtn').onclick = async () => {
       toast('Transaction updated');
       closeModal();
     } else {
-      // ADD transaction
       await runTransaction(db, async (tx) => {
         const accRef = doc(db, 'accounts', accountId);
         const accSnap = await tx.get(accRef);
@@ -308,7 +313,7 @@ document.getElementById('submitTransBtn').onclick = async () => {
   } catch (err) { console.error(err); toast(err.message, 'error'); }
 };
 
-// Delete with runTransaction
+// Delete transaction
 window.deleteTransactionHandler = async (transactionId) => {
   if (!confirm('Delete this transaction? It will update the account balance.')) return;
   const transaction = accountTransactions.find(t => t.id === transactionId);
@@ -333,7 +338,7 @@ window.editTransactionHandler = (transactionId) => {
   if (txn) openTransactionModalForAdd(txn);
 };
 
-// Dropdown logic
+// Dropdown logic for 3 dots
 function closeDropdown() { if (activeDropdown) { activeDropdown.remove(); activeDropdown = null; } }
 function showDropdown(event, transactionId) {
   event.stopPropagation();
@@ -364,13 +369,17 @@ function showDropdown(event, transactionId) {
   setTimeout(() => document.addEventListener('click', removeHandler), 10);
 }
 
+// Load account (without the balance summary line - removed as requested)
 function loadAccount() {
   if (unsubscribeAccount) unsubscribeAccount();
   unsubscribeAccount = onSnapshot(doc(db, 'accounts', accountId), (docSnap) => {
-    if (docSnap.exists()) { currentAccount = { id: docSnap.id, ...docSnap.data(), balance: Number(docSnap.data().balance) || 0 }; renderAccountHeader(); }
-    else toast('Account not found', 'error');
+    if (docSnap.exists()) { 
+      currentAccount = { id: docSnap.id, ...docSnap.data(), balance: Number(docSnap.data().balance) || 0 }; 
+      renderAccountHeader(); 
+    } else toast('Account not found', 'error');
   });
 }
+
 function loadTransactions() {
   if (unsubscribeTransactions) unsubscribeTransactions();
   const q = query(collection(db, 'account_transactions'), where('accountId', '==', accountId));
@@ -380,24 +389,27 @@ function loadTransactions() {
     renderAccountHeader();
   }, (err) => { console.error(err); toast('Transactions error', 'error'); });
 }
+
+// Render account header WITHOUT the current balance / credits line as requested
 function renderAccountHeader() {
   if (!currentAccount) return;
-  const filtered = getFilteredTransactions();
-  const totalCredit = filtered.filter(t => t.type === 'credit').reduce((s, t) => s + t.amount, 0);
-  const totalDebit = filtered.filter(t => t.type === 'debit').reduce((s, t) => s + t.amount, 0);
-  const filterNote = getSavedFilter() ? ` <span style="font-size:0.55rem;color:var(--p);">(filtered period)</span>` : '';
+  // filtered summary for display only (though requested to remove, we just show account name & type, no balance line)
+  // But to keep clean, we show only account info, no balance/credits/debits line.
   document.getElementById('accountHeader').innerHTML = `
     <div class="account-row">
-      <div class="account-info"><div class="account-icon-large"><i class="fas fa-wallet"></i></div>
-        <div class="account-name"><h1>${escapeHtml(currentAccount.name)}</h1>
-        <span class="account-type-badge" style="background:rgba(67,97,238,0.15);">${currentAccount.type?.toUpperCase() || 'ASSET'}</span>
-        ${currentAccount.description ? `<div style="font-size:0.65rem;color:var(--fade);">${escapeHtml(currentAccount.description)}</div>` : ''}
-      </div></div>
-      <div class="balance-display"><div class="balance-label">Current Balance</div>
-      <div class="balance-amount">K${(currentAccount.balance || 0).toFixed(2)}</div>
-      <div style="font-size:0.6rem;">Credits: K${totalCredit.toFixed(2)} | Debits: K${totalDebit.toFixed(2)}${filterNote}</div></div>
-    </div>`;
+      <div class="account-info">
+        <div class="account-icon-large"><i class="fas fa-wallet"></i></div>
+        <div class="account-name">
+          <h1>${escapeHtml(currentAccount.name)}</h1>
+          <span class="account-type-badge" style="background:rgba(67,97,238,0.15);">${currentAccount.type?.toUpperCase() || 'ASSET'}</span>
+          ${currentAccount.description ? `<div style="font-size:0.65rem;color:var(--fade); margin-top:4px;">${escapeHtml(currentAccount.description)}</div>` : ''}
+        </div>
+      </div>
+      <!-- Removed Current Balance and Credits/Debits summary line as requested -->
+    </div>
+  `;
 }
+
 function renderTransactions() {
   const tbody = document.getElementById('transactionsTbody');
   const filtered = getFilteredTransactions();
@@ -408,7 +420,10 @@ function renderTransactions() {
   const sortedAsc = [...filtered].sort((a,b) => (a.date < b.date ? -1 : 1));
   let running = 0;
   const balanceMap = new Map();
-  for (const t of sortedAsc) { running += t.type === 'credit' ? t.amount : -t.amount; balanceMap.set(t.id, running); }
+  for (const t of sortedAsc) { 
+    running += t.type === 'credit' ? t.amount : -t.amount; 
+    balanceMap.set(t.id, running); 
+  }
   const sortedDesc = [...filtered].sort((a,b) => (a.date < b.date ? 1 : -1));
   tbody.innerHTML = sortedDesc.map(trans => {
     const isDebit = trans.type === 'debit';
@@ -441,7 +456,7 @@ function dropdownHandler(e) {
 }
 function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
 
-// global references for handlers
+// Global handlers
 window.deleteTransactionHandler = window.deleteTransactionHandler;
 window.editTransactionHandler = window.editTransactionHandler;
 
@@ -449,9 +464,9 @@ document.getElementById('backBtn').addEventListener('click', () => { window.loca
 initMonthFilter();
 loadAccount();
 loadTransactions();
-updateSectionVisibility();
+updateHeaderVisibility();
 
-// ensure that when any modal closes we clean editing id
+// close dropdown on outside click
 window.addEventListener('click', (e) => { if (!e.target.closest('.dropdown-menu')) closeDropdown(); });
 </script>
 </body>
