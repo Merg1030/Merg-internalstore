@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Account Detail · Trismart Accounts</title>
+<title>Account Detail · Trismart</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -37,6 +37,7 @@
 html, body {
   height: 100%;
   width: 100%;
+  overflow: hidden;
   font-family: 'DM Sans', system-ui, sans-serif;
   background: var(--bg);
 }
@@ -44,7 +45,9 @@ html, body {
 .app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
 }
 
 .topbar {
@@ -57,8 +60,6 @@ html, body {
   justify-content: space-between;
   flex-shrink: 0;
   box-shadow: var(--sh);
-  position: sticky;
-  top: 0;
   z-index: 100;
 }
 
@@ -106,44 +107,44 @@ html, body {
 }
 
 .main-content {
-  padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  min-height: 0;
 }
 
+/* Account Header Card */
 .account-header-card {
   background: var(--sur);
   border: 1px solid var(--bdr);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: 20px;
   margin-bottom: 24px;
   box-shadow: var(--sh);
 }
 
-.account-title {
+.account-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   flex-wrap: wrap;
   gap: 16px;
-  margin-bottom: 20px;
 }
 
-.account-name-section {
+.account-info {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
 .account-icon-large {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 }
 
 .icon-revenue { background: rgba(46,204,113,0.1); color: var(--ok); }
@@ -153,7 +154,7 @@ html, body {
 .icon-equity { background: rgba(124,58,237,0.1); color: var(--purple); }
 
 .account-name h1 {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 800;
   margin-bottom: 4px;
 }
@@ -167,7 +168,7 @@ html, body {
   display: inline-block;
 }
 
-.balance-section {
+.balance-display {
   text-align: right;
 }
 
@@ -179,7 +180,7 @@ html, body {
 }
 
 .balance-amount {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 800;
   font-family: 'DM Mono', monospace;
 }
@@ -187,31 +188,7 @@ html, body {
 .balance-amount.positive { color: var(--ok); }
 .balance-amount.negative { color: var(--danger); }
 
-.account-stats-row {
-  display: flex;
-  gap: 24px;
-  padding-top: 16px;
-  border-top: 1px solid var(--bdr);
-  margin-top: 8px;
-}
-
-.stat-item {
-  flex: 1;
-}
-
-.stat-item-label {
-  font-size: 0.55rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: var(--fade);
-}
-
-.stat-item-value {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-top: 4px;
-}
-
+/* Section Header */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -262,12 +239,14 @@ html, body {
   color: white;
 }
 
+/* Table Container */
 .table-container {
   background: var(--sur);
   border: 1px solid var(--bdr);
   border-radius: var(--radius);
   overflow: auto;
-  max-height: 500px;
+  flex: 1;
+  min-height: 300px;
   box-shadow: var(--sh);
 }
 
@@ -275,12 +254,12 @@ html, body {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.7rem;
-  min-width: 600px;
+  min-width: 800px;
 }
 
 .transaction-table th {
   background: #fafcff;
-  padding: 10px 12px;
+  padding: 12px 12px;
   text-align: left;
   font-size: 0.55rem;
   font-weight: 800;
@@ -290,32 +269,37 @@ html, body {
   position: sticky;
   top: 0;
   background: white;
+  z-index: 10;
 }
 
 .transaction-table td {
-  padding: 8px 12px;
+  padding: 10px 12px;
   border-bottom: 1px solid #eff3f8;
+  vertical-align: middle;
 }
 
-.transaction-type {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-size: 0.6rem;
-  font-weight: 600;
+.debit-amount {
+  color: var(--danger);
+  font-weight: 700;
 }
 
-.type-income { background: rgba(46,204,113,0.1); color: var(--ok); }
-.type-expense { background: rgba(239,68,68,0.1); color: var(--danger); }
+.credit-amount {
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.balance-amount-table {
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+}
 
 .empty-row td {
   text-align: center;
-  padding: 40px;
+  padding: 60px;
   color: var(--fade);
 }
 
+/* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -336,9 +320,9 @@ html, body {
   border-radius: 24px;
   max-width: 500px;
   width: 90%;
-  max-height: 80vh;
+  max-height: 85vh;
   overflow: auto;
-  padding: 20px;
+  padding: 24px;
 }
 
 .modal-header {
@@ -383,7 +367,7 @@ html, body {
   font-family: inherit;
 }
 
-.form-group input:focus, .form-group select:focus {
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
   outline: none;
   border-color: var(--p);
 }
@@ -418,19 +402,30 @@ html, body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--lite);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bdr);
+  border-radius: 4px;
+}
+
 @media (max-width: 700px) {
-  .account-title {
+  .account-row {
     flex-direction: column;
+    align-items: flex-start;
   }
-  .balance-section {
+  .balance-display {
     text-align: left;
   }
-  .account-stats-row {
-    flex-direction: column;
-    gap: 12px;
-  }
   .main-content {
-    padding: 16px;
+    padding: 12px;
   }
   .topbar {
     padding: 0 12px;
@@ -455,13 +450,13 @@ html, body {
 
     <!-- Account Header -->
     <div class="account-header-card" id="accountHeader">
-      <div style="text-align:center; padding:40px;">Loading account details...</div>
+      <div style="text-align:center; padding:30px;">Loading account details...</div>
     </div>
 
     <!-- Transactions Section -->
     <div class="section-header">
       <div class="section-title"><i class="fas fa-list"></i> Transaction History</div>
-      <button class="btn btn-primary" onclick="openAddTransactionModal()">
+      <button class="btn btn-primary" onclick="openTransactionModal()">
         <i class="fas fa-plus"></i> Add Transaction
       </button>
     </div>
@@ -469,10 +464,18 @@ html, body {
     <div class="table-container">
       <table class="transaction-table">
         <thead>
-          <tr><th>Date</th><th>Description</th><th>Type</th><th>Amount</th><th>Reference</th><th>Actions</th></tr>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Debit</th>
+            <th>Credit</th>
+            <th>Balance</th>
+            <th>Reference</th>
+            <th style="width:50px;">Action</th>
+          </tr>
         </thead>
         <tbody id="transactionsTbody">
-          <tr class="empty-row"><td colspan="6">Loading transactions...</tr>
+          <tr class="empty-row"><td colspan="7">Loading transactions...</td></tr>
         </tbody>
       </table>
     </div>
@@ -495,13 +498,13 @@ html, body {
       <div class="form-group">
         <label>Transaction Type</label>
         <select id="transType" required>
-          <option value="income">Income / Credit</option>
-          <option value="expense">Expense / Debit</option>
+          <option value="credit">Credit (Money In / Income)</option>
+          <option value="debit">Debit (Money Out / Expense)</option>
         </select>
       </div>
       <div class="form-group">
         <label>Amount (K)</label>
-        <input type="number" id="transAmount" step="0.01" required>
+        <input type="number" id="transAmount" step="0.01" required placeholder="0.00">
       </div>
       <div class="form-group">
         <label>Description</label>
@@ -523,7 +526,7 @@ html, body {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, collection, query, where, orderBy, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, orderBy, addDoc, updateDoc, deleteDoc, doc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 const firebaseConfig = { 
   apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k", 
@@ -547,7 +550,8 @@ if (userName !== 'chris') {
 
 const accountId = localStorage.getItem('selectedAccountId');
 if (!accountId) {
-  window.location.href = 'accounts-dashboard.html';
+  toast('No account selected', 'error');
+  setTimeout(() => window.location.href = 'accounts-dashboard.html', 1500);
 }
 
 let currentAccount = null;
@@ -568,27 +572,29 @@ function toast(msg, type = 'success') {
 function closeModal(modalId) {
   document.getElementById(modalId).classList.remove('show');
 }
-
 window.closeModal = closeModal;
 
-function openAddTransactionModal() {
+function openTransactionModal() {
   document.getElementById('transactionForm').reset();
   document.getElementById('transDate').valueAsDate = new Date();
   document.getElementById('transactionModal').classList.add('show');
 }
-window.openAddTransactionModal = openAddTransactionModal;
+window.openTransactionModal = openTransactionModal;
 
 // Load account details
 function loadAccount() {
   if (unsubscribeAccount) unsubscribeAccount();
   unsubscribeAccount = onSnapshot(doc(db, 'accounts', accountId), (docSnap) => {
     if (docSnap.exists()) {
-      currentAccount = { id: docSnap.id, ...docSnap.data() };
+      currentAccount = { id: docSnap.id, ...docSnap.data(), balance: Number(docSnap.data().balance) || 0 };
       renderAccountHeader();
     } else {
       toast('Account not found', 'error');
       setTimeout(() => window.location.href = 'accounts-dashboard.html', 1500);
     }
+  }, (error) => {
+    console.error('Account load error:', error);
+    toast('Error loading account', 'error');
   });
 }
 
@@ -597,8 +603,12 @@ function loadTransactions() {
   if (unsubscribeTransactions) unsubscribeTransactions();
   const q = query(collection(db, 'account_transactions'), where('accountId', '==', accountId), orderBy('date', 'desc'));
   unsubscribeTransactions = onSnapshot(q, (snap) => {
-    accountTransactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    accountTransactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data(), amount: Number(doc.data().amount) || 0 }));
     renderTransactions();
+    renderAccountHeader(); // Refresh header stats
+  }, (error) => {
+    console.error('Transactions load error:', error);
+    toast('Error loading transactions', 'error');
   });
 }
 
@@ -606,58 +616,43 @@ function renderAccountHeader() {
   if (!currentAccount) return;
   
   const typeIcons = {
-    revenue: { icon: 'fa-chart-line', class: 'icon-revenue', label: 'Revenue' },
-    expense: { icon: 'fa-shopping-cart', class: 'icon-expense', label: 'Expense' },
-    asset: { icon: 'fa-coins', class: 'icon-asset', label: 'Asset' },
-    liability: { icon: 'fa-hand-holding-usd', class: 'icon-liability', label: 'Liability' },
-    equity: { icon: 'fa-chart-pie', class: 'icon-equity', label: 'Equity' }
+    revenue: { icon: 'fa-chart-line', class: 'icon-revenue', label: 'REVENUE' },
+    expense: { icon: 'fa-shopping-cart', class: 'icon-expense', label: 'EXPENSE' },
+    asset: { icon: 'fa-coins', class: 'icon-asset', label: 'ASSET' },
+    liability: { icon: 'fa-hand-holding-usd', class: 'icon-liability', label: 'LIABILITY' },
+    equity: { icon: 'fa-chart-pie', class: 'icon-equity', label: 'EQUITY' }
   };
   
   const typeInfo = typeIcons[currentAccount.type] || typeIcons.asset;
-  const isPositive = currentAccount.type === 'revenue' || currentAccount.type === 'asset';
+  const isPositive = currentAccount.type === 'revenue' || currentAccount.type === 'asset' || currentAccount.type === 'equity';
   const balanceClass = (currentAccount.type === 'expense' || currentAccount.type === 'liability') && currentAccount.balance > 0 ? 'negative' : 'positive';
   
   // Calculate totals from transactions
-  const totalIncome = accountTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-  const totalExpense = accountTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+  const totalCredit = accountTransactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
+  const totalDebit = accountTransactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
   
   document.getElementById('accountHeader').innerHTML = `
-    <div class="account-title">
-      <div class="account-name-section">
+    <div class="account-row">
+      <div class="account-info">
         <div class="account-icon-large ${typeInfo.class}">
           <i class="fas ${typeInfo.icon}"></i>
         </div>
         <div class="account-name">
           <h1>${escapeHtml(currentAccount.name)}</h1>
-          <span class="account-type-badge" style="background:${typeInfo.class.split(' ')[1] === 'icon-revenue' ? 'rgba(46,204,113,0.1)' : 'rgba(67,97,238,0.1)'}; color:${typeInfo.class === 'icon-revenue' ? '#2ecc71' : '#4361ee'}">
+          <span class="account-type-badge" style="background:${typeInfo.class === 'icon-revenue' ? 'rgba(46,204,113,0.15)' : 'rgba(67,97,238,0.15)'}; color:${typeInfo.class === 'icon-revenue' ? '#2ecc71' : '#4361ee'}">
             ${typeInfo.label}
           </span>
+          ${currentAccount.description ? `<div style="font-size:0.65rem; color:var(--fade); margin-top:4px;">${escapeHtml(currentAccount.description)}</div>` : ''}
         </div>
       </div>
-      <div class="balance-section">
+      <div class="balance-display">
         <div class="balance-label">Current Balance</div>
         <div class="balance-amount ${balanceClass}">K${(currentAccount.balance || 0).toFixed(2)}</div>
+        <div style="font-size:0.6rem; color:var(--fade); margin-top:4px;">
+          Credits: K${totalCredit.toFixed(2)} | Debits: K${totalDebit.toFixed(2)}
+        </div>
       </div>
     </div>
-    <div class="account-stats-row">
-      <div class="stat-item">
-        <div class="stat-item-label">Total Income</div>
-        <div class="stat-item-value" style="color: var(--ok);">K${totalIncome.toFixed(2)}</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-item-label">Total Expenses</div>
-        <div class="stat-item-value" style="color: var(--danger);">K${totalExpense.toFixed(2)}</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-item-label">Net Flow</div>
-        <div class="stat-item-value" style="color: ${totalIncome - totalExpense >= 0 ? 'var(--ok)' : 'var(--danger)'};">K${(totalIncome - totalExpense).toFixed(2)}</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-item-label">Transactions</div>
-        <div class="stat-item-value">${accountTransactions.length}</div>
-      </div>
-    </div>
-    ${currentAccount.description ? `<div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--bdr); font-size: 0.7rem; color: var(--fade);">${escapeHtml(currentAccount.description)}</div>` : ''}
   `;
 }
 
@@ -665,26 +660,43 @@ function renderTransactions() {
   const tbody = document.getElementById('transactionsTbody');
   
   if (accountTransactions.length === 0) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No transactions for this account</tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No transactions for this account. Click "Add Transaction" to get started.</td></tr>';
     return;
   }
   
+  // Calculate running balance (oldest to newest)
+  const sortedAsc = [...accountTransactions].sort((a, b) => new Date(a.date) - new Date(b.date));
+  let runningBalance = 0;
+  const balanceMap = new Map();
+  
+  for (const trans of sortedAsc) {
+    if (trans.type === 'credit') {
+      runningBalance += trans.amount;
+    } else {
+      runningBalance -= trans.amount;
+    }
+    balanceMap.set(trans.id, runningBalance);
+  }
+  
+  // Display newest first
   tbody.innerHTML = accountTransactions.map(trans => {
-    const typeClass = trans.type === 'income' ? 'type-income' : 'type-expense';
-    const typeIcon = trans.type === 'income' ? 'fa-arrow-down' : 'fa-arrow-up';
-    const amountClass = trans.type === 'income' ? 'positive' : 'negative';
-    const amountPrefix = trans.type === 'income' ? '+' : '-';
+    const isDebit = trans.type === 'debit';
+    const isCredit = trans.type === 'credit';
+    const debitAmount = isDebit ? `K${trans.amount.toFixed(2)}` : '-';
+    const creditAmount = isCredit ? `K${trans.amount.toFixed(2)}` : '-';
+    const balance = balanceMap.get(trans.id) || 0;
     
     return `
       <tr>
         <td>${trans.date || '-'}</td>
-        <td>${escapeHtml(trans.description || '-')}</td>
-        <td><span class="transaction-type ${typeClass}"><i class="fas ${typeIcon}"></i> ${trans.type === 'income' ? 'Income' : 'Expense'}</span></td>
-        <td class="${amountClass}">${amountPrefix} K${(trans.amount || 0).toFixed(2)}</td>
-        <td><span style="font-family:monospace;">${escapeHtml(trans.reference || '-')}</span></td>
+        <td><strong>${escapeHtml(trans.description || '-')}</strong></td>
+        <td class="debit-amount">${debitAmount}</td>
+        <td class="credit-amount">${creditAmount}</td>
+        <td class="balance-amount-table">K${balance.toFixed(2)}</td>
+        <td><span style="font-family:monospace; font-size:0.65rem;">${escapeHtml(trans.reference || '-')}</span></td>
         <td>
           <button class="btn btn-outline" style="padding:4px 8px;" onclick="deleteTransaction('${trans.id}')">
-            <i class="fas fa-trash"></i>
+            <i class="fas fa-trash-alt"></i>
           </button>
         </td>
       </tr>
@@ -699,20 +711,24 @@ window.deleteTransaction = async function(transactionId) {
   if (!transaction) return;
   
   try {
-    // Reverse the balance change
-    let balanceChange = transaction.amount;
-    if (transaction.type === 'expense') {
-      balanceChange = transaction.amount; // Adding back to balance
-    } else if (transaction.type === 'income') {
-      balanceChange = -transaction.amount; // Subtracting from balance
-    }
-    
-    const newBalance = (currentAccount.balance || 0) + balanceChange;
-    
-    // Update account balance
-    await updateDoc(doc(db, 'accounts', accountId), { balance: newBalance });
-    // Delete transaction
-    await deleteDoc(doc(db, 'account_transactions', transactionId));
+    await runTransaction(db, async (transactionRef) => {
+      const accountRef = doc(db, 'accounts', accountId);
+      const accountDoc = await transactionRef.get(accountRef);
+      if (!accountDoc.exists()) throw new Error('Account not found');
+      
+      let currentBalance = accountDoc.data().balance || 0;
+      let newBalance = currentBalance;
+      
+      // Reverse the transaction effect
+      if (transaction.type === 'credit') {
+        newBalance = currentBalance - transaction.amount;
+      } else {
+        newBalance = currentBalance + transaction.amount;
+      }
+      
+      transactionRef.update(accountRef, { balance: newBalance });
+      transactionRef.delete(doc(db, 'account_transactions', transactionId));
+    });
     
     toast('Transaction deleted');
   } catch (err) {
@@ -723,15 +739,13 @@ window.deleteTransaction = async function(transactionId) {
 // Add transaction
 document.getElementById('transactionForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+  
   const amount = parseFloat(document.getElementById('transAmount').value);
   const type = document.getElementById('transType').value;
   
-  // Calculate new balance
-  let newBalance = currentAccount.balance || 0;
-  if (type === 'income') {
-    newBalance += amount;
-  } else {
-    newBalance -= amount;
+  if (isNaN(amount) || amount <= 0) {
+    toast('Enter a valid amount', 'error');
+    return;
   }
   
   const transactionData = {
@@ -746,10 +760,24 @@ document.getElementById('transactionForm').addEventListener('submit', async (e) 
   };
   
   try {
-    // Add transaction
-    await addDoc(collection(db, 'account_transactions'), transactionData);
-    // Update account balance
-    await updateDoc(doc(db, 'accounts', accountId), { balance: newBalance });
+    await runTransaction(db, async (transactionRef) => {
+      const accountRef = doc(db, 'accounts', accountId);
+      const accountDoc = await transactionRef.get(accountRef);
+      if (!accountDoc.exists()) throw new Error('Account not found');
+      
+      let currentBalance = accountDoc.data().balance || 0;
+      let newBalance = currentBalance;
+      
+      if (type === 'credit') {
+        newBalance = currentBalance + amount;
+      } else {
+        newBalance = currentBalance - amount;
+      }
+      
+      transactionRef.update(accountRef, { balance: newBalance });
+      transactionRef.set(doc(collection(db, 'account_transactions')), transactionData);
+    });
+    
     toast('Transaction added');
     closeModal('transactionModal');
   } catch (err) {
