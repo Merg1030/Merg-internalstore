@@ -113,7 +113,6 @@ html, body {
   min-height: 0;
 }
 
-/* Account Header Card */
 .account-header-card {
   background: var(--sur);
   border: 1px solid var(--bdr);
@@ -188,7 +187,6 @@ html, body {
 .balance-amount.positive { color: var(--ok); }
 .balance-amount.negative { color: var(--danger); }
 
-/* Section Header */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -234,12 +232,6 @@ html, body {
   color: var(--p);
 }
 
-.btn-danger {
-  background: linear-gradient(135deg, var(--danger), #dc2626);
-  color: white;
-}
-
-/* Table Container */
 .table-container {
   background: var(--sur);
   border: 1px solid var(--bdr);
@@ -247,6 +239,7 @@ html, body {
   overflow: auto;
   flex: 1;
   min-height: 300px;
+  max-height: calc(100vh - 280px);
   box-shadow: var(--sh);
 }
 
@@ -254,7 +247,7 @@ html, body {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.7rem;
-  min-width: 800px;
+  min-width: 650px;
 }
 
 .transaction-table th {
@@ -299,7 +292,6 @@ html, body {
   color: var(--fade);
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -358,7 +350,7 @@ html, body {
   margin-bottom: 5px;
 }
 
-.form-group input, .form-group select, .form-group textarea {
+.form-group input, .form-group select {
   width: 100%;
   padding: 10px 12px;
   border: 1.5px solid var(--bdr);
@@ -367,7 +359,7 @@ html, body {
   font-family: inherit;
 }
 
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+.form-group input:focus, .form-group select:focus {
   outline: none;
   border-color: var(--p);
 }
@@ -448,12 +440,10 @@ html, body {
 
   <div class="main-content">
 
-    <!-- Account Header -->
     <div class="account-header-card" id="accountHeader">
       <div style="text-align:center; padding:30px;">Loading account details...</div>
     </div>
 
-    <!-- Transactions Section -->
     <div class="section-header">
       <div class="section-title"><i class="fas fa-list"></i> Transaction History</div>
       <button class="btn btn-primary" onclick="openTransactionModal()">
@@ -470,20 +460,18 @@ html, body {
             <th>Debit</th>
             <th>Credit</th>
             <th>Balance</th>
-            <th>Reference</th>
             <th style="width:50px;">Action</th>
           </tr>
         </thead>
         <tbody id="transactionsTbody">
-          <tr class="empty-row"><td colspan="7">Loading transactions...</td></tr>
+          <tr class="empty-row"><td colspan="6">Loading transactions...</td></tr>
         </tbody>
-      </table>
+       </table>
     </div>
 
   </div>
 </div>
 
-<!-- Add Transaction Modal -->
 <div id="transactionModal" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-header">
@@ -510,10 +498,6 @@ html, body {
         <label>Description</label>
         <input type="text" id="transDesc" required placeholder="e.g., Rent payment, Sales revenue">
       </div>
-      <div class="form-group">
-        <label>Reference / Invoice No</label>
-        <input type="text" id="transRef" placeholder="Optional reference">
-      </div>
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Add Transaction</button>
         <button type="button" class="btn btn-outline" onclick="closeModal('transactionModal')">Cancel</button>
@@ -526,7 +510,7 @@ html, body {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, collection, query, where, orderBy, addDoc, updateDoc, deleteDoc, doc, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, orderBy, addDoc, updateDoc, deleteDoc, doc, onSnapshot, runTransaction, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 const firebaseConfig = { 
   apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k", 
@@ -581,7 +565,6 @@ function openTransactionModal() {
 }
 window.openTransactionModal = openTransactionModal;
 
-// Load account details
 function loadAccount() {
   if (unsubscribeAccount) unsubscribeAccount();
   unsubscribeAccount = onSnapshot(doc(db, 'accounts', accountId), (docSnap) => {
@@ -598,17 +581,24 @@ function loadAccount() {
   });
 }
 
-// Load transactions for this account
 function loadTransactions() {
   if (unsubscribeTransactions) unsubscribeTransactions();
+  
   const q = query(collection(db, 'account_transactions'), where('accountId', '==', accountId), orderBy('date', 'desc'));
   unsubscribeTransactions = onSnapshot(q, (snap) => {
-    accountTransactions = snap.docs.map(doc => ({ id: doc.id, ...doc.data(), amount: Number(doc.data().amount) || 0 }));
+    accountTransactions = snap.docs.map(doc => ({ 
+      id: doc.id, 
+      ...doc.data(), 
+      amount: Number(doc.data().amount) || 0 
+    }));
+    
+    console.log('Transactions loaded:', accountTransactions.length);
     renderTransactions();
-    renderAccountHeader(); // Refresh header stats
+    renderAccountHeader();
   }, (error) => {
     console.error('Transactions load error:', error);
-    toast('Error loading transactions', 'error');
+    toast('Error loading transactions: ' + error.message, 'error');
+    document.getElementById('transactionsTbody').innerHTML = '<tr class="empty-row"><td colspan="6">Error loading transactions. Check console.</td></tr>';
   });
 }
 
@@ -627,7 +617,6 @@ function renderAccountHeader() {
   const isPositive = currentAccount.type === 'revenue' || currentAccount.type === 'asset' || currentAccount.type === 'equity';
   const balanceClass = (currentAccount.type === 'expense' || currentAccount.type === 'liability') && currentAccount.balance > 0 ? 'negative' : 'positive';
   
-  // Calculate totals from transactions
   const totalCredit = accountTransactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
   const totalDebit = accountTransactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
   
@@ -660,11 +649,10 @@ function renderTransactions() {
   const tbody = document.getElementById('transactionsTbody');
   
   if (accountTransactions.length === 0) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No transactions for this account. Click "Add Transaction" to get started.</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No transactions for this account. Click "Add Transaction" to get started.</td></tr>';
     return;
   }
   
-  // Calculate running balance (oldest to newest)
   const sortedAsc = [...accountTransactions].sort((a, b) => new Date(a.date) - new Date(b.date));
   let runningBalance = 0;
   const balanceMap = new Map();
@@ -678,7 +666,6 @@ function renderTransactions() {
     balanceMap.set(trans.id, runningBalance);
   }
   
-  // Display newest first
   tbody.innerHTML = accountTransactions.map(trans => {
     const isDebit = trans.type === 'debit';
     const isCredit = trans.type === 'credit';
@@ -693,7 +680,6 @@ function renderTransactions() {
         <td class="debit-amount">${debitAmount}</td>
         <td class="credit-amount">${creditAmount}</td>
         <td class="balance-amount-table">K${balance.toFixed(2)}</td>
-        <td><span style="font-family:monospace; font-size:0.65rem;">${escapeHtml(trans.reference || '-')}</span></td>
         <td>
           <button class="btn btn-outline" style="padding:4px 8px;" onclick="deleteTransaction('${trans.id}')">
             <i class="fas fa-trash-alt"></i>
@@ -719,7 +705,6 @@ window.deleteTransaction = async function(transactionId) {
       let currentBalance = accountDoc.data().balance || 0;
       let newBalance = currentBalance;
       
-      // Reverse the transaction effect
       if (transaction.type === 'credit') {
         newBalance = currentBalance - transaction.amount;
       } else {
@@ -736,7 +721,6 @@ window.deleteTransaction = async function(transactionId) {
   }
 };
 
-// Add transaction
 document.getElementById('transactionForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   
@@ -755,7 +739,6 @@ document.getElementById('transactionForm').addEventListener('submit', async (e) 
     type: type,
     amount: amount,
     description: document.getElementById('transDesc').value,
-    reference: document.getElementById('transRef').value || '',
     createdAt: new Date().toISOString()
   };
   
