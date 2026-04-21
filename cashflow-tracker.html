@@ -111,52 +111,6 @@ html, body {
   min-height: 0;
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  background: var(--sur);
-  border: 1px solid var(--bdr);
-  border-radius: var(--radius);
-  padding: 16px;
-  transition: 0.2s;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shl);
-}
-
-.stat-label {
-  font-size: 0.55rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: var(--fade);
-  letter-spacing: 0.08em;
-  margin-bottom: 6px;
-}
-
-.stat-value {
-  font-size: 1.4rem;
-  font-weight: 800;
-  font-family: 'DM Mono', monospace;
-  color: var(--p);
-}
-
-.stat-change {
-  font-size: 0.6rem;
-  margin-top: 4px;
-  color: var(--ok);
-}
-
-.stat-change.negative {
-  color: var(--danger);
-}
-
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -202,16 +156,10 @@ html, body {
   color: var(--p);
 }
 
-.btn-danger {
-  background: linear-gradient(135deg, var(--danger), #dc2626);
-  color: white;
-}
-
 .accounts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 16px;
-  margin-bottom: 24px;
 }
 
 .account-card {
@@ -464,9 +412,6 @@ html, body {
 }
 
 @media (max-width: 700px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .accounts-grid {
     grid-template-columns: 1fr;
   }
@@ -489,36 +434,13 @@ html, body {
       <div class="accounts-badge">FINANCIAL</div>
       <div class="admin-badge" id="adminBadge">ADMIN</div>
     </div>
-    <div><i class="fas fa-chart-pie"></i> Financial Dashboard</div>
+    <div><i class="fas fa-chart-pie"></i> Chart of Accounts</div>
   </div>
 
   <div class="main-content">
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Total Revenue</div>
-        <div class="stat-value" id="totalRevenue">K0</div>
-        <div class="stat-change" id="revenueChange">+0% vs last month</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Expenses</div>
-        <div class="stat-value" id="totalExpenses">K0</div>
-        <div class="stat-change negative" id="expenseChange">+0% vs last month</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Net Profit</div>
-        <div class="stat-value" id="netProfit">K0</div>
-        <div class="stat-change" id="profitChange">+0% vs last month</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Assets</div>
-        <div class="stat-value" id="totalAssets">K0</div>
-        <div class="stat-sub">cash + inventory + receivables</div>
-      </div>
-    </div>
-
     <div class="section-header">
-      <div class="section-title"><i class="fas fa-chart-line"></i> Chart of Accounts</div>
+      <div class="section-title"><i class="fas fa-chart-line"></i> All Accounts</div>
       <button class="btn btn-primary" onclick="openAccountModal()">
         <i class="fas fa-plus"></i> New Account
       </button>
@@ -658,7 +580,6 @@ function loadAccounts() {
   unsubscribeAccounts = onSnapshot(q, (snap) => {
     accounts = snap.docs.map(doc => ({ id: doc.id, ...doc.data(), balance: Number(doc.data().balance) || 0 }));
     renderAccounts();
-    updateStats();
   }, (error) => {
     console.error('Accounts load error:', error);
     toast('Error loading accounts', 'error');
@@ -710,7 +631,7 @@ function renderAccounts() {
         <div class="account-desc">${escapeHtml(account.description || typeInfo.label)}</div>
         <div class="account-stats">
           <span><i class="fas fa-chart-line"></i> ${typeInfo.label}</span>
-          <span><i class="fas fa-calendar"></i> Created: ${account.createdAt ? new Date(account.createdAt).toLocaleDateString() : '-'}</span>
+          <span><i class="fas fa-calendar"></i> Balance: K${(account.balance || 0).toFixed(2)}</span>
         </div>
       </div>
     `;
@@ -754,21 +675,6 @@ window.goToAccountDetail = function(accountId) {
   localStorage.setItem('selectedAccountId', accountId);
   window.location.href = 'account-detail.html';
 };
-
-function updateStats() {
-  const revenue = accounts.filter(a => a.type === 'revenue').reduce((sum, a) => sum + (a.balance || 0), 0);
-  const expenses = accounts.filter(a => a.type === 'expense').reduce((sum, a) => sum + (a.balance || 0), 0);
-  const assets = accounts.filter(a => a.type === 'asset').reduce((sum, a) => sum + (a.balance || 0), 0);
-  
-  const netProfit = revenue - expenses;
-  const profitMargin = revenue > 0 ? (netProfit / revenue * 100) : 0;
-  
-  document.getElementById('totalRevenue').innerHTML = `K${revenue.toFixed(2)}`;
-  document.getElementById('totalExpenses').innerHTML = `K${expenses.toFixed(2)}`;
-  document.getElementById('netProfit').innerHTML = `K${netProfit.toFixed(2)}`;
-  document.getElementById('totalAssets').innerHTML = `K${assets.toFixed(2)}`;
-  document.getElementById('profitChange').innerHTML = `Margin: ${profitMargin.toFixed(1)}%`;
-}
 
 document.getElementById('accountForm').addEventListener('submit', async (e) => {
   e.preventDefault();
