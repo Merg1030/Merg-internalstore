@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TriSmart Stores | Inventory Editor</title>
+    <title>TriSmart Stores | Inventory Manager + Branch Transfer</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
@@ -384,7 +384,7 @@
             background: white;
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.13);
-            min-width: 130px;
+            min-width: 150px;
             display: none;
             z-index: 400;
             border: 1px solid #e2e6ef;
@@ -419,6 +419,12 @@
         .dots-item.delete {
             color: #ef4444;
             border-top: 1px solid #e2e6ef;
+        }
+        
+        .dots-item.transfer {
+            color: #0f6b3a;
+            border-bottom: 1px solid #eef2f0;
+            background: rgba(16,185,129,0.05);
         }
         
         .modal-bg {
@@ -462,7 +468,7 @@
             color: #6b7490;
         }
         
-        .field-group input {
+        .field-group input, .field-group select {
             width: 100%;
             padding: 7px 8px;
             border-radius: 10px;
@@ -658,7 +664,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-    import { getFirestore, collection, query, where, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, updateDoc, deleteDoc, addDoc, doc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
@@ -672,27 +678,22 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Get branch ID from localStorage - MUST match master file branch IDs
     let branchId = localStorage.getItem('branchId');
-    const loggedInUser = (localStorage.getItem('loggedInUser') || localStorage.getItem('userName') || '').toLowerCase().trim();
+    const loggedInUserRaw = (localStorage.getItem('loggedInUser') || localStorage.getItem('userName') || '').toLowerCase().trim();
+    const loggedInUser = loggedInUserRaw;
     
-    // Branch mapping for display - MUST match master file
     const branchMap = {
         'kabanana': { id: 'kabanana', name: 'Kabanana Branch', display: '🏪 KABANANA' },
         'makeni': { id: 'makeni', name: 'Makeni Branch', display: '🏪 MAKENI' }
     };
     
-    // Validate branch ID
     if (!branchId) {
         alert("Missing branch. Please login.");
         window.location.href = "dashboard.html";
     }
-    
-    // Ensure branchId is valid
     if (!branchMap[branchId]) {
-        console.warn(`Unknown branch ID: ${branchId}, defaulting to kabanana`);
+        localStorage.setItem('branchId', 'kabanana');
         branchId = 'kabanana';
-        localStorage.setItem('branchId', branchId);
     }
     
     const currentBranch = branchMap[branchId];
@@ -700,8 +701,7 @@
     document.getElementById('branchBadge').innerHTML = `<i class="fas fa-store"></i> ${currentBranch.display}`;
     
     const isAdmin = loggedInUser === 'chris';
-    const isWarehouseMan = loggedInUser === 'warehouseman';
-    const canEdit = isAdmin || isWarehouseMan;
+    const canEdit = isAdmin || loggedInUser === 'warehouseman';
     
     if (isAdmin) {
         document.getElementById('statsRow').style.display = 'grid';
@@ -729,7 +729,7 @@
             <div class="pw-box">
                 <div class="lock-icon"><i class="fas fa-lock"></i></div>
                 <h3>Authentication Required</h3>
-                <p>Enter password to edit or delete items</p>
+                <p>Enter password to edit, delete or transfer items</p>
                 <input type="password" id="pwInput" placeholder="••••••••" autocomplete="off">
                 <div class="pw-error" id="pwError">Incorrect password</div>
                 <button class="btn btn-primary" id="unlockBtn" style="width:100%;justify-content:center;margin-top:10px"><i class="fas fa-unlock-alt"></i> Unlock</button>
@@ -773,13 +773,130 @@
     let inventory = [];
     let unsubscribe = null;
     
+    // TRANSFER LOGIC (ONLY FOR CHRIS)
+    async function transferItemToBranch(item, targetBranchId, quantityToTransfer) {
+        if (!isAdmin) {
+            showToast("Transfer only available for admin (chris).", "error");
+            return false;
+        }
+        if (quantityToTransfer <= 0 || quantityToTransfer > item.stock) {
+            showToast(`Invalid quantity. Stock available: ${item.stock}`, "error");
+            return false;
+        }
+        if (targetBranchId === branchId) {
+            showToast("Cannot transfer to the same branch", "error");
+            return false;
+        }
+        try {
+            // 1. decrement source
+            const newSourceStock = item.stock - quantityToTransfer;
+            await updateDoc(doc(db, 'inventory', item.id), { stock: newSourceStock });
+            
+            // 2. Check if product exists in target branch (same code)
+            const targetQuery = query(collection(db, 'inventory'), where('branchId', '==', targetBranchId), where('code', '==', item.code));
+            const targetSnap = await new Promise((resolve) => {
+                const unsub = onSnapshot(targetQuery, (snap) => { unsub(); resolve(snap); }, (err) => resolve(null));
+            });
+            
+            let targetItem = null;
+            if (targetSnap && !targetSnap.empty) {
+                targetItem = targetSnap.docs[0];
+                const existingData = targetItem.data();
+                const newStock = (existingData.stock || 0) + quantityToTransfer;
+                await updateDoc(doc(db, 'inventory', targetItem.id), { stock: newStock });
+            } else {
+                // Create new product in target branch
+                const newProduct = {
+                    code: item.code,
+                    name: item.name,
+                    price: item.price,
+                    stock: quantityToTransfer,
+                    branchId: targetBranchId,
+                    createdAt: new Date().toISOString()
+                };
+                await addDoc(collection(db, 'inventory'), newProduct);
+            }
+            showToast(`✅ Transferred ${quantityToTransfer} x ${item.code} to ${branchMap[targetBranchId]?.name || targetBranchId}`, "success");
+            return true;
+        } catch (err) {
+            showToast(`Transfer failed: ${err.message}`, "error");
+            return false;
+        }
+    }
+    
+    window.transferItem = function(itemId) {
+        const item = inventory.find(i => i.id === itemId);
+        if (!item) {
+            showToast("Item not found", "error");
+            return;
+        }
+        
+        // Only Chris gets the transfer option; but we double-check inside.
+        if (!isAdmin) {
+            showToast("Transfer option only available for Chris (admin)", "error");
+            return;
+        }
+        
+        withAuth(async () => {
+            // Build modal with quantity + target branch selector
+            const modalDiv = document.createElement('div');
+            modalDiv.className = 'modal-bg';
+            modalDiv.innerHTML = `
+                <div class="modal-box">
+                    <h3><i class="fas fa-exchange-alt" style="color:#0f6b3a"></i> Transfer Stock</h3>
+                    <p style="font-size:0.7rem; margin-bottom:12px;">Product: <strong>${escapeHtml(item.name)} (${escapeHtml(item.code)})</strong><br>Current stock: ${item.stock}</p>
+                    <div class="field-group">
+                        <label>Target Branch</label>
+                        <select id="targetBranchSelect">
+                            ${Object.entries(branchMap).map(([key, val]) => `<option value="${key}" ${key === branchId ? 'disabled' : ''}>${val.name} ${key === branchId ? '(current)' : ''}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label>Quantity to Transfer</label>
+                        <input type="number" id="transferQty" min="1" max="${item.stock}" value="${Math.min(1, item.stock)}" step="1">
+                    </div>
+                    <div class="form-actions">
+                        <button id="confirmTransferBtn" class="btn btn-primary" style="background:#0f6b3a;">Confirm Transfer</button>
+                        <button id="cancelTransferBtn" class="btn btn-sm">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modalDiv);
+            
+            const qtyInput = modalDiv.querySelector('#transferQty');
+            const targetSelect = modalDiv.querySelector('#targetBranchSelect');
+            const confirmBtn = modalDiv.querySelector('#confirmTransferBtn');
+            const cancelBtn = modalDiv.querySelector('#cancelTransferBtn');
+            
+            const runTransfer = async () => {
+                let qty = parseInt(qtyInput.value);
+                if (isNaN(qty) || qty <= 0) qty = 1;
+                if (qty > item.stock) {
+                    showToast(`Max quantity is ${item.stock}`, "error");
+                    return;
+                }
+                const targetBranchId = targetSelect.value;
+                if (targetBranchId === branchId) {
+                    showToast("Select different branch", "error");
+                    return;
+                }
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Transferring...';
+                await transferItemToBranch(item, targetBranchId, qty);
+                modalDiv.remove();
+            };
+            
+            confirmBtn.onclick = runTransfer;
+            cancelBtn.onclick = () => modalDiv.remove();
+            modalDiv.onclick = (e) => { if (e.target === modalDiv) modalDiv.remove(); };
+        });
+    };
+    
+    // Edit & Delete functions with auth
     window.editItem = function(itemId) {
         withAuth(async () => {
             const item = inventory.find(i => i.id === itemId);
-            if (!item) {
-                showToast("Item not found", "error");
-                return;
-            }
+            if (!item) { showToast("Item not found", "error"); return; }
             
             const modal = document.createElement('div');
             modal.className = 'modal-bg';
@@ -787,72 +904,40 @@
                 <div class="modal-box">
                     <h3><i class="fas fa-edit"></i> Edit Product</h3>
                     <form id="editForm">
-                        <div class="field-group">
-                            <label>Product Code</label>
-                            <input type="text" name="code" value="${escapeHtml(item.code)}" required>
-                        </div>
-                        <div class="field-group">
-                            <label>Product Name</label>
-                            <input type="text" name="name" value="${escapeHtml(item.name)}" required>
-                        </div>
-                        <div class="field-group">
-                            <label>Price (K)</label>
-                            <input type="number" name="price" step="0.01" value="${item.price}" required>
-                        </div>
-                        <div class="field-group">
-                            <label>Stock Quantity</label>
-                            <input type="number" name="stock" value="${item.stock}" required>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                            <button type="button" class="btn btn-sm" id="cancelBtn">Cancel</button>
-                        </div>
+                        <div class="field-group"><label>Product Code</label><input type="text" name="code" value="${escapeHtml(item.code)}" required></div>
+                        <div class="field-group"><label>Product Name</label><input type="text" name="name" value="${escapeHtml(item.name)}" required></div>
+                        <div class="field-group"><label>Price (K)</label><input type="number" name="price" step="0.01" value="${item.price}" required></div>
+                        <div class="field-group"><label>Stock Quantity</label><input type="number" name="stock" value="${item.stock}" required></div>
+                        <div class="form-actions"><button type="submit" class="btn btn-primary">Save Changes</button><button type="button" class="btn btn-sm" id="cancelBtn">Cancel</button></div>
                     </form>
                 </div>
             `;
             document.body.appendChild(modal);
-            
             const form = modal.querySelector('#editForm');
-            const cancelBtn = modal.querySelector('#cancelBtn');
-            
             form.onsubmit = async (e) => {
                 e.preventDefault();
                 const code = form.code.value.trim().toUpperCase();
                 const name = form.name.value.trim();
                 const price = parseFloat(form.price.value);
                 const stock = parseInt(form.stock.value);
-                
                 if (!code || !name || isNaN(price) || price < 0 || isNaN(stock) || stock < 0) {
-                    showToast("Please fill all fields correctly", "error");
+                    showToast("Invalid fields", "error");
                     return;
                 }
-                
                 if (code !== item.code && inventory.some(i => i.code === code && i.id !== item.id)) {
-                    showToast("Product code already exists", "error");
+                    showToast("Duplicate product code", "error");
                     return;
                 }
-                
                 const submitBtn = form.querySelector('button[type="submit"]');
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-                
                 try {
-                    await updateDoc(doc(db, 'inventory', item.id), {
-                        code: code,
-                        name: name,
-                        price: price,
-                        stock: stock
-                    });
+                    await updateDoc(doc(db, 'inventory', item.id), { code, name, price, stock });
                     modal.remove();
-                    showToast(`${item.code} updated successfully!`, "success");
-                } catch (err) {
-                    showToast("Update failed: " + err.message, "error");
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'Save Changes';
-                }
+                    showToast(`${item.code} updated!`, "success");
+                } catch (err) { showToast("Update failed", "error"); submitBtn.disabled = false; submitBtn.innerHTML = 'Save Changes'; }
             };
-            
-            cancelBtn.onclick = () => modal.remove();
+            modal.querySelector('#cancelBtn').onclick = () => modal.remove();
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
         });
     };
@@ -860,115 +945,68 @@
     window.deleteItem = function(itemId) {
         withAuth(async () => {
             const item = inventory.find(i => i.id === itemId);
-            if (!item) {
-                showToast("Item not found", "error");
-                return;
-            }
-            
+            if (!item) return;
             const confirmModal = document.createElement('div');
             confirmModal.className = 'modal-bg';
-            confirmModal.innerHTML = `
-                <div class="modal-box">
-                    <h3 style="color:#ef4444;"><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h3>
-                    <p style="margin:15px 0;">Delete <strong>${escapeHtml(item.name)}</strong> (${escapeHtml(item.code)})?</p>
-                    <p style="margin-bottom:15px;font-size:12px;color:#6b7490;">This action cannot be undone!</p>
-                    <div class="form-actions">
-                        <button id="confirmDelete" class="btn btn-danger">Delete Permanently</button>
-                        <button id="cancelDelete" class="btn btn-sm">Cancel</button>
-                    </div>
-                </div>
-            `;
+            confirmModal.innerHTML = `<div class="modal-box"><h3 style="color:#ef4444;"><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h3><p style="margin:15px 0;">Delete <strong>${escapeHtml(item.name)}</strong> (${escapeHtml(item.code)})?</p><div class="form-actions"><button id="confirmDelete" class="btn btn-danger">Delete</button><button id="cancelDelete" class="btn btn-sm">Cancel</button></div></div>`;
             document.body.appendChild(confirmModal);
-            
             const confirmBtn = confirmModal.querySelector('#confirmDelete');
-            const cancelBtn = confirmModal.querySelector('#cancelDelete');
-            
             confirmBtn.onclick = async () => {
                 confirmBtn.disabled = true;
-                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
-                
+                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 try {
                     await deleteDoc(doc(db, 'inventory', item.id));
                     confirmModal.remove();
-                    showToast(`${item.code} deleted successfully!`, "success");
-                } catch (err) {
-                    showToast("Delete failed: " + err.message, "error");
-                    confirmBtn.disabled = false;
-                    confirmBtn.innerHTML = 'Delete Permanently';
-                }
+                    showToast(`${item.code} deleted`, "success");
+                } catch (err) { showToast("Delete failed", "error"); confirmBtn.disabled = false; confirmBtn.innerHTML = 'Delete'; }
             };
-            
-            cancelBtn.onclick = () => confirmModal.remove();
+            confirmModal.querySelector('#cancelDelete').onclick = () => confirmModal.remove();
             confirmModal.onclick = (e) => { if (e.target === confirmModal) confirmModal.remove(); };
         });
     };
     
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str).replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
+    function escapeHtml(str) { if (!str) return ''; return String(str).replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
     
-    function closeAllMenus() {
-        document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open'));
-    }
-    
-    window.toggleMenu = function(e, id) {
-        e.stopPropagation();
-        closeAllMenus();
-        const menu = document.getElementById(`menu-${id}`);
-        if (menu) menu.classList.add('open');
-    };
-    
+    function closeAllMenus() { document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open')); }
+    window.toggleMenu = function(e, id) { e.stopPropagation(); closeAllMenus(); const menu = document.getElementById(`menu-${id}`); if (menu) menu.classList.add('open'); };
     window.closeAllMenus = closeAllMenus;
     document.addEventListener('click', closeAllMenus);
     
     function renderTable() {
         const tbody = document.getElementById('inventoryTbody');
         const search = document.getElementById('searchInput').value.toLowerCase();
-        
-        let filtered = inventory.filter(i => 
-            i.name?.toLowerCase().includes(search) || 
-            i.code?.toLowerCase().includes(search)
-        );
-        
+        let filtered = inventory.filter(i => i.name?.toLowerCase().includes(search) || i.code?.toLowerCase().includes(search));
         if (!filtered.length) {
             const cols = canEdit ? 5 : 4;
             tbody.innerHTML = `<tr class="empty-row"><td colspan="${cols}">📦 No products found</td></tr>`;
             return;
         }
-        
         tbody.innerHTML = '';
-        
         filtered.forEach(item => {
             const bg = item.stock === 0 ? '#fee2e2' : item.stock < 5 ? '#fff3e0' : '#d1fae5';
             const color = item.stock === 0 ? '#b91c1c' : item.stock < 5 ? '#b45309' : '#065f46';
-            
             const row = tbody.insertRow();
+            let actionsHtml = '';
+            if (canEdit) {
+                actionsHtml = `
+                    <td>
+                        <div class="dots-wrap">
+                            <button class="dots-btn" onclick="toggleMenu(event, '${item.id}')"><span class="dot"></span><span class="dot"></span><span class="dot"></span></button>
+                            <div class="dots-menu" id="menu-${item.id}">
+                                <button class="dots-item edit" onclick="closeAllMenus(); editItem('${item.id}')"><i class="fas fa-edit"></i> Edit Product</button>
+                                ${isAdmin ? `<button class="dots-item transfer" onclick="closeAllMenus(); transferItem('${item.id}')"><i class="fas fa-exchange-alt"></i> Transfer to Branch</button>` : ''}
+                                <button class="dots-item delete" onclick="closeAllMenus(); deleteItem('${item.id}')"><i class="fas fa-trash-alt"></i> Delete Product</button>
+                            </div>
+                        </div>
+                    </td>
+                `;
+            }
             row.innerHTML = `
                 <td><span class="code-chip">${escapeHtml(item.code)}</span></td>
                 <td><strong>${escapeHtml(item.name)}</strong></td>
                 <td>K${item.price.toFixed(2)}</td>
                 <td><span class="stock-chip" style="background:${bg};color:${color}">${item.stock}</span></td>
-                ${canEdit ? `<td>
-                    <div class="dots-wrap">
-                        <button class="dots-btn" onclick="toggleMenu(event, '${item.id}')">
-                            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                        </button>
-                        <div class="dots-menu" id="menu-${item.id}">
-                            <button class="dots-item edit" onclick="closeAllMenus(); editItem('${item.id}')">
-                                <i class="fas fa-edit"></i> Edit Product
-                            </button>
-                            <button class="dots-item delete" onclick="closeAllMenus(); deleteItem('${item.id}')">
-                                <i class="fas fa-trash-alt"></i> Delete Product
-                            </button>
-                        </div>
-                    </div>
-                </td>` : ''}
+                ${actionsHtml}
             `;
         });
     }
@@ -976,7 +1014,6 @@
     function updateStats() {
         const totalStock = inventory.reduce((s, i) => s + i.stock, 0);
         const totalValue = inventory.reduce((s, i) => s + (i.price * i.stock), 0);
-        
         if (isAdmin) {
             document.getElementById('statItems').innerText = inventory.length;
             document.getElementById('statStock').innerText = totalStock;
@@ -987,77 +1024,29 @@
     
     function startListener() {
         if (unsubscribe) unsubscribe();
-        // IMPORTANT: Filter by the correct branch ID
         const q = query(collection(db, 'inventory'), where('branchId', '==', branchId));
         unsubscribe = onSnapshot(q, (snap) => {
-            inventory = snap.docs.map(d => ({
-                id: d.id,
-                ...d.data(),
-                stock: Number(d.data().stock) || 0,
-                price: Number(d.data().price) || 0
-            }));
+            inventory = snap.docs.map(d => ({ id: d.id, ...d.data(), stock: Number(d.data().stock) || 0, price: Number(d.data().price) || 0 }));
             inventory.sort((a, b) => (a.code || '').localeCompare(b.code || ''));
             updateStats();
             renderTable();
-        }, (error) => {
-            console.error('Firestore error:', error);
-            showToast('Error loading inventory: ' + error.message, 'error');
-        });
+        }, (error) => { showToast('Firestore error: ' + error.message, 'error'); });
     }
     
     document.getElementById('searchInput').addEventListener('input', renderTable);
     
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sbOverlay');
-    const menuBtn = document.getElementById('menuBtn');
-    const mainEl = document.getElementById('mainContent');
-    
+    const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('sbOverlay'); const menuBtn = document.getElementById('menuBtn'); const mainEl = document.getElementById('mainContent');
     function isMobile() { return window.innerWidth <= 640; }
-    
-    function initSidebar() {
-        if (!isMobile()) {
-            sidebar.classList.remove('hidden');
-            mainEl.style.marginLeft = '220px';
-        } else {
-            sidebar.classList.remove('visible');
-            mainEl.style.marginLeft = '0';
-        }
-    }
-    
-    menuBtn.addEventListener('click', () => {
-        if (isMobile()) {
-            sidebar.classList.toggle('visible');
-            overlay.classList.toggle('show');
-        } else {
-            sidebar.classList.toggle('hidden');
-            mainEl.style.marginLeft = sidebar.classList.contains('hidden') ? '0' : '220px';
-        }
-    });
-    
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('visible');
-        overlay.classList.remove('show');
-    });
-    
-    window.addEventListener('resize', initSidebar);
-    initSidebar();
-    
-    function updateClock() {
-        document.getElementById('timeBadge').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-    
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        localStorage.clear();
-        window.location.href = 'index.html';
-    });
-    
+    function initSidebar() { if (!isMobile()) { sidebar.classList.remove('hidden'); mainEl.style.marginLeft = '220px'; } else { sidebar.classList.remove('visible'); mainEl.style.marginLeft = '0'; } }
+    menuBtn.addEventListener('click', () => { if (isMobile()) { sidebar.classList.toggle('visible'); overlay.classList.toggle('show'); } else { sidebar.classList.toggle('hidden'); mainEl.style.marginLeft = sidebar.classList.contains('hidden') ? '0' : '220px'; } });
+    overlay.addEventListener('click', () => { sidebar.classList.remove('visible'); overlay.classList.remove('show'); });
+    window.addEventListener('resize', initSidebar); initSidebar();
+    function updateClock() { document.getElementById('timeBadge').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+    setInterval(updateClock, 1000); updateClock();
+    document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.clear(); window.location.href = 'index.html'; });
     startListener();
-    
-    // Show current branch info on load
-    console.log(`Loaded branch: ${currentBranch.name} (ID: ${branchId})`);
-    showToast(`Welcome to ${currentBranch.name}`, 'success');
+    showToast(`Welcome ${loggedInUser === 'chris' ? 'Chris (Admin)' : loggedInUser} | ${currentBranch.name}`, 'success');
+    if (isAdmin) showToast("🔁 Transfer button active: Use 3-dot menu → Transfer to Branch", "success");
 </script>
 </body>
 </html>
