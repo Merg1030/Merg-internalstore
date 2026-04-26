@@ -383,6 +383,17 @@
             border-bottom: 1px solid #eee;
         }
 
+        /* subtle hint for sorting */
+        .sort-hint {
+            font-size: 12px;
+            color: #2c3e50;
+            background: #eef2f7;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
         @media (max-width: 768px) {
             .container { padding: 15px; }
             .input-grid { grid-template-columns: 1fr; }
@@ -474,10 +485,13 @@
             </div>
         </div>
         
-        <!-- GRV History Section -->
+        <!-- GRV History Section with ASCENDING order (oldest first) -->
         <div id="historySection" class="hidden-section">
             <div style="margin: 20px 0;">
-                <h2 style="color: #000000; margin-bottom: 15px; font-size: 18px;">Processed GRV Files</h2>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px;">
+                    <h2 style="color: #000000; font-size: 18px;">Processed GRV Files</h2>
+                    <div class="sort-hint">📅 Sorted by date: OLDEST FIRST (ascending)</div>
+                </div>
                 <div style="overflow-x: auto;">
                     <table style="width: 100%;">
                         <thead>
@@ -664,6 +678,8 @@
             document.getElementById('historySection').classList.remove('hidden-section');
             document.getElementById('historySection').classList.add('visible-section');
             document.getElementById('hideBtn').style.display = 'inline-block';
+            // refresh to ensure ascending order each time we open history
+            updateGRVHistory();
         }
 
         function hideAllSections() {
@@ -680,7 +696,10 @@
             if (savedItems) { items = JSON.parse(savedItems); updateTable(); }
 
             const savedProcessed = localStorage.getItem(`processedGRVs_${branchId}`);
-            if (savedProcessed) { processedGRVs = JSON.parse(savedProcessed); updateGRVHistory(); }
+            if (savedProcessed) { 
+                processedGRVs = JSON.parse(savedProcessed); 
+                updateGRVHistory(); 
+            }
         }
 
         function saveLocalData() {
@@ -846,6 +865,7 @@
 
                 await getNextGRVNumber();
                 updateTable();
+                // After processing, refresh history with ascending order
                 updateGRVHistory();
                 saveLocalData();
 
@@ -857,6 +877,7 @@
             }
         }
 
+        // ========== CORE CHANGE: DISPLAY GRV FILES IN ASCENDING ORDER (OLDEST FIRST) ==========
         function updateGRVHistory() {
             const body = document.getElementById('grvHistoryBody');
             body.innerHTML = '';
@@ -867,22 +888,34 @@
                 return;
             }
 
-            [...processedGRVs].reverse().forEach(grv => {
+            // Create a copy and sort by date (oldest first), then by time to be precise
+            const sortedAsc = [...processedGRVs].sort((a, b) => {
+                // Combine date and time for accurate chronological order
+                const dateTimeA = `${a.date || ''} ${a.time || ''}`;
+                const dateTimeB = `${b.date || ''} ${b.time || ''}`;
+                if (dateTimeA === dateTimeB) return 0;
+                return dateTimeA.localeCompare(dateTimeB);
+            });
+
+            // Render each GRV in ascending order (oldest at top)
+            for (const grv of sortedAsc) {
                 const row = document.createElement('tr');
+                const totalVal = typeof grv.totalValue === 'number' ? grv.totalValue.toFixed(2) : parseFloat(grv.totalValue || 0).toFixed(2);
                 row.innerHTML = `
                     <td>${grv.grvNumber}</td>
-                    <td>${grv.date}</td>
-                    <td>${grv.time}</td>
-                    <td>${grv.totalItems}</td>
-                    <td>${grv.totalQuantity}</td>
-                    <td>${grv.totalValue.toFixed(2)}</td>
+                    <td>${grv.date || '-'}</td>
+                    <td>${grv.time || '-'}</td>
+                    <td>${grv.totalItems || grv.items?.length || 0}</td>
+                    <td>${grv.totalQuantity || 0}</td>
+                    <td>${totalVal}</td>
                     <td>
                         <button class="view-items-btn" onclick="viewGRVDetails('${grv.grvNumber}')">View Items</button>
                     </td>
                 `;
                 body.appendChild(row);
-            });
+            }
         }
+        // ========== END OF SORTING MODIFICATION ==========
 
         function viewGRVDetails(grvNumber) {
             const grv = processedGRVs.find(g => g.grvNumber === grvNumber);
@@ -895,18 +928,22 @@
 
             const body = document.getElementById('modalItemsBody');
             body.innerHTML = '';
-            grv.items.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.code}</td>
-                    <td>${item.name}</td>
-                    <td>${item.quantity}</td>
-                    <td>${parseFloat(item.unitPrice).toFixed(2)}</td>
-                    <td>${item.totalPrice}</td>
-                    <td>${item.supplier}</td>
-                `;
-                body.appendChild(row);
-            });
+            if (grv.items && grv.items.length) {
+                grv.items.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.code}</td>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${parseFloat(item.unitPrice).toFixed(2)}</td>
+                        <td>${item.totalPrice}</td>
+                        <td>${item.supplier}</td>
+                    `;
+                    body.appendChild(row);
+                });
+            } else {
+                body.innerHTML = '<tr><td colspan="6" style="text-align:center;">No item details</td></tr>';
+            }
 
             document.getElementById('grvModal').classList.add('active');
         }
@@ -928,7 +965,7 @@
                 const q = query(collection(db, 'grvRecords'), where('branchId', '==', branchId));
                 const snap = await getDocs(q);
                 processedGRVs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                updateGRVHistory();
+                updateGRVHistory();   // will automatically sort ascending
                 saveLocalData();
             } catch (error) {
                 console.error('Error fetching GRVs:', error);
@@ -941,6 +978,8 @@
             await fetchInventory();
             loadLocalData();
             await fetchExistingGRVs();
+            // final refresh to ensure ascending order after all data loads
+            updateGRVHistory();
         };
 
         // Expose to global scope
