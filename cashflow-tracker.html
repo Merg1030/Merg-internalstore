@@ -455,49 +455,6 @@
   </div>
 </div>
 
-<!-- Account Modal (Add/Edit/View) -->
-<div id="accountModal" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 id="accountModalTitle">Account Details</h3>
-      <span class="close-modal" onclick="closeModal('accountModal')">&times;</span>
-    </div>
-    <form id="accountForm">
-      <input type="hidden" id="accountId">
-      <div class="form-group">
-        <label>Account Name</label>
-        <input type="text" id="accountName" required placeholder="e.g., Cash, Bank, Inventory">
-      </div>
-      <div class="form-group">
-        <label>Account Type</label>
-        <select id="accountType">
-          <option value="asset">Asset</option>
-          <option value="liability">Liability</option>
-          <option value="equity">Equity</option>
-          <option value="revenue">Revenue</option>
-          <option value="expense">Expense</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Balance (K)</label>
-        <input type="number" id="accountBalance" step="0.01" value="0">
-      </div>
-      <div class="form-group">
-        <label>Description</label>
-        <textarea id="accountDesc" rows="2" placeholder="Optional description"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Category</label>
-        <select id="accountCategory"></select>
-      </div>
-      <div class="form-actions">
-        <button type="submit" class="btn-primary">Save Account</button>
-        <button type="button" class="btn-outline" onclick="closeModal('accountModal')">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <!-- Add Category Modal -->
 <div id="categoryModal" class="modal-overlay">
   <div class="modal-content">
@@ -532,7 +489,7 @@
 
 <script type="module">
   import { initializeApp } from "firebase/app";
-  import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, addDoc, deleteDoc, getDocs, writeBatch } from "firebase/firestore";
+  import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, addDoc, getDocs, writeBatch } from "firebase/firestore";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
@@ -635,18 +592,6 @@
     }
   }
 
-  async function updateAccount(accountId, data) {
-    try {
-      await updateDoc(doc(db, 'accounts', accountId), {
-        ...data,
-        updatedAt: new Date().toISOString()
-      });
-      showToast("Account updated");
-    } catch (err) {
-      showToast(err.message, true);
-    }
-  }
-
   async function ensureAllAccountsHaveMetaFields() {
     try {
       const accountsRef = collection(db, 'accounts');
@@ -704,32 +649,29 @@
     return filtered;
   }
 
-  function openAccountDetail(account) {
-    document.getElementById('accountModalTitle').innerText = 'Account Details';
-    document.getElementById('accountId').value = account.id;
-    document.getElementById('accountName').value = account.name;
-    document.getElementById('accountType').value = account.type;
-    document.getElementById('accountBalance').value = account.balance;
-    document.getElementById('accountDesc').value = account.description || '';
-    populateCategoryDropdown(account.category);
-    document.getElementById('accountModal').classList.add('show');
+  // GO TO ACCOUNT DETAIL PAGE - like original!
+  function goToAccountDetail(accountId) {
+    localStorage.setItem('selectedAccountId', accountId);
+    window.location.href = 'account-detail.html';
   }
 
   function openAddAccountModal() {
-    document.getElementById('accountModalTitle').innerText = 'New Account';
-    document.getElementById('accountForm').reset();
-    document.getElementById('accountId').value = '';
-    document.getElementById('accountType').value = 'asset';
-    document.getElementById('accountBalance').value = '0';
-    populateCategoryDropdown('uncategorized');
-    document.getElementById('accountModal').classList.add('show');
-  }
-
-  function populateCategoryDropdown(selected) {
-    const select = document.getElementById('accountCategory');
-    const defaultCats = ['journal', 'ledger', 'uncategorized'];
-    const allCats = [...defaultCats, ...customCategories];
-    select.innerHTML = allCats.map(cat => `<option value="${cat}" ${selected === cat ? 'selected' : ''}>${cat.charAt(0).toUpperCase() + cat.slice(1)}</option>`).join('');
+    // For adding account, we'll just show the modal inline (keeping it simple)
+    // But to match original behavior, we can also add account inline
+    const name = prompt("Enter account name:");
+    if (!name) return;
+    const type = prompt("Enter account type (asset/liability/equity/revenue/expense):", "asset");
+    const balance = parseFloat(prompt("Enter opening balance:", "0")) || 0;
+    const desc = prompt("Description (optional):", "");
+    
+    addNewAccount({
+      name: name,
+      type: type,
+      balance: balance,
+      description: desc,
+      category: 'uncategorized',
+      hidden: false
+    });
   }
 
   function renderCustomCategoryChips() {
@@ -778,7 +720,7 @@
       
       const dropdownId = `dd_${acc.id}`;
       return `
-        <div class="account-card ${hiddenClass}" data-id="${acc.id}" data-account='${JSON.stringify(acc)}'>
+        <div class="account-card ${hiddenClass}" data-id="${acc.id}">
           <div class="card-header">
             <div class="account-title">
               <i class="fas ${typeIcon}" style="color:#3b82f6;"></i>
@@ -810,7 +752,7 @@
       `;
     }).join('');
     
-    // Attach card click handlers
+    // Attach card click handlers - GO TO ACCOUNT DETAIL PAGE
     document.querySelectorAll('.account-card').forEach(card => {
       card.removeEventListener('click', handleCardClick);
       card.addEventListener('click', handleCardClick);
@@ -830,8 +772,9 @@
   function handleCardClick(e) {
     if (e.target.closest('.menu-btn-card') || e.target.closest('.card-dropdown')) return;
     const card = e.currentTarget;
-    const accountData = JSON.parse(card.getAttribute('data-account'));
-    openAccountDetail(accountData);
+    const accountId = card.getAttribute('data-id');
+    // Navigate to account-detail.html like original!
+    goToAccountDetail(accountId);
   }
   
   function handleMenuClick(e) {
@@ -913,25 +856,7 @@
     });
   }
   
-  // Form handlers
-  document.getElementById('accountForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('accountId').value;
-    const data = {
-      name: document.getElementById('accountName').value.trim(),
-      type: document.getElementById('accountType').value,
-      balance: parseFloat(document.getElementById('accountBalance').value) || 0,
-      description: document.getElementById('accountDesc').value,
-      category: document.getElementById('accountCategory').value
-    };
-    if (id) {
-      await updateAccount(id, data);
-    } else {
-      await addNewAccount(data);
-    }
-    closeModal('accountModal');
-  });
-  
+  // Category form handler
   document.getElementById('categoryForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const newCat = document.getElementById('newCategoryName').value.trim().toLowerCase();
@@ -946,7 +871,7 @@
     closeModal('categoryModal');
     document.getElementById('newCategoryName').value = '';
     showToast(`Added category: ${newCat}`);
-    renderAccountsGrid(); // refresh to show new category options
+    renderAccountsGrid();
   });
   
   function closeModal(modalId) {
@@ -958,7 +883,6 @@
     await ensureAllAccountsHaveMetaFields();
     listenAccounts();
     initFiltersAndUI();
-    document.querySelector('.filter-chip[data-filter="all"]').click();
   }
   
   init();
