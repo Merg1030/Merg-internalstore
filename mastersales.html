@@ -1,417 +1,522 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Trismart Dealer Hub · Real Firebase</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-    body { background: #f0f2f8; padding: 20px; min-height: 100vh; }
-    .dashboard { max-width: 1600px; margin: 0 auto; }
-    .top-bar {
-      background: white; border-radius: 20px; padding: 16px 28px; margin-bottom: 24px;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
-    }
-    .logo-area { display: flex; align-items: center; gap: 12px; }
-    .logo-icon { background: linear-gradient(135deg, #1e3a5f, #0f2b46); width: 42px; height: 42px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; }
-    .badge-master { background: #fef3e8; color: #e67e22; padding: 4px 12px; border-radius: 40px; font-size: 12px; font-weight: 700; }
-    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
-    .stat-tile { background: white; border-radius: 20px; padding: 18px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
-    .stat-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: #5b6e8c; margin-bottom: 8px; }
-    .stat-number { font-size: 28px; font-weight: 800; color: #1e3a5f; }
-    .two-col-grid { display: grid; grid-template-columns: 1fr 380px; gap: 24px; margin-bottom: 28px; }
-    @media (max-width: 950px) { .two-col-grid { grid-template-columns: 1fr; } }
-    .card-panel { background: white; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.03); margin-bottom: 24px; }
-    .panel-header { padding: 18px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-    .panel-header h2 { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-    .filter-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    select, input { background: white; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; }
-    .btn-primary { background: #1e3a5f; border: none; color: white; padding: 8px 20px; border-radius: 40px; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
-    .btn-accent { background: #e67e22; border: none; color: white; padding: 10px 20px; border-radius: 40px; font-weight: 700; cursor: pointer; width: 100%; }
-    .sales-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .sales-table th { text-align: left; padding: 14px 16px; background: #f8fafc; font-weight: 700; font-size: 12px; border-bottom: 1px solid #e2e8f0; }
-    .sales-table td { padding: 12px 16px; border-bottom: 1px solid #edf2f7; }
-    .credit-chip { background: #f3e8ff; color: #8e44ad; border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 700; display: inline-block; }
-    .badge-bulk { background: #eafaf1; color: #2c7a4d; }
-    .dealer-list { max-height: 300px; overflow-y: auto; }
-    .dealer-row { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; align-items: center; }
-    .dealer-name { font-weight: 700; }
-    .inv-row { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; }
-    .toast-msg { position: fixed; bottom: 25px; right: 25px; background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; font-size: 13px; z-index: 1200; box-shadow: 0 6px 18px rgba(0,0,0,0.2); }
-    .credit-warning { background: #fff3e0; padding: 8px 12px; border-radius: 16px; font-size: 12px; margin: 12px 0; display: none; }
-    .loading-placeholder { padding: 40px; text-align: center; color: #5b6e8c; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DealerSuite · Orders & Balance | Trismart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f0f2f8;
+            color: #111827;
+            min-height: 100vh;
+        }
+        :root {
+            --blue: #3b5bdb;
+            --cyan: #0ea5e9;
+            --green: #0e9f6e;
+            --orange: #f97316;
+            --danger: #e11d48;
+            --purple: #7c3aed;
+            --border: #e2e8f0;
+            --bg-card: #ffffff;
+            --text-muted: #5b6e8c;
+            --radius: 12px;
+            --header-h: 54px;
+        }
+        .topbar {
+            position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+            background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border); display: flex;
+            align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1100;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo-mark { width: 30px; height: 30px; background: linear-gradient(135deg, var(--blue), #2563eb); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; }
+        .logo-text { font-size: 0.9rem; font-weight: 800; }
+        .logo-text span { color: var(--blue); }
+        .admin-badge { background: #eef2ff; color: var(--blue); font-size: 0.6rem; font-weight: 700; padding: 3px 10px; border-radius: 40px; }
+        .main { margin-top: var(--header-h); padding: 18px 20px 32px; max-width: 1400px; margin-left: auto; margin-right: auto; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; padding: 14px 16px; }
+        .stat-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px; }
+        .stat-value { font-size: 1.7rem; font-weight: 800; font-family: 'DM Mono', monospace; color: var(--blue); }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px;
+            border-radius: 40px; font-size: 0.75rem; font-weight: 700; cursor: pointer;
+            border: none; font-family: 'DM Sans', sans-serif; transition: 0.15s;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--blue), #2c4ed6); color: white; }
+        .btn-success { background: linear-gradient(135deg, var(--green), #0b815a); color: white; }
+        .btn-warning { background: linear-gradient(135deg, var(--orange), #ea580c); color: white; }
+        .btn-purple { background: var(--purple); color: white; }
+        .btn-outline { background: white; border: 1px solid var(--border); color: #1f2a44; }
+        .tab-bar { display: flex; gap: 2px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
+        .tab-btn { background: none; border: none; padding: 8px 20px; font-size: 0.75rem; font-weight: 700; color: #5b6e8c; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .table-card { background: var(--bg-card); border-radius: 18px; border: 1px solid var(--border); overflow: hidden; }
+        .table-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        th { background: #fafcff; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; padding: 12px 14px; border-bottom: 1px solid var(--border); color: #5a6e8c; text-align: left; }
+        td { padding: 12px 14px; border-bottom: 1px solid #eff3f8; vertical-align: middle; }
+        .code-chip { font-family: 'DM Mono', monospace; background: #eef2ff; padding: 4px 10px; border-radius: 24px; font-size: 0.7rem; font-weight: 600; color: var(--blue); display: inline-block; }
+        .balance-badge { background: #fef3c7; color: #b45309; padding: 4px 12px; border-radius: 40px; font-weight: 800; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-overlay.show { display: flex; }
+        .modal-detail { background: white; border-radius: 28px; max-width: 560px; width: 90%; max-height: 85vh; overflow-y: auto; }
+        .modal-lg { max-width: 780px; }
+        .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-weight: 800; }
+        .field-group { margin-bottom: 16px; }
+        .field-group label { font-size: 0.65rem; font-weight: 800; color: #5b6e8c; text-transform: uppercase; display: block; margin-bottom: 6px; }
+        .field-group input, .field-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 16px; font-size: 0.8rem; }
+        .form-actions { display: flex; gap: 12px; margin-top: 20px; justify-content: flex-end; }
+        .cart-table { width: 100%; font-size: 0.7rem; border-collapse: collapse; background: #f9fafc; border-radius: 16px; }
+        .cart-table th, .cart-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .toast-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: #1e293b; color: white; padding: 10px 18px; border-radius: 40px; font-size: 0.75rem; display: flex; align-items: center; gap: 8px; }
+        .search-wrap { margin-bottom: 18px; display: flex; justify-content: flex-end; }
+        .search-wrap input { width: 260px; padding: 7px 12px 7px 32px; border: 1px solid var(--border); border-radius: 40px; font-size: 0.75rem; }
+        @media (max-width: 650px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .main { padding: 14px; }
+        }
+    </style>
 </head>
 <body>
-<div class="dashboard">
-  <div class="top-bar">
-    <div class="logo-area">
-      <div class="logo-icon"><i class="fas fa-warehouse"></i></div>
-      <div><span style="font-weight:800; font-size:20px;">Trismart DEALER HUB</span><br><span style="font-size:12px;">Real-time · Bulk + Credit</span></div>
-      <div class="badge-master"><i class="fas fa-firebase"></i> FIRESTORE LIVE</div>
-    </div>
-    <div><i class="fas fa-chalkboard-user"></i> Dealer Portal | Master Warehouse Backend</div>
-  </div>
 
-  <div class="stats-row">
-    <div class="stat-tile"><div class="stat-label"><i class="fas fa-cubes"></i> MASTER STOCK VALUE</div><div class="stat-number" id="totalStockValue">K0</div></div>
-    <div class="stat-tile"><div class="stat-label"><i class="fas fa-chart-line"></i> BULK REVENUE (30d)</div><div class="stat-number" id="bulkRevenue">K0</div></div>
-    <div class="stat-tile"><div class="stat-label"><i class="fas fa-hand-holding-usd"></i> CREDIT OUTSTANDING</div><div class="stat-number" id="totalCreditOut">K0</div></div>
-    <div class="stat-tile"><div class="stat-label"><i class="fas fa-truck"></i> DEALERS ACTIVE</div><div class="stat-number" id="activeDealers">0</div></div>
-  </div>
+<header class="topbar">
+    <div class="logo"><div class="logo-mark"><i class="fas fa-handshake"></i></div><div class="logo-text">Dealer<span>Suite</span></div><div class="admin-badge"><i class="fas fa-store"></i> DEALER HUB</div></div>
+    <div class="admin-badge" id="adminBadge"><i class="fas fa-shield-alt"></i> MASTER</div>
+</header>
 
-  <div class="two-col-grid">
-    <div>
-      <div class="card-panel">
-        <div class="panel-header">
-          <h2><i class="fas fa-receipt"></i> BULK / CREDIT LEDGER</h2>
-          <div class="filter-group">
-            <select id="filterDealerSelect"><option value="all">All dealers</option></select>
-            <select id="filterTypeSelect"><option value="all">All orders</option><option value="bulk">Bulk</option><option value="credit">Credit</option></select>
-            <button class="btn-primary" id="refreshBtn"><i class="fas fa-sync-alt"></i> Sync</button>
-          </div>
-        </div>
-        <div style="overflow-x: auto;">
-          <table class="sales-table">
-            <thead><tr><th>Date</th><th>Dealer</th><th>Product</th><th>Qty</th><th>Price</th><th>Total</th><th>Type</th><th>Status</th></tr></thead>
-            <tbody id="salesTbody"><tr><td colspan="8" class="loading-placeholder">Loading from Firebase...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card-panel">
-        <div class="panel-header"><h2><i class="fas fa-boxes"></i> MASTER WAREHOUSE (live stock)</h2></div>
-        <div id="inventoryList" class="dealer-list"><div class="loading-placeholder">Loading inventory...</div></div>
-      </div>
+<main class="main">
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label"><i class="fas fa-users"></i> Dealers</div><div class="stat-value" id="totalDealers">0</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="fas fa-boxes"></i> Stock Items</div><div class="stat-value" id="totalStockItems">0</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="fas fa-chart-line"></i> Total Orders</div><div class="stat-value" id="totalOrdersCount">0</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="fas fa-credit-card"></i> Total Outstanding</div><div class="stat-value" id="globalOutstanding">K0</div></div>
     </div>
 
-    <div>
-      <div class="card-panel">
-        <div class="panel-header"><h2><i class="fas fa-users"></i> DEALER CREDIT DESK</h2><button class="btn-primary" id="newDealerBtn" style="background:#6c5ce7;"><i class="fas fa-plus"></i> New</button></div>
-        <div id="dealerCreditList" class="dealer-list"><div class="loading-placeholder">Loading dealers...</div></div>
-      </div>
-
-      <div class="card-panel">
-        <div class="panel-header"><h2><i class="fas fa-shopping-cart"></i> PLACE ORDER</h2></div>
-        <div style="padding: 16px;">
-          <label style="font-weight:600;">Dealer *</label>
-          <select id="orderDealerSelect" style="width:100%; margin:8px 0 12px;"><option value="">Loading dealers...</option></select>
-          <label style="font-weight:600;">Product (master stock)</label>
-          <select id="orderProductSelect" style="width:100%; margin:8px 0 12px;"><option value="">Loading products...</option></select>
-          <div class="filter-group" style="justify-content: space-between;">
-            <div><label>Quantity</label><input type="number" id="orderQty" value="1" min="1" style="width:90px;"></div>
-            <div><label>Sale Type</label><select id="orderTypeSelect"><option value="bulk">💵 Bulk (Cash)</option><option value="credit">📝 Credit (Debt)</option></select></div>
-          </div>
-          <div id="creditWarning" class="credit-warning"></div>
-          <button class="btn-accent" id="placeOrderBtn"><i class="fas fa-check-circle"></i> PROCESS ORDER</button>
-        </div>
-      </div>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+        <button class="btn btn-success" id="createDealerBtn"><i class="fas fa-user-plus"></i> Create Dealer Account</button>
+        <button class="btn btn-primary" id="placeOrderBtn"><i class="fas fa-shopping-cart"></i> Place Order</button>
+        <button class="btn btn-warning" id="recordPaymentBtn"><i class="fas fa-coins"></i> Record Payment</button>
     </div>
-  </div>
-</div>
+
+    <div class="search-wrap"><i class="fas fa-search" style="position: absolute; margin-left: 12px; margin-top: 9px; color:#94a3b8;"></i><input type="text" id="dealerSearch" placeholder="Search dealer by name / phone..."></div>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="dealers"><i class="fas fa-users"></i> Dealers & Balances</button>
+        <button class="tab-btn" data-tab="orders"><i class="fas fa-receipt"></i> Order History</button>
+    </div>
+
+    <!-- Dealers Table with outstanding balances -->
+    <div class="tab-content active" id="tabDealers">
+        <div class="table-card">
+            <div class="table-scroll">
+                <table id="dealersTable">
+                    <thead><tr><th>Dealer</th><th>Contact</th><th>Total Orders</th><th>Outstanding Balance</th><th>Last Order</th><th style="width:100px">Actions</th></tr></thead>
+                    <tbody id="dealersTbody"><tr class="empty-row"><td colspan="6">Loading dealers...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order History -->
+    <div class="tab-content" id="tabOrders">
+        <div class="table-card">
+            <div class="table-scroll">
+                <table style="width:100%">
+                    <thead><tr><th>Date</th><th>Order Ref</th><th>Dealer</th><th>Items</th><th>Total (K)</th><th>Paid (K)</th><th>Balance Due</th><th>Status</th><th>Details</th></tr></thead>
+                    <tbody id="ordersTbody"><tr class="empty-row"><td colspan="9">No orders yet</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- MODALS -->
+<div id="dealerModal" class="modal-overlay"><div class="modal-detail"><div class="modal-header"><h3>Create Dealer Account</h3><button class="close-modal" onclick="closeModal('dealerModal')">✕</button></div><div class="modal-body"><form id="dealerForm"><div class="field-group"><label>Full Name *</label><input type="text" id="dealerName" required></div><div class="field-group"><label>Phone / Contact</label><input type="text" id="dealerPhone"></div><div class="field-group"><label>Initial Credit Limit (optional)</label><input type="number" id="creditLimit" value="0" step="0.01"></div><div class="form-actions"><button type="submit" class="btn btn-success">Create Dealer</button><button type="button" class="btn btn-outline" onclick="closeModal('dealerModal')">Cancel</button></div></form></div></div></div>
+
+<!-- ORDER MODAL with item selection & live balance -->
+<div id="orderModal" class="modal-overlay"><div class="modal-detail modal-lg"><div class="modal-header"><h3><i class="fas fa-cart-plus"></i> Place Order (Warehouse stock ↓)</h3><button class="close-modal" onclick="closeModal('orderModal')">✕</button></div><div class="modal-body"><form id="orderForm"><div class="field-group"><label>Select Dealer *</label><select id="orderDealerSelect" required><option value="">-- Choose Dealer --</option></select><div id="dealerBalancePreview" style="margin-top: 6px; font-size:0.7rem; background:#f1f5f9; padding:6px 12px; border-radius: 30px;"></div></div>
+<div style="background:#f9fafb; border-radius: 24px; padding: 14px; margin: 14px 0;"><label style="font-weight:800;">Add Items (reduce warehouse stock)</label>
+<div style="display:flex; gap:10px; flex-wrap:wrap; margin:10px 0;"><select id="orderItemSelect" style="flex:2; padding:8px; border-radius:40px;"><option value="">-- Select Product --</option></select><input type="number" id="orderItemQty" placeholder="Qty" value="1" min="1" style="width:90px; border-radius:40px; padding:8px;"><button type="button" class="btn btn-primary" id="addToOrderListBtn" style="padding:6px 14px;">+ Add</button></div>
+<div id="orderCartContainer"><table class="cart-table"><thead><tr><th>Product</th><th>Price</th><th>Qty</th><th>Subtotal</th><th></th></tr></thead><tbody id="orderCartBody"></tbody></table><div style="text-align:right; margin:12px;"><strong>Order Total: K<span id="orderTotalAmount">0.00</span></strong></div></div></div>
+<div class="field-group"><label>Amount Paid Today (optional)</label><input type="number" id="orderPaidNow" value="0" step="0.01" min="0"><small style="color:#5b6e8c;">👉 This will reduce outstanding balance</small></div>
+<div class="form-actions"><button type="submit" class="btn btn-success" id="confirmOrderBtn">✅ Confirm Order & Reduce Stock</button><button type="button" class="btn btn-outline" onclick="closeModal('orderModal')">Cancel</button></div></form></div></div></div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="modal-overlay"><div class="modal-detail"><div class="modal-header"><h3>Record Payment</h3><button class="close-modal" onclick="closeModal('paymentModal')">✕</button></div><div class="modal-body"><form id="paymentForm"><div class="field-group"><label>Dealer</label><select id="paymentDealerSelect" required><option value="">-- Select Dealer --</option></select></div><div class="field-group"><label>Outstanding Balance (Current)</label><input type="text" id="currentBalanceDisplay" readonly style="background:#f3f4f6;"></div><div class="field-group"><label>Payment Amount (K)</label><input type="number" id="paymentAmount" step="0.01" min="0.01" required></div><div class="field-group"><label>Reference / Note</label><input type="text" id="paymentNote" placeholder="Optional"></div><div class="form-actions"><button type="submit" class="btn btn-success">Record Payment</button><button type="button" class="btn btn-outline" onclick="closeModal('paymentModal')">Cancel</button></div></form></div></div></div>
+
+<div id="orderDetailModal" class="modal-overlay"><div class="modal-detail modal-lg"><div class="modal-header"><h3>Order Details</h3><button class="close-modal" onclick="closeModal('orderDetailModal')">✕</button></div><div class="modal-body" id="orderDetailBody"></div></div></div>
+<div class="toast-wrap" id="toastWrap"></div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-  import { 
-    getFirestore, collection, query, where, getDocs, addDoc, updateDoc, doc, 
-    increment, onSnapshot, runTransaction, orderBy, Timestamp 
-  } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, getDocs, addDoc, updateDoc, doc, increment, onSnapshot, writeBatch, deleteDoc, where } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-  const firebaseConfig = { 
-    apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k", 
-    authDomain: "trismartstores.firebaseapp.com", 
-    projectId: "trismartstores", 
-    storageBucket: "trismartstores.appspot.com", 
-    messagingSenderId: "416692703333", 
-    appId: "1:416692703333:web:d4b60292621435c748f68c" 
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // Authentication check: only 'chris' can access
-  const userName = (localStorage.getItem('loggedInUser') || localStorage.getItem('userName') || '').toLowerCase().trim();
-  if (userName !== 'chris') {
-    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><div style="background:white;padding:40px;border-radius:24px;text-align:center;"><i class="fas fa-lock" style="font-size:48px;color:#e67e22;"></i><h2>Access Denied</h2><p>Admin access (chris) required for dealer terminal.</p></div></div>`;
-    throw new Error('Unauthorized');
-  }
-
-  // Collections
-  let masterInventory = [];     // from inventory where branchId == 'master'
-  let dealers = [];             // from 'dealers' collection
-  let salesLedger = [];         // from 'sales' collection (filtered)
-  
-  let unsubscribeInventory = null;
-  let unsubscribeSales = null;
-  let unsubscribeDealers = null;
-
-  function showToast(msg, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = 'toast-msg';
-    toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-circle-exclamation' : 'fa-check-circle'}"></i> ${msg}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2800);
-  }
-
-  // Load Master Inventory (branchId == 'master')
-  function loadMasterInventory() {
-    if (unsubscribeInventory) unsubscribeInventory();
-    const q = query(collection(db, 'inventory'), where('branchId', '==', 'master'));
-    unsubscribeInventory = onSnapshot(q, (snap) => {
-      masterInventory = snap.docs.map(doc => ({ id: doc.id, ...doc.data(), stock: Number(doc.data().stock) || 0, price: Number(doc.data().price) || 0 }));
-      renderInventory();
-      updateProductSelect();
-      updateStats();
-    }, err => console.error("Inventory error:", err));
-  }
-
-  // Load Dealers from 'dealers' collection
-  function loadDealers() {
-    if (unsubscribeDealers) unsubscribeDealers();
-    const q = query(collection(db, 'dealers'));
-    unsubscribeDealers = onSnapshot(q, (snap) => {
-      dealers = snap.docs.map(doc => ({ id: doc.id, ...doc.data(), creditBalance: Number(doc.data().creditBalance) || 0, totalCreditLimit: Number(doc.data().totalCreditLimit) || 5000 }));
-      renderDealerList();
-      updateDealerSelects();
-      updateStats();
-    }, err => console.error("Dealers error:", err));
-  }
-
-  // Load Sales (all for now, we'll filter in UI)
-  function loadSales() {
-    if (unsubscribeSales) unsubscribeSales();
-    const q = query(collection(db, 'sales'), orderBy('date', 'desc'));
-    unsubscribeSales = onSnapshot(q, (snap) => {
-      salesLedger = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderSalesTable();
-      updateStats();
-    }, err => console.error("Sales error:", err));
-  }
-
-  function renderInventory() {
-    const container = document.getElementById('inventoryList');
-    if (!masterInventory.length) { container.innerHTML = '<div class="loading-placeholder">No stock in master warehouse</div>'; return; }
-    container.innerHTML = masterInventory.map(item => `
-      <div class="inv-row">
-        <div><strong>${item.name || item.code}</strong><br><span style="font-size:11px;">${item.code} | K${item.price}</span></div>
-        <div style="text-align:right;"><span style="font-weight:800;">${item.stock} units</span><br><span style="font-size:11px;">bulk ready</span></div>
-      </div>
-    `).join('');
-  }
-
-  function renderDealerList() {
-    const container = document.getElementById('dealerCreditList');
-    if (!dealers.length) { container.innerHTML = '<div class="loading-placeholder">No dealers. Click + New Dealer</div>'; return; }
-    container.innerHTML = dealers.map(d => `
-      <div class="dealer-row">
-        <div><span class="dealer-name">${d.name}</span><br><span style="font-size:10px;">Limit: K${d.totalCreditLimit}</span></div>
-        <div><span class="dealer-balance" style="color:${d.creditBalance > 0 ? '#e67e22' : '#2c7a4d'}">K${d.creditBalance.toFixed(2)}</span><br>
-        <button class="action-btn" data-id="${d.id}" onclick="window.repayCredit('${d.id}')" style="background:none;border:none;color:#1e3a5f;cursor:pointer;font-size:11px;"><i class="fas fa-coins"></i> repay</button></div>
-      </div>
-    `).join('');
-    document.getElementById('activeDealers').innerText = dealers.length;
-  }
-
-  function renderSalesTable() {
-    const dealerFilter = document.getElementById('filterDealerSelect')?.value || 'all';
-    const typeFilter = document.getElementById('filterTypeSelect')?.value || 'all';
-    let filtered = [...salesLedger];
-    if (dealerFilter !== 'all') filtered = filtered.filter(s => s.dealerId === dealerFilter);
-    if (typeFilter !== 'all') filtered = filtered.filter(s => s.type === typeFilter);
-    const tbody = document.getElementById('salesTbody');
-    if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="8" class="loading-placeholder">No sales records</td></tr>'; return; }
-    tbody.innerHTML = filtered.slice(0, 100).map(s => `
-      <tr>
-        <td>${s.date || s.timestamp?.toDate?.().toISOString().slice(0,10) || '-'}</td>
-        <td><strong>${s.dealerName || s.branchId || 'dealer'}</strong></td>
-        <td>${s.name || s.code || s.productName || '-'}</td>
-        <td>${s.quantity || 0}</td>
-        <td>K${(s.price || s.unitPrice || 0).toFixed(2)}</td>
-        <td>K${(s.total || s.totalAmount || 0).toFixed(2)}</td>
-        <td>${s.type === 'bulk' ? '<span class="credit-chip badge-bulk">💰 Bulk</span>' : '<span class="credit-chip">📋 Credit</span>'}</td>
-        <td>${s.status === 'paid' ? '✅ Paid' : '⏳ Pending'}</td>
-      </tr>
-    `).join('');
-  }
-
-  function updateStats() {
-    const totalStockValue = masterInventory.reduce((acc, i) => acc + (i.price * i.stock), 0);
-    document.getElementById('totalStockValue').innerHTML = `K${totalStockValue.toFixed(2)}`;
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const thirtyDaysStr = thirtyDaysAgo.toISOString().slice(0,10);
-    const bulkRevenueLast30 = salesLedger.filter(s => s.type === 'bulk' && (s.date || '') >= thirtyDaysStr).reduce((sum, s) => sum + (s.total || s.totalAmount || 0), 0);
-    document.getElementById('bulkRevenue').innerHTML = `K${bulkRevenueLast30.toFixed(2)}`;
-    const totalCreditOut = dealers.reduce((sum, d) => sum + d.creditBalance, 0);
-    document.getElementById('totalCreditOut').innerHTML = `K${totalCreditOut.toFixed(2)}`;
-  }
-
-  function updateDealerSelects() {
-    const dealerSelectOrder = document.getElementById('orderDealerSelect');
-    const filterDealer = document.getElementById('filterDealerSelect');
-    const options = '<option value="">-- Select dealer --</option>' + dealers.map(d => `<option value="${d.id}">${d.name} (Credit: K${d.creditBalance})</option>`).join('');
-    dealerSelectOrder.innerHTML = options;
-    filterDealer.innerHTML = '<option value="all">All dealers</option>' + dealers.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
-  }
-
-  function updateProductSelect() {
-    const productSelect = document.getElementById('orderProductSelect');
-    productSelect.innerHTML = '<option value="">Select product</option>' + masterInventory.map(p => `<option value="${p.id}" data-price="${p.price}" data-stock="${p.stock}">${p.name} (${p.code}) - K${p.price} | stock: ${p.stock}</option>`).join('');
-  }
-
-  // Place order with transaction (bulk or credit)
-  window.placeOrder = async function() {
-    const dealerId = document.getElementById('orderDealerSelect').value;
-    if (!dealerId) { showToast('Select a dealer', 'error'); return; }
-    const productId = document.getElementById('orderProductSelect').value;
-    if (!productId) { showToast('Select product from master warehouse', 'error'); return; }
-    const qty = parseInt(document.getElementById('orderQty').value);
-    if (isNaN(qty) || qty < 1) { showToast('Invalid quantity', 'error'); return; }
-    const saleType = document.getElementById('orderTypeSelect').value;
-
-    const product = masterInventory.find(p => p.id === productId);
-    if (!product) { showToast('Product not found', 'error'); return; }
-    if (product.stock < qty) { showToast(`Insufficient stock! Only ${product.stock} left in master warehouse`, 'error'); return; }
-    const dealer = dealers.find(d => d.id === dealerId);
-    if (!dealer) { showToast('Dealer not found', 'error'); return; }
-
-    if (saleType === 'credit') {
-      const newBalance = dealer.creditBalance + (product.price * qty);
-      if (newBalance > dealer.totalCreditLimit) {
-        if (!confirm(`⚠️ Dealer credit would exceed limit (${dealer.totalCreditLimit}). Proceed anyway?`)) return;
-      }
-    }
-
-    const today = new Date().toISOString().slice(0,10);
-    const totalAmount = product.price * qty;
-
-    try {
-      await runTransaction(db, async (transaction) => {
-        // 1. Update master inventory (reduce stock)
-        const masterRef = doc(db, 'inventory', product.id);
-        const masterSnap = await transaction.get(masterRef);
-        if (!masterSnap.exists()) throw new Error('Inventory item missing');
-        const currentStock = masterSnap.data().stock || 0;
-        if (currentStock < qty) throw new Error('Stock changed, retry');
-        transaction.update(masterRef, { stock: increment(-qty) });
-
-        // 2. If credit order: update dealer balance
-        if (saleType === 'credit') {
-          const dealerRef = doc(db, 'dealers', dealer.id);
-          transaction.update(dealerRef, { creditBalance: increment(totalAmount) });
-        }
-
-        // 3. Create sale record
-        const saleData = {
-          date: today,
-          timestamp: Timestamp.now(),
-          dealerId: dealer.id,
-          dealerName: dealer.name,
-          productId: product.id,
-          productName: product.name,
-          code: product.code,
-          quantity: qty,
-          price: product.price,
-          unitPrice: product.price,
-          total: totalAmount,
-          totalAmount: totalAmount,
-          type: saleType,
-          status: saleType === 'credit' ? 'outstanding' : 'paid',
-          branchId: 'dealer_sale',
-          sourceBranch: 'master'
-        };
-        transaction.set(doc(collection(db, 'sales')), saleData);
-      });
-      showToast(`${saleType === 'bulk' ? 'Bulk sale' : 'Credit sale'} completed: ${qty} x ${product.name} - K${totalAmount}`, 'success');
-      document.getElementById('orderQty').value = '1';
-      document.getElementById('orderProductSelect').value = '';
-    } catch (err) {
-      showToast('Transaction failed: ' + err.message, 'error');
-    }
-  };
-
-  window.repayCredit = async function(dealerId) {
-    const dealer = dealers.find(d => d.id === dealerId);
-    if (!dealer) return;
-    let amount = prompt(`Enter repayment amount for ${dealer.name}\nCurrent credit: K${dealer.creditBalance}`, "0");
-    amount = parseFloat(amount);
-    if (isNaN(amount) || amount <= 0) { showToast('Invalid amount', 'error'); return; }
-    if (amount > dealer.creditBalance) { showToast('Amount exceeds credit balance', 'error'); return; }
+    const firebaseConfig = { 
+        apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k", 
+        authDomain: "trismartstores.firebaseapp.com", 
+        projectId: "trismartstores", 
+        storageBucket: "trismartstores.appspot.com", 
+        messagingSenderId: "416692703333", 
+        appId: "1:416692703333:web:d4b60292621435c748f68c" 
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
     
-    try {
-      const dealerRef = doc(db, 'dealers', dealer.id);
-      await updateDoc(dealerRef, { creditBalance: increment(-amount) });
-      // Log repayment as a special sale record
-      await addDoc(collection(db, 'sales'), {
-        date: new Date().toISOString().slice(0,10),
-        timestamp: Timestamp.now(),
-        dealerId: dealer.id,
-        dealerName: dealer.name,
-        productName: 'CREDIT REPAYMENT',
-        quantity: 0,
-        total: -amount,
-        totalAmount: -amount,
-        type: 'credit',
-        status: 'payment',
-        note: `Repayment of K${amount}`
-      });
-      showToast(`Repayment of K${amount} recorded. New balance K${(dealer.creditBalance - amount).toFixed(2)}`, 'success');
-    } catch (err) {
-      showToast('Repayment failed: ' + err.message, 'error');
+    // simple auth protection (same as original master)
+    const loggedUser = localStorage.getItem('loggedInUser') || '';
+    const userName = (loggedUser || localStorage.getItem('userName') || '').toLowerCase();
+    if (userName !== 'chris') { document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><div style="background:white;padding:30px;border-radius:24px;">🔒 Dealer Manager Access: Only 'chris' authorized.</div></div>`; throw new Error('unauth'); }
+    document.getElementById('adminBadge').innerHTML = `<i class="fas fa-shield-alt"></i> ${userName.toUpperCase()} · DEALER MASTER`;
+
+    // Data stores
+    let dealers = [];         // { id, name, phone, creditLimit, totalOrders, outstandingBalance }
+    let masterInventory = []; // warehouse items { id, code, name, price, stock, branchId:'master' }
+    let allOrders = [];
+
+    let orderCart = [];       // { itemId, code, name, price, qty }
+    let unsubscribeInv = null;
+    let unsubscribeDealers = null;
+
+    const toast = (msg, type='success') => { const w = document.getElementById('toastWrap'); const t = document.createElement('div'); t.className = `toast`; t.style.background = type==='error' ? '#b91c1c' : '#1e293b'; t.innerHTML = `<i class="fas ${type==='error' ? 'fa-times-circle' : 'fa-check-circle'}"></i> ${msg}`; w.appendChild(t); setTimeout(()=>t.remove(),3000); };
+    const closeModal = (id) => document.getElementById(id).classList.remove('show');
+    window.closeModal = closeModal;
+
+    // Load dealers (collection "dealers")
+    function loadDealersRealTime() {
+        const q = query(collection(db, 'dealers'), orderBy('name'));
+        unsubscribeDealers = onSnapshot(q, (snap) => {
+            dealers = snap.docs.map(d => ({ id: d.id, ...d.data(), outstandingBalance: Number(d.data().outstandingBalance) || 0, totalOrders: Number(d.data().totalOrders) || 0 }));
+            renderDealersTable();
+            updateStats();
+            updateDealerDropdowns();
+        });
     }
-  };
 
-  window.createNewDealer = async function() {
-    let name = prompt('Enter dealer name:', 'New Bulk Dealer');
-    if (!name) return;
-    let limit = parseFloat(prompt('Credit limit (K):', '5000'));
-    if (isNaN(limit)) limit = 5000;
-    try {
-      await addDoc(collection(db, 'dealers'), {
-        name: name,
-        creditBalance: 0,
-        totalCreditLimit: limit,
-        createdAt: Timestamp.now()
-      });
-      showToast(`Dealer ${name} added with limit K${limit}`, 'success');
-    } catch (err) {
-      showToast('Error creating dealer: ' + err.message, 'error');
+    // Load warehouse stock (branchId = 'master')
+    function loadMasterInventory() {
+        if(unsubscribeInv) unsubscribeInv();
+        const invQuery = query(collection(db, 'inventory'), where('branchId', '==', 'master'));
+        unsubscribeInv = onSnapshot(invQuery, (snap) => {
+            masterInventory = snap.docs.map(d => ({ id: d.id, ...d.data(), stock: Number(d.data().stock) || 0, price: Number(d.data().price) || 0 }));
+            masterInventory.sort((a,b)=> (a.code||'').localeCompare(b.code||''));
+            updateProductSelect();
+            updateStats();
+        });
     }
-  };
 
-  function setupEventListeners() {
-    document.getElementById('placeOrderBtn').addEventListener('click', () => window.placeOrder());
-    document.getElementById('newDealerBtn').addEventListener('click', () => window.createNewDealer());
-    document.getElementById('refreshBtn').addEventListener('click', () => { showToast('Syncing with Firebase...', 'info'); });
-    document.getElementById('filterDealerSelect').addEventListener('change', () => renderSalesTable());
-    document.getElementById('filterTypeSelect').addEventListener('change', () => renderSalesTable());
-    document.getElementById('orderDealerSelect').addEventListener('change', (e) => {
-      const dealerId = e.target.value;
-      const dealer = dealers.find(d => d.id === dealerId);
-      const warnDiv = document.getElementById('creditWarning');
-      if (dealer && dealer.creditBalance > 0) {
-        warnDiv.style.display = 'block';
-        warnDiv.innerHTML = `⚠️ Dealer has outstanding credit: K${dealer.creditBalance.toFixed(2)}. Consider repayment before new credit sale.`;
-      } else {
-        warnDiv.style.display = 'none';
-      }
-    });
-  }
+    // Load order history (orders collection)
+    async function loadOrdersHistory() {
+        const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
+        allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderOrdersTable();
+        updateStats();
+    }
 
-  // Initialize
-  loadMasterInventory();
-  loadDealers();
-  loadSales();
-  setupEventListeners();
-  
-  // Expose functions globally
-  window.repayCredit = window.repayCredit;
-  window.placeOrder = window.placeOrder;
-  window.createNewDealer = window.createNewDealer;
+    function updateStats() {
+        document.getElementById('totalDealers').innerText = dealers.length;
+        document.getElementById('totalStockItems').innerText = masterInventory.length;
+        document.getElementById('totalOrdersCount').innerText = allOrders.length;
+        const globalOut = dealers.reduce((sum, d) => sum + (d.outstandingBalance || 0), 0);
+        document.getElementById('globalOutstanding').innerText = `K${globalOut.toFixed(2)}`;
+    }
+
+    function renderDealersTable() {
+        const tbody = document.getElementById('dealersTbody');
+        const searchTerm = document.getElementById('dealerSearch').value.toLowerCase();
+        let filtered = dealers.filter(d => d.name?.toLowerCase().includes(searchTerm) || (d.phone || '').toLowerCase().includes(searchTerm));
+        tbody.innerHTML = '';
+        if(filtered.length === 0) { tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No dealers found</td></tr>'; return; }
+        filtered.forEach(d => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td><strong>${escapeHtml(d.name)}</strong></td>
+                <td>${escapeHtml(d.phone || '-')}</td>
+                <td>${d.totalOrders || 0}</td>
+                <td><span class="balance-badge">K${(d.outstandingBalance || 0).toFixed(2)}</span></td>
+                <td>${d.lastOrderDate || '-'}</td>
+                <td><button class="btn btn-outline" style="padding:4px 12px;" data-dealer-id="${d.id}" data-action="view-orders">📋 Orders</button></td>
+            `;
+        });
+        document.querySelectorAll('[data-action="view-orders"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const dealerId = btn.getAttribute('data-dealer-id');
+                filterOrdersByDealer(dealerId);
+                document.querySelector('.tab-btn[data-tab="orders"]').click();
+            });
+        });
+    }
+
+    function filterOrdersByDealer(dealerId) {
+        renderOrdersTable(dealerId);
+    }
+
+    function renderOrdersTable(filterDealerId = null) {
+        const tbody = document.getElementById('ordersTbody');
+        let orders = [...allOrders];
+        if(filterDealerId) orders = orders.filter(o => o.dealerId === filterDealerId);
+        if(orders.length === 0) { tbody.innerHTML = '<tr class="empty-row"><td colspan="9">No orders</td></tr>'; return; }
+        tbody.innerHTML = '';
+        orders.forEach(order => {
+            const dealer = dealers.find(d => d.id === order.dealerId);
+            const dealerName = dealer ? dealer.name : order.dealerName;
+            const due = (order.totalAmount || 0) - (order.paidAmount || 0);
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td style="white-space:nowrap">${order.dateStr || order.createdAt?.slice(0,10) || '-'}</td>
+                <td><span class="code-chip">${order.ref || order.id.slice(-6)}</span></td>
+                <td>${escapeHtml(dealerName)}</td>
+                <td>${order.items?.length || 0}</td>
+                <td>K${(order.totalAmount || 0).toFixed(2)}</td>
+                <td>K${(order.paidAmount || 0).toFixed(2)}</td>
+                <td style="color:${due > 0 ? '#b91c1c' : '#0e9f6e'}">K${due.toFixed(2)}</td>
+                <td><span class="stock-chip" style="background:${due===0?'#dcfce7':'#ffe4e6'}">${due===0 ? 'PAID' : 'UNPAID'}</span></td>
+                <td><button class="btn btn-ghost" data-order-id="${order.id}" style="padding:4px 8px;"><i class="fas fa-eye"></i></button></td>
+            `;
+        });
+        document.querySelectorAll('[data-order-id]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const orderId = btn.getAttribute('data-order-id');
+                showOrderDetail(orderId);
+            });
+        });
+    }
+
+    function showOrderDetail(orderId) {
+        const order = allOrders.find(o => o.id === orderId);
+        if(!order) return;
+        const itemsHtml = (order.items || []).map(it => `<tr><td>${escapeHtml(it.code)}</td><td>${escapeHtml(it.name)}</td><td>${it.qty}</td><td>K${(it.price*it.qty).toFixed(2)}</td></tr>`).join('');
+        const modalBody = document.getElementById('orderDetailBody');
+        modalBody.innerHTML = `
+            <div><strong>Ref:</strong> ${order.ref || order.id}</div>
+            <div><strong>Dealer:</strong> ${escapeHtml(order.dealerName)}</div>
+            <div><strong>Date:</strong> ${order.dateStr} ${order.timeStr || ''}</div>
+            <div><strong>Total Amount:</strong> K${(order.totalAmount || 0).toFixed(2)}</div>
+            <div><strong>Paid:</strong> K${(order.paidAmount || 0).toFixed(2)}</div>
+            <div><strong>Balance Due:</strong> K${((order.totalAmount||0) - (order.paidAmount||0)).toFixed(2)}</div>
+            <div style="margin:12px 0;"><strong>Items:</strong></div>
+            <table class="cart-table"><thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Subtotal</th></tr></thead><tbody>${itemsHtml || '<tr><td colspan="4">-</td></tr>'}</tbody></table>
+        `;
+        document.getElementById('orderDetailModal').classList.add('show');
+    }
+
+    function updateDealerDropdowns() {
+        const orderSelect = document.getElementById('orderDealerSelect');
+        const paymentSelect = document.getElementById('paymentDealerSelect');
+        if(orderSelect) {
+            orderSelect.innerHTML = '<option value="">-- Choose Dealer --</option>' + dealers.map(d => `<option value="${d.id}" data-balance="${d.outstandingBalance}">${escapeHtml(d.name)} (Balance: K${d.outstandingBalance.toFixed(2)})</option>`).join('');
+            orderSelect.onchange = () => {
+                const selected = orderSelect.options[orderSelect.selectedIndex];
+                const bal = selected?.getAttribute('data-balance') || 0;
+                document.getElementById('dealerBalancePreview').innerHTML = `<span>💰 Current outstanding: K${Number(bal).toFixed(2)}</span>`;
+            };
+        }
+        if(paymentSelect) {
+            paymentSelect.innerHTML = '<option value="">-- Select Dealer --</option>' + dealers.map(d => `<option value="${d.id}" data-balance="${d.outstandingBalance}">${escapeHtml(d.name)} (Due: K${d.outstandingBalance.toFixed(2)})</option>`).join('');
+            paymentSelect.onchange = () => {
+                const opt = paymentSelect.options[paymentSelect.selectedIndex];
+                const bal = opt?.getAttribute('data-balance') || 0;
+                document.getElementById('currentBalanceDisplay').value = `K${Number(bal).toFixed(2)}`;
+            };
+        }
+    }
+
+    function updateProductSelect() {
+        const select = document.getElementById('orderItemSelect');
+        if(!select) return;
+        select.innerHTML = '<option value="">-- Select Product --</option>' + masterInventory.filter(i => i.stock > 0).map(i => `<option value="${i.id}" data-price="${i.price}" data-stock="${i.stock}" data-code="${i.code}" data-name="${i.name}">${i.code} | ${i.name} (stock: ${i.stock}) - K${i.price}</option>`).join('');
+    }
+
+    // Place order logic - reduces warehouse stock, updates dealer balance
+    document.getElementById('placeOrderBtn').onclick = () => {
+        orderCart = [];
+        document.getElementById('orderForm').reset();
+        document.getElementById('orderCartBody').innerHTML = '';
+        document.getElementById('orderTotalAmount').innerText = '0.00';
+        document.getElementById('dealerBalancePreview').innerHTML = '';
+        if(dealers.length === 0) { toast('No dealers, create one first', 'error'); return; }
+        updateDealerDropdowns();
+        updateProductSelect();
+        document.getElementById('orderModal').classList.add('show');
+    };
+
+    document.getElementById('addToOrderListBtn').onclick = () => {
+        const itemId = document.getElementById('orderItemSelect').value;
+        if(!itemId) { toast('Select product','error'); return; }
+        const item = masterInventory.find(i => i.id === itemId);
+        if(!item) { toast('Item not found','error'); return; }
+        let qty = parseInt(document.getElementById('orderItemQty').value);
+        if(isNaN(qty) || qty < 1) qty = 1;
+        const existingCart = orderCart.find(c => c.itemId === itemId);
+        const totalRequested = (existingCart ? existingCart.qty : 0) + qty;
+        if(totalRequested > item.stock) { toast(`Insufficient stock! Available: ${item.stock}`, 'error'); return; }
+        if(existingCart) existingCart.qty += qty;
+        else orderCart.push({ itemId, code: item.code, name: item.name, price: item.price, qty });
+        renderOrderCart();
+        document.getElementById('orderItemQty').value = 1;
+    };
+
+    function renderOrderCart() {
+        const tbody = document.getElementById('orderCartBody');
+        tbody.innerHTML = '';
+        let total = 0;
+        orderCart.forEach((c, idx) => {
+            const sub = c.price * c.qty;
+            total += sub;
+            const row = tbody.insertRow();
+            row.innerHTML = `<td>${escapeHtml(c.code)} ${escapeHtml(c.name)}</td><td>K${c.price.toFixed(2)}</td><td>${c.qty}</td><td>K${sub.toFixed(2)}</td><td><button type="button" onclick="window.removeOrderItem(${idx})" style="background:#e11d48; border:none; color:white; border-radius:30px; padding:4px 10px;">✕</button></td>`;
+        });
+        document.getElementById('orderTotalAmount').innerText = total.toFixed(2);
+    }
+    window.removeOrderItem = (idx) => { orderCart.splice(idx,1); renderOrderCart(); };
+
+    document.getElementById('orderForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const dealerId = document.getElementById('orderDealerSelect').value;
+        if(!dealerId) { toast('Select dealer','error'); return; }
+        if(orderCart.length === 0) { toast('Add at least one item','error'); return; }
+        const dealer = dealers.find(d => d.id === dealerId);
+        if(!dealer) { toast('Dealer not found','error'); return; }
+        const paidNow = parseFloat(document.getElementById('orderPaidNow').value || 0);
+        const orderTotal = orderCart.reduce((s,i)=> s + (i.price * i.qty), 0);
+        if(paidNow > orderTotal) { toast('Paid amount cannot exceed order total','error'); return; }
+        const newBalance = (dealer.outstandingBalance || 0) + (orderTotal - paidNow);
+        
+        const confirmMsg = `Confirm order for ${dealer.name}? Total K${orderTotal.toFixed(2)} | Paid now K${paidNow.toFixed(2)} → New balance K${newBalance.toFixed(2)}. Stock will be reduced.`;
+        if(!confirm(confirmMsg)) return;
+        
+        const btn = document.getElementById('confirmOrderBtn');
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        try {
+            const batch = writeBatch(db);
+            // 1. reduce stock for each item in master inventory
+            for(const cartItem of orderCart) {
+                const itemRef = doc(db, 'inventory', cartItem.itemId);
+                batch.update(itemRef, { stock: increment(-cartItem.qty) });
+            }
+            // 2. update dealer outstanding balance and total orders count
+            const dealerRef = doc(db, 'dealers', dealerId);
+            batch.update(dealerRef, {
+                outstandingBalance: newBalance,
+                totalOrders: (dealer.totalOrders || 0) + 1,
+                lastOrderDate: new Date().toLocaleDateString('en-GB')
+            });
+            // 3. create order record
+            const now = new Date();
+            const refNum = 'ORD-' + Date.now().toString().slice(-8);
+            const orderData = {
+                ref: refNum,
+                dealerId: dealerId,
+                dealerName: dealer.name,
+                items: orderCart.map(i => ({ code: i.code, name: i.name, qty: i.qty, price: i.price, total: i.price*i.qty })),
+                totalAmount: orderTotal,
+                paidAmount: paidNow,
+                dateStr: now.toLocaleDateString('en-GB'),
+                timeStr: now.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'}),
+                createdAt: now.toISOString(),
+                doneBy: userName,
+                status: paidNow >= orderTotal ? 'paid' : 'partial'
+            };
+            const orderRef = doc(collection(db, 'orders'));
+            batch.set(orderRef, orderData);
+            // optionally record payment transaction if paidNow>0 (as sub-payment)
+            if(paidNow > 0) {
+                const paymentRef = doc(collection(db, 'payments'));
+                batch.set(paymentRef, {
+                    dealerId, dealerName: dealer.name, amount: paidNow, orderRef: refNum,
+                    date: now.toLocaleDateString('en-GB'), note: 'Partial payment on order',
+                    createdAt: now.toISOString()
+                });
+            }
+            await batch.commit();
+            toast(`✅ Order placed! Stock reduced. Dealer new balance K${newBalance.toFixed(2)}`);
+            closeModal('orderModal');
+            orderCart = [];
+            loadOrdersHistory();  // refresh history
+        } catch(err) { toast('Order failed: '+err.message, 'error'); } finally { btn.disabled = false; btn.innerHTML = '✅ Confirm Order & Reduce Stock'; }
+    };
+
+    // Create Dealer
+    document.getElementById('createDealerBtn').onclick = () => { document.getElementById('dealerModal').classList.add('show'); };
+    document.getElementById('dealerForm').onsubmit = async(e) => {
+        e.preventDefault();
+        const name = document.getElementById('dealerName').value.trim();
+        const phone = document.getElementById('dealerPhone').value.trim();
+        const creditLimit = parseFloat(document.getElementById('creditLimit').value || 0);
+        if(!name) { toast('Dealer name required','error'); return; }
+        try {
+            await addDoc(collection(db, 'dealers'), {
+                name, phone: phone || '', creditLimit, outstandingBalance: 0, totalOrders: 0,
+                createdAt: new Date().toISOString()
+            });
+            toast(`Dealer ${name} created`);
+            closeModal('dealerModal');
+            document.getElementById('dealerForm').reset();
+        } catch(err){ toast(err.message,'error'); }
+    };
+
+    // Payment Recording
+    document.getElementById('recordPaymentBtn').onclick = () => {
+        if(dealers.length===0){ toast('No dealers','error'); return; }
+        updateDealerDropdowns();
+        document.getElementById('paymentAmount').value = '';
+        document.getElementById('currentBalanceDisplay').value = '';
+        document.getElementById('paymentModal').classList.add('show');
+    };
+    document.getElementById('paymentForm').onsubmit = async(e) => {
+        e.preventDefault();
+        const dealerId = document.getElementById('paymentDealerSelect').value;
+        if(!dealerId) { toast('Select dealer','error'); return; }
+        const amount = parseFloat(document.getElementById('paymentAmount').value);
+        if(isNaN(amount) || amount <=0) { toast('Valid amount required','error'); return; }
+        const dealer = dealers.find(d => d.id === dealerId);
+        if(!dealer) return;
+        const newBalance = (dealer.outstandingBalance || 0) - amount;
+        if(newBalance < 0) { toast('Payment exceeds outstanding balance!', 'error'); return; }
+        const note = document.getElementById('paymentNote').value;
+        try {
+            const batch = writeBatch(db);
+            const dealerRef = doc(db, 'dealers', dealerId);
+            batch.update(dealerRef, { outstandingBalance: newBalance });
+            const paymentRef = doc(collection(db, 'payments'));
+            batch.set(paymentRef, {
+                dealerId, dealerName: dealer.name, amount, note, date: new Date().toLocaleDateString('en-GB'),
+                createdAt: new Date().toISOString(), type: 'payment'
+            });
+            await batch.commit();
+            toast(`✅ Recorded K${amount.toFixed(2)} from ${dealer.name}. New balance K${newBalance.toFixed(2)}`);
+            closeModal('paymentModal');
+            loadOrdersHistory(); // refresh orders display (balances across orders)
+        } catch(err){ toast(err.message,'error'); }
+    };
+
+    function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>{
+        const tab=btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+        document.getElementById(`tab${tab.charAt(0).toUpperCase()+tab.slice(1)}`).classList.add('active');
+        if(tab==='orders') loadOrdersHistory();
+    }));
+    document.getElementById('dealerSearch').addEventListener('input',()=>renderDealersTable());
+
+    // Initialize all
+    loadDealersRealTime();
+    loadMasterInventory();
+    loadOrdersHistory();
 </script>
 </body>
 </html>
