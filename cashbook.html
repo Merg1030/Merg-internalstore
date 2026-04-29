@@ -35,7 +35,7 @@
 
     html, body {
       width: 100%; height: 100%;
-      overflow: hidden; /* NO SCROLL — everything fits on screen */
+      overflow: hidden;
       font-family: 'DM Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
@@ -45,7 +45,6 @@
       background-size: 40px 40px;
     }
 
-    /* Full-screen flex layout */
     .shell {
       display: flex;
       flex-direction: column;
@@ -53,9 +52,7 @@
       width: 100%;
     }
 
-    /* ════════════════════════
-       TOPBAR
-    ════════════════════════ */
+    /* TOPBAR */
     .topbar {
       height: var(--header-h);
       flex-shrink: 0;
@@ -107,20 +104,17 @@
     }
     .back-btn:hover { border-color: var(--blue); color: var(--blue); background: white; }
 
-    /* ════════════════════════
-       CONTENT — fills remaining height
-    ════════════════════════ */
+    /* CONTENT */
     .content {
       flex: 1;
       display: flex;
       flex-direction: column;
       padding: 18px 28px 16px;
       gap: 16px;
-      overflow: hidden; /* still no scroll */
+      overflow: hidden;
       min-height: 0;
     }
 
-    /* ── Divider ── */
     .divider {
       display: flex; align-items: center; gap: 10px;
       flex-shrink: 0;
@@ -131,7 +125,7 @@
     }
     .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    /* ── STATS ROW ── */
+    /* STATS ROW */
     .stats-row {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 12px; flex-shrink: 0;
@@ -162,7 +156,7 @@
       text-transform: uppercase; letter-spacing: 0.09em;
     }
 
-    /* ── MAIN GRID — fills remaining space ── */
+    /* MAIN GRID */
     .main-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -171,7 +165,7 @@
       min-height: 0;
     }
 
-    /* ── MODULE CARDS (left col) ── */
+    /* MODULE CARDS */
     .module-cards {
       display: flex; flex-direction: column; gap: 10px;
       min-height: 0;
@@ -193,12 +187,14 @@
     .card-blue::before   { background: var(--blue); }
     .card-green::before  { background: var(--green); }
     .card-purple::before { background: var(--purple); }
+    .card-pink::before   { background: var(--pink); }
 
     .module-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
     .module-card:hover::before { opacity: 0.2; }
     .card-blue:hover   { border-color: rgba(67,97,238,0.3); }
     .card-green:hover  { border-color: rgba(16,185,129,0.3); }
     .card-purple:hover { border-color: rgba(124,58,237,0.3); }
+    .card-pink:hover   { border-color: rgba(247,37,133,0.3); }
 
     .mod-icon {
       width: 46px; height: 46px; border-radius: 13px;
@@ -208,6 +204,7 @@
     .card-blue   .mod-icon { background: linear-gradient(135deg, var(--blue), var(--cyan));   box-shadow: 0 4px 12px rgba(67,97,238,0.25); }
     .card-green  .mod-icon { background: linear-gradient(135deg, var(--green), #059669);       box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
     .card-purple .mod-icon { background: linear-gradient(135deg, var(--purple), #6d28d9);      box-shadow: 0 4px 12px rgba(124,58,237,0.2); }
+    .card-pink   .mod-icon { background: linear-gradient(135deg, var(--pink), #db2777);        box-shadow: 0 4px 12px rgba(247,37,133,0.2); }
 
     .mod-info { flex: 1; min-width: 0; }
     .mod-info h3 { font-size: 0.88rem; font-weight: 800; color: var(--text); margin-bottom: 3px; }
@@ -230,8 +227,9 @@
     }
     .card-green:hover  .mod-arrow { background: var(--green);  border-color: var(--green); }
     .card-purple:hover .mod-arrow { background: var(--purple); border-color: var(--purple); }
+    .card-pink:hover   .mod-arrow { background: var(--pink);   border-color: var(--pink); }
 
-    /* ── QUICK ACCESS (right col) ── */
+    /* QUICK ACCESS PANEL */
     .panel {
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: var(--radius-lg); overflow: hidden;
@@ -282,7 +280,7 @@
     .list-arrow { color: var(--text-dim); font-size: 0.7rem; flex-shrink: 0; transition: all 0.18s; }
     .list-item:hover .list-arrow { color: var(--blue); transform: translateX(3px); }
 
-    /* ── STATUS BAR ── */
+    /* STATUS BAR */
     .status-bar {
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: space-between;
@@ -297,7 +295,6 @@
     .status-text { font-size: 0.62rem; font-weight: 700; color: var(--text-dim); }
     .status-right { font-size: 0.62rem; color: var(--text-dim); font-family: 'DM Mono', monospace; }
 
-    /* ── ANIMATIONS ── */
     @keyframes pulse {
       0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
     }
@@ -351,7 +348,7 @@
     <!-- Main grid -->
     <div class="main-grid">
 
-      <!-- LEFT — module cards -->
+      <!-- LEFT — module cards (now 4 cards) -->
       <div class="module-cards">
 
         <a class="module-card card-blue" href="total-sales.html">
@@ -383,26 +380,37 @@
           <div class="mod-num-tag">03</div>
           <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
         </a>
+
+        <a class="module-card card-pink" href="receipt.html">
+          <div class="mod-icon"><i class="fas fa-receipt"></i></div>
+          <div class="mod-info">
+            <h3>Receipt Manager</h3>
+            <p>Customer receipts, payment tracking and digital records</p>
+          </div>
+          <div class="mod-num-tag">04</div>
+          <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
+        </a>
+
         <a class="module-card card-purple" href="payroll.html">
-          <div class="mod-icon"><i class="fas fa-money-bill-transfer"></i></div>
+          <div class="mod-icon"><i class="fas fa-users"></i></div>
           <div class="mod-info">
             <h3>Payroll</h3>
-            <p> Employees and pay Roll management</p>
+            <p>Employees and pay roll management</p>
           </div>
-          <div class="mod-num-tag">03</div>
+          <div class="mod-num-tag">05</div>
           <div class="mod-arrow"><i class="fas fa-arrow-right"></i></div>
         </a>
 
       </div>
 
-      <!-- RIGHT — quick access panel -->
+      <!-- RIGHT — quick access panel (updated with Receipt link) -->
       <div class="panel">
         <div class="panel-hdr">
           <div class="panel-hdr-left">
             <div class="hdr-dot"></div>
             <h3>Quick Access</h3>
           </div>
-          <div class="panel-badge">4 pages</div>
+          <div class="panel-badge">5 pages</div>
         </div>
         <div class="list-wrap">
           <a class="list-item" href="total-sales.html">
@@ -429,8 +437,16 @@
             </div>
             <i class="fas fa-chevron-right list-arrow"></i>
           </a>
+          <a class="list-item" href="receipt.html">
+            <div class="list-icon li-pink"><i class="fas fa-receipt"></i></div>
+            <div class="list-body">
+              <div class="list-title">Receipt Manager</div>
+              <div class="list-sub">Customer receipts, payment tracking</div>
+            </div>
+            <i class="fas fa-chevron-right list-arrow"></i>
+          </a>
           <a class="list-item" href="cashbook.html">
-            <div class="list-icon li-pink"><i class="fas fa-book-open"></i></div>
+            <div class="list-icon li-purple"><i class="fas fa-book-open"></i></div>
             <div class="list-body">
               <div class="list-title">Cash Ledger</div>
               <div class="list-sub">Detailed cash book and transaction log</div>
