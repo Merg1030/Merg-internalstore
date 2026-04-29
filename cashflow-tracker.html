@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>Trismart · Categorized Ledger</title>
+  <title>Trismart · Accounts Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
     * {
@@ -15,11 +15,11 @@
     }
 
     :root {
-      --bg: #f1f5f9;
+      --bg: #f5f7fb;
       --surface: #ffffff;
-      --border: #e2e8f0;
-      --text: #0f172a;
-      --text-muted: #475569;
+      --border: #e4e7ec;
+      --text: #1a2634;
+      --text-muted: #5b6e8c;
       --primary: #3b82f6;
       --primary-dark: #2563eb;
       --purple: #8b5cf6;
@@ -27,11 +27,12 @@
       --emerald: #10b981;
       --amber: #f59e0b;
       --radius: 1rem;
-      --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+      --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.04);
     }
 
     body {
       font-family: 'Inter', sans-serif;
+      font-weight: 400;
       background: var(--bg);
       color: var(--text);
       height: 100vh;
@@ -45,12 +46,12 @@
       overflow: hidden;
     }
 
-    /* header */
+    /* header - clean, no bold */
     .navbar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       padding: 0 1.75rem;
-      height: 64px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -64,32 +65,30 @@
     }
     .logo-icon {
       background: linear-gradient(135deg, var(--primary), var(--purple));
-      width: 36px;
-      height: 36px;
-      border-radius: 12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
+      font-size: 0.9rem;
     }
     .logo-text {
-      font-weight: 800;
-      font-size: 1.2rem;
+      font-weight: 500;
+      font-size: 1rem;
+      letter-spacing: -0.2px;
     }
-    .badge-pro {
-      background: #eef2ff;
-      padding: 4px 12px;
-      border-radius: 40px;
+    .version-text {
       font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--primary);
+      color: var(--text-muted);
     }
 
-    /* filter bar */
+    /* filter bar - all text normal weight */
     .filter-bar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0.65rem 1.75rem;
+      padding: 0.6rem 1.75rem;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -104,35 +103,44 @@
       align-items: center;
     }
     .filter-chip {
-      background: #f1f5f9;
-      padding: 6px 14px;
+      background: #f0f2f5;
+      padding: 5px 14px;
       border-radius: 32px;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 400;
       cursor: pointer;
       transition: 0.2s;
       border: 1px solid transparent;
       color: var(--text-muted);
     }
+    .filter-chip i {
+      margin-right: 4px;
+      font-size: 0.7rem;
+    }
     .filter-chip.active {
       background: var(--primary);
       color: white;
+      font-weight: 500;
     }
     .action-icon {
       background: transparent;
       border: 1px solid var(--border);
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 32px;
       font-size: 0.7rem;
-      font-weight: 500;
+      font-weight: 400;
       cursor: pointer;
+      transition: 0.2s;
+      color: var(--text-muted);
     }
     .action-icon:hover {
       background: var(--bg);
+      border-color: var(--primary);
+      color: var(--primary);
     }
     .divider-vert {
       width: 1px;
-      height: 28px;
+      height: 26px;
       background: var(--border);
       margin: 0 6px;
     }
@@ -146,27 +154,27 @@
     .accounts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 1.25rem;
+      gap: 1.2rem;
     }
     .account-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.2rem;
+      padding: 1.1rem;
       transition: all 0.2s;
       position: relative;
       box-shadow: var(--shadow);
     }
     .account-card.hidden-account {
-      opacity: 0.55;
-      background: #f8fafc;
+      opacity: 0.5;
+      background: #f9fafb;
       border-left: 3px solid #94a3b8;
     }
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .account-title {
       display: flex;
@@ -175,39 +183,40 @@
       flex-wrap: wrap;
     }
     .cat-badge {
-      font-size: 0.6rem;
-      font-weight: 800;
-      padding: 4px 10px;
+      font-size: 0.58rem;
+      font-weight: 500;
+      padding: 3px 10px;
       border-radius: 20px;
       text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
-    .cat-badge.journal { background: #e0f2fe; color: #0284c7; }
-    .cat-badge.ledger { background: #dcfce7; color: #15803d; }
+    .cat-badge.journal { background: #e0f2fe; color: #0369a1; }
+    .cat-badge.ledger { background: #dcfce7; color: #166534; }
     .cat-badge.report { background: #fef3c7; color: #b45309; }
     .cat-badge.uncategorized { background: #f1f5f9; color: #475569; }
     .account-name {
-      font-weight: 700;
-      font-size: 0.95rem;
+      font-weight: 500;
+      font-size: 0.9rem;
     }
     .account-detail {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
       margin: 8px 0;
     }
     .balance {
-      font-weight: 700;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       margin-top: 8px;
       border-top: 1px solid var(--border);
       padding-top: 8px;
       display: flex;
       justify-content: space-between;
+      font-weight: 400;
     }
     .menu-btn-card {
       background: none;
       border: none;
-      font-size: 1rem;
+      font-size: 0.9rem;
       cursor: pointer;
       padding: 6px;
       border-radius: 8px;
@@ -225,7 +234,7 @@
       box-shadow: 0 12px 28px rgba(0,0,0,0.12);
       border: 1px solid var(--border);
       z-index: 200;
-      min-width: 170px;
+      min-width: 160px;
       overflow: hidden;
       display: none;
     }
@@ -233,14 +242,15 @@
       display: block;
     }
     .dropdown-opt {
-      padding: 10px 16px;
-      font-size: 0.75rem;
-      font-weight: 500;
+      padding: 10px 14px;
+      font-size: 0.73rem;
+      font-weight: 400;
       display: flex;
       align-items: center;
       gap: 10px;
       cursor: pointer;
       transition: 0.1s;
+      color: var(--text);
     }
     .dropdown-opt:hover {
       background: #f8fafc;
@@ -262,10 +272,10 @@
     .toast-item {
       background: #1e293b;
       color: white;
-      padding: 8px 20px;
+      padding: 8px 18px;
       border-radius: 40px;
-      font-size: 0.75rem;
-      font-weight: 500;
+      font-size: 0.7rem;
+      font-weight: 400;
       backdrop-filter: blur(4px);
       animation: fadeUp 0.2s ease;
     }
@@ -275,8 +285,9 @@
     }
     .empty-placeholder {
       text-align: center;
-      padding: 3rem;
+      padding: 2.5rem;
       color: var(--text-muted);
+      font-size: 0.85rem;
     }
     @media (max-width: 640px) {
       .filter-bar { flex-direction: column; align-items: stretch; }
@@ -289,18 +300,17 @@
   <div class="navbar">
     <div class="logo-area">
       <div class="logo-icon"><i class="fas fa-layer-group"></i></div>
-      <div class="logo-text">Trismart · Categories</div>
-      <div class="badge-pro">JOURNAL / LEDGER / REPORT</div>
+      <div class="logo-text">Trismart · Accounts</div>
+      <div class="version-text">dashboard</div>
     </div>
-    <div><i class="fas fa-database"></i> live DB · filters persist</div>
+    <div><i class="fas fa-database"></i> <span id="dbStatus">connected</span></div>
   </div>
 
   <div class="filter-bar">
     <div class="filter-group">
-      <span class="filter-chip active" data-filter="all"><i class="fas fa-list-ul"></i> All</span>
+      <span class="filter-chip active" data-filter="all"><i class="fas fa-th-large"></i> All</span>
       <span class="filter-chip" data-filter="journal"><i class="fas fa-book"></i> Journal</span>
       <span class="filter-chip" data-filter="ledger"><i class="fas fa-receipt"></i> Ledger</span>
-      <span class="filter-chip" data-filter="report"><i class="fas fa-chart-simple"></i> Report</span>
       <span class="filter-chip" data-filter="uncategorized"><i class="fas fa-tag"></i> Uncategorized</span>
       <div class="divider-vert"></div>
       <span class="filter-chip" id="toggleHiddenBtn"><i class="fas fa-eye-slash"></i> Show hidden</span>
@@ -313,7 +323,7 @@
 
   <div class="main-scroll">
     <div class="accounts-grid" id="accountsGrid">
-      <div style="text-align:center; padding:40px;"><i class="fas fa-spinner fa-pulse"></i> Loading accounts from Firebase...</div>
+      <div style="text-align:center; padding:40px;"><i class="fas fa-spinner fa-pulse"></i> Loading accounts...</div>
     </div>
   </div>
 </div>
@@ -334,7 +344,7 @@
   import { initializeApp } from "firebase/app";
   import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, getDocs, writeBatch } from "firebase/firestore";
 
-  // Firebase config (your existing project)
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
     authDomain: "trismartstores.firebaseapp.com",
@@ -347,20 +357,23 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // auth check (Chris only)
+  // Auth check (Chris only)
   const loggedInUser = localStorage.getItem('loggedInUser') || '';
   const userName = (loggedInUser || localStorage.getItem('userName') || '').toLowerCase().trim();
   if (userName !== 'chris') {
-    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><div style="background:white;padding:30px;border-radius:24px;">🔐 Access Denied. Accounts restricted.</div></div>`;
+    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><div style="background:white;padding:30px;border-radius:24px;">🔐 Access restricted. Accounts dashboard only for authorized users.</div></div>`;
     throw new Error('unauthorized');
   }
 
-  // ---------- GLOBAL STATE ----------
-  let accounts = [];           // raw from firestore { id, name, type, balance, description, category?, hidden? }
-  let currentFilter = "all";   // "all", "journal", "ledger", "report", "uncategorized"
-  let showHiddenItems = true;   // if false, hidden accounts completely removed from UI
+  // ---------- PERSISTENT STATE (localStorage) ----------
+  // Filter preference persists across refresh
+  let currentFilter = localStorage.getItem('trismart_filter') || "all";
+  let showHiddenItems = localStorage.getItem('trismart_showHidden') !== "false"; // default true
   
-  // Helper: toast messages
+  // accounts array from firestore
+  let accounts = [];
+  let unsubscribeAccounts = null;
+
   function showToast(msg, isError = false) {
     const stack = document.getElementById('toastStack');
     const toast = document.createElement('div');
@@ -371,15 +384,99 @@
     setTimeout(() => toast.remove(), 2800);
   }
 
-  // Helper: ensure every account from DB has category & hidden fields (migration)
-  function ensureMetaFields(account) {
-    if (!account.hasOwnProperty('category')) account.category = 'uncategorized';
-    if (!account.hasOwnProperty('hidden')) account.hidden = false;
-    return account;
+  // Update single field
+  async function updateAccountField(accountId, field, value) {
+    try {
+      const accountRef = doc(db, 'accounts', accountId);
+      await updateDoc(accountRef, { [field]: value });
+      return true;
+    } catch (err) {
+      console.error(err);
+      showToast(`Update failed: ${err.message}`, true);
+      return false;
+    }
   }
 
-  // Watch realtime accounts from Firestore (collection 'accounts')
-  let unsubscribeAccounts = null;
+  async function changeAccountCategory(accountId, newCategory) {
+    const acc = accounts.find(a => a.id === accountId);
+    if (!acc) return;
+    await updateAccountField(accountId, 'category', newCategory);
+    showToast(`"${acc.name}" → ${newCategory}`);
+  }
+
+  async function toggleHideAccount(accountId) {
+    const acc = accounts.find(a => a.id === accountId);
+    if (!acc) return;
+    const newHidden = !acc.hidden;
+    await updateAccountField(accountId, 'hidden', newHidden);
+    showToast(newHidden ? `"${acc.name}" hidden` : `"${acc.name}" visible`);
+  }
+
+  // Bulk reset all categories to 'uncategorized'
+  async function resetAllCategories() {
+    try {
+      const accountsRef = collection(db, 'accounts');
+      const snapshot = await getDocs(accountsRef);
+      const batch = writeBatch(db);
+      snapshot.docs.forEach(docSnap => {
+        batch.update(docSnap.ref, { category: 'uncategorized' });
+      });
+      await batch.commit();
+      showToast("All accounts reset to Uncategorized");
+    } catch (err) {
+      showToast("Reset error: " + err.message, true);
+    }
+  }
+
+  // Bulk unhide all
+  async function unhideAllAccounts() {
+    try {
+      const accountsRef = collection(db, 'accounts');
+      const snapshot = await getDocs(accountsRef);
+      const batch = writeBatch(db);
+      snapshot.docs.forEach(docSnap => {
+        batch.update(docSnap.ref, { hidden: false });
+      });
+      await batch.commit();
+      showToast("All accounts are now visible");
+      if (!showHiddenItems) {
+        showHiddenItems = true;
+        localStorage.setItem('trismart_showHidden', 'true');
+        const toggleBtn = document.getElementById('toggleHiddenBtn');
+        if (toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Show hidden';
+      }
+    } catch (err) {
+      showToast("Unhide error: " + err.message, true);
+    }
+  }
+
+  // Ensure every account has category & hidden fields (migration)
+  async function ensureAllAccountsHaveMetaFields() {
+    try {
+      const accountsRef = collection(db, 'accounts');
+      const snapshot = await getDocs(accountsRef);
+      const batch = writeBatch(db);
+      let needsUpdate = false;
+      snapshot.docs.forEach(docSnap => {
+        const data = docSnap.data();
+        let updateData = {};
+        if (data.category === undefined) updateData.category = 'uncategorized';
+        if (data.hidden === undefined) updateData.hidden = false;
+        if (Object.keys(updateData).length > 0) {
+          needsUpdate = true;
+          batch.update(docSnap.ref, updateData);
+        }
+      });
+      if (needsUpdate) {
+        await batch.commit();
+        console.log("Migration complete: added category/hidden fields");
+      }
+    } catch (err) {
+      console.warn("Migration skipped", err);
+    }
+  }
+
+  // Real-time listener
   function listenAccounts() {
     if (unsubscribeAccounts) unsubscribeAccounts();
     const q = query(collection(db, 'accounts'), orderBy('name'));
@@ -393,88 +490,23 @@
           balance: typeof data.balance === 'number' ? data.balance : 0,
           description: data.description || '',
           category: data.category || 'uncategorized',
-          hidden: data.hidden === true ? true : false,
-          createdAt: data.createdAt || null
+          hidden: data.hidden === true,
         };
       });
       renderAccountsGrid();
+      document.getElementById('dbStatus').innerHTML = '✓ live';
     }, (error) => {
       console.error("Firestore error:", error);
-      document.getElementById('accountsGrid').innerHTML = `<div class="empty-placeholder"><i class="fas fa-database"></i> Error loading accounts. Check network.</div>`;
-      showToast("Failed to load accounts", true);
+      document.getElementById('accountsGrid').innerHTML = `<div class="empty-placeholder"><i class="fas fa-database"></i> Connection error. Retrying...</div>`;
+      document.getElementById('dbStatus').innerHTML = '⚠ offline';
+      showToast("Firebase connection issue", true);
     });
   }
 
-  // Update single account field (category or hidden)
-  async function updateAccountField(accountId, field, value) {
-    try {
-      const accountRef = doc(db, 'accounts', accountId);
-      await updateDoc(accountRef, { [field]: value });
-      showToast(`Account ${field} updated`);
-    } catch (err) {
-      console.error(err);
-      showToast(`Update failed: ${err.message}`, true);
-    }
-  }
-
-  // Change category via dropdown
-  async function changeAccountCategory(accountId, newCategory) {
-    const acc = accounts.find(a => a.id === accountId);
-    if (!acc) return;
-    await updateAccountField(accountId, 'category', newCategory);
-    showToast(`"${acc.name}" → ${newCategory.toUpperCase()}`);
-  }
-
-  // Toggle hide/unhide
-  async function toggleHideAccount(accountId) {
-    const acc = accounts.find(a => a.id === accountId);
-    if (!acc) return;
-    const newHidden = !acc.hidden;
-    await updateAccountField(accountId, 'hidden', newHidden);
-    showToast(newHidden ? `"${acc.name}" hidden` : `"${acc.name}" visible`);
-  }
-
-  // Reset all accounts categories to 'uncategorized' (bulk write)
-  async function resetAllCategories() {
-    try {
-      const accountsRef = collection(db, 'accounts');
-      const snapshot = await getDocs(accountsRef);
-      const batch = writeBatch(db);
-      snapshot.docs.forEach(docSnap => {
-        batch.update(docSnap.ref, { category: 'uncategorized' });
-      });
-      await batch.commit();
-      showToast("All accounts reset to Uncategorized category");
-    } catch (err) {
-      showToast("Reset error: " + err.message, true);
-    }
-  }
-
-  // Unhide all accounts (set hidden: false for all)
-  async function unhideAllAccounts() {
-    try {
-      const accountsRef = collection(db, 'accounts');
-      const snapshot = await getDocs(accountsRef);
-      const batch = writeBatch(db);
-      snapshot.docs.forEach(docSnap => {
-        batch.update(docSnap.ref, { hidden: false });
-      });
-      await batch.commit();
-      showToast("All accounts are now visible");
-      if (!showHiddenItems) {
-        showHiddenItems = true;
-        const toggleBtn = document.getElementById('toggleHiddenBtn');
-        if (toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Show hidden';
-      }
-    } catch (err) {
-      showToast("Unhide error: " + err.message, true);
-    }
-  }
-
-  // get filtered & visible accounts based on current UI flags
+  // Filter logic: respects showHiddenItems & currentFilter
   function getFilteredAccounts() {
     let filtered = [...accounts];
-    // 1) hidden filter: if showHiddenItems === false, exclude hidden accounts
+    // 1) hidden filter
     if (!showHiddenItems) {
       filtered = filtered.filter(acc => !acc.hidden);
     }
@@ -485,13 +517,28 @@
     return filtered;
   }
 
-  // UI rendering with category badges and hide styles
+  function getCatIcon(cat) {
+    if (cat === 'journal') return 'fa-book';
+    if (cat === 'ledger') return 'fa-receipt';
+    return 'fa-tag';
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
   function renderAccountsGrid() {
     const container = document.getElementById('accountsGrid');
     const visibleList = getFilteredAccounts();
     
     if (!visibleList.length) {
-      container.innerHTML = `<div class="empty-placeholder"><i class="fas fa-filter-circle-xmark"></i> <br/> No accounts match filter. Try changing category or show hidden.</div>`;
+      container.innerHTML = `<div class="empty-placeholder"><i class="fas fa-filter-circle-xmark"></i> <br/> No accounts match current filter.</div>`;
       return;
     }
     
@@ -505,7 +552,6 @@
       else catBadgeClass = 'uncategorized';
       
       const categoryLabel = acc.category.charAt(0).toUpperCase() + acc.category.slice(1);
-      // icon based on account type (asset/expense/etc)
       let typeIcon = 'fa-receipt';
       if (acc.type === 'asset') typeIcon = 'fa-coins';
       else if (acc.type === 'expense') typeIcon = 'fa-shopping-cart';
@@ -525,10 +571,9 @@
             <div style="position:relative;">
               <button class="menu-btn-card" data-menu-for="${acc.id}"><i class="fas fa-ellipsis-v"></i></button>
               <div class="card-dropdown" id="${dropdownId}">
-                <div class="dropdown-opt" data-action="categorize" data-cat="journal"><i class="fas fa-book-open"></i> 📓 Journal</div>
-                <div class="dropdown-opt" data-action="categorize" data-cat="ledger"><i class="fas fa-list-ul"></i> 📒 Ledger</div>
-                <div class="dropdown-opt" data-action="categorize" data-cat="report"><i class="fas fa-chart-line"></i> 📊 Report</div>
-                <div class="dropdown-opt" data-action="categorize" data-cat="uncategorized"><i class="fas fa-question"></i> 🧾 Uncategorized</div>
+                <div class="dropdown-opt" data-action="categorize" data-cat="journal"><i class="fas fa-book-open"></i> Journal</div>
+                <div class="dropdown-opt" data-action="categorize" data-cat="ledger"><i class="fas fa-list-ul"></i> Ledger</div>
+                <div class="dropdown-opt" data-action="categorize" data-cat="uncategorized"><i class="fas fa-question"></i> Uncategorized</div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-opt" data-action="toggle-hide"><i class="fas ${isHidden ? 'fa-eye' : 'fa-eye-slash'}"></i> ${isHidden ? 'Unhide' : 'Hide'}</div>
               </div>
@@ -536,18 +581,18 @@
           </div>
           <div class="account-detail">
             <i class="fas fa-align-left"></i> ${escapeHtml(acc.description || 'No description')}
-            <span style="margin-left: 10px;"><i class="fas fa-chart-simple"></i> ${acc.type}</span>
+            <span style="margin-left: 8px;"><i class="fas fa-chart-simple"></i> ${acc.type}</span>
           </div>
           <div class="balance">
             <span><i class="fas fa-coins"></i> Balance</span>
-            <span style="font-weight:800;">K ${acc.balance.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+            <span>K ${acc.balance.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
           </div>
-          ${isHidden ? '<div style="font-size:0.6rem; margin-top:6px; color:#94a3b8;"><i class="fas fa-low-vision"></i> hidden from main view</div>' : ''}
+          ${isHidden ? '<div style="font-size:0.55rem; margin-top:6px; color:#94a3b8;"><i class="fas fa-low-vision"></i> hidden</div>' : ''}
         </div>
       `;
     }).join('');
     
-    // attach event listeners to dropdown triggers & options
+    // attach dropdown events
     document.querySelectorAll('.menu-btn-card').forEach(btn => {
       btn.removeEventListener('click', handleMenuClick);
       btn.addEventListener('click', handleMenuClick);
@@ -558,13 +603,6 @@
     });
   }
   
-  function getCatIcon(cat) {
-    if (cat === 'journal') return 'fa-book';
-    if (cat === 'ledger') return 'fa-receipt';
-    if (cat === 'report') return 'fa-chart-simple';
-    return 'fa-tag';
-  }
-  
   function handleMenuClick(e) {
     e.stopPropagation();
     const btn = e.currentTarget;
@@ -572,7 +610,6 @@
     if (!cardDiv) return;
     const dropdownDiv = btn.nextElementSibling;
     if (!dropdownDiv || !dropdownDiv.classList) return;
-    // close any other open dropdowns
     document.querySelectorAll('.card-dropdown.show').forEach(dd => {
       if (dd !== dropdownDiv) dd.classList.remove('show');
     });
@@ -600,103 +637,95 @@
     dropdownDiv.classList.remove('show');
   }
   
-  // Click outside closes dropdowns
+  // close dropdowns on outside click
   document.addEventListener('click', function(e) {
     if (!e.target.closest('.card-dropdown') && !e.target.closest('.menu-btn-card')) {
       document.querySelectorAll('.card-dropdown.show').forEach(dd => dd.classList.remove('show'));
     }
   });
   
-  function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
+  // ---------- FILTER PERSISTENCE & UI sync ----------
+  function saveFilterPreference() {
+    localStorage.setItem('trismart_filter', currentFilter);
+    localStorage.setItem('trismart_showHidden', showHiddenItems);
   }
   
-  // Filter UI and persistence (filters survive because we keep global state, but no localStorage for filter)
-  function initFilters() {
+  function setFilter(filterValue) {
+    currentFilter = filterValue;
+    saveFilterPreference();
+    // update active class on chips
+    document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
+      const val = chip.getAttribute('data-filter');
+      if (val === currentFilter) chip.classList.add('active');
+      else chip.classList.remove('active');
+    });
+    renderAccountsGrid();
+  }
+  
+  function setShowHidden(value) {
+    showHiddenItems = value;
+    saveFilterPreference();
+    const btn = document.getElementById('toggleHiddenBtn');
+    if (btn) {
+      if (showHiddenItems) btn.innerHTML = '<i class="fas fa-eye-slash"></i> Show hidden';
+      else btn.innerHTML = '<i class="fas fa-eye"></i> Hide hidden';
+    }
+    renderAccountsGrid();
+  }
+  
+  function initFiltersAndUI() {
+    // filter chips (only All, Journal, Ledger, Uncategorized - removed Report)
     const filterChips = document.querySelectorAll('.filter-chip[data-filter]');
     filterChips.forEach(chip => {
       chip.addEventListener('click', () => {
         const filterVal = chip.getAttribute('data-filter');
         if (filterVal) {
-          currentFilter = filterVal;
-          filterChips.forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-          renderAccountsGrid();
+          setFilter(filterVal);
           showToast(`Filter: ${filterVal === 'all' ? 'All accounts' : filterVal}`);
         }
       });
     });
     
-    // toggle hidden visibility (show/hide hidden accounts completely)
+    // toggle hidden button
     const toggleHiddenBtn = document.getElementById('toggleHiddenBtn');
     toggleHiddenBtn.addEventListener('click', () => {
-      showHiddenItems = !showHiddenItems;
-      if (showHiddenItems) {
-        toggleHiddenBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Show hidden';
-        toggleHiddenBtn.style.background = '#f1f5f9';
-        showToast('Hidden accounts are VISIBLE (dimmed)');
-      } else {
-        toggleHiddenBtn.innerHTML = '<i class="fas fa-eye"></i> Hide hidden';
-        toggleHiddenBtn.style.background = '#e2e8f0';
-        showToast('Hidden accounts are HIDDEN from list');
-      }
-      renderAccountsGrid();
+      setShowHidden(!showHiddenItems);
+      showToast(showHiddenItems ? 'Showing hidden accounts (dimmed)' : 'Hidden accounts removed from view');
     });
     
-    // reset categories bulk
+    // reset categories
     document.getElementById('resetCatsBtn').addEventListener('click', async () => {
       await resetAllCategories();
     });
-    // unhide all accounts bulk
+    // unhide all
     document.getElementById('unhideAllBtn').addEventListener('click', async () => {
       await unhideAllAccounts();
       if (!showHiddenItems) {
-        showHiddenItems = true;
-        const btn = document.getElementById('toggleHiddenBtn');
-        if (btn) btn.innerHTML = '<i class="fas fa-eye-slash"></i> Show hidden';
+        setShowHidden(true);
       }
-      renderAccountsGrid();
     });
-  }
-  
-  // small migration: ensure existing accounts have 'category' & 'hidden' fields if missing
-  // we will call once to patch missing fields (optional but good practice)
-  async function ensureAllAccountsHaveMetaFields() {
-    try {
-      const accountsRef = collection(db, 'accounts');
-      const snapshot = await getDocs(accountsRef);
-      const batch = writeBatch(db);
-      let needsUpdate = false;
-      snapshot.docs.forEach(docSnap => {
-        const data = docSnap.data();
-        let updateData = {};
-        if (data.category === undefined) updateData.category = 'uncategorized';
-        if (data.hidden === undefined) updateData.hidden = false;
-        if (Object.keys(updateData).length > 0) {
-          needsUpdate = true;
-          batch.update(docSnap.ref, updateData);
-        }
-      });
-      if (needsUpdate) {
-        await batch.commit();
-        console.log("Migrated existing accounts with category/hidden fields");
-      }
-    } catch (err) {
-      console.warn("Migration skip:", err);
+    
+    // set initial active states based on stored values
+    document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
+      if (chip.getAttribute('data-filter') === currentFilter) chip.classList.add('active');
+    });
+    if (!showHiddenItems) {
+      toggleHiddenBtn.innerHTML = '<i class="fas fa-eye"></i> Hide hidden';
+    } else {
+      toggleHiddenBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Show hidden';
     }
   }
   
-  // start app: listen + init filters
+  // remove "Report" from visible category chips (we already excluded from HTML)
+  // Also ensure no "live DB · filters persist" text appears (navbar already clean)
+  
+  // main init
   async function init() {
     await ensureAllAccountsHaveMetaFields();
     listenAccounts();
-    initFilters();
+    initFiltersAndUI();
+    // set initial filter value (already loaded)
+    renderAccountsGrid();
   }
   
   init();
