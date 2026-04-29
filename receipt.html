@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
     * {
       margin: 0;
@@ -26,7 +27,6 @@
       --warning: #f59e0b;
       --danger: #ef4444;
       --purple: #8b5cf6;
-      --pink: #ec4899;
       --radius: 1rem;
       --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
       --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1);
@@ -39,7 +39,6 @@
       min-height: 100vh;
     }
 
-    /* Header */
     .header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -104,14 +103,12 @@
       background: var(--bg);
     }
 
-    /* Container */
     .container {
       max-width: 1400px;
       margin: 0 auto;
       padding: 1.5rem 2rem;
     }
 
-    /* Receipt Form Card */
     .form-card {
       background: var(--surface);
       border-radius: var(--radius);
@@ -164,12 +161,7 @@
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
-    .amount-input {
-      font-size: 1rem;
-      font-weight: 600;
-    }
 
-    /* Company Info Bar */
     .company-info {
       background: linear-gradient(135deg, #f8fafc, #f1f5f9);
       border-radius: 14px;
@@ -194,7 +186,6 @@
       color: var(--primary);
     }
 
-    /* Receipt Preview */
     .receipt-preview {
       background: var(--surface);
       border-radius: var(--radius);
@@ -209,14 +200,6 @@
       margin-bottom: 1rem;
       padding-bottom: 0.75rem;
       border-bottom: 2px dashed var(--border);
-    }
-    .preview-title {
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-    .receipt-temp {
-      font-family: 'JetBrains Mono', monospace;
     }
     .receipt-row {
       display: flex;
@@ -267,8 +250,17 @@
       font-weight: 500;
       cursor: pointer;
     }
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
 
-    /* Receipts History Grid */
     .receipts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -314,13 +306,7 @@
       color: var(--primary);
       margin-top: 8px;
     }
-    .balance-remaining {
-      font-size: 0.7rem;
-      color: var(--warning);
-      margin-top: 4px;
-    }
 
-    /* Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -383,9 +369,7 @@
 </div>
 
 <div class="container">
-  <!-- New Receipt Panel -->
   <div id="newReceiptPanel">
-    <!-- Company Info -->
     <div class="company-info">
       <div class="company-detail"><i class="fas fa-store"></i> Trismart Enterprises</div>
       <div class="company-detail"><i class="fas fa-envelope"></i> trismart.zm@gmail.com</div>
@@ -398,7 +382,7 @@
       <div class="form-title"><i class="fas fa-file-invoice-dollar"></i> Payment Receipt</div>
       <div class="form-grid">
         <div class="input-group">
-          <label>Receipt Number (Auto)</label>
+          <label>Receipt Number</label>
           <input type="text" id="receiptNumber" readonly style="background:#f8fafc; font-weight:600;">
         </div>
         <div class="input-group">
@@ -423,53 +407,47 @@
           </select>
         </div>
         <div class="input-group">
-          <label>Transaction Reference (optional)</label>
+          <label>Transaction Reference</label>
           <input type="text" id="transactionRef" placeholder="Airtel TXN ID / Cheque #">
         </div>
         <div class="input-group">
           <label>Amount Paid (K)</label>
-          <input type="number" id="amountPaid" step="0.01" class="amount-input" placeholder="0.00">
+          <input type="number" id="amountPaid" step="0.01" placeholder="0.00">
         </div>
         <div class="input-group">
           <label>Previous Balance (K)</label>
-          <input type="number" id="previousBalance" step="0.01" value="0" placeholder="0.00">
+          <input type="number" id="previousBalance" step="0.01" value="0">
         </div>
       </div>
       <div class="input-group" style="margin-top: 0.5rem;">
         <label>Notes / Description</label>
-        <input type="text" id="notes" placeholder="Payment for invoice #123, deposit, etc.">
+        <input type="text" id="notes" placeholder="Payment for invoice, deposit, etc.">
       </div>
-
       <div class="action-buttons">
         <button class="btn-secondary" id="resetBtn"><i class="fas fa-undo-alt"></i> Reset</button>
         <button class="btn-primary" id="saveReceiptBtn"><i class="fas fa-save"></i> Issue Receipt</button>
       </div>
     </div>
 
-    <!-- Live Receipt Preview -->
     <div class="receipt-preview">
       <div class="preview-header">
         <span class="preview-title"><i class="fas fa-print"></i> RECEIPT PREVIEW</span>
         <span class="preview-title">OFFICIAL RECEIPT</span>
       </div>
-      <div id="receiptPreview" class="receipt-temp">
-        <!-- Dynamic preview -->
-      </div>
+      <div id="receiptPreview"></div>
     </div>
   </div>
 
-  <!-- History Panel -->
   <div id="historyPanel" style="display: none;">
     <div class="form-card">
       <div class="form-title"><i class="fas fa-archive"></i> All Receipts</div>
       <div class="receipts-grid" id="receiptsGrid">
-        <div style="text-align:center; padding:2rem;">Loading receipts...</div>
+        <div style="text-align:center; padding:2rem;"><i class="fas fa-spinner fa-pulse"></i> Loading receipts...</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Receipt Detail Modal -->
 <div id="receiptModal" class="modal-overlay">
   <div class="modal-content">
     <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
@@ -477,13 +455,15 @@
       <span style="cursor:pointer; font-size:1.3rem;" onclick="closeModal()">&times;</span>
     </div>
     <div id="receiptDetails"></div>
-    <button class="btn-primary" onclick="closeModal()" style="margin-top: 1rem; width: 100%;">Close</button>
+    <div style="display: flex; gap: 10px; margin-top: 1rem;">
+      <button class="btn-primary" id="printPdfBtn" style="flex:1;"><i class="fas fa-file-pdf"></i> Download PDF</button>
+      <button class="btn-secondary" onclick="closeModal()" style="flex:1;">Close</button>
+    </div>
   </div>
 </div>
 
 <div class="toast-stack" id="toastStack"></div>
 
-<!-- Firebase -->
 <script type="importmap">
   {
     "imports": {
@@ -495,7 +475,7 @@
 
 <script type="module">
   import { initializeApp } from "firebase/app";
-  import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc } from "firebase/firestore";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, doc } from "firebase/firestore";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k",
@@ -509,7 +489,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Auth
   const loggedInUser = localStorage.getItem('loggedInUser') || '';
   const userName = (loggedInUser || localStorage.getItem('userName') || '').toLowerCase().trim();
   if (userName !== 'chris') {
@@ -518,7 +497,7 @@
   }
 
   let receipts = [];
-  let lastReceiptNum = 0;
+  let currentReceiptForPdf = null;
 
   function showToast(msg, isError = false) {
     const stack = document.getElementById('toastStack');
@@ -531,11 +510,10 @@
   }
 
   function generateReceiptNumber() {
-    const prefix = "TRS";
     const date = new Date();
     const yymm = date.getFullYear().toString().slice(-2) + (date.getMonth() + 1).toString().padStart(2, '0');
     const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    return `${prefix}-${yymm}-${random}`;
+    return `TRS-${yymm}-${random}`;
   }
 
   function updatePreview() {
@@ -548,7 +526,7 @@
     const ref = document.getElementById('transactionRef').value || '—';
     const notes = document.getElementById('notes').value || '—';
     const date = document.getElementById('receiptDate').value || new Date().toISOString().split('T')[0];
-    const receiptNum = document.getElementById('receiptNumber').value || generateReceiptNumber();
+    const receiptNum = document.getElementById('receiptNumber').value;
 
     const balanceStatus = newBalance > 0 ? `<span style="color:#f59e0b;">Remaining Balance: K ${newBalance.toFixed(2)}</span>` : 
                          newBalance < 0 ? `<span style="color:#ef4444;">Overpayment / Credit: K ${Math.abs(newBalance).toFixed(2)}</span>` :
@@ -567,7 +545,7 @@
       <div class="receipt-row"><strong>Phone:</strong> <span>${escapeHtml(phone)}</span></div>
       <div class="receipt-row"><strong>Payment Method:</strong> <span>${paymentMethod}</span></div>
       ${ref !== '—' ? `<div class="receipt-row"><strong>Transaction Ref:</strong> <span>${escapeHtml(ref)}</span></div>` : ''}
-      <div class="receipt-row"><strong>Description / Notes:</strong> <span>${escapeHtml(notes)}</span></div>
+      <div class="receipt-row"><strong>Description:</strong> <span>${escapeHtml(notes)}</span></div>
       <div class="receipt-row"><strong>Previous Balance:</strong> <span>K ${prevBalance.toFixed(2)}</span></div>
       <div class="receipt-row receipt-total"><strong>Amount Paid:</strong> <strong>K ${amount.toFixed(2)}</strong></div>
       <div class="balance-info">${balanceStatus}</div>
@@ -585,7 +563,7 @@
     }
     const amountPaid = parseFloat(document.getElementById('amountPaid').value);
     if (isNaN(amountPaid) || amountPaid <= 0) {
-      showToast("Please enter a valid amount paid", true);
+      showToast("Please enter a valid amount", true);
       return;
     }
 
@@ -618,10 +596,11 @@
       await addDoc(collection(db, 'receipts'), receiptData);
       showToast(`Receipt ${receiptData.receiptNumber} saved!`);
       resetForm();
-      loadReceipts();
+      await loadReceipts();
       document.getElementById('historyTab').click();
     } catch (err) {
       showToast("Error: " + err.message, true);
+      console.error(err);
     }
   }
 
@@ -640,13 +619,13 @@
 
   async function loadReceipts() {
     const grid = document.getElementById('receiptsGrid');
-    grid.innerHTML = '<div style="text-align:center; padding:2rem;"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
+    grid.innerHTML = '<div style="text-align:center; padding:2rem;"><i class="fas fa-spinner fa-pulse"></i> Loading receipts...</div>';
     try {
       const q = query(collection(db, 'receipts'), orderBy('createdAt', 'desc'));
       const snap = await getDocs(q);
       receipts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       if (receipts.length === 0) {
-        grid.innerHTML = '<div style="text-align:center; padding:2rem; color:#94a3b8;"><i class="fas fa-receipt"></i> No receipts yet.</div>';
+        grid.innerHTML = '<div style="text-align:center; padding:2rem; color:#94a3b8;"><i class="fas fa-receipt"></i> No receipts yet. Create your first receipt!</div>';
         return;
       }
       grid.innerHTML = receipts.map(rec => `
@@ -658,17 +637,52 @@
           <div class="customer-name"><i class="fas fa-user"></i> ${escapeHtml(rec.customerName)}</div>
           <div><i class="fas fa-money-bill-wave"></i> ${rec.paymentMethod}</div>
           <div class="receipt-amount">Paid: K ${rec.amountPaid.toFixed(2)}</div>
-          <div class="balance-remaining"><i class="fas fa-balance-scale"></i> Balance: K ${(rec.newBalance || 0).toFixed(2)}</div>
+          <div style="font-size:0.7rem; margin-top:4px;">Balance: K ${(rec.newBalance || 0).toFixed(2)}</div>
         </div>
       `).join('');
     } catch (err) {
-      grid.innerHTML = '<div style="text-align:center; padding:2rem; color:red;">Error loading</div>';
+      console.error("Load error:", err);
+      grid.innerHTML = '<div style="text-align:center; padding:2rem; color:red;"><i class="fas fa-exclamation-triangle"></i> Error loading receipts. Check your connection.</div>';
+      showToast("Failed to load receipts: " + err.message, true);
     }
+  }
+
+  function getReceiptHtmlForPrint(rec) {
+    const balanceStatus = rec.newBalance > 0 ? `Remaining Balance: K ${rec.newBalance.toFixed(2)}` :
+                         rec.newBalance < 0 ? `Credit: K ${Math.abs(rec.newBalance).toFixed(2)}` : "FULLY SETTLED";
+    return `
+      <div style="font-family: 'Inter', sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h2 style="color: #2563eb; margin-bottom: 5px;">TRISMART ENTERPRISES</h2>
+          <p style="font-size: 12px; margin: 2px 0;">${rec.companyDetails?.email || 'trismart.zm@gmail.com'} | ${rec.companyDetails?.phone || '+260 775 390905'}</p>
+          <p style="font-size: 11px;">FNB Bank: ${rec.companyDetails?.account || '63042080133'} | Industrial Area, Lusaka</p>
+          <hr style="margin: 10px 0;">
+        </div>
+        <div style="margin-bottom: 15px;">
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0;"><strong>Receipt #:</strong> <span>${rec.receiptNumber}</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0;"><strong>Date:</strong> <span>${rec.date}</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0;"><strong>Customer:</strong> <span>${escapeHtml(rec.customerName)}</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0;"><strong>Phone:</strong> <span>${escapeHtml(rec.customerPhone || 'N/A')}</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0;"><strong>Payment Method:</strong> <span>${rec.paymentMethod}</span></div>
+          ${rec.transactionRef ? `<div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0;"><strong>Transaction Ref:</strong> <span>${escapeHtml(rec.transactionRef)}</span></div>` : ''}
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0;"><strong>Description:</strong> <span>${escapeHtml(rec.notes || '—')}</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0;"><strong>Previous Balance:</strong> <span>K ${rec.previousBalance?.toFixed(2) || '0.00'}</span></div>
+          <div style="display: flex; justify-content: space-between; padding: 10px 0; margin-top: 8px; border-top: 2px solid #e2e8f0; font-size: 1.1rem; font-weight: 800; color: #2563eb;"><strong>Amount Paid:</strong> <strong>K ${rec.amountPaid.toFixed(2)}</strong></div>
+        </div>
+        <div style="background: #fef3c7; padding: 10px; border-radius: 8px; text-align: center; margin: 10px 0;">
+          <strong>${balanceStatus}</strong>
+        </div>
+        <div style="text-align: center; margin-top: 20px; font-size: 11px; color: #64748b;">
+          <i class="fas fa-check-circle"></i> Thank you for your business!
+        </div>
+      </div>
+    `;
   }
 
   window.viewReceipt = async (id) => {
     const rec = receipts.find(r => r.id === id);
     if (!rec) return;
+    currentReceiptForPdf = rec;
     const modal = document.getElementById('receiptModal');
     const detailsDiv = document.getElementById('receiptDetails');
     const balanceStatus = rec.newBalance > 0 ? `Remaining: K ${rec.newBalance.toFixed(2)}` :
@@ -676,7 +690,7 @@
     detailsDiv.innerHTML = `
       <div style="text-align:center; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
         <h3>TRISMART ENTERPRISES</h3>
-        <p style="font-size:0.7rem;">${rec.companyDetails?.email} | ${rec.companyDetails?.phone}</p>
+        <p style="font-size:0.7rem;">${rec.companyDetails?.email || 'trismart.zm@gmail.com'} | ${rec.companyDetails?.phone || '+260 775 390905'}</p>
       </div>
       <div class="receipt-row"><strong>Receipt #:</strong> ${rec.receiptNumber}</div>
       <div class="receipt-row"><strong>Date:</strong> ${rec.date}</div>
@@ -684,13 +698,35 @@
       <div class="receipt-row"><strong>Phone:</strong> ${escapeHtml(rec.customerPhone || 'N/A')}</div>
       <div class="receipt-row"><strong>Payment:</strong> ${rec.paymentMethod} ${rec.transactionRef ? `(${rec.transactionRef})` : ''}</div>
       <div class="receipt-row"><strong>Notes:</strong> ${escapeHtml(rec.notes || '—')}</div>
-      <div class="receipt-row"><strong>Previous Balance:</strong> K ${rec.previousBalance.toFixed(2)}</div>
+      <div class="receipt-row"><strong>Previous Balance:</strong> K ${rec.previousBalance?.toFixed(2) || '0.00'}</div>
       <div class="receipt-row receipt-total"><strong>Amount Paid:</strong> K ${rec.amountPaid.toFixed(2)}</div>
       <div class="balance-info"><strong>${balanceStatus}</strong></div>
       <div style="margin-top:12px; text-align:center; font-size:0.65rem;">Thank you for your business!</div>
     `;
     modal.classList.add('show');
   };
+
+  document.getElementById('printPdfBtn')?.addEventListener('click', () => {
+    if (!currentReceiptForPdf) return;
+    const htmlContent = getReceiptHtmlForPrint(currentReceiptForPdf);
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Receipt ${currentReceiptForPdf.receiptNumber}</title>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+          <style>
+            body { font-family: 'Inter', sans-serif; margin: 0; padding: 20px; background: white; }
+            @media print { body { margin: 0; padding: 0; } }
+          </style>
+        </head>
+        <body>${htmlContent}</body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+    showToast("PDF download started");
+  });
 
   function closeModal() {
     document.getElementById('receiptModal').classList.remove('show');
@@ -715,12 +751,12 @@
     document.getElementById('historyTab').classList.remove('active');
     resetForm();
   });
-  document.getElementById('historyTab').addEventListener('click', () => {
+  document.getElementById('historyTab').addEventListener('click', async () => {
     document.getElementById('newReceiptPanel').style.display = 'none';
     document.getElementById('historyPanel').style.display = 'block';
     document.getElementById('historyTab').classList.add('active');
     document.getElementById('newReceiptTab').classList.remove('active');
-    loadReceipts();
+    await loadReceipts();
   });
   document.getElementById('saveReceiptBtn').addEventListener('click', saveReceipt);
   document.getElementById('resetBtn').addEventListener('click', resetForm);
