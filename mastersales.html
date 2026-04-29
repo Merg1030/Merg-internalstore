@@ -1,393 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Trismart · Master Sales Terminal (Fixed)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-:root {
-  --p: #4361ee;
-  --p2: #3a56d4;
-  --ok: #2ecc71;
-  --ok2: #27ae60;
-  --warn: #f8961e;
-  --danger: #ef4444;
-  --bg: #f4f6fb;
-  --sur: #ffffff;
-  --lite: #f1f3f5;
-  --bdr: #dee2e6;
-  --txt: #212529;
-  --fade: #6c757d;
-  --radius: 12px;
-  --radius-lg: 16px;
-  --sh: 0 1px 6px rgba(0,0,0,0.05);
-  --shl: 0 4px 20px rgba(0,0,0,0.08);
-}
-html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); }
-.app { display: flex; flex-direction: column; height: 100vh; width: 100%; overflow: hidden; }
-.topbar { background: var(--sur); border-bottom: 1px solid var(--bdr); padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; box-shadow: var(--sh); z-index: 100; }
-.logo { display: flex; align-items: center; gap: 12px; }
-.logo-mark { width: 32px; height: 32px; background: linear-gradient(135deg, var(--p), var(--p2)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; }
-.logo-text { font-weight: 800; font-size: 0.9rem; }
-.master-badge { background: linear-gradient(135deg, #f59e0b, #ea580c); font-size: 0.6rem; font-weight: 800; padding: 3px 10px; border-radius: 40px; color: white; }
-.admin-badge { background: #eef2ff; color: var(--p); font-size: 0.6rem; font-weight: 700; padding: 3px 12px; border-radius: 40px; }
-.main-content { flex: 1; overflow-y: auto; padding: 20px 24px; min-height: 0; }
-.stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
-.stat-card { background: var(--sur); border: 1px solid var(--bdr); border-radius: var(--radius); padding: 14px; transition: 0.2s; }
-.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shl); }
-.stat-label { font-size: 0.55rem; font-weight: 800; text-transform: uppercase; color: var(--fade); letter-spacing: 0.08em; margin-bottom: 5px; }
-.stat-value { font-size: 1.3rem; font-weight: 800; font-family: 'DM Mono', monospace; color: var(--p); }
-.stat-sub { font-size: 0.6rem; color: var(--fade); margin-top: 3px; }
-.filter-bar { background: var(--sur); border: 1px solid var(--bdr); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; }
-.filter-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.filter-group label { font-size: 0.6rem; font-weight: 800; color: var(--fade); text-transform: uppercase; }
-.filter-select, .filter-input { padding: 7px 12px; border: 1.5px solid var(--bdr); border-radius: 40px; font-size: 0.7rem; font-weight: 600; background: white; cursor: pointer; transition: 0.15s; }
-.filter-select:focus, .filter-input:focus { outline: none; border-color: var(--p); }
-.search-wrapper { position: relative; }
-.search-wrapper i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.7rem; color: var(--fade); }
-.search-input { padding: 7px 12px 7px 32px; width: 200px; }
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 40px; font-size: 0.7rem; font-weight: 700; cursor: pointer; border: none; transition: 0.15s; }
-.btn-primary { background: linear-gradient(135deg, var(--p), var(--p2)); color: white; }
-.btn-success { background: linear-gradient(135deg, var(--ok), var(--ok2)); color: white; }
-.btn-warning { background: linear-gradient(135deg, var(--warn), #e07b0a); color: white; }
-.btn-outline { background: transparent; border: 1.5px solid var(--bdr); color: var(--txt); }
-.btn-outline:hover { border-color: var(--p); color: var(--p); }
-.tab-bar { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--bdr); }
-.tab-btn { background: none; border: none; padding: 10px 22px; font-size: 0.75rem; font-weight: 700; color: var(--fade); cursor: pointer; border-bottom: 2px solid transparent; transition: 0.15s; }
-.tab-btn.active { color: var(--p); border-bottom-color: var(--p); }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-.two-column { display: grid; grid-template-columns: 1fr 380px; gap: 20px; }
-.table-container { background: var(--sur); border: 1px solid var(--bdr); border-radius: var(--radius); overflow: auto; box-shadow: var(--sh); }
-.sales-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; min-width: 700px; }
-.sales-table th { background: #fafcff; padding: 10px 12px; text-align: left; font-size: 0.55rem; font-weight: 800; text-transform: uppercase; color: var(--fade); border-bottom: 1px solid var(--bdr); position: sticky; top: 0; background: white; }
-.sales-table td { padding: 8px 12px; border-bottom: 1px solid #eff3f8; }
-.code-chip { font-family: 'DM Mono', monospace; background: #eef2ff; padding: 2px 8px; border-radius: 20px; font-size: 0.6rem; font-weight: 600; }
-.empty-row td { text-align: center; padding: 40px; color: var(--fade); }
-.strategy-card { background: linear-gradient(135deg, #1a1e2e, #0f1119); border-radius: var(--radius-lg); padding: 18px; color: white; height: 100%; display: flex; flex-direction: column; }
-.strategy-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-.strategy-header i { font-size: 1.2rem; color: var(--warn); }
-.strategy-header h3 { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
-.strategy-content { flex: 1; overflow-y: auto; }
-.strategy-section { margin-bottom: 16px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: var(--radius); }
-.strategy-section h4 { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; color: var(--warn); }
-.strategy-section p { font-size: 0.7rem; line-height: 1.4; color: rgba(255,255,255,0.8); }
-.bundle-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
-.bundle-item:last-child { border-bottom: none; }
-.bundle-name { font-size: 0.7rem; font-weight: 600; }
-.bundle-action { font-size: 0.6rem; color: var(--ok); cursor: pointer; }
-.slow-item { color: #f87171; }
-.analytics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
-.analytics-card { background: var(--sur); border: 1px solid var(--bdr); border-radius: var(--radius); padding: 16px; }
-.analytics-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--fade); letter-spacing: 0.08em; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-.top-item-list { list-style: none; }
-.top-item-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--bdr); }
-.top-item-list li:last-child { border-bottom: none; }
-.item-name { font-weight: 600; font-size: 0.7rem; }
-.item-qty { font-size: 0.65rem; color: var(--p); font-weight: 700; }
-.item-revenue { font-size: 0.65rem; color: var(--ok); font-weight: 700; }
-.cart-section { background: var(--sur); border: 1px solid var(--bdr); border-radius: var(--radius); padding: 16px; }
-.cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-.cart-items { max-height: 300px; overflow: auto; }
-.cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--bdr); }
-.cart-total { text-align: right; margin-top: 12px; padding-top: 12px; border-top: 2px solid var(--bdr); font-weight: 800; font-size: 1rem; }
-.toast-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 1100; display: flex; flex-direction: column; gap: 8px; }
-.toast { background: #1e293b; color: white; padding: 10px 18px; border-radius: 40px; font-size: 0.7rem; animation: fadeIn 0.2s; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: var(--lite); }
-::-webkit-scrollbar-thumb { background: var(--bdr); border-radius: 4px; }
-@media (max-width: 1000px) { .two-column { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(3, 1fr); } .analytics-grid { grid-template-columns: 1fr; } .main-content { padding: 12px; } .topbar { padding: 0 12px; } }
-@media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .filter-bar { flex-direction: column; align-items: stretch; } }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Trismart Dealer Hub · Real Firebase</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    body { background: #f0f2f8; padding: 20px; min-height: 100vh; }
+    .dashboard { max-width: 1600px; margin: 0 auto; }
+    .top-bar {
+      background: white; border-radius: 20px; padding: 16px 28px; margin-bottom: 24px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+    }
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { background: linear-gradient(135deg, #1e3a5f, #0f2b46); width: 42px; height: 42px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; }
+    .badge-master { background: #fef3e8; color: #e67e22; padding: 4px 12px; border-radius: 40px; font-size: 12px; font-weight: 700; }
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-tile { background: white; border-radius: 20px; padding: 18px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+    .stat-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: #5b6e8c; margin-bottom: 8px; }
+    .stat-number { font-size: 28px; font-weight: 800; color: #1e3a5f; }
+    .two-col-grid { display: grid; grid-template-columns: 1fr 380px; gap: 24px; margin-bottom: 28px; }
+    @media (max-width: 950px) { .two-col-grid { grid-template-columns: 1fr; } }
+    .card-panel { background: white; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.03); margin-bottom: 24px; }
+    .panel-header { padding: 18px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .panel-header h2 { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .filter-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    select, input { background: white; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .btn-primary { background: #1e3a5f; border: none; color: white; padding: 8px 20px; border-radius: 40px; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+    .btn-accent { background: #e67e22; border: none; color: white; padding: 10px 20px; border-radius: 40px; font-weight: 700; cursor: pointer; width: 100%; }
+    .sales-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .sales-table th { text-align: left; padding: 14px 16px; background: #f8fafc; font-weight: 700; font-size: 12px; border-bottom: 1px solid #e2e8f0; }
+    .sales-table td { padding: 12px 16px; border-bottom: 1px solid #edf2f7; }
+    .credit-chip { background: #f3e8ff; color: #8e44ad; border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 700; display: inline-block; }
+    .badge-bulk { background: #eafaf1; color: #2c7a4d; }
+    .dealer-list { max-height: 300px; overflow-y: auto; }
+    .dealer-row { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; align-items: center; }
+    .dealer-name { font-weight: 700; }
+    .inv-row { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; }
+    .toast-msg { position: fixed; bottom: 25px; right: 25px; background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; font-size: 13px; z-index: 1200; box-shadow: 0 6px 18px rgba(0,0,0,0.2); }
+    .credit-warning { background: #fff3e0; padding: 8px 12px; border-radius: 16px; font-size: 12px; margin: 12px 0; display: none; }
+    .loading-placeholder { padding: 40px; text-align: center; color: #5b6e8c; }
+  </style>
 </head>
 <body>
-<div class="app">
-  <div class="topbar">
-    <div class="logo">
-      <div class="logo-mark"><i class="fas fa-crown"></i></div>
-      <div class="logo-text">Trismart · Master Sales</div>
-      <div class="master-badge">ADVANCED</div>
-      <div class="admin-badge" id="adminBadge">ADMIN</div>
+<div class="dashboard">
+  <div class="top-bar">
+    <div class="logo-area">
+      <div class="logo-icon"><i class="fas fa-warehouse"></i></div>
+      <div><span style="font-weight:800; font-size:20px;">Trismart DEALER HUB</span><br><span style="font-size:12px;">Real-time · Bulk + Credit</span></div>
+      <div class="badge-master"><i class="fas fa-firebase"></i> FIRESTORE LIVE</div>
     </div>
-    <div><i class="fas fa-chart-line"></i> Marketing Intelligence</div>
+    <div><i class="fas fa-chalkboard-user"></i> Dealer Portal | Master Warehouse Backend</div>
   </div>
-  <div class="main-content">
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="totalRevenue">K0</div><div class="stat-sub">all time</div></div>
-      <div class="stat-card"><div class="stat-label">Items Sold</div><div class="stat-value" id="totalItemsSold">0</div><div class="stat-sub">total quantity</div></div>
-      <div class="stat-card"><div class="stat-label">Transactions</div><div class="stat-value" id="totalTransactions">0</div><div class="stat-sub">unique sales</div></div>
-      <div class="stat-card"><div class="stat-label">Avg Order</div><div class="stat-value" id="avgOrder">K0</div><div class="stat-sub">per transaction</div></div>
-      <div class="stat-card"><div class="stat-label">Today's Sales</div><div class="stat-value" id="todaySales">K0</div><div class="stat-sub" id="todayDate">-</div></div>
-    </div>
-    <div class="filter-bar">
-      <div class="filter-group"><label>Period</label><select id="periodSelect" class="filter-select" onchange="changePeriod()"><option value="all">All Time</option><option value="day">Day</option><option value="month">Month</option><option value="year">Year</option></select></div>
-      <div class="filter-group" id="dayGroup" style="display:none;"><label>Select Date</label><input type="date" id="dayPicker" class="filter-input" onchange="applyFilters()"></div>
-      <div class="filter-group" id="monthYearGroup" style="display:none;"><select id="monthSelect" class="filter-select"><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select><input type="number" id="yearSelect" class="filter-input" value="2026" style="width:80px;"></div>
-      <div class="filter-group"><label>Branch</label><select id="branchFilter" class="filter-select" onchange="applyFilters()"><option value="all">All Branches</option><option value="kabanana">Kabanana Branch</option><option value="makeni">Makeni Branch</option><option value="master">Master Warehouse</option></select></div>
-      <div class="filter-group"><label>Search</label><div class="search-wrapper"><i class="fas fa-search"></i><input type="text" id="itemSearch" class="filter-input search-input" placeholder="Item code or name" oninput="applyFilters()"></div></div>
-      <button class="btn btn-outline" onclick="resetFilters()">Reset</button>
-    </div>
-    <div class="tab-bar">
-      <button class="tab-btn active" data-tab="sales" onclick="switchTab('sales')">Sales & Marketing</button>
-      <button class="tab-btn" data-tab="analytics" onclick="switchTab('analytics')">Analytics</button>
-      <button class="tab-btn" data-tab="make-sale" onclick="switchTab('make-sale')">Make Sale</button>
-    </div>
-    <div class="tab-content active" id="tab-sales">
-      <div class="two-column">
-        <div><div class="table-container"><table class="sales-table"><thead><tr><th>Date</th><th>Branch</th><th>Code</th><th>Product</th><th>Price</th><th>Qty</th><th>Discount</th><th>Total</th></tr></thead><tbody id="salesTbody"><tr class="empty-row"><td colspan="8">Loading sales data...</td></tr></tbody></table></div></div>
-        <div><div class="strategy-card"><div class="strategy-header"><i class="fas fa-chart-line"></i><h3>Marketing Intelligence</h3><i class="fas fa-robot" style="margin-left:auto; opacity:0.5;"></i></div><div class="strategy-content" id="marketingStrategy"><div style="text-align:center; padding:20px;">Analyzing sales data...</div></div></div></div>
+
+  <div class="stats-row">
+    <div class="stat-tile"><div class="stat-label"><i class="fas fa-cubes"></i> MASTER STOCK VALUE</div><div class="stat-number" id="totalStockValue">K0</div></div>
+    <div class="stat-tile"><div class="stat-label"><i class="fas fa-chart-line"></i> BULK REVENUE (30d)</div><div class="stat-number" id="bulkRevenue">K0</div></div>
+    <div class="stat-tile"><div class="stat-label"><i class="fas fa-hand-holding-usd"></i> CREDIT OUTSTANDING</div><div class="stat-number" id="totalCreditOut">K0</div></div>
+    <div class="stat-tile"><div class="stat-label"><i class="fas fa-truck"></i> DEALERS ACTIVE</div><div class="stat-number" id="activeDealers">0</div></div>
+  </div>
+
+  <div class="two-col-grid">
+    <div>
+      <div class="card-panel">
+        <div class="panel-header">
+          <h2><i class="fas fa-receipt"></i> BULK / CREDIT LEDGER</h2>
+          <div class="filter-group">
+            <select id="filterDealerSelect"><option value="all">All dealers</option></select>
+            <select id="filterTypeSelect"><option value="all">All orders</option><option value="bulk">Bulk</option><option value="credit">Credit</option></select>
+            <button class="btn-primary" id="refreshBtn"><i class="fas fa-sync-alt"></i> Sync</button>
+          </div>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="sales-table">
+            <thead><tr><th>Date</th><th>Dealer</th><th>Product</th><th>Qty</th><th>Price</th><th>Total</th><th>Type</th><th>Status</th></tr></thead>
+            <tbody id="salesTbody"><tr><td colspan="8" class="loading-placeholder">Loading from Firebase...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card-panel">
+        <div class="panel-header"><h2><i class="fas fa-boxes"></i> MASTER WAREHOUSE (live stock)</h2></div>
+        <div id="inventoryList" class="dealer-list"><div class="loading-placeholder">Loading inventory...</div></div>
       </div>
     </div>
-    <div class="tab-content" id="tab-analytics">
-      <div class="analytics-grid"><div class="analytics-card"><div class="analytics-title"><i class="fas fa-trophy"></i> Top Selling Items</div><ul class="top-item-list" id="topItemsList">Loading...</ul></div><div class="analytics-card"><div class="analytics-title"><i class="fas fa-store"></i> Branch Performance</div><ul class="top-item-list" id="branchPerformanceList">Loading...</ul></div><div class="analytics-card"><div class="analytics-title"><i class="fas fa-chart-line"></i> Monthly Trend</div><div id="monthlyTrend">Loading...</div></div><div class="analytics-card"><div class="analytics-title"><i class="fas fa-calendar"></i> Period Summary</div><div id="periodSummary">Loading...</div></div></div>
-    </div>
-    <div class="tab-content" id="tab-make-sale">
-      <div class="cart-section">
-        <div class="cart-header"><h3 style="font-size:0.85rem;">New Sale - Stock from Master Warehouse</h3><div class="filter-group"><label>Selling For</label><select id="sellingBranchSelect" class="filter-select"><option value="kabanana">Kabanana Branch</option><option value="makeni">Makeni Branch</option><option value="master">Master Warehouse</option></select></div></div>
-        <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
-          <div style="flex:2;"><label style="font-size:0.6rem;">Product</label><select id="productSelect" class="filter-select" style="width:100%;"><option value="">Select product</option></select></div>
-          <div style="flex:1;"><label style="font-size:0.6rem;">Quantity</label><input type="number" id="saleQty" class="filter-input" style="width:100%;" value="1" min="1"></div>
-          <div style="flex:1;"><label style="font-size:0.6rem;">Sale Date</label><input type="date" id="saleDatePicker" class="filter-input" style="width:100%;"></div>
-          <div style="flex:0.5; display:flex; align-items:flex-end;"><button class="btn btn-primary" id="addToCartBtn" style="width:100%;">Add</button></div>
+
+    <div>
+      <div class="card-panel">
+        <div class="panel-header"><h2><i class="fas fa-users"></i> DEALER CREDIT DESK</h2><button class="btn-primary" id="newDealerBtn" style="background:#6c5ce7;"><i class="fas fa-plus"></i> New</button></div>
+        <div id="dealerCreditList" class="dealer-list"><div class="loading-placeholder">Loading dealers...</div></div>
+      </div>
+
+      <div class="card-panel">
+        <div class="panel-header"><h2><i class="fas fa-shopping-cart"></i> PLACE ORDER</h2></div>
+        <div style="padding: 16px;">
+          <label style="font-weight:600;">Dealer *</label>
+          <select id="orderDealerSelect" style="width:100%; margin:8px 0 12px;"><option value="">Loading dealers...</option></select>
+          <label style="font-weight:600;">Product (master stock)</label>
+          <select id="orderProductSelect" style="width:100%; margin:8px 0 12px;"><option value="">Loading products...</option></select>
+          <div class="filter-group" style="justify-content: space-between;">
+            <div><label>Quantity</label><input type="number" id="orderQty" value="1" min="1" style="width:90px;"></div>
+            <div><label>Sale Type</label><select id="orderTypeSelect"><option value="bulk">💵 Bulk (Cash)</option><option value="credit">📝 Credit (Debt)</option></select></div>
+          </div>
+          <div id="creditWarning" class="credit-warning"></div>
+          <button class="btn-accent" id="placeOrderBtn"><i class="fas fa-check-circle"></i> PROCESS ORDER</button>
         </div>
-        <div id="saleCartItems" class="cart-items"><div style="text-align:center; padding:20px; color:var(--fade);">Cart is empty</div></div>
-        <div class="cart-total" id="saleCartTotal">Total: K0.00</div>
-        <div style="display:flex; gap:10px; margin-top:15px;"><button class="btn btn-success" id="processSaleBtn" style="flex:1;">Process Sale</button><button class="btn btn-outline" id="clearCartBtn" style="flex:1;">Clear Cart</button></div>
       </div>
     </div>
   </div>
 </div>
-<div class="toast-wrap" id="toastWrap"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, collection, query, where, orderBy, getDocs, addDoc, updateDoc, doc, increment, onSnapshot, runTransaction, writeBatch } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+  import { 
+    getFirestore, collection, query, where, getDocs, addDoc, updateDoc, doc, 
+    increment, onSnapshot, runTransaction, orderBy, Timestamp 
+  } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-const firebaseConfig = { 
-  apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k", 
-  authDomain: "trismartstores.firebaseapp.com", 
-  projectId: "trismartstores", 
-  storageBucket: "trismartstores.appspot.com", 
-  messagingSenderId: "416692703333", 
-  appId: "1:416692703333:web:d4b60292621435c748f68c" 
-};
+  const firebaseConfig = { 
+    apiKey: "AIzaSyB-lm7Y3r1F6VvY8PKvY8glLabZDbJsHM1k", 
+    authDomain: "trismartstores.firebaseapp.com", 
+    projectId: "trismartstores", 
+    storageBucket: "trismartstores.appspot.com", 
+    messagingSenderId: "416692703333", 
+    appId: "1:416692703333:web:d4b60292621435c748f68c" 
+  };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-// Auth simulation (CHRIS access)
-const loggedInUser = localStorage.getItem('loggedInUser') || '';
-const userName = (loggedInUser || localStorage.getItem('userName') || '').toLowerCase().trim();
-if (userName !== 'chris') { 
-  document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><div style="background:white;padding:30px;border-radius:24px;">Access Denied. Admin access required.</div></div>`; 
-  throw new Error('unauth'); 
-}
-document.getElementById('adminBadge').innerHTML = userName.toUpperCase();
-
-let allSales = [];
-let masterInventory = [];
-let saleCart = [];
-let unsubscribeSales = null;
-let unsubscribeInventory = null;
-
-function toast(msg, type = 'success') {
-  const wrap = document.getElementById('toastWrap');
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.style.background = type === 'error' ? '#b91c1c' : '#1e293b';
-  t.innerHTML = `<i class="fas ${type === 'error' ? 'fa-times-circle' : 'fa-check-circle'}"></i> ${msg}`;
-  wrap.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
-}
-
-window.switchTab = function(tab) {
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
-  document.getElementById(`tab-${tab}`).classList.add('active');
-};
-
-window.changePeriod = function() {
-  const period = document.getElementById('periodSelect').value;
-  document.getElementById('dayGroup').style.display = period === 'day' ? 'flex' : 'none';
-  document.getElementById('monthYearGroup').style.display = period === 'month' || period === 'year' ? 'flex' : 'none';
-  if (period === 'day') document.getElementById('dayPicker').valueAsDate = new Date();
-  applyFilters();
-};
-
-window.resetFilters = function() {
-  document.getElementById('periodSelect').value = 'all';
-  document.getElementById('branchFilter').value = 'all';
-  document.getElementById('itemSearch').value = '';
-  changePeriod();
-};
-
-window.applyFilters = function() {
-  renderSalesTable();
-  updateStatsAndAnalytics();
-  updateMarketingStrategy();
-};
-
-function getFilteredSales() {
-  const period = document.getElementById('periodSelect').value;
-  const branch = document.getElementById('branchFilter').value;
-  const searchTerm = document.getElementById('itemSearch').value.toLowerCase();
-  const month = parseInt(document.getElementById('monthSelect')?.value);
-  const year = parseInt(document.getElementById('yearSelect')?.value);
-  const day = document.getElementById('dayPicker')?.value;
-  const currentYear = new Date().getFullYear();
-  let filtered = [...allSales];
-  if (period === 'day' && day) filtered = filtered.filter(sale => sale.date === day);
-  else if (period === 'month' && month) filtered = filtered.filter(sale => { const d = new Date(sale.date + 'T00:00:00'); return d.getMonth() + 1 === month && d.getFullYear() === (year || currentYear); });
-  else if (period === 'year' && year) filtered = filtered.filter(sale => { const d = new Date(sale.date + 'T00:00:00'); return d.getFullYear() === year; });
-  if (branch !== 'all') filtered = filtered.filter(sale => sale.branchId === branch);
-  if (searchTerm) filtered = filtered.filter(sale => sale.code?.toLowerCase().includes(searchTerm) || sale.name?.toLowerCase().includes(searchTerm));
-  return filtered;
-}
-
-function renderSalesTable() {
-  const tbody = document.getElementById('salesTbody');
-  const filtered = getFilteredSales();
-  if (filtered.length === 0) { tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No sales found</td></tr>'; return; }
-  tbody.innerHTML = filtered.slice(0, 100).map(sale => `<tr><td>${sale.date || '-'}</td><td>${sale.branchId || '-'}</td><td><span class="code-chip">${sale.code || '-'}</span></td><td>${sale.name || '-'}</td><td>K${(sale.price || 0).toFixed(2)}</td><td>${sale.quantity || 0}</td><td>${(sale.discount || 0) > 0 ? 'K' + (sale.discount || 0).toFixed(2) : '-'}</td><td><strong>K${((sale.total || (sale.price * sale.quantity) - (sale.discount || 0))).toFixed(2)}</strong></td></tr>`).join('');
-}
-
-function updateStatsAndAnalytics() {
-  const filtered = getFilteredSales();
-  const totalRevenue = filtered.reduce((sum, sale) => sum + (sale.total || (sale.price * sale.quantity) - (sale.discount || 0)), 0);
-  const totalQty = filtered.reduce((sum, sale) => sum + (sale.quantity || 0), 0);
-  const transactions = new Set(filtered.map(s => s.id)).size;
-  const avgOrder = transactions > 0 ? totalRevenue / transactions : 0;
-  const today = new Date().toISOString().split('T')[0];
-  const todaySales = allSales.filter(s => s.date === today).reduce((sum, s) => sum + (s.total || (s.price * s.quantity) - (s.discount || 0)), 0);
-  document.getElementById('totalRevenue').innerHTML = `K${totalRevenue.toFixed(2)}`;
-  document.getElementById('totalItemsSold').innerHTML = totalQty;
-  document.getElementById('totalTransactions').innerHTML = transactions;
-  document.getElementById('avgOrder').innerHTML = `K${avgOrder.toFixed(2)}`;
-  document.getElementById('todaySales').innerHTML = `K${todaySales.toFixed(2)}`;
-  document.getElementById('todayDate').innerHTML = today;
-  
-  const itemSales = {};
-  filtered.forEach(sale => { const key = sale.code; if (!itemSales[key]) itemSales[key] = { name: sale.name, qty: 0, revenue: 0 }; itemSales[key].qty += sale.quantity; itemSales[key].revenue += (sale.total || (sale.price * sale.quantity) - (sale.discount || 0)); });
-  const topItems = Object.entries(itemSales).sort((a,b) => b[1].revenue - a[1].revenue).slice(0, 5);
-  document.getElementById('topItemsList').innerHTML = topItems.map(([code, data]) => `<li><span class="item-name">${data.name} (${code})</span><span class="item-qty">${data.qty} sold</span><span class="item-revenue">K${data.revenue.toFixed(2)}</span></li>`).join('') || '<li>No data</li>';
-  
-  const branchSales = {};
-  filtered.forEach(sale => { const br = sale.branchId || 'unknown'; if (!branchSales[br]) branchSales[br] = { revenue: 0, qty: 0 }; branchSales[br].revenue += (sale.total || (sale.price * sale.quantity) - (sale.discount || 0)); branchSales[br].qty += sale.quantity; });
-  document.getElementById('branchPerformanceList').innerHTML = Object.entries(branchSales).map(([branch, data]) => `<li><span class="item-name">${branch}</span><span class="item-qty">${data.qty} items</span><span class="item-revenue">K${data.revenue.toFixed(2)}</span></li>`).join('') || '<li>No data</li>';
-  
-  const period = document.getElementById('periodSelect').value;
-  let periodText = 'All Time';
-  if (period === 'day') periodText = document.getElementById('dayPicker')?.value || 'Today';
-  if (period === 'month') periodText = `${document.getElementById('monthSelect')?.value}/${document.getElementById('yearSelect')?.value}`;
-  if (period === 'year') periodText = `Year ${document.getElementById('yearSelect')?.value}`;
-  document.getElementById('periodSummary').innerHTML = `<div><strong>Period:</strong> ${periodText}</div><div><strong>Revenue:</strong> K${totalRevenue.toFixed(2)}</div><div><strong>Items Sold:</strong> ${totalQty}</div><div><strong>Transactions:</strong> ${transactions}</div>`;
-  
-  const monthlyData = {};
-  allSales.forEach(sale => { if (sale.date) { const month = sale.date.substring(0, 7); const rev = sale.total || (sale.price * sale.quantity) - (sale.discount || 0); monthlyData[month] = (monthlyData[month] || 0) + rev; } });
-  const last6Months = Object.entries(monthlyData).sort().slice(-6);
-  document.getElementById('monthlyTrend').innerHTML = `<div style="display:flex; flex-direction:column; gap:8px;">${last6Months.map(([month, rev]) => `<div style="display:flex; justify-content:space-between;"><span>${month}</span><span style="font-weight:700;">K${rev.toFixed(2)}</span></div>`).join('')}${last6Months.length === 0 ? '<div>No data</div>' : ''}</div>`;
-}
-
-function updateMarketingStrategy() {
-  const filtered = getFilteredSales();
-  const itemPerformance = {};
-  filtered.forEach(sale => { const key = sale.code; if (!itemPerformance[key]) itemPerformance[key] = { name: sale.name, code: sale.code, qty: 0, revenue: 0 }; itemPerformance[key].qty += sale.quantity; itemPerformance[key].revenue += (sale.total || (sale.price * sale.quantity) - (sale.discount || 0)); });
-  const itemsArray = Object.values(itemPerformance);
-  const topSellers = [...itemsArray].sort((a,b) => b.qty - a.qty).slice(0, 3);
-  const slowMovers = [...itemsArray].sort((a,b) => a.qty - b.qty).slice(0, 3);
-  const bundleSuggestions = []; if (topSellers.length >= 2) bundleSuggestions.push(`${topSellers[0].name} + ${topSellers[1].name}`); if (topSellers.length >= 3) bundleSuggestions.push(`${topSellers[0].name} + ${topSellers[2].name}`);
-  const totalRevenue = filtered.reduce((sum, s) => sum + (s.total || (s.price * s.quantity) - (s.discount || 0)), 0);
-  const totalQty = filtered.reduce((sum, s) => sum + s.quantity, 0);
-  const avgItemValue = totalQty > 0 ? totalRevenue / totalQty : 0;
-  document.getElementById('marketingStrategy').innerHTML = `<div class="strategy-section"><h4><i class="fas fa-fire"></i> Top Performers</h4>${topSellers.map(item => `<div class="bundle-item"><span class="bundle-name">${item.name}</span><span>${item.qty} sold · K${item.revenue.toFixed(2)}</span></div>`).join('') || '<p>No data</p>'}</div><div class="strategy-section"><h4><i class="fas fa-link"></i> Bundle Recommendation</h4>${bundleSuggestions.length ? `<p>Create a bundle deal:</p>${bundleSuggestions.map(bundle => `<div class="bundle-item"><span class="bundle-name">${bundle}</span><span class="bundle-action" onclick="window.suggestBundle('${bundle}')">Create Bundle →</span></div>`).join('')}<p style="margin-top:8px;">Suggested discount: 10-15% off</p>` : '<p>Add more data for bundle suggestions</p>'}</div><div class="strategy-section"><h4><i class="fas fa-hourglass-half"></i> Slow Movers</h4>${slowMovers.filter(m => m.qty < 5).map(item => `<div class="bundle-item"><span class="bundle-name slow-item">${item.name}</span><span class="bundle-action" onclick="window.suggestPromo('${item.name}')">Run Promotion →</span></div>`).join('') || '<p>No slow movers</p>'}</div><div class="strategy-section"><h4><i class="fas fa-chart-line"></i> Actionable Insights</h4><p>• Avg item value: K${avgItemValue.toFixed(2)}</p><p>• ${totalQty > 50 ? 'Volume good. Consider loyalty program.' : 'Focus on increasing volume.'}</p><p>• ${topSellers.length ? `Promote "${topSellers[0].name}" as featured.` : 'Add more products.'}</p></div>`;
-}
-
-window.suggestBundle = function(bundle) { toast(`Bundle idea: ${bundle} - offer 10-15% discount`, 'info'); };
-window.suggestPromo = function(item) { toast(`Promotion idea: Buy 1 ${item}, get 2nd at 50% off`, 'info'); };
-
-async function loadSales() { if (unsubscribeSales) unsubscribeSales(); const q = query(collection(db, 'sales'), orderBy('date', 'desc')); unsubscribeSales = onSnapshot(q, (snap) => { allSales = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderSalesTable(); updateStatsAndAnalytics(); updateMarketingStrategy(); }, (error) => console.error(error)); }
-async function loadInventory() { if (unsubscribeInventory) unsubscribeInventory(); const q = query(collection(db, 'inventory'), where('branchId', '==', 'master')); unsubscribeInventory = onSnapshot(q, (snap) => { masterInventory = snap.docs.map(doc => ({ id: doc.id, ...doc.data(), stock: Number(doc.data().stock) || 0, price: Number(doc.data().price) || 0 })); const select = document.getElementById('productSelect'); select.innerHTML = '<option value="">Select product</option>' + masterInventory.map(p => `<option value="${p.id}" data-stock="${p.stock}" data-price="${p.price}" data-code="${p.code}" data-name="${p.name}">${p.name} (${p.code}) - K${p.price} | Stock: ${p.stock}</option>`).join(''); }); }
-
-// FIXED ADD TO CART FUNCTION — fully working
-window.addToSaleCart = function() {
-  const select = document.getElementById('productSelect');
-  const productId = select.value;
-  if (!productId) { toast('Select a product', 'error'); return; }
-  const qty = parseInt(document.getElementById('saleQty').value);
-  if (isNaN(qty) || qty < 1) { toast('Invalid quantity', 'error'); return; }
-  const product = masterInventory.find(p => p.id === productId);
-  if (!product) { toast('Product not found', 'error'); return; }
-  if (product.stock < qty) { toast(`Only ${product.stock} available`, 'error'); return; }
-  const existing = saleCart.find(i => i.id === productId);
-  if (existing) {
-    if (existing.qty + qty > product.stock) { toast(`Max stock ${product.stock}`, 'error'); return; }
-    existing.qty += qty;
-    existing.total = existing.qty * existing.price;
-  } else {
-    saleCart.push({ id: productId, code: product.code, name: product.name, price: product.price, qty: qty, total: qty * product.price });
+  // Authentication check: only 'chris' can access
+  const userName = (localStorage.getItem('loggedInUser') || localStorage.getItem('userName') || '').toLowerCase().trim();
+  if (userName !== 'chris') {
+    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><div style="background:white;padding:40px;border-radius:24px;text-align:center;"><i class="fas fa-lock" style="font-size:48px;color:#e67e22;"></i><h2>Access Denied</h2><p>Admin access (chris) required for dealer terminal.</p></div></div>`;
+    throw new Error('Unauthorized');
   }
-  renderSaleCart();
-  toast(`${product.name} added to cart`);
-  document.getElementById('saleQty').value = 1;
-  select.value = '';
-};
 
-function renderSaleCart() {
-  const container = document.getElementById('saleCartItems');
-  if (saleCart.length === 0) { container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--fade);">Cart is empty</div>'; document.getElementById('saleCartTotal').innerHTML = 'Total: K0.00'; return; }
-  container.innerHTML = saleCart.map((item, idx) => `<div class="cart-item"><div><strong>${item.name}</strong><br><span style="font-size:0.6rem;">${item.code}</span></div><div>Qty: ${item.qty}</div><div>K${(item.price * item.qty).toFixed(2)}</div><button class="btn btn-outline" style="padding:4px 8px;" onclick="window.removeFromSaleCart(${idx})">Remove</button></div>`).join('');
-  const total = saleCart.reduce((sum, i) => sum + i.total, 0);
-  document.getElementById('saleCartTotal').innerHTML = `Total: K${total.toFixed(2)}`;
-}
+  // Collections
+  let masterInventory = [];     // from inventory where branchId == 'master'
+  let dealers = [];             // from 'dealers' collection
+  let salesLedger = [];         // from 'sales' collection (filtered)
+  
+  let unsubscribeInventory = null;
+  let unsubscribeSales = null;
+  let unsubscribeDealers = null;
 
-window.removeFromSaleCart = function(idx) { saleCart.splice(idx, 1); renderSaleCart(); };
-window.clearSaleCart = function() { if (saleCart.length === 0) return; if (confirm('Clear entire cart?')) { saleCart = []; renderSaleCart(); toast('Cart cleared'); } };
+  function showToast(msg, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = 'toast-msg';
+    toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-circle-exclamation' : 'fa-check-circle'}"></i> ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2800);
+  }
 
-window.processSaleCart = async function() {
-  if (saleCart.length === 0) { toast('Cart is empty', 'error'); return; }
-  const sellingBranch = document.getElementById('sellingBranchSelect').value;
-  const saleDate = document.getElementById('saleDatePicker').value;
-  if (!saleDate) { toast('Select sale date', 'error'); return; }
-  if (!confirm(`Process ${saleCart.length} item(s) for ${sellingBranch} on ${saleDate}?`)) return;
-  const btn = document.getElementById('processSaleBtn');
-  btn.disabled = true; btn.innerHTML = 'Processing...';
-  try {
-    for (const item of saleCart) {
-      await runTransaction(db, async (transaction) => {
-        const masterRef = doc(db, 'inventory', item.id);
-        const masterDoc = await transaction.get(masterRef);
-        if (!masterDoc.exists()) throw new Error(`${item.name} not found`);
-        const currentStock = masterDoc.data().stock || 0;
-        if (currentStock < item.qty) throw new Error(`Insufficient stock for ${item.name}`);
-        transaction.update(masterRef, { stock: increment(-item.qty), sold: increment(item.qty) });
-        transaction.set(doc(collection(db, 'sales')), { date: saleDate, code: item.code, name: item.name, price: item.price, quantity: item.qty, discount: 0, subtotal: item.total, total: item.total, branchId: sellingBranch, sourceBranch: 'master', timestamp: new Date().toISOString() });
-      });
+  // Load Master Inventory (branchId == 'master')
+  function loadMasterInventory() {
+    if (unsubscribeInventory) unsubscribeInventory();
+    const q = query(collection(db, 'inventory'), where('branchId', '==', 'master'));
+    unsubscribeInventory = onSnapshot(q, (snap) => {
+      masterInventory = snap.docs.map(doc => ({ id: doc.id, ...doc.data(), stock: Number(doc.data().stock) || 0, price: Number(doc.data().price) || 0 }));
+      renderInventory();
+      updateProductSelect();
+      updateStats();
+    }, err => console.error("Inventory error:", err));
+  }
+
+  // Load Dealers from 'dealers' collection
+  function loadDealers() {
+    if (unsubscribeDealers) unsubscribeDealers();
+    const q = query(collection(db, 'dealers'));
+    unsubscribeDealers = onSnapshot(q, (snap) => {
+      dealers = snap.docs.map(doc => ({ id: doc.id, ...doc.data(), creditBalance: Number(doc.data().creditBalance) || 0, totalCreditLimit: Number(doc.data().totalCreditLimit) || 5000 }));
+      renderDealerList();
+      updateDealerSelects();
+      updateStats();
+    }, err => console.error("Dealers error:", err));
+  }
+
+  // Load Sales (all for now, we'll filter in UI)
+  function loadSales() {
+    if (unsubscribeSales) unsubscribeSales();
+    const q = query(collection(db, 'sales'), orderBy('date', 'desc'));
+    unsubscribeSales = onSnapshot(q, (snap) => {
+      salesLedger = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderSalesTable();
+      updateStats();
+    }, err => console.error("Sales error:", err));
+  }
+
+  function renderInventory() {
+    const container = document.getElementById('inventoryList');
+    if (!masterInventory.length) { container.innerHTML = '<div class="loading-placeholder">No stock in master warehouse</div>'; return; }
+    container.innerHTML = masterInventory.map(item => `
+      <div class="inv-row">
+        <div><strong>${item.name || item.code}</strong><br><span style="font-size:11px;">${item.code} | K${item.price}</span></div>
+        <div style="text-align:right;"><span style="font-weight:800;">${item.stock} units</span><br><span style="font-size:11px;">bulk ready</span></div>
+      </div>
+    `).join('');
+  }
+
+  function renderDealerList() {
+    const container = document.getElementById('dealerCreditList');
+    if (!dealers.length) { container.innerHTML = '<div class="loading-placeholder">No dealers. Click + New Dealer</div>'; return; }
+    container.innerHTML = dealers.map(d => `
+      <div class="dealer-row">
+        <div><span class="dealer-name">${d.name}</span><br><span style="font-size:10px;">Limit: K${d.totalCreditLimit}</span></div>
+        <div><span class="dealer-balance" style="color:${d.creditBalance > 0 ? '#e67e22' : '#2c7a4d'}">K${d.creditBalance.toFixed(2)}</span><br>
+        <button class="action-btn" data-id="${d.id}" onclick="window.repayCredit('${d.id}')" style="background:none;border:none;color:#1e3a5f;cursor:pointer;font-size:11px;"><i class="fas fa-coins"></i> repay</button></div>
+      </div>
+    `).join('');
+    document.getElementById('activeDealers').innerText = dealers.length;
+  }
+
+  function renderSalesTable() {
+    const dealerFilter = document.getElementById('filterDealerSelect')?.value || 'all';
+    const typeFilter = document.getElementById('filterTypeSelect')?.value || 'all';
+    let filtered = [...salesLedger];
+    if (dealerFilter !== 'all') filtered = filtered.filter(s => s.dealerId === dealerFilter);
+    if (typeFilter !== 'all') filtered = filtered.filter(s => s.type === typeFilter);
+    const tbody = document.getElementById('salesTbody');
+    if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="8" class="loading-placeholder">No sales records</td></tr>'; return; }
+    tbody.innerHTML = filtered.slice(0, 100).map(s => `
+      <tr>
+        <td>${s.date || s.timestamp?.toDate?.().toISOString().slice(0,10) || '-'}</td>
+        <td><strong>${s.dealerName || s.branchId || 'dealer'}</strong></td>
+        <td>${s.name || s.code || s.productName || '-'}</td>
+        <td>${s.quantity || 0}</td>
+        <td>K${(s.price || s.unitPrice || 0).toFixed(2)}</td>
+        <td>K${(s.total || s.totalAmount || 0).toFixed(2)}</td>
+        <td>${s.type === 'bulk' ? '<span class="credit-chip badge-bulk">💰 Bulk</span>' : '<span class="credit-chip">📋 Credit</span>'}</td>
+        <td>${s.status === 'paid' ? '✅ Paid' : '⏳ Pending'}</td>
+      </tr>
+    `).join('');
+  }
+
+  function updateStats() {
+    const totalStockValue = masterInventory.reduce((acc, i) => acc + (i.price * i.stock), 0);
+    document.getElementById('totalStockValue').innerHTML = `K${totalStockValue.toFixed(2)}`;
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysStr = thirtyDaysAgo.toISOString().slice(0,10);
+    const bulkRevenueLast30 = salesLedger.filter(s => s.type === 'bulk' && (s.date || '') >= thirtyDaysStr).reduce((sum, s) => sum + (s.total || s.totalAmount || 0), 0);
+    document.getElementById('bulkRevenue').innerHTML = `K${bulkRevenueLast30.toFixed(2)}`;
+    const totalCreditOut = dealers.reduce((sum, d) => sum + d.creditBalance, 0);
+    document.getElementById('totalCreditOut').innerHTML = `K${totalCreditOut.toFixed(2)}`;
+  }
+
+  function updateDealerSelects() {
+    const dealerSelectOrder = document.getElementById('orderDealerSelect');
+    const filterDealer = document.getElementById('filterDealerSelect');
+    const options = '<option value="">-- Select dealer --</option>' + dealers.map(d => `<option value="${d.id}">${d.name} (Credit: K${d.creditBalance})</option>`).join('');
+    dealerSelectOrder.innerHTML = options;
+    filterDealer.innerHTML = '<option value="all">All dealers</option>' + dealers.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+  }
+
+  function updateProductSelect() {
+    const productSelect = document.getElementById('orderProductSelect');
+    productSelect.innerHTML = '<option value="">Select product</option>' + masterInventory.map(p => `<option value="${p.id}" data-price="${p.price}" data-stock="${p.stock}">${p.name} (${p.code}) - K${p.price} | stock: ${p.stock}</option>`).join('');
+  }
+
+  // Place order with transaction (bulk or credit)
+  window.placeOrder = async function() {
+    const dealerId = document.getElementById('orderDealerSelect').value;
+    if (!dealerId) { showToast('Select a dealer', 'error'); return; }
+    const productId = document.getElementById('orderProductSelect').value;
+    if (!productId) { showToast('Select product from master warehouse', 'error'); return; }
+    const qty = parseInt(document.getElementById('orderQty').value);
+    if (isNaN(qty) || qty < 1) { showToast('Invalid quantity', 'error'); return; }
+    const saleType = document.getElementById('orderTypeSelect').value;
+
+    const product = masterInventory.find(p => p.id === productId);
+    if (!product) { showToast('Product not found', 'error'); return; }
+    if (product.stock < qty) { showToast(`Insufficient stock! Only ${product.stock} left in master warehouse`, 'error'); return; }
+    const dealer = dealers.find(d => d.id === dealerId);
+    if (!dealer) { showToast('Dealer not found', 'error'); return; }
+
+    if (saleType === 'credit') {
+      const newBalance = dealer.creditBalance + (product.price * qty);
+      if (newBalance > dealer.totalCreditLimit) {
+        if (!confirm(`⚠️ Dealer credit would exceed limit (${dealer.totalCreditLimit}). Proceed anyway?`)) return;
+      }
     }
-    toast(`Sale recorded for ${sellingBranch} on ${saleDate}`);
-    saleCart = []; renderSaleCart(); applyFilters();
-  } catch (err) { toast('Error: ' + err.message, 'error'); } 
-  finally { btn.disabled = false; btn.innerHTML = 'Process Sale'; }
-};
 
-// Event listeners binding (fixes any missing handler)
-document.getElementById('saleDatePicker').valueAsDate = new Date();
-document.getElementById('dayPicker').valueAsDate = new Date();
-document.getElementById('addToCartBtn').addEventListener('click', (e) => { e.preventDefault(); window.addToSaleCart(); });
-document.getElementById('processSaleBtn').addEventListener('click', (e) => { e.preventDefault(); window.processSaleCart(); });
-document.getElementById('clearCartBtn').addEventListener('click', (e) => { e.preventDefault(); window.clearSaleCart(); });
+    const today = new Date().toISOString().slice(0,10);
+    const totalAmount = product.price * qty;
 
-loadSales();
-loadInventory();
+    try {
+      await runTransaction(db, async (transaction) => {
+        // 1. Update master inventory (reduce stock)
+        const masterRef = doc(db, 'inventory', product.id);
+        const masterSnap = await transaction.get(masterRef);
+        if (!masterSnap.exists()) throw new Error('Inventory item missing');
+        const currentStock = masterSnap.data().stock || 0;
+        if (currentStock < qty) throw new Error('Stock changed, retry');
+        transaction.update(masterRef, { stock: increment(-qty) });
+
+        // 2. If credit order: update dealer balance
+        if (saleType === 'credit') {
+          const dealerRef = doc(db, 'dealers', dealer.id);
+          transaction.update(dealerRef, { creditBalance: increment(totalAmount) });
+        }
+
+        // 3. Create sale record
+        const saleData = {
+          date: today,
+          timestamp: Timestamp.now(),
+          dealerId: dealer.id,
+          dealerName: dealer.name,
+          productId: product.id,
+          productName: product.name,
+          code: product.code,
+          quantity: qty,
+          price: product.price,
+          unitPrice: product.price,
+          total: totalAmount,
+          totalAmount: totalAmount,
+          type: saleType,
+          status: saleType === 'credit' ? 'outstanding' : 'paid',
+          branchId: 'dealer_sale',
+          sourceBranch: 'master'
+        };
+        transaction.set(doc(collection(db, 'sales')), saleData);
+      });
+      showToast(`${saleType === 'bulk' ? 'Bulk sale' : 'Credit sale'} completed: ${qty} x ${product.name} - K${totalAmount}`, 'success');
+      document.getElementById('orderQty').value = '1';
+      document.getElementById('orderProductSelect').value = '';
+    } catch (err) {
+      showToast('Transaction failed: ' + err.message, 'error');
+    }
+  };
+
+  window.repayCredit = async function(dealerId) {
+    const dealer = dealers.find(d => d.id === dealerId);
+    if (!dealer) return;
+    let amount = prompt(`Enter repayment amount for ${dealer.name}\nCurrent credit: K${dealer.creditBalance}`, "0");
+    amount = parseFloat(amount);
+    if (isNaN(amount) || amount <= 0) { showToast('Invalid amount', 'error'); return; }
+    if (amount > dealer.creditBalance) { showToast('Amount exceeds credit balance', 'error'); return; }
+    
+    try {
+      const dealerRef = doc(db, 'dealers', dealer.id);
+      await updateDoc(dealerRef, { creditBalance: increment(-amount) });
+      // Log repayment as a special sale record
+      await addDoc(collection(db, 'sales'), {
+        date: new Date().toISOString().slice(0,10),
+        timestamp: Timestamp.now(),
+        dealerId: dealer.id,
+        dealerName: dealer.name,
+        productName: 'CREDIT REPAYMENT',
+        quantity: 0,
+        total: -amount,
+        totalAmount: -amount,
+        type: 'credit',
+        status: 'payment',
+        note: `Repayment of K${amount}`
+      });
+      showToast(`Repayment of K${amount} recorded. New balance K${(dealer.creditBalance - amount).toFixed(2)}`, 'success');
+    } catch (err) {
+      showToast('Repayment failed: ' + err.message, 'error');
+    }
+  };
+
+  window.createNewDealer = async function() {
+    let name = prompt('Enter dealer name:', 'New Bulk Dealer');
+    if (!name) return;
+    let limit = parseFloat(prompt('Credit limit (K):', '5000'));
+    if (isNaN(limit)) limit = 5000;
+    try {
+      await addDoc(collection(db, 'dealers'), {
+        name: name,
+        creditBalance: 0,
+        totalCreditLimit: limit,
+        createdAt: Timestamp.now()
+      });
+      showToast(`Dealer ${name} added with limit K${limit}`, 'success');
+    } catch (err) {
+      showToast('Error creating dealer: ' + err.message, 'error');
+    }
+  };
+
+  function setupEventListeners() {
+    document.getElementById('placeOrderBtn').addEventListener('click', () => window.placeOrder());
+    document.getElementById('newDealerBtn').addEventListener('click', () => window.createNewDealer());
+    document.getElementById('refreshBtn').addEventListener('click', () => { showToast('Syncing with Firebase...', 'info'); });
+    document.getElementById('filterDealerSelect').addEventListener('change', () => renderSalesTable());
+    document.getElementById('filterTypeSelect').addEventListener('change', () => renderSalesTable());
+    document.getElementById('orderDealerSelect').addEventListener('change', (e) => {
+      const dealerId = e.target.value;
+      const dealer = dealers.find(d => d.id === dealerId);
+      const warnDiv = document.getElementById('creditWarning');
+      if (dealer && dealer.creditBalance > 0) {
+        warnDiv.style.display = 'block';
+        warnDiv.innerHTML = `⚠️ Dealer has outstanding credit: K${dealer.creditBalance.toFixed(2)}. Consider repayment before new credit sale.`;
+      } else {
+        warnDiv.style.display = 'none';
+      }
+    });
+  }
+
+  // Initialize
+  loadMasterInventory();
+  loadDealers();
+  loadSales();
+  setupEventListeners();
+  
+  // Expose functions globally
+  window.repayCredit = window.repayCredit;
+  window.placeOrder = window.placeOrder;
+  window.createNewDealer = window.createNewDealer;
 </script>
 </body>
 </html>
