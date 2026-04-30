@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DealerPro · Orders · Payments · Account</title>
+    <title>DealerPro · Complete Order & Payment System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -22,114 +22,46 @@
             --green: #2b7a4b;
             --orange: #e67e22;
             --danger: #c0392b;
-            --purple: #6c5ce7;
             --border: #dce4ec;
-            --bg-card: #ffffff;
-            --text-muted: #5d6e85;
         }
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+        .app-container { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         .topbar {
-            background: white;
-            border-bottom: 1px solid var(--border);
-            padding: 8px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
+            background: white; border-bottom: 1px solid var(--border); padding: 8px 20px;
+            display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
         .logo { display: flex; align-items: center; gap: 8px; }
-        .logo-mark { background: var(--blue); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; }
+        .logo-mark { background: var(--blue); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; }
         .logo-text { font-weight: 800; font-size: 1rem; }
-        .admin-badge { background: #eef2ff; padding: 4px 12px; border-radius: 40px; font-size: 0.7rem; font-weight: 600; }
         .stats-bar {
-            display: flex;
-            gap: 12px;
-            padding: 10px 20px;
-            background: white;
-            border-bottom: 1px solid var(--border);
-            flex-wrap: wrap;
-            flex-shrink: 0;
+            display: flex; gap: 12px; padding: 10px 20px; background: white;
+            border-bottom: 1px solid var(--border); flex-wrap: wrap; flex-shrink: 0;
         }
         .stat-pill {
-            background: #f8fafc;
-            border-radius: 40px;
-            padding: 6px 14px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            border: 1px solid var(--border);
+            background: #f8fafc; border-radius: 40px; padding: 6px 14px;
+            font-size: 0.7rem; font-weight: 600; border: 1px solid var(--border);
         }
         .stat-pill span { font-weight: 800; color: var(--blue); font-size: 1rem; margin-right: 4px; }
         .action-bar {
-            padding: 10px 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            background: #ffffffd9;
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0;
+            padding: 10px 20px; display: flex; gap: 10px; flex-wrap: wrap;
+            background: white; border-bottom: 1px solid var(--border); flex-shrink: 0;
         }
         .btn {
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            padding: 6px 14px; border-radius: 40px; font-size: 0.7rem; font-weight: 700;
+            border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
             transition: 0.15s;
         }
         .btn-primary { background: var(--blue); color: white; }
         .btn-success { background: var(--green); color: white; }
         .btn-warning { background: var(--orange); color: white; }
         .btn-outline { background: white; border: 1px solid var(--border); }
-        .main-grid {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            gap: 1px;
-            background: var(--border);
-        }
-        .dealer-panel {
-            width: 320px;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .right-panel {
-            flex: 1;
-            background: #f4f7fb;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .panel-header {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            font-weight: 700;
-            font-size: 0.8rem;
-            background: white;
-        }
-        .dealer-list {
-            overflow-y: auto;
-            flex: 1;
-        }
+        .main-grid { display: flex; flex: 1; overflow: hidden; gap: 1px; background: var(--border); }
+        .dealer-panel { width: 320px; background: white; display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; }
+        .right-panel { flex: 1; background: #f4f7fb; display: flex; flex-direction: column; overflow: hidden; }
+        .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); font-weight: 700; background: white; }
+        .dealer-list { overflow-y: auto; flex: 1; }
         .dealer-item {
-            padding: 10px 16px;
-            border-bottom: 1px solid #edf2f7;
-            cursor: pointer;
-            transition: 0.05s linear;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 10px 16px; border-bottom: 1px solid #edf2f7; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
         }
         .dealer-item:hover { background: #f8fafc; }
         .dealer-item.selected { background: #eef2ff; border-left: 3px solid var(--blue); }
@@ -137,64 +69,56 @@
         .dealer-balance { font-size: 0.7rem; font-weight: 800; color: var(--orange); }
         .search-box { padding: 10px; border-bottom: 1px solid var(--border); }
         .search-box input { width: 100%; padding: 8px 10px; border-radius: 30px; border: 1px solid var(--border); font-size: 0.7rem; }
-        .tab-nav {
-            display: flex;
-            background: white;
-            border-bottom: 1px solid var(--border);
-            padding: 0 12px;
-        }
+        .tab-nav { display: flex; background: white; border-bottom: 1px solid var(--border); padding: 0 12px; }
         .tab-btn {
-            padding: 8px 16px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-muted);
+            padding: 8px 16px; font-size: 0.7rem; font-weight: 700; background: none;
+            border: none; cursor: pointer; color: #5d6e85;
         }
         .tab-btn.active { color: var(--blue); border-bottom: 2px solid var(--blue); }
         .tab-content { display: none; overflow-y: auto; flex: 1; padding: 12px; }
         .tab-content.active { display: block; }
         .compact-table { width: 100%; font-size: 0.7rem; border-collapse: collapse; }
         .compact-table th, .compact-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #e9eef3; }
-        .compact-table th { color: var(--text-muted); font-weight: 700; background: #fafcff; position: sticky; top: 0; }
+        .compact-table th { background: #fafcff; position: sticky; top: 0; }
         .badge { padding: 2px 8px; border-radius: 30px; font-size: 0.65rem; font-weight: 700; display: inline-block; }
         .badge-paid { background: #e3f7ec; color: #1e7b48; }
         .badge-unpaid { background: #fee9e6; color: #c0392b; }
+        .badge-partial { background: #fff3e0; color: #e67e22; }
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px);
             display: none; align-items: center; justify-content: center; z-index: 2000;
         }
         .modal-overlay.show { display: flex; }
         .modal-card {
-            background: white; border-radius: 24px; width: 90%; max-width: 650px; max-height: 85vh;
-            overflow-y: auto; padding: 20px;
+            background: white; border-radius: 24px; width: 90%; max-width: 650px;
+            max-height: 85vh; overflow-y: auto; padding: 20px;
         }
         .form-group { margin-bottom: 14px; }
         .form-group label { font-size: 0.7rem; font-weight: 700; display: block; margin-bottom: 4px; }
-        .form-group input, .form-group select { width: 100%; padding: 8px 12px; border-radius: 30px; border: 1px solid var(--border); font-size: 0.75rem; }
-        .cart-item { display: flex; justify-content: space-between; background: #f8fafc; margin-bottom: 6px; padding: 6px 10px; border-radius: 30px; font-size: 0.7rem; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 8px 12px; border-radius: 30px;
+            border: 1px solid var(--border); font-size: 0.75rem;
+        }
+        .cart-item {
+            display: flex; justify-content: space-between; background: #f8fafc;
+            margin-bottom: 6px; padding: 6px 10px; border-radius: 30px; font-size: 0.7rem;
+        }
         .toast {
-            position: fixed; bottom: 20px; right: 20px; background: #1e2a3a; color: white;
-            padding: 8px 16px; border-radius: 40px; font-size: 0.7rem; z-index: 2100;
-            animation: slideIn 0.2s ease;
+            position: fixed; bottom: 20px; right: 20px; background: #1e2a3a;
+            color: white; padding: 8px 16px; border-radius: 40px; font-size: 0.7rem;
+            z-index: 2100; animation: slideIn 0.2s ease;
         }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         .flex-between { display: flex; justify-content: space-between; align-items: center; }
         .text-danger { color: var(--danger); font-weight: 700; }
-        .btn-small { padding: 4px 10px; font-size: 0.65rem; }
         @media (max-width: 780px) { .dealer-panel { width: 260px; } }
     </style>
 </head>
 <body>
 <div class="app-container">
     <div class="topbar">
-        <div class="logo">
-            <div class="logo-mark"><i class="fas fa-chart-line"></i></div>
-            <div class="logo-text">Dealer<span style="color:var(--blue)">Pro</span></div>
-            <div class="admin-badge"><i class="fas fa-user-check"></i> MASTER</div>
-        </div>
-        <div id="adminBadge" class="admin-badge">CHRIS</div>
+        <div class="logo"><div class="logo-mark"><i class="fas fa-chart-line"></i></div><div class="logo-text">Dealer<span style="color:var(--blue)">Pro</span></div></div>
+        <div id="adminBadge" class="stat-pill"><i class="fas fa-user-check"></i> MASTER</div>
     </div>
     
     <div class="stats-bar">
@@ -230,16 +154,16 @@
             </div>
             
             <div id="orders-tab" class="tab-content active">
-                <div class="compact-table-container" style="overflow-x:auto;">
-                    <table class="compact-table" id="ordersTable">
-                        <thead><tr><th>Date</th><th>Ref</th><th>Items</th><th>Total</th><th>Paid</th><th>Due</th><th>Status</th><th>PDF</th></tr></thead>
+                <div style="overflow-x:auto;">
+                    <table class="compact-table">
+                        <thead><tr><th>Date</th><th>Ref</th><th>Items</th><th>Total</th><th>Paid</th><th>Due</th><th>Status</th><th>PDF</th></thead>
                         <tbody id="ordersTbody"><tr><td colspan="8">Select dealer</td></tr></tbody>
                     </table>
                 </div>
             </div>
             
             <div id="payments-tab" class="tab-content">
-                <table class="compact-table" id="paymentsTable">
+                <table class="compact-table">
                     <thead><tr><th>Date</th><th>Reference</th><th>Amount (K)</th><th>Note</th></thead>
                     <tbody id="paymentsTbody"><tr><td colspan="4">Select dealer</td></tr></tbody>
                 </table>
@@ -281,10 +205,10 @@
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
                     <select id="orderItemSelect" style="flex:2;"></select>
                     <input type="number" id="orderQty" value="1" min="1" style="width:80px;">
-                    <button type="button" id="addItemBtn" class="btn btn-primary" style="padding:4px 12px;">+</button>
+                    <button type="button" id="addItemBtn" class="btn btn-primary">+ Add</button>
                 </div>
                 <div id="orderCartList" style="margin-top:12px;"></div>
-                <div class="flex-between"><span>Total: K<span id="orderTotalPreview">0.00</span></span></div>
+                <div class="flex-between"><strong>Total: K<span id="orderTotalPreview">0.00</span></strong></div>
             </div>
             <div class="form-group"><label>Amount Paid Today (K)</label><input type="number" id="orderPaidNow" value="0" step="0.01" min="0"></div>
             <div class="flex-between"><button type="submit" class="btn btn-success">✅ Confirm Order</button><button type="button" class="btn btn-outline" onclick="closeModal('orderModal')">Cancel</button></div>
@@ -322,9 +246,11 @@
     
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    
+    // Auth check
     const authUser = (localStorage.getItem('loggedInUser') || localStorage.getItem('userName') || '').toLowerCase();
     if (authUser !== 'chris') { 
-        document.body.innerHTML = '<div style="padding:40px;text-align:center;">🔒 Access Denied. Only chris authorized.</div>'; 
+        document.body.innerHTML = '<div style="padding:40px;text-align:center;">🔒 Access Denied</div>'; 
         throw new Error('unauth'); 
     }
     document.getElementById('adminBadge').innerHTML = `<i class="fas fa-shield-alt"></i> MASTER: ${authUser.toUpperCase()}`;
@@ -348,7 +274,7 @@
     
     window.closeModal = (id) => document.getElementById(id).classList.remove('show');
 
-    // Load dealers realtime
+    // Load dealers with realtime updates
     function loadDealers() {
         const q = query(collection(db, 'dealers'), orderBy('name'));
         onSnapshot(q, (snap) => {
@@ -377,10 +303,7 @@
         }
         container.innerHTML = filtered.map(d => `
             <div class="dealer-item ${selectedDealerId === d.id ? 'selected' : ''}" data-id="${d.id}">
-                <div>
-                    <div class="dealer-name">${escapeHtml(d.name)}</div>
-                    <div style="font-size:0.6rem;color:#6c7a8e;">${d.phone || '-'}</div>
-                </div>
+                <div><div class="dealer-name">${escapeHtml(d.name)}</div><div style="font-size:0.6rem;color:#6c7a8e;">${d.phone || '-'}</div></div>
                 <div class="dealer-balance">K${(d.outstandingBalance || 0).toFixed(2)}</div>
             </div>
         `).join('');
@@ -407,8 +330,7 @@
             document.getElementById('selectedDealerName').innerHTML = `<i class="fas fa-user"></i> ${escapeHtml(dealer.name)}`; 
             document.getElementById('selectedBalanceSpan').innerHTML = `Outstanding: K${(dealer.outstandingBalance || 0).toFixed(2)}`; 
         }
-        await loadOrdersForDealer();
-        await loadPaymentsForDealer();
+        await Promise.all([loadOrdersForDealer(), loadPaymentsForDealer()]);
         renderPerformance();
     }
 
@@ -417,6 +339,10 @@
         const q = query(collection(db, 'orders'), where('dealerId', '==', selectedDealerId), orderBy('createdAt', 'desc'));
         const snap = await getDocs(q);
         allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderOrdersTable();
+    }
+
+    function renderOrdersTable() {
         const tbody = document.getElementById('ordersTbody');
         if (!allOrders.length) { 
             tbody.innerHTML = '<tr><td colspan="8">No orders yet</td></tr>'; 
@@ -424,7 +350,18 @@
         }
         tbody.innerHTML = allOrders.map(o => {
             const due = (o.totalAmount || 0) - (o.paidAmount || 0);
-            const status = due <= 0 ? 'PAID' : 'PARTIAL';
+            let statusBadge = '';
+            let statusText = '';
+            if (due <= 0) {
+                statusBadge = 'badge-paid';
+                statusText = 'PAID';
+            } else if (o.paidAmount > 0 && due > 0) {
+                statusBadge = 'badge-partial';
+                statusText = 'PARTIAL';
+            } else {
+                statusBadge = 'badge-unpaid';
+                statusText = 'UNPAID';
+            }
             return `
                 <tr>
                     <td>${o.dateStr || '-'}</td>
@@ -433,8 +370,8 @@
                     <td>K${(o.totalAmount || 0).toFixed(2)}</td>
                     <td>K${(o.paidAmount || 0).toFixed(2)}</td>
                     <td class="${due > 0 ? 'text-danger' : ''}">K${due.toFixed(2)}</td>
-                    <td><span class="badge ${due <= 0 ? 'badge-paid' : 'badge-unpaid'}">${status}</span></td>
-                    <td><button class="btn btn-outline btn-small" data-order='${JSON.stringify(o)}' onclick='window.printOrderPDF(this)'>🖨️ PDF</button></td>
+                    <td><span class="badge ${statusBadge}">${statusText}</span></td>
+                    <td><button class="btn btn-outline" style="padding:2px 10px;" data-order='${JSON.stringify(o)}' onclick='window.printOrderPDF(this)'>🖨️ PDF</button></td>
                 </tr>
             `;
         }).join('');
@@ -448,43 +385,23 @@
     function generateOrderPDF(order) {
         const printWindow = window.open('', '_blank');
         const itemsRows = (order.items || []).map(i => `
-            <tr>
-                <td>${escapeHtml(i.code)}</td>
-                <td>${escapeHtml(i.name)}</td>
-                <td>${i.qty}</td>
-                <td>K${(i.price * i.qty).toFixed(2)}</td>
-            </tr>
+            <tr><td>${escapeHtml(i.code)}</td><td>${escapeHtml(i.name)}</td><td>${i.qty}</td><td>K${(i.price * i.qty).toFixed(2)}</td></tr>
         `).join('');
         const dealerName = dealers.find(d => d.id === order.dealerId)?.name || order.dealerName;
         printWindow.document.write(`
-            <html>
-            <head>
-                <title>Order ${order.ref}</title>
-                <style>
-                    body { font-family: 'DM Sans', sans-serif; padding: 30px; }
-                    h2 { color: #2c5f8a; }
-                    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                    th { background: #f5f5f5; }
-                    .total-row { font-weight: bold; background: #f9f9f9; }
-                </style>
-            </head>
-            <body>
+            <html><head><title>Order ${order.ref}</title>
+            <style>body{font-family:sans-serif;padding:30px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;}</style>
+            </head><body>
                 <h2>🧾 DEALER ORDER INVOICE</h2>
-                <p><strong>Order Ref:</strong> ${order.ref} &nbsp;|&nbsp; <strong>Date:</strong> ${order.dateStr}</p>
+                <p><strong>Ref:</strong> ${order.ref} | <strong>Date:</strong> ${order.dateStr}</p>
                 <p><strong>Dealer:</strong> ${escapeHtml(dealerName)}</p>
-                <table>
-                    <thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Subtotal</th></tr></thead>
-                    <tbody>${itemsRows}</tbody>
-                    <tfoot>
-                        <tr class="total-row"><td colspan="3"><strong>Total</strong></td><td><strong>K${(order.totalAmount || 0).toFixed(2)}</strong></td></tr>
-                        <tr><td colspan="3">Amount Paid</td><td>K${(order.paidAmount || 0).toFixed(2)}</td></tr>
-                        <tr><td colspan="3">Balance Due</td><td>K${((order.totalAmount || 0) - (order.paidAmount || 0)).toFixed(2)}</td></tr>
-                    </tfoot>
-                </table>
-                <p>Thank you for your business! 🙏</p>
-            </body>
-            </html>
+                <table><thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Subtotal</th></tr></thead>
+                <tbody>${itemsRows}</tbody>
+                <tfoot><tr><td colspan="3"><strong>Total</strong></td><td><strong>K${(order.totalAmount || 0).toFixed(2)}</strong></td></tr>
+                <tr><td colspan="3">Amount Paid</td><td>K${(order.paidAmount || 0).toFixed(2)}</td></tr>
+                <tr><td colspan="3">Balance Due</td><td>K${((order.totalAmount || 0) - (order.paidAmount || 0)).toFixed(2)}</td></tr></tfoot>
+                </table><p>Thank you for your business!</p>
+            </body></html>
         `);
         printWindow.document.close();
         printWindow.print();
@@ -495,6 +412,10 @@
         const q = query(collection(db, 'payments'), where('dealerId', '==', selectedDealerId), orderBy('createdAt', 'desc'));
         const snap = await getDocs(q);
         allPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderPaymentsTable();
+    }
+
+    function renderPaymentsTable() {
         const tbody = document.getElementById('paymentsTbody');
         if (!allPayments.length) { 
             tbody.innerHTML = '<tr><td colspan="4">No payment records</td></tr>'; 
@@ -570,7 +491,7 @@
         const orderSelect = document.getElementById('orderDealerSelect'); 
         const paymentSelect = document.getElementById('paymentDealerSelect');
         if (orderSelect) {
-            orderSelect.innerHTML = '<option value="">-- Dealer --</option>' + dealers.map(d => 
+            orderSelect.innerHTML = '<option value="">-- Select Dealer --</option>' + dealers.map(d => 
                 `<option value="${d.id}" data-bal="${d.outstandingBalance}">${escapeHtml(d.name)} (Due: K${(d.outstandingBalance || 0).toFixed(2)})</option>`
             ).join('');
             orderSelect.onchange = () => { 
@@ -579,8 +500,8 @@
             };
         }
         if (paymentSelect) {
-            paymentSelect.innerHTML = '<option value="">-- Dealer --</option>' + dealers.map(d => 
-                `<option value="${d.id}" data-bal="${d.outstandingBalance}">${escapeHtml(d.name)} (K${(d.outstandingBalance || 0).toFixed(2)})</option>`
+            paymentSelect.innerHTML = '<option value="">-- Select Dealer --</option>' + dealers.map(d => 
+                `<option value="${d.id}" data-bal="${d.outstandingBalance}">${escapeHtml(d.name)} (Due: K${(d.outstandingBalance || 0).toFixed(2)})</option>`
             ).join('');
             paymentSelect.onchange = () => { 
                 const bal = paymentSelect.options[paymentSelect.selectedIndex]?.getAttribute('data-bal') || 0; 
@@ -592,8 +513,8 @@
     function updateProductSelect() { 
         const sel = document.getElementById('orderItemSelect'); 
         if (sel) {
-            sel.innerHTML = '<option value="">-- Product --</option>' + masterStock.filter(i => i.stock > 0).map(i => 
-                `<option value="${i.id}" data-price="${i.price}" data-stock="${i.stock}" data-code="${i.code}" data-name="${i.name}">${i.code} | ${i.name} (stock:${i.stock}) K${i.price}</option>`
+            sel.innerHTML = '<option value="">-- Select Product --</option>' + masterStock.filter(i => i.stock > 0).map(i => 
+                `<option value="${i.id}" data-price="${i.price}" data-stock="${i.stock}" data-code="${i.code}" data-name="${i.name}">${i.code} | ${i.name} (${i.stock} left) K${i.price}</option>`
             ).join('');
         }
     }
@@ -612,15 +533,21 @@
         if (exist) exist.qty += qty;
         else currentOrderCart.push({ itemId: item.id, code: item.code, name: item.name, price: item.price, qty });
         renderOrderCartPreview();
+        document.getElementById('orderQty').value = 1;
     });
     
     function renderOrderCartPreview() {
         const div = document.getElementById('orderCartList');
         if (!div) return;
         let total = 0;
+        if (currentOrderCart.length === 0) {
+            div.innerHTML = '<div style="color:#999; text-align:center; padding:10px;">No items added yet</div>';
+            document.getElementById('orderTotalPreview').innerText = '0.00';
+            return;
+        }
         div.innerHTML = currentOrderCart.map((c, i) => { 
             total += c.price * c.qty; 
-            return `<div class="cart-item"><span>${c.code} ${c.name} x${c.qty}</span><span>K${(c.price * c.qty).toFixed(2)} <button type="button" onclick="window.removeCartItem(${i})" style="background:none;border:none;color:#c0392b;cursor:pointer;">✕</button></span></div>`; 
+            return `<div class="cart-item"><span><strong>${c.code}</strong> ${c.name} x${c.qty}</span><span>K${(c.price * c.qty).toFixed(2)} <button type="button" onclick="window.removeCartItem(${i})" style="background:#c0392b;color:white;border:none;border-radius:20px;padding:2px 8px;cursor:pointer;">✕</button></span></div>`; 
         }).join('');
         document.getElementById('orderTotalPreview').innerText = total.toFixed(2);
     }
@@ -657,16 +584,19 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...'; 
         try { 
             const batch = writeBatch(db); 
+            // Reduce stock
             for (const c of currentOrderCart) { 
                 const ref = doc(db, 'inventory', c.itemId); 
                 batch.update(ref, { stock: increment(-c.qty) }); 
             } 
+            // Update dealer balance
             const dealerRef = doc(db, 'dealers', dealerId); 
             batch.update(dealerRef, { 
                 outstandingBalance: newBal, 
                 totalOrders: (dealer.totalOrders || 0) + 1, 
                 lastOrderDate: new Date().toLocaleDateString() 
             }); 
+            // Create order
             const now = new Date(); 
             const refNum = 'ORD-' + now.getTime().toString().slice(-8); 
             const orderDoc = { 
@@ -679,10 +609,11 @@
                 dateStr: now.toLocaleDateString('en-GB'), 
                 timeStr: now.toLocaleTimeString(), 
                 createdAt: now.toISOString(), 
-                status: paidNow >= total ? 'paid' : 'partial' 
+                status: paidNow >= total ? 'paid' : (paidNow > 0 ? 'partial' : 'unpaid')
             }; 
             const orderRef = doc(collection(db, 'orders')); 
             batch.set(orderRef, orderDoc); 
+            // Record payment if any
             if (paidNow > 0) { 
                 const payRef = doc(collection(db, 'payments')); 
                 batch.set(payRef, { 
@@ -699,7 +630,7 @@
             toast(`✅ Order placed! New balance: K${newBal.toFixed(2)}`); 
             closeModal('orderModal'); 
             currentOrderCart = []; 
-            refreshDealerPanel(); 
+            await refreshDealerPanel(); 
         } catch (err) { 
             toast('Error: ' + err.message, true); 
         } finally { 
@@ -708,7 +639,7 @@
         } 
     };
     
-    // Payment Recording - FIXED: removed Date.now().slice error
+    // Payment Recording - Updates both payment record AND order paid amounts
     document.getElementById('paymentBtn').onclick = () => { 
         if (!dealers.length) { toast('No dealers available', true); return; } 
         updateDropdowns(); 
@@ -726,10 +657,14 @@
         if (!dealer) return; 
         if (amount > dealer.outstandingBalance) { toast('Amount exceeds outstanding balance', true); return; } 
         const newBal = dealer.outstandingBalance - amount; 
+        
         try { 
             const batch = writeBatch(db); 
+            // Update dealer balance
             const dealerRef = doc(db, 'dealers', dealerId); 
             batch.update(dealerRef, { outstandingBalance: newBal }); 
+            
+            // Record payment
             const now = new Date(); 
             const paymentRef = doc(collection(db, 'payments')); 
             batch.set(paymentRef, { 
@@ -739,12 +674,27 @@
                 date: now.toLocaleDateString('en-GB'), 
                 note: document.getElementById('paymentNote').value || 'Manual payment', 
                 createdAt: now.toISOString(), 
-                orderRef: 'PAY-' + now.getTime().toString().slice(-6)  // FIXED: using getTime()
+                orderRef: 'PAY-' + now.getTime().toString().slice(-6)
             }); 
+            
+            // Apply payment to oldest unpaid orders (FIFO)
+            const unpaidOrders = allOrders.filter(o => (o.totalAmount - o.paidAmount) > 0).sort((a,b) => a.createdAt - b.createdAt);
+            let remainingAmount = amount;
+            
+            for (const order of unpaidOrders) {
+                if (remainingAmount <= 0) break;
+                const orderDue = order.totalAmount - order.paidAmount;
+                const applyAmount = Math.min(remainingAmount, orderDue);
+                const newPaidAmount = order.paidAmount + applyAmount;
+                const orderRef = doc(db, 'orders', order.id);
+                batch.update(orderRef, { paidAmount: newPaidAmount });
+                remainingAmount -= applyAmount;
+            }
+            
             await batch.commit(); 
             toast(`💰 Payment of K${amount.toFixed(2)} recorded. New balance: K${newBal.toFixed(2)}`); 
             closeModal('paymentModal'); 
-            refreshDealerPanel(); 
+            await refreshDealerPanel(); 
         } catch (err) { 
             toast('Error: ' + err.message, true); 
         } 
@@ -774,33 +724,22 @@
         `).join('');
         const win = window.open('', '_blank'); 
         win.document.write(`
-            <html>
-            <head>
-                <title>${dealer.name} - Account Statement</title>
-                <style>
-                    body { font-family: 'DM Sans', sans-serif; padding: 30px; }
-                    h2 { color: #2c5f8a; }
-                    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                    th { background: #f5f5f5; }
-                    .header { margin-bottom: 20px; }
-                </style>
-            </head>
-            <body>
+            <html><head><title>${dealer.name} - Statement</title>
+            <style>body{font-family:sans-serif;padding:30px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;}</style>
+            </head><body>
                 <h2>📋 DEALER ACCOUNT STATEMENT</h2>
-                <div class="header">
-                    <p><strong>Dealer:</strong> ${escapeHtml(dealer.name)}</p>
-                    <p><strong>Phone:</strong> ${dealer.phone || '-'}</p>
-                    <p><strong>Current Balance:</strong> K${(dealer.outstandingBalance || 0).toFixed(2)}</p>
-                    <p><strong>Credit Limit:</strong> K${(dealer.creditLimit || 0).toFixed(2)}</p>
-                </div>
+                <p><strong>Dealer:</strong> ${escapeHtml(dealer.name)}</p>
+                <p><strong>Phone:</strong> ${dealer.phone || '-'}</p>
+                <p><strong>Current Balance:</strong> K${(dealer.outstandingBalance || 0).toFixed(2)}</p>
                 <h3>Order History</h3>
-                <table><thead><tr><th>Date</th><th>Ref</th><th>Total</th><th>Paid</th><th>Due</th></tr></thead><tbody>${ordersHtml || '<tr><td colspan="5">No orders</td></tr>'}</tbody></table>
+                <table><thead><tr><th>Date</th><th>Ref</th><th>Total</th><th>Paid</th><th>Due</th></thead>
+                <tbody>${ordersHtml || '<td><td colspan="5">No orders</td></tr>'}</tbody>
+                </table>
                 <h3>Payment History</h3>
-                <table><thead><tr><th>Date</th><th>Reference</th><th>Amount</th><th>Note</th></tr></thead><tbody>${paymentsHtml || '<tr><td colspan="4">No payments</td></tr>'}</tbody></table>
-                <p><em>Generated by DealerPro</em></p>
-            </body>
-            </html>
+                <table><thead><tr><th>Date</th><th>Reference</th><th>Amount</th><th>Note</th></thead>
+                <tbody>${paymentsHtml || '<tr><td colspan="4">No payments</td></tr>'}</tbody>
+                </table>
+            </body></html>
         `); 
         win.document.close(); 
         win.print(); 
