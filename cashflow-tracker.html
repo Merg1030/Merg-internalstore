@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>Trismart · Custom Categories</title>
+  <title>Trismart · Ledger View (Table)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -25,19 +25,21 @@
       --purple: #8b5cf6;
       --danger: #ef4444;
       --emerald: #10b981;
-      --radius: 1rem;
-      --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.04);
+      --radius: 0.75rem;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.03);
+      --transition: all 0.2s ease;
     }
 
     body {
       font-family: 'Inter', sans-serif;
-      font-weight: 400;
       background: var(--bg);
       color: var(--text);
       height: 100vh;
       overflow: hidden;
+      font-size: 0.85rem;
     }
 
+    /* App layout */
     .app-container {
       display: flex;
       flex-direction: column;
@@ -45,6 +47,7 @@
       overflow: hidden;
     }
 
+    /* Navbar */
     .navbar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -54,7 +57,7 @@
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-sm);
     }
     .logo-area {
       display: flex;
@@ -79,7 +82,7 @@
     .add-account-btn {
       background: var(--primary);
       border: none;
-      padding: 6px 14px;
+      padding: 6px 16px;
       border-radius: 32px;
       font-size: 0.75rem;
       font-weight: 500;
@@ -87,17 +90,18 @@
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       transition: 0.2s;
     }
     .add-account-btn:hover {
       background: var(--primary-dark);
     }
 
+    /* Filter Bar */
     .filter-bar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0.6rem 1.75rem;
+      padding: 0.5rem 1.75rem;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -115,8 +119,8 @@
       background: #f0f2f5;
       padding: 5px 14px;
       border-radius: 32px;
-      font-size: 0.75rem;
-      font-weight: 400;
+      font-size: 0.73rem;
+      font-weight: 500;
       cursor: pointer;
       transition: 0.2s;
       border: 1px solid transparent;
@@ -129,7 +133,6 @@
     .filter-chip.active {
       background: var(--primary);
       color: white;
-      font-weight: 500;
     }
     .action-icon {
       background: transparent;
@@ -137,7 +140,7 @@
       padding: 5px 12px;
       border-radius: 32px;
       font-size: 0.7rem;
-      font-weight: 400;
+      font-weight: 500;
       cursor: pointer;
       transition: 0.2s;
       color: var(--text-muted);
@@ -153,7 +156,7 @@
       padding: 5px 12px;
       border-radius: 32px;
       font-size: 0.7rem;
-      font-weight: 400;
+      font-weight: 500;
       color: white;
       cursor: pointer;
       display: inline-flex;
@@ -170,136 +173,177 @@
       margin: 0 6px;
     }
 
+    /* Table container (main scroll) */
     .main-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 1.5rem 1.75rem;
+      padding: 1.2rem 1.75rem;
+      background: var(--bg);
     }
-    .accounts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 1.2rem;
-    }
-    .account-card {
+
+    /* ---------- TABLE STYLES (replaces cards) ---------- */
+    .accounts-table-wrapper {
       background: var(--surface);
-      border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.1rem;
-      transition: all 0.2s;
-      position: relative;
-      box-shadow: var(--shadow);
-      cursor: pointer;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
-    .account-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      border-color: var(--primary);
+
+    .accounts-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      min-width: 680px;
     }
-    .account-card.hidden-account {
-      opacity: 0.5;
-      background: #f9fafb;
-      border-left: 3px solid #94a3b8;
+
+    .accounts-table th {
+      text-align: left;
+      padding: 0.9rem 1rem;
+      background: #fafcff;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 0.75rem;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
     }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 10px;
+
+    .accounts-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      transition: background 0.15s;
     }
-    .account-title {
+
+    .accounts-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .accounts-table tr:hover td {
+      background: #f8fafd;
+    }
+
+    .account-name-cell {
+      font-weight: 600;
+      color: var(--text);
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 8px;
     }
-    .cat-badge {
-      font-size: 0.58rem;
+
+    .type-badge {
+      font-size: 0.65rem;
+      background: #eef2ff;
+      padding: 3px 8px;
+      border-radius: 30px;
       font-weight: 500;
+      color: #1e40af;
+      white-space: nowrap;
+    }
+
+    .cat-badge {
+      font-size: 0.65rem;
       padding: 3px 10px;
-      border-radius: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
+      border-radius: 24px;
+      font-weight: 500;
       background: #f1f5f9;
       color: #475569;
+      white-space: nowrap;
+      display: inline-block;
     }
+
     .cat-badge.custom-cat {
       background: #e9d5ff;
       color: #6b21a5;
     }
-    .account-name {
-      font-weight: 500;
-      font-size: 0.9rem;
-    }
-    .account-detail {
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      margin: 8px 0;
-    }
-    .balance {
+
+    .balance-number {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      margin-top: 8px;
-      border-top: 1px solid var(--border);
-      padding-top: 8px;
-      display: flex;
-      justify-content: space-between;
-      font-weight: 400;
+      font-weight: 500;
+      color: #0f172a;
     }
-    .menu-btn-card {
-      background: none;
+
+    .hidden-badge {
+      background: #f1f3f5;
+      font-size: 0.6rem;
+      padding: 2px 8px;
+      border-radius: 18px;
+      color: #5b6e8c;
+      display: inline-block;
+      margin-left: 8px;
+    }
+
+    .action-menu {
+      position: relative;
+      display: inline-block;
+    }
+
+    .menu-btn-table {
+      background: transparent;
       border: none;
-      font-size: 0.9rem;
+      font-size: 1rem;
       cursor: pointer;
-      padding: 6px;
+      padding: 6px 10px;
       border-radius: 8px;
       color: var(--text-muted);
-      position: relative;
-      z-index: 10;
     }
-    .menu-btn-card:hover {
-      background: var(--bg);
+
+    .menu-btn-table:hover {
+      background: #f0f2f5;
     }
-    .card-dropdown {
+
+    .table-dropdown {
       position: absolute;
-      top: 48px;
-      right: 12px;
+      top: 28px;
+      right: 0;
       background: white;
       border-radius: 14px;
       box-shadow: 0 12px 28px rgba(0,0,0,0.12);
       border: 1px solid var(--border);
       z-index: 200;
-      min-width: 180px;
-      overflow: hidden;
+      min-width: 190px;
       display: none;
     }
-    .card-dropdown.show {
+
+    .table-dropdown.show {
       display: block;
     }
+
     .dropdown-opt {
-      padding: 10px 14px;
-      font-size: 0.73rem;
-      font-weight: 400;
+      padding: 8px 14px;
+      font-size: 0.72rem;
       display: flex;
       align-items: center;
       gap: 10px;
       cursor: pointer;
       transition: 0.1s;
-      color: var(--text);
     }
+
     .dropdown-opt:hover {
       background: #f8fafc;
     }
+
     .dropdown-divider {
       height: 1px;
       background: var(--border);
       margin: 4px 0;
     }
-    .custom-cat-header {
-      padding: 8px 12px;
-      background: #f8fafc;
-      font-size: 0.65rem;
-      font-weight: 600;
+
+    .empty-placeholder {
+      text-align: center;
+      padding: 3rem;
       color: var(--text-muted);
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .custom-cat-header {
+      padding: 6px 12px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      background: #f8fafc;
       border-bottom: 1px solid var(--border);
     }
 
@@ -320,70 +364,55 @@
     .modal-content {
       background: white;
       border-radius: 24px;
-      max-width: 500px;
+      max-width: 480px;
       width: 90%;
-      max-height: 85vh;
-      overflow: auto;
       padding: 1.5rem;
     }
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.2rem;
-      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
       border-bottom: 1px solid var(--border);
-    }
-    .modal-header h3 {
-      font-size: 1rem;
-      font-weight: 600;
+      padding-bottom: 0.6rem;
     }
     .close-modal {
       cursor: pointer;
       font-size: 1.2rem;
-      color: var(--text-muted);
     }
     .form-group {
       margin-bottom: 1rem;
     }
     .form-group label {
-      display: block;
       font-size: 0.7rem;
       font-weight: 500;
       color: var(--text-muted);
-      margin-bottom: 4px;
     }
-    .form-group input, .form-group select, .form-group textarea {
+    .form-group input {
       width: 100%;
       padding: 8px 12px;
       border: 1.5px solid var(--border);
       border-radius: 12px;
       font-size: 0.8rem;
-      font-family: inherit;
-    }
-    .form-group input:focus, .form-group select:focus {
-      outline: none;
-      border-color: var(--primary);
     }
     .form-actions {
       display: flex;
       gap: 10px;
-      margin-top: 1.2rem;
+      margin-top: 1rem;
     }
     .btn-primary {
       background: var(--primary);
       color: white;
       border: none;
-      padding: 8px 16px;
+      padding: 7px 18px;
       border-radius: 32px;
       font-size: 0.75rem;
-      font-weight: 500;
       cursor: pointer;
     }
     .btn-outline {
       background: transparent;
       border: 1px solid var(--border);
-      padding: 8px 16px;
+      padding: 7px 18px;
       border-radius: 32px;
       font-size: 0.75rem;
       cursor: pointer;
@@ -403,22 +432,11 @@
       padding: 8px 18px;
       border-radius: 40px;
       font-size: 0.7rem;
-      font-weight: 400;
-      animation: fadeUp 0.2s ease;
     }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
-    .empty-placeholder {
-      text-align: center;
-      padding: 2.5rem;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-    @media (max-width: 640px) {
-      .filter-bar { flex-direction: column; align-items: stretch; }
+
+    @media (max-width: 720px) {
       .main-scroll { padding: 1rem; }
+      .filter-bar { padding: 0.7rem 1rem; }
     }
   </style>
 </head>
@@ -426,8 +444,8 @@
 <div class="app-container">
   <div class="navbar">
     <div class="logo-area">
-      <div class="logo-icon"><i class="fas fa-layer-group"></i></div>
-      <div class="logo-text">Trismart · Accounts</div>
+      <div class="logo-icon"><i class="fas fa-table-list"></i></div>
+      <div class="logo-text">Trismart · Ledger (Table View)</div>
     </div>
     <button class="add-account-btn" id="openAddAccountModalBtn"><i class="fas fa-plus"></i> Add Account</button>
   </div>
@@ -449,26 +467,27 @@
   </div>
 
   <div class="main-scroll">
-    <div class="accounts-grid" id="accountsGrid">
-      <div style="text-align:center; padding:40px;"><i class="fas fa-spinner fa-pulse"></i> Loading accounts...</div>
+    <div id="tableContainer">
+      <!-- dynamic table will be injected here -->
+      <div style="text-align:center; padding:40px;"><i class="fas fa-spinner fa-pulse"></i> Loading ledger...</div>
     </div>
   </div>
 </div>
 
-<!-- Add Category Modal -->
+<!-- Category Modal -->
 <div id="categoryModal" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-header">
-      <h3>Add Custom Category</h3>
+      <h3>Create Custom Category</h3>
       <span class="close-modal" onclick="closeModal('categoryModal')">&times;</span>
     </div>
     <form id="categoryForm">
       <div class="form-group">
         <label>Category Name</label>
-        <input type="text" id="newCategoryName" required placeholder="e.g., Tax, Investments, Payroll">
+        <input type="text" id="newCategoryName" required placeholder="e.g., Investments, Payroll">
       </div>
       <div class="form-actions">
-        <button type="submit" class="btn-primary">Add Category</button>
+        <button type="submit" class="btn-primary">Add</button>
         <button type="button" class="btn-outline" onclick="closeModal('categoryModal')">Cancel</button>
       </div>
     </form>
@@ -503,15 +522,14 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Auth check
   const loggedInUser = localStorage.getItem('loggedInUser') || '';
   const userName = (loggedInUser || localStorage.getItem('userName') || '').toLowerCase().trim();
   if (userName !== 'chris') {
-    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><div style="background:white;padding:30px;border-radius:24px;">🔐 Access restricted.</div></div>`;
+    document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><div style="background:white;padding:2rem;border-radius:24px;">🔐 Restricted access</div></div>`;
     throw new Error('unauthorized');
   }
 
-  // State
+  // Global state
   let accounts = [];
   let customCategories = JSON.parse(localStorage.getItem('trismart_custom_categories') || '[]');
   let currentFilter = localStorage.getItem('trismart_filter') || "all";
@@ -534,8 +552,8 @@
 
   async function updateAccountField(accountId, field, value) {
     try {
-      const accountRef = doc(db, 'accounts', accountId);
-      await updateDoc(accountRef, { [field]: value });
+      const ref = doc(db, 'accounts', accountId);
+      await updateDoc(ref, { [field]: value });
       return true;
     } catch (err) {
       showToast(`Update failed: ${err.message}`, true);
@@ -553,21 +571,17 @@
   async function toggleHideAccount(accountId) {
     const acc = accounts.find(a => a.id === accountId);
     if (!acc) return;
-    const newHidden = !acc.hidden;
-    await updateAccountField(accountId, 'hidden', newHidden);
-    showToast(newHidden ? `"${acc.name}" hidden` : `"${acc.name}" visible`);
+    await updateAccountField(accountId, 'hidden', !acc.hidden);
+    showToast(!acc.hidden ? `"${acc.name}" hidden` : `"${acc.name}" visible`);
   }
 
   async function unhideAllAccounts() {
     try {
-      const accountsRef = collection(db, 'accounts');
-      const snapshot = await getDocs(accountsRef);
+      const snap = await getDocs(collection(db, 'accounts'));
       const batch = writeBatch(db);
-      snapshot.docs.forEach(docSnap => {
-        batch.update(docSnap.ref, { hidden: false });
-      });
+      snap.docs.forEach(docSnap => batch.update(docSnap.ref, { hidden: false }));
       await batch.commit();
-      showToast("All accounts are now visible");
+      showToast("All accounts unhidden");
       if (!showHiddenItems) {
         showHiddenItems = true;
         localStorage.setItem('trismart_showHidden', 'true');
@@ -575,43 +589,34 @@
         if (toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Show hidden';
       }
     } catch (err) {
-      showToast("Unhide error: " + err.message, true);
+      showToast("Error unhiding: " + err.message, true);
     }
   }
 
   async function addNewAccount(data) {
     try {
-      await addDoc(collection(db, 'accounts'), {
-        ...data,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
-      showToast("Account created successfully");
+      await addDoc(collection(db, 'accounts'), { ...data, createdAt: new Date().toISOString() });
+      showToast("Account created");
     } catch (err) {
       showToast(err.message, true);
     }
   }
 
-  async function ensureAllAccountsHaveMetaFields() {
-    try {
-      const accountsRef = collection(db, 'accounts');
-      const snapshot = await getDocs(accountsRef);
-      const batch = writeBatch(db);
-      let needsUpdate = false;
-      snapshot.docs.forEach(docSnap => {
-        const data = docSnap.data();
-        let updateData = {};
-        if (data.category === undefined) updateData.category = 'uncategorized';
-        if (data.hidden === undefined) updateData.hidden = false;
-        if (Object.keys(updateData).length > 0) {
-          needsUpdate = true;
-          batch.update(docSnap.ref, updateData);
-        }
-      });
-      if (needsUpdate) await batch.commit();
-    } catch (err) {
-      console.warn("Migration skipped", err);
-    }
+  async function ensureMetaFields() {
+    const snap = await getDocs(collection(db, 'accounts'));
+    const batch = writeBatch(db);
+    let needsUpdate = false;
+    snap.docs.forEach(d => {
+      const data = d.data();
+      const updates = {};
+      if (data.category === undefined) updates.category = 'uncategorized';
+      if (data.hidden === undefined) updates.hidden = false;
+      if (Object.keys(updates).length) {
+        needsUpdate = true;
+        batch.update(d.ref, updates);
+      }
+    });
+    if (needsUpdate) await batch.commit();
   }
 
   function listenAccounts() {
@@ -630,48 +635,152 @@
           hidden: data.hidden === true,
         };
       });
-      renderAccountsGrid();
+      renderTable();
       renderCustomCategoryChips();
-    }, (error) => {
-      console.error("Firestore error:", error);
-      document.getElementById('accountsGrid').innerHTML = `<div class="empty-placeholder"><i class="fas fa-database"></i> Connection error.</div>`;
+    }, (err) => {
+      console.error(err);
+      document.getElementById('tableContainer').innerHTML = `<div class="empty-placeholder"><i class="fas fa-exclamation-triangle"></i> Firestore error</div>`;
     });
   }
 
   function getFilteredAccounts() {
     let filtered = [...accounts];
-    if (!showHiddenItems) {
-      filtered = filtered.filter(acc => !acc.hidden);
-    }
-    if (currentFilter !== 'all') {
-      filtered = filtered.filter(acc => acc.category === currentFilter);
-    }
+    if (!showHiddenItems) filtered = filtered.filter(acc => !acc.hidden);
+    if (currentFilter !== 'all') filtered = filtered.filter(acc => acc.category === currentFilter);
     return filtered;
   }
 
-  // GO TO ACCOUNT DETAIL PAGE - like original!
+  // Navigate to account detail (same as original)
   function goToAccountDetail(accountId) {
     localStorage.setItem('selectedAccountId', accountId);
     window.location.href = 'account-detail.html';
   }
 
-  function openAddAccountModal() {
-    // For adding account, we'll just show the modal inline (keeping it simple)
-    // But to match original behavior, we can also add account inline
-    const name = prompt("Enter account name:");
+  function openAddAccountFlow() {
+    const name = prompt("Account name:");
     if (!name) return;
-    const type = prompt("Enter account type (asset/liability/equity/revenue/expense):", "asset");
-    const balance = parseFloat(prompt("Enter opening balance:", "0")) || 0;
-    const desc = prompt("Description (optional):", "");
-    
-    addNewAccount({
-      name: name,
-      type: type,
-      balance: balance,
-      description: desc,
-      category: 'uncategorized',
-      hidden: false
+    const type = prompt("Type (asset/liability/equity/revenue/expense):", "asset");
+    const balance = parseFloat(prompt("Opening balance (K):", "0")) || 0;
+    const desc = prompt("Description:", "");
+    addNewAccount({ name, type, balance, description: desc, category: 'uncategorized', hidden: false });
+  }
+
+  // Main TABLE render (replaces card grid)
+  function renderTable() {
+    const container = document.getElementById('tableContainer');
+    const filtered = getFilteredAccounts();
+    if (!filtered.length) {
+      container.innerHTML = `<div class="empty-placeholder"><i class="fas fa-table-list"></i> <br/> No accounts match current view.</div>`;
+      return;
+    }
+
+    const html = `
+      <div class="accounts-table-wrapper">
+        <table class="accounts-table">
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Balance (K)</th>
+              <th style="width:50px">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.map(acc => {
+              const isHidden = acc.hidden;
+              const isCustom = customCategories.includes(acc.category);
+              const catBadgeClass = isCustom ? 'custom-cat' : '';
+              const categoryLabel = acc.category.charAt(0).toUpperCase() + acc.category.slice(1);
+              const typeIcon = acc.type === 'asset' ? 'fa-coins' : (acc.type === 'expense' ? 'fa-cart-shopping' : (acc.type === 'revenue' ? 'fa-chart-line' : 'fa-receipt'));
+              const hiddenMark = isHidden ? `<span class="hidden-badge"><i class="fas fa-low-vision"></i> hidden</span>` : '';
+              const dropdownId = `tdrop_${acc.id}`;
+              return `
+                <tr data-account-id="${acc.id}" class="account-row" style="cursor:pointer;">
+                  <td>
+                    <div class="account-name-cell">
+                      <i class="fas ${typeIcon}" style="color:#3b82f6; width:18px;"></i>
+                      <span>${escapeHtml(acc.name)}</span>
+                      ${hiddenMark}
+                    </div>
+                  </td>
+                  <td><span class="type-badge">${escapeHtml(acc.type)}</span></td>
+                  <td><span class="cat-badge ${catBadgeClass}"><i class="fas fa-tag"></i> ${escapeHtml(categoryLabel)}</span></td>
+                  <td style="max-width:220px; white-space:nowrap; overflow-x:hidden; text-overflow:ellipsis;">${escapeHtml(acc.description || '—')}</td>
+                  <td><span class="balance-number">${acc.balance.toLocaleString(undefined, {minimumFractionDigits:2})}</span></td>
+                  <td>
+                    <div class="action-menu">
+                      <button class="menu-btn-table" data-menu-id="${acc.id}" onclick="event.stopPropagation()"><i class="fas fa-ellipsis-v"></i></button>
+                      <div class="table-dropdown" id="${dropdownId}">
+                        <div class="dropdown-opt" data-account="${acc.id}" data-cat="journal"><i class="fas fa-book-open"></i> Journal</div>
+                        <div class="dropdown-opt" data-account="${acc.id}" data-cat="ledger"><i class="fas fa-list-ul"></i> Ledger</div>
+                        <div class="dropdown-opt" data-account="${acc.id}" data-cat="uncategorized"><i class="fas fa-question"></i> Uncategorized</div>
+                        ${customCategories.map(cat => `<div class="dropdown-opt" data-account="${acc.id}" data-cat="${cat}"><i class="fas fa-tag"></i> ${escapeHtml(cat)}</div>`).join('')}
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-opt" data-action="toggle-hide" data-account="${acc.id}"><i class="fas ${isHidden ? 'fa-eye' : 'fa-eye-slash'}"></i> ${isHidden ? 'Unhide' : 'Hide'}</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+    container.innerHTML = html;
+
+    // Attach row click: go to detail page (unless dropdown menu clicked)
+    document.querySelectorAll('.account-row').forEach(row => {
+      row.removeEventListener('click', rowClickHandler);
+      row.addEventListener('click', rowClickHandler);
     });
+
+    function rowClickHandler(e) {
+      if (e.target.closest('.menu-btn-table') || e.target.closest('.dropdown-opt') || e.target.closest('.table-dropdown')) return;
+      const accountId = this.getAttribute('data-account-id');
+      if (accountId) goToAccountDetail(accountId);
+    }
+
+    // Dropdown menu buttons
+    document.querySelectorAll('.menu-btn-table').forEach(btn => {
+      btn.removeEventListener('click', handleTableMenuClick);
+      btn.addEventListener('click', handleTableMenuClick);
+    });
+
+    function handleTableMenuClick(e) {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      const menuId = btn.getAttribute('data-menu-id');
+      const dropdown = document.getElementById(`tdrop_${menuId}`);
+      if (!dropdown) return;
+      document.querySelectorAll('.table-dropdown.show').forEach(d => {
+        if (d !== dropdown) d.classList.remove('show');
+      });
+      dropdown.classList.toggle('show');
+    }
+
+    // Dropdown options
+    document.querySelectorAll('.dropdown-opt').forEach(opt => {
+      opt.removeEventListener('click', handleDropdownSelect);
+      opt.addEventListener('click', handleDropdownSelect);
+    });
+
+    function handleDropdownSelect(e) {
+      e.stopPropagation();
+      const opt = e.currentTarget;
+      const accountId = opt.getAttribute('data-account');
+      const catVal = opt.getAttribute('data-cat');
+      const action = opt.getAttribute('data-action');
+      if (accountId && catVal && !action) {
+        changeAccountCategory(accountId, catVal);
+      } else if (action === 'toggle-hide' && accountId) {
+        toggleHideAccount(accountId);
+      }
+      // close all dropdowns
+      document.querySelectorAll('.table-dropdown.show').forEach(d => d.classList.remove('show'));
+    }
   }
 
   function renderCustomCategoryChips() {
@@ -680,141 +789,23 @@
     container.innerHTML = customCategories.map(cat => `
       <span class="filter-chip" data-filter="${cat}"><i class="fas fa-tag"></i> ${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
     `).join('');
-    
     document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
-      chip.addEventListener('click', () => {
-        const filterVal = chip.getAttribute('data-filter');
-        if (filterVal) {
-          currentFilter = filterVal;
-          localStorage.setItem('trismart_filter', currentFilter);
-          document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-          renderAccountsGrid();
-          showToast(`Filter: ${filterVal === 'all' ? 'All accounts' : filterVal}`);
-        }
-      });
+      chip.removeEventListener('click', chipClickHandler);
+      chip.addEventListener('click', chipClickHandler);
     });
+    function chipClickHandler(e) {
+      const filterVal = this.getAttribute('data-filter');
+      if (filterVal) {
+        currentFilter = filterVal;
+        localStorage.setItem('trismart_filter', currentFilter);
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        renderTable();
+        showToast(`Filter: ${filterVal === 'all' ? 'All accounts' : filterVal}`);
+      }
+    }
   }
 
-  function renderAccountsGrid() {
-    const container = document.getElementById('accountsGrid');
-    const visibleList = getFilteredAccounts();
-    
-    if (!visibleList.length) {
-      container.innerHTML = `<div class="empty-placeholder"><i class="fas fa-filter-circle-xmark"></i> <br/> No accounts match current filter.</div>`;
-      return;
-    }
-    
-    container.innerHTML = visibleList.map(acc => {
-      const isHidden = acc.hidden;
-      const hiddenClass = isHidden ? 'hidden-account' : '';
-      const isCustomCat = customCategories.includes(acc.category);
-      const catBadgeClass = isCustomCat ? 'custom-cat' : '';
-      const categoryLabel = acc.category.charAt(0).toUpperCase() + acc.category.slice(1);
-      let typeIcon = 'fa-receipt';
-      if (acc.type === 'asset') typeIcon = 'fa-coins';
-      else if (acc.type === 'expense') typeIcon = 'fa-shopping-cart';
-      else if (acc.type === 'revenue') typeIcon = 'fa-chart-line';
-      else if (acc.type === 'liability') typeIcon = 'fa-hand-holding-dollar';
-      else if (acc.type === 'equity') typeIcon = 'fa-chart-pie';
-      
-      const dropdownId = `dd_${acc.id}`;
-      return `
-        <div class="account-card ${hiddenClass}" data-id="${acc.id}">
-          <div class="card-header">
-            <div class="account-title">
-              <i class="fas ${typeIcon}" style="color:#3b82f6;"></i>
-              <span class="account-name">${escapeHtml(acc.name)}</span>
-              <span class="cat-badge ${catBadgeClass}"><i class="fas fa-tag"></i> ${escapeHtml(categoryLabel)}</span>
-            </div>
-            <div style="position:relative;">
-              <button class="menu-btn-card" data-menu-for="${acc.id}" onclick="event.stopPropagation()"><i class="fas fa-ellipsis-v"></i></button>
-              <div class="card-dropdown" id="${dropdownId}">
-                <div class="dropdown-opt" data-action="categorize" data-cat="journal"><i class="fas fa-book-open"></i> Journal</div>
-                <div class="dropdown-opt" data-action="categorize" data-cat="ledger"><i class="fas fa-list-ul"></i> Ledger</div>
-                <div class="dropdown-opt" data-action="categorize" data-cat="uncategorized"><i class="fas fa-question"></i> Uncategorized</div>
-                ${customCategories.map(cat => `<div class="dropdown-opt" data-action="categorize" data-cat="${cat}"><i class="fas fa-tag"></i> ${escapeHtml(cat)}</div>`).join('')}
-                <div class="dropdown-divider"></div>
-                <div class="dropdown-opt" data-action="toggle-hide"><i class="fas ${isHidden ? 'fa-eye' : 'fa-eye-slash'}"></i> ${isHidden ? 'Unhide' : 'Hide'}</div>
-              </div>
-            </div>
-          </div>
-          <div class="account-detail">
-            <i class="fas fa-align-left"></i> ${escapeHtml(acc.description || 'No description')}
-            <span style="margin-left: 8px;"><i class="fas fa-chart-simple"></i> ${acc.type}</span>
-          </div>
-          <div class="balance">
-            <span><i class="fas fa-coins"></i> Balance</span>
-            <span>K ${acc.balance.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
-          </div>
-          ${isHidden ? '<div style="font-size:0.55rem; margin-top:6px; color:#94a3b8;"><i class="fas fa-low-vision"></i> hidden</div>' : ''}
-        </div>
-      `;
-    }).join('');
-    
-    // Attach card click handlers - GO TO ACCOUNT DETAIL PAGE
-    document.querySelectorAll('.account-card').forEach(card => {
-      card.removeEventListener('click', handleCardClick);
-      card.addEventListener('click', handleCardClick);
-    });
-    
-    // Attach dropdown handlers
-    document.querySelectorAll('.menu-btn-card').forEach(btn => {
-      btn.removeEventListener('click', handleMenuClick);
-      btn.addEventListener('click', handleMenuClick);
-    });
-    document.querySelectorAll('.dropdown-opt').forEach(opt => {
-      opt.removeEventListener('click', handleDropdownOption);
-      opt.addEventListener('click', handleDropdownOption);
-    });
-  }
-  
-  function handleCardClick(e) {
-    if (e.target.closest('.menu-btn-card') || e.target.closest('.card-dropdown')) return;
-    const card = e.currentTarget;
-    const accountId = card.getAttribute('data-id');
-    // Navigate to account-detail.html like original!
-    goToAccountDetail(accountId);
-  }
-  
-  function handleMenuClick(e) {
-    e.stopPropagation();
-    const btn = e.currentTarget;
-    const cardDiv = btn.closest('.account-card');
-    if (!cardDiv) return;
-    const dropdownDiv = btn.nextElementSibling;
-    if (!dropdownDiv) return;
-    document.querySelectorAll('.card-dropdown.show').forEach(dd => {
-      if (dd !== dropdownDiv) dd.classList.remove('show');
-    });
-    dropdownDiv.classList.toggle('show');
-  }
-  
-  function handleDropdownOption(e) {
-    e.stopPropagation();
-    const opt = e.currentTarget;
-    const dropdownDiv = opt.closest('.card-dropdown');
-    if (!dropdownDiv) return;
-    const card = dropdownDiv.closest('.account-card');
-    if (!card) return;
-    const accountId = card.getAttribute('data-id');
-    const action = opt.getAttribute('data-action');
-    
-    if (action === 'categorize') {
-      const targetCat = opt.getAttribute('data-cat');
-      if (targetCat && accountId) changeAccountCategory(accountId, targetCat);
-    } else if (action === 'toggle-hide') {
-      if (accountId) toggleHideAccount(accountId);
-    }
-    dropdownDiv.classList.remove('show');
-  }
-  
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.card-dropdown') && !e.target.closest('.menu-btn-card')) {
-      document.querySelectorAll('.card-dropdown.show').forEach(dd => dd.classList.remove('show'));
-    }
-  });
-  
   function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/[&<>]/g, function(m) {
@@ -824,17 +815,16 @@
       return m;
     });
   }
-  
-  function initFiltersAndUI() {
+
+  function initUI() {
     const toggleHiddenBtn = document.getElementById('toggleHiddenBtn');
     toggleHiddenBtn.addEventListener('click', () => {
       showHiddenItems = !showHiddenItems;
       localStorage.setItem('trismart_showHidden', showHiddenItems);
       toggleHiddenBtn.innerHTML = showHiddenItems ? '<i class="fas fa-eye-slash"></i> Show hidden' : '<i class="fas fa-eye"></i> Hide hidden';
-      renderAccountsGrid();
-      showToast(showHiddenItems ? 'Showing hidden accounts' : 'Hidden accounts hidden');
+      renderTable();
+      showToast(showHiddenItems ? 'Showing hidden accounts' : 'Hiding hidden accounts');
     });
-    
     document.getElementById('unhideAllBtn').addEventListener('click', async () => {
       await unhideAllAccounts();
       if (!showHiddenItems) {
@@ -842,27 +832,23 @@
         localStorage.setItem('trismart_showHidden', 'true');
         toggleHiddenBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Show hidden';
       }
-      renderAccountsGrid();
+      renderTable();
     });
-    
-    document.getElementById('openAddAccountModalBtn').addEventListener('click', openAddAccountModal);
+    document.getElementById('openAddAccountModalBtn').addEventListener('click', openAddAccountFlow);
     document.getElementById('openAddCategoryModalBtn').addEventListener('click', () => {
       document.getElementById('categoryModal').classList.add('show');
     });
-    
-    // Set initial active filter chip
     document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
       if (chip.getAttribute('data-filter') === currentFilter) chip.classList.add('active');
     });
   }
-  
-  // Category form handler
+
   document.getElementById('categoryForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const newCat = document.getElementById('newCategoryName').value.trim().toLowerCase();
     if (!newCat) return;
     if (customCategories.includes(newCat)) {
-      showToast("Category already exists", true);
+      showToast("Category exists", true);
       return;
     }
     customCategories.push(newCat);
@@ -870,22 +856,26 @@
     renderCustomCategoryChips();
     closeModal('categoryModal');
     document.getElementById('newCategoryName').value = '';
-    showToast(`Added category: ${newCat}`);
-    renderAccountsGrid();
+    showToast(`Added: ${newCat}`);
+    renderTable();
   });
-  
-  function closeModal(modalId) {
+
+  window.closeModal = (modalId) => {
     document.getElementById(modalId).classList.remove('show');
-  }
-  window.closeModal = closeModal;
-  
-  async function init() {
-    await ensureAllAccountsHaveMetaFields();
+  };
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.table-dropdown') && !e.target.closest('.menu-btn-table')) {
+      document.querySelectorAll('.table-dropdown.show').forEach(d => d.classList.remove('show'));
+    }
+  });
+
+  async function bootstrap() {
+    await ensureMetaFields();
     listenAccounts();
-    initFiltersAndUI();
+    initUI();
   }
-  
-  init();
+  bootstrap();
 </script>
 </body>
 </html>
