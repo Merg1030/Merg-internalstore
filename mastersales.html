@@ -7,7 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -156,7 +155,7 @@
             <div id="orders-tab" class="tab-content active">
                 <div style="overflow-x:auto;">
                     <table class="compact-table">
-                        <thead><tr><th>Date</th><th>Ref</th><th>Items</th><th>Total</th><th>Paid</th><th>Due</th><th>Status</th><th>PDF</th></thead>
+                        <thead><tr><th>Date</th><th>Ref</th><th>Items</th><th>Total</th><th>Paid</th><th>Due</th><th>Status</th><th>PDF</th></tr></thead>
                         <tbody id="ordersTbody"><tr><td colspan="8">Select dealer</td></tr></tbody>
                     </table>
                 </div>
@@ -164,7 +163,7 @@
             
             <div id="payments-tab" class="tab-content">
                 <table class="compact-table">
-                    <thead><tr><th>Date</th><th>Reference</th><th>Amount (K)</th><th>Note</th></thead>
+                    <thead><tr><th>Date</th><th>Reference</th><th>Amount (K)</th><th>Note</th></tr></thead>
                     <tbody id="paymentsTbody"><tr><td colspan="4">Select dealer</td></tr></tbody>
                 </table>
             </div>
@@ -257,11 +256,13 @@
 
     let dealers = [];
     let masterStock = [];
-    let allOrders = [];
-    let allPayments = [];
+    let allOrders = [];       // orders for currently selected dealer
+    let allPayments = [];     // payments for currently selected dealer
+    let totalOrdersCount = 0; // FIX: global orders count for stats bar
     let selectedDealerId = null;
     let currentOrderCart = [];
 
+    // ─── TOAST ────────────────────────────────────────────────────────────────
     const toast = (msg, isError = false) => { 
         const container = document.getElementById('toastContainer'); 
         const el = document.createElement('div'); 
@@ -274,7 +275,7 @@
     
     window.closeModal = (id) => document.getElementById(id).classList.remove('show');
 
-    // Load dealers with realtime updates
+    // ─── LOAD DEALERS (realtime) ───────────────────────────────────────────────
     function loadDealers() {
         const q = query(collection(db, 'dealers'), orderBy('name'));
         onSnapshot(q, (snap) => {
@@ -287,23 +288,35 @@
             renderDealerList();
             updateStats();
             updateDropdowns();
-            if (selectedDealerId && !dealers.find(d => d.id === selectedDealerId)) selectedDealerId = null;
-            if (selectedDealerId) refreshDealerPanel();
-            else if (dealers.length) { selectedDealerId = dealers[0].id; refreshDealerPanel(); }
+            // If selected dealer was deleted, clear selection
+            if (selectedDealerId && !dealers.find(d => d.id === selectedDealerId)) {
+                selectedDealerId = null;
+            }
+            // Auto-select first dealer if none selected
+            if (!selectedDealerId && dealers.length) {
+                selectedDealerId = dealers[0].id;
+            }
+            refreshDealerPanel();
         });
     }
 
     function renderDealerList() {
         const container = document.getElementById('dealerListContainer');
         const search = document.getElementById('dealerSearchInput').value.toLowerCase();
-        let filtered = dealers.filter(d => d.name.toLowerCase().includes(search) || (d.phone || '').toLowerCase().includes(search));
+        let filtered = dealers.filter(d => 
+            d.name.toLowerCase().includes(search) || 
+            (d.phone || '').toLowerCase().includes(search)
+        );
         if (!filtered.length) { 
             container.innerHTML = '<div style="padding:16px;text-align:center;color:#666;">No dealers found</div>'; 
             return; 
         }
         container.innerHTML = filtered.map(d => `
             <div class="dealer-item ${selectedDealerId === d.id ? 'selected' : ''}" data-id="${d.id}">
-                <div><div class="dealer-name">${escapeHtml(d.name)}</div><div style="font-size:0.6rem;color:#6c7a8e;">${d.phone || '-'}</div></div>
+                <div>
+                    <div class="dealer-name">${escapeHtml(d.name)}</div>
+                    <div style="font-size:0.6rem;color:#6c7a8e;">${d.phone || '-'}</div>
+                </div>
                 <div class="dealer-balance">K${(d.outstandingBalance || 0).toFixed(2)}</div>
             </div>
         `).join('');
@@ -317,6 +330,7 @@
         });
     }
 
+    // ─── REFRESH DEALER PANEL ─────────────────────────────────────────────────
     async function refreshDealerPanel() {
         if (!selectedDealerId) { 
             document.getElementById('selectedDealerName').innerText = 'Select a dealer'; 
@@ -330,126 +344,175 @@
             document.getElementById('selectedDealerName').innerHTML = `<i class="fas fa-user"></i> ${escapeHtml(dealer.name)}`; 
             document.getElementById('selectedBalanceSpan').innerHTML = `Outstanding: K${(dealer.outstandingBalance || 0).toFixed(2)}`; 
         }
+        // Load both in parallel
         await Promise.all([loadOrdersForDealer(), loadPaymentsForDealer()]);
         renderPerformance();
     }
 
+    // ─── FIX 1: LOAD ORDERS — fresh fetch each time ───────────────────────────
     async function loadOrdersForDealer() {
         if (!selectedDealerId) return;
-        const q = query(collection(db, 'orders'), where('dealerId', '==', selectedDealerId), orderBy('createdAt', 'desc'));
-        const snap = await getDocs(q);
-        allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderOrdersTable();
+        try {
+            const q = query(
+                collection(db, 'orders'), 
+                where('dealerId', '==', selectedDealerId), 
+                orderBy('createdAt', 'desc')
+            );
+            const snap = await getDocs(q);
+            allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+            // FIX 2: Also count all orders globally for stats bar
+            // We tally from dealer.totalOrders instead of a separate query
+            totalOrdersCount = dealers.reduce((sum, d) => sum + (d.totalOrders || 0), 0);
+            document.getElementById('statOrders').innerText = totalOrdersCount;
+
+            renderOrdersTable();
+        } catch (err) {
+            console.error('loadOrdersForDealer error:', err);
+            document.getElementById('ordersTbody').innerHTML = `<tr><td colspan="8" style="color:red;">Error loading orders: ${err.message}</td></tr>`;
+        }
     }
 
     function renderOrdersTable() {
         const tbody = document.getElementById('ordersTbody');
         if (!allOrders.length) { 
-            tbody.innerHTML = '<tr><td colspan="8">No orders yet</td></tr>'; 
+            tbody.innerHTML = '<tr><td colspan="8" style="color:#666;text-align:center;padding:20px;">No orders yet for this dealer</td></tr>'; 
             return; 
         }
         tbody.innerHTML = allOrders.map(o => {
-            const due = (o.totalAmount || 0) - (o.paidAmount || 0);
-            let statusBadge = '';
-            let statusText = '';
-            if (due <= 0) {
-                statusBadge = 'badge-paid';
-                statusText = 'PAID';
-            } else if (o.paidAmount > 0 && due > 0) {
-                statusBadge = 'badge-partial';
-                statusText = 'PARTIAL';
+            const total = Number(o.totalAmount) || 0;
+            const paid  = Number(o.paidAmount)  || 0;
+            const due   = total - paid;
+            let statusBadge, statusText;
+            if (due <= 0.001) {
+                statusBadge = 'badge-paid';    statusText = 'PAID';
+            } else if (paid > 0) {
+                statusBadge = 'badge-partial'; statusText = 'PARTIAL';
             } else {
-                statusBadge = 'badge-unpaid';
-                statusText = 'UNPAID';
+                statusBadge = 'badge-unpaid';  statusText = 'UNPAID';
             }
+            // FIX 3: Store order ID separately, encode items safely
+            const orderId = o.id;
             return `
                 <tr>
                     <td>${o.dateStr || '-'}</td>
                     <td><span class="badge" style="background:#eef2ff;">${o.ref || o.id.slice(-6)}</span></td>
                     <td>${o.items?.length || 0}</td>
-                    <td>K${(o.totalAmount || 0).toFixed(2)}</td>
-                    <td>K${(o.paidAmount || 0).toFixed(2)}</td>
-                    <td class="${due > 0 ? 'text-danger' : ''}">K${due.toFixed(2)}</td>
+                    <td>K${total.toFixed(2)}</td>
+                    <td>K${paid.toFixed(2)}</td>
+                    <td class="${due > 0.001 ? 'text-danger' : ''}">K${Math.max(0, due).toFixed(2)}</td>
                     <td><span class="badge ${statusBadge}">${statusText}</span></td>
-                    <td><button class="btn btn-outline" style="padding:2px 10px;" data-order='${JSON.stringify(o)}' onclick='window.printOrderPDF(this)'>🖨️ PDF</button></td>
+                    <td><button class="btn btn-outline" style="padding:2px 10px;" onclick="window.printOrderPDF('${orderId}')">🖨️ PDF</button></td>
                 </tr>
             `;
         }).join('');
     }
 
-    window.printOrderPDF = (btn) => { 
-        const order = JSON.parse(btn.getAttribute('data-order')); 
-        generateOrderPDF(order); 
+    // FIX 3: Look up order from allOrders array by ID — avoids broken data-attribute JSON
+    window.printOrderPDF = (orderId) => { 
+        const order = allOrders.find(o => o.id === orderId);
+        if (order) generateOrderPDF(order);
+        else toast('Order not found', true);
     };
 
     function generateOrderPDF(order) {
         const printWindow = window.open('', '_blank');
         const itemsRows = (order.items || []).map(i => `
-            <tr><td>${escapeHtml(i.code)}</td><td>${escapeHtml(i.name)}</td><td>${i.qty}</td><td>K${(i.price * i.qty).toFixed(2)}</td></tr>
+            <tr>
+                <td>${escapeHtml(i.code)}</td>
+                <td>${escapeHtml(i.name)}</td>
+                <td>${i.qty}</td>
+                <td>K${(i.price * i.qty).toFixed(2)}</td>
+            </tr>
         `).join('');
-        const dealerName = dealers.find(d => d.id === order.dealerId)?.name || order.dealerName;
+        const dealerName = dealers.find(d => d.id === order.dealerId)?.name || order.dealerName || 'Unknown';
+        const total = Number(order.totalAmount) || 0;
+        const paid  = Number(order.paidAmount)  || 0;
+        const due   = total - paid;
         printWindow.document.write(`
             <html><head><title>Order ${order.ref}</title>
-            <style>body{font-family:sans-serif;padding:30px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;}</style>
+            <style>
+                body{font-family:sans-serif;padding:30px;} 
+                table{width:100%;border-collapse:collapse;} 
+                th,td{border:1px solid #ddd;padding:8px;}
+            </style>
             </head><body>
                 <h2>🧾 DEALER ORDER INVOICE</h2>
                 <p><strong>Ref:</strong> ${order.ref} | <strong>Date:</strong> ${order.dateStr}</p>
                 <p><strong>Dealer:</strong> ${escapeHtml(dealerName)}</p>
-                <table><thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Subtotal</th></tr></thead>
-                <tbody>${itemsRows}</tbody>
-                <tfoot><tr><td colspan="3"><strong>Total</strong></td><td><strong>K${(order.totalAmount || 0).toFixed(2)}</strong></td></tr>
-                <tr><td colspan="3">Amount Paid</td><td>K${(order.paidAmount || 0).toFixed(2)}</td></tr>
-                <tr><td colspan="3">Balance Due</td><td>K${((order.totalAmount || 0) - (order.paidAmount || 0)).toFixed(2)}</td></tr></tfoot>
-                </table><p>Thank you for your business!</p>
+                <table>
+                    <thead><tr><th>Code</th><th>Product</th><th>Qty</th><th>Subtotal</th></tr></thead>
+                    <tbody>${itemsRows}</tbody>
+                    <tfoot>
+                        <tr><td colspan="3"><strong>Total</strong></td><td><strong>K${total.toFixed(2)}</strong></td></tr>
+                        <tr><td colspan="3">Amount Paid</td><td>K${paid.toFixed(2)}</td></tr>
+                        <tr><td colspan="3">Balance Due</td><td>K${Math.max(0,due).toFixed(2)}</td></tr>
+                    </tfoot>
+                </table>
+                <p>Thank you for your business!</p>
             </body></html>
         `);
         printWindow.document.close();
         printWindow.print();
     }
 
+    // ─── LOAD PAYMENTS ────────────────────────────────────────────────────────
     async function loadPaymentsForDealer() {
         if (!selectedDealerId) return;
-        const q = query(collection(db, 'payments'), where('dealerId', '==', selectedDealerId), orderBy('createdAt', 'desc'));
-        const snap = await getDocs(q);
-        allPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderPaymentsTable();
+        try {
+            const q = query(
+                collection(db, 'payments'), 
+                where('dealerId', '==', selectedDealerId), 
+                orderBy('createdAt', 'desc')
+            );
+            const snap = await getDocs(q);
+            allPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderPaymentsTable();
+        } catch (err) {
+            console.error('loadPaymentsForDealer error:', err);
+            document.getElementById('paymentsTbody').innerHTML = `<tr><td colspan="4" style="color:red;">Error loading payments: ${err.message}</td></tr>`;
+        }
     }
 
     function renderPaymentsTable() {
         const tbody = document.getElementById('paymentsTbody');
         if (!allPayments.length) { 
-            tbody.innerHTML = '<tr><td colspan="4">No payment records</td></tr>'; 
+            tbody.innerHTML = '<tr><td colspan="4" style="color:#666;text-align:center;padding:20px;">No payment records yet</td></tr>'; 
             return; 
         }
         tbody.innerHTML = allPayments.map(p => `
             <tr>
                 <td>${p.date || '-'}</td>
                 <td>${p.orderRef || p.id.slice(-6)}</td>
-                <td><strong>K${(p.amount || 0).toFixed(2)}</strong></td>
-                <td>${p.note || '-'}</td>
+                <td><strong>K${(Number(p.amount) || 0).toFixed(2)}</strong></td>
+                <td>${escapeHtml(p.note || '-')}</td>
             </tr>
         `).join('');
     }
 
+    // ─── PERFORMANCE TAB ──────────────────────────────────────────────────────
     function renderPerformance() {
         if (!selectedDealerId) return;
         const dealer = dealers.find(d => d.id === selectedDealerId);
         if (!dealer) return;
-        const totalOrderValue = allOrders.reduce((s, o) => s + (o.totalAmount || 0), 0);
-        const totalPaidFromOrders = allOrders.reduce((s, o) => s + (o.paidAmount || 0), 0);
-        const totalPaymentsRecorded = allPayments.reduce((s, p) => s + (p.amount || 0), 0);
-        const totalPaid = Math.max(totalPaidFromOrders, totalPaymentsRecorded);
+        const totalOrderValue   = allOrders.reduce((s, o) => s + (Number(o.totalAmount) || 0), 0);
+        const totalPaidOnOrders = allOrders.reduce((s, o) => s + (Number(o.paidAmount) || 0), 0);
+        const totalPaymentsRec  = allPayments.reduce((s, p) => s + (Number(p.amount) || 0), 0);
         const orderCount = allOrders.length;
-        const avgOrder = orderCount ? totalOrderValue / orderCount : 0;
+        const avgOrder   = orderCount ? totalOrderValue / orderCount : 0;
         document.getElementById('performanceCard').innerHTML = `
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                 <div style="padding:12px; background:#f8fafc; border-radius:16px;">
-                    <i class="fas fa-chart-line"></i> <strong>Total Spent</strong><br>
+                    <i class="fas fa-chart-line"></i> <strong>Total Ordered</strong><br>
                     <span style="font-size:1.3rem; font-weight:800;">K${totalOrderValue.toFixed(2)}</span>
                 </div>
                 <div style="padding:12px; background:#f8fafc; border-radius:16px;">
-                    <i class="fas fa-hand-holding-usd"></i> <strong>Total Payments</strong><br>
-                    <span style="font-size:1.3rem; font-weight:800;">K${totalPaid.toFixed(2)}</span>
+                    <i class="fas fa-hand-holding-usd"></i> <strong>Total Paid (on orders)</strong><br>
+                    <span style="font-size:1.3rem; font-weight:800;">K${totalPaidOnOrders.toFixed(2)}</span>
+                </div>
+                <div style="padding:12px; background:#f8fafc; border-radius:16px;">
+                    <i class="fas fa-coins"></i> <strong>Payments Recorded</strong><br>
+                    <span style="font-size:1.3rem; font-weight:800;">K${totalPaymentsRec.toFixed(2)}</span>
                 </div>
                 <div style="padding:12px; background:#f8fafc; border-radius:16px;">
                     <i class="fas fa-receipt"></i> <strong>Orders Count</strong><br>
@@ -471,28 +534,37 @@
         `;
     }
 
+    // ─── LOAD STOCK ───────────────────────────────────────────────────────────
     function loadStock() {
         const q = query(collection(db, 'inventory'), where('branchId', '==', 'master'));
         onSnapshot(q, (snap) => {
-            masterStock = snap.docs.map(d => ({ id: d.id, ...d.data(), stock: Number(d.data().stock) || 0, price: Number(d.data().price) || 0 }));
+            masterStock = snap.docs.map(d => ({ 
+                id: d.id, ...d.data(), 
+                stock: Number(d.data().stock) || 0, 
+                price: Number(d.data().price) || 0 
+            }));
             document.getElementById('statItems').innerText = masterStock.length;
             updateProductSelect();
         });
     }
 
+    // ─── STATS ────────────────────────────────────────────────────────────────
     function updateStats() { 
-        document.getElementById('statDealers').innerText = dealers.length; 
-        document.getElementById('statOrders').innerText = allOrders.length; 
+        document.getElementById('statDealers').innerText = dealers.length;
+        // FIX 4: Derive order count from dealer.totalOrders (sum across all dealers)
+        const totalOrders = dealers.reduce((s, d) => s + (d.totalOrders || 0), 0);
+        document.getElementById('statOrders').innerText = totalOrders;
         const totalOut = dealers.reduce((s, d) => s + (d.outstandingBalance || 0), 0); 
         document.getElementById('statOutstanding').innerHTML = `K${totalOut.toFixed(2)}`; 
     }
     
+    // ─── DROPDOWNS ────────────────────────────────────────────────────────────
     function updateDropdowns() { 
-        const orderSelect = document.getElementById('orderDealerSelect'); 
+        const orderSelect   = document.getElementById('orderDealerSelect'); 
         const paymentSelect = document.getElementById('paymentDealerSelect');
         if (orderSelect) {
             orderSelect.innerHTML = '<option value="">-- Select Dealer --</option>' + dealers.map(d => 
-                `<option value="${d.id}" data-bal="${d.outstandingBalance}">${escapeHtml(d.name)} (Due: K${(d.outstandingBalance || 0).toFixed(2)})</option>`
+                `<option value="${d.id}" data-bal="${d.outstandingBalance || 0}">${escapeHtml(d.name)} (Due: K${(d.outstandingBalance || 0).toFixed(2)})</option>`
             ).join('');
             orderSelect.onchange = () => { 
                 const bal = orderSelect.options[orderSelect.selectedIndex]?.getAttribute('data-bal') || 0; 
@@ -501,7 +573,7 @@
         }
         if (paymentSelect) {
             paymentSelect.innerHTML = '<option value="">-- Select Dealer --</option>' + dealers.map(d => 
-                `<option value="${d.id}" data-bal="${d.outstandingBalance}">${escapeHtml(d.name)} (Due: K${(d.outstandingBalance || 0).toFixed(2)})</option>`
+                `<option value="${d.id}" data-bal="${d.outstandingBalance || 0}">${escapeHtml(d.name)} (Due: K${(d.outstandingBalance || 0).toFixed(2)})</option>`
             ).join('');
             paymentSelect.onchange = () => { 
                 const bal = paymentSelect.options[paymentSelect.selectedIndex]?.getAttribute('data-bal') || 0; 
@@ -513,23 +585,24 @@
     function updateProductSelect() { 
         const sel = document.getElementById('orderItemSelect'); 
         if (sel) {
-            sel.innerHTML = '<option value="">-- Select Product --</option>' + masterStock.filter(i => i.stock > 0).map(i => 
-                `<option value="${i.id}" data-price="${i.price}" data-stock="${i.stock}" data-code="${i.code}" data-name="${i.name}">${i.code} | ${i.name} (${i.stock} left) K${i.price}</option>`
-            ).join('');
+            sel.innerHTML = '<option value="">-- Select Product --</option>' + 
+                masterStock.filter(i => i.stock > 0).map(i => 
+                    `<option value="${i.id}" data-price="${i.price}" data-stock="${i.stock}" data-code="${escapeHtml(i.code)}" data-name="${escapeHtml(i.name)}">${i.code} | ${i.name} (${i.stock} left) K${i.price}</option>`
+                ).join('');
         }
     }
 
-    // Order cart management
+    // ─── ORDER CART ───────────────────────────────────────────────────────────
     document.getElementById('addItemBtn')?.addEventListener('click', () => {
         const id = document.getElementById('orderItemSelect').value;
         if (!id) { toast('Select a product', true); return; }
         const item = masterStock.find(i => i.id === id);
         if (!item) return;
-        let qty = parseInt(document.getElementById('orderQty').value);
+        let qty = parseInt(document.getElementById('orderQty').value) || 1;
         if (qty < 1) qty = 1;
         const exist = currentOrderCart.find(c => c.itemId === id);
         const newQty = exist ? exist.qty + qty : qty;
-        if (item.stock < newQty) { toast(`Only ${item.stock} items available`, true); return; }
+        if (item.stock < newQty) { toast(`Only ${item.stock} in stock`, true); return; }
         if (exist) exist.qty += qty;
         else currentOrderCart.push({ itemId: item.id, code: item.code, name: item.name, price: item.price, qty });
         renderOrderCartPreview();
@@ -539,15 +612,22 @@
     function renderOrderCartPreview() {
         const div = document.getElementById('orderCartList');
         if (!div) return;
-        let total = 0;
         if (currentOrderCart.length === 0) {
             div.innerHTML = '<div style="color:#999; text-align:center; padding:10px;">No items added yet</div>';
             document.getElementById('orderTotalPreview').innerText = '0.00';
             return;
         }
+        let total = 0;
         div.innerHTML = currentOrderCart.map((c, i) => { 
-            total += c.price * c.qty; 
-            return `<div class="cart-item"><span><strong>${c.code}</strong> ${c.name} x${c.qty}</span><span>K${(c.price * c.qty).toFixed(2)} <button type="button" onclick="window.removeCartItem(${i})" style="background:#c0392b;color:white;border:none;border-radius:20px;padding:2px 8px;cursor:pointer;">✕</button></span></div>`; 
+            const subtotal = c.price * c.qty;
+            total += subtotal;
+            return `<div class="cart-item">
+                <span><strong>${escapeHtml(c.code)}</strong> ${escapeHtml(c.name)} x${c.qty}</span>
+                <span>K${subtotal.toFixed(2)} 
+                    <button type="button" onclick="window.removeCartItem(${i})" 
+                        style="background:#c0392b;color:white;border:none;border-radius:20px;padding:2px 8px;cursor:pointer;">✕</button>
+                </span>
+            </div>`; 
         }).join('');
         document.getElementById('orderTotalPreview').innerText = total.toFixed(2);
     }
@@ -557,6 +637,7 @@
         renderOrderCartPreview(); 
     };
     
+    // ─── PLACE ORDER BUTTON ───────────────────────────────────────────────────
     document.getElementById('placeOrderBtn').onclick = () => { 
         if (dealers.length === 0) { toast('Create a dealer first', true); return; } 
         currentOrderCart = []; 
@@ -564,9 +645,16 @@
         updateDropdowns(); 
         updateProductSelect(); 
         document.getElementById('orderPaidNow').value = 0; 
+        // Pre-select the currently viewed dealer
+        if (selectedDealerId) {
+            const sel = document.getElementById('orderDealerSelect');
+            sel.value = selectedDealerId;
+            sel.dispatchEvent(new Event('change'));
+        }
         document.getElementById('orderModal').classList.add('show'); 
     };
     
+    // ─── SUBMIT ORDER ─────────────────────────────────────────────────────────
     document.getElementById('orderForm').onsubmit = async (e) => { 
         e.preventDefault(); 
         const dealerId = document.getElementById('orderDealerSelect').value; 
@@ -574,7 +662,7 @@
         if (currentOrderCart.length === 0) { toast('Add at least one item', true); return; } 
         const dealer = dealers.find(d => d.id === dealerId); 
         const paidNow = parseFloat(document.getElementById('orderPaidNow').value || 0); 
-        const total = currentOrderCart.reduce((s, i) => s + i.price * i.qty, 0); 
+        const total   = currentOrderCart.reduce((s, i) => s + i.price * i.qty, 0); 
         if (paidNow > total) { toast('Paid amount exceeds total', true); return; } 
         const newBal = (dealer.outstandingBalance || 0) + (total - paidNow); 
         if (!confirm(`Confirm order for ${dealer.name}?\nTotal: K${total.toFixed(2)}\nPaid: K${paidNow.toFixed(2)}\nNew balance: K${newBal.toFixed(2)}`)) return; 
@@ -586,52 +674,53 @@
             const batch = writeBatch(db); 
             // Reduce stock
             for (const c of currentOrderCart) { 
-                const ref = doc(db, 'inventory', c.itemId); 
-                batch.update(ref, { stock: increment(-c.qty) }); 
+                batch.update(doc(db, 'inventory', c.itemId), { stock: increment(-c.qty) }); 
             } 
-            // Update dealer balance
-            const dealerRef = doc(db, 'dealers', dealerId); 
-            batch.update(dealerRef, { 
+            // Update dealer balance and order count
+            batch.update(doc(db, 'dealers', dealerId), { 
                 outstandingBalance: newBal, 
-                totalOrders: (dealer.totalOrders || 0) + 1, 
+                totalOrders: increment(1),    // FIX: use increment() so count is accurate
                 lastOrderDate: new Date().toLocaleDateString() 
             }); 
-            // Create order
+            // Create order record
             const now = new Date(); 
             const refNum = 'ORD-' + now.getTime().toString().slice(-8); 
-            const orderDoc = { 
+            const orderData = { 
                 ref: refNum, 
                 dealerId, 
                 dealerName: dealer.name, 
-                items: currentOrderCart.map(c => ({ code: c.code, name: c.name, qty: c.qty, price: c.price, total: c.price * c.qty })), 
+                items: currentOrderCart.map(c => ({ 
+                    code: c.code, name: c.name, qty: c.qty, 
+                    price: c.price, total: c.price * c.qty 
+                })), 
                 totalAmount: total, 
-                paidAmount: paidNow, 
-                dateStr: now.toLocaleDateString('en-GB'), 
-                timeStr: now.toLocaleTimeString(), 
-                createdAt: now.toISOString(), 
+                paidAmount:  paidNow, 
+                dateStr:     now.toLocaleDateString('en-GB'), 
+                timeStr:     now.toLocaleTimeString(), 
+                createdAt:   now.toISOString(),    // ISO string for reliable sort
                 status: paidNow >= total ? 'paid' : (paidNow > 0 ? 'partial' : 'unpaid')
             }; 
-            const orderRef = doc(collection(db, 'orders')); 
-            batch.set(orderRef, orderDoc); 
-            // Record payment if any
+            batch.set(doc(collection(db, 'orders')), orderData); 
+            // Record initial payment if any
             if (paidNow > 0) { 
-                const payRef = doc(collection(db, 'payments')); 
-                batch.set(payRef, { 
+                batch.set(doc(collection(db, 'payments')), { 
                     dealerId, 
                     dealerName: dealer.name, 
-                    amount: paidNow, 
+                    amount:   paidNow, 
                     orderRef: refNum, 
-                    date: now.toLocaleDateString('en-GB'), 
-                    note: 'Payment on order', 
+                    date:     now.toLocaleDateString('en-GB'), 
+                    note:    'Payment on order', 
                     createdAt: now.toISOString() 
                 }); 
             } 
             await batch.commit(); 
             toast(`✅ Order placed! New balance: K${newBal.toFixed(2)}`); 
             closeModal('orderModal'); 
-            currentOrderCart = []; 
-            await refreshDealerPanel(); 
+            currentOrderCart = [];
+            // Refresh the panel so new order shows immediately
+            if (selectedDealerId === dealerId) await refreshDealerPanel();
         } catch (err) { 
+            console.error(err);
             toast('Error: ' + err.message, true); 
         } finally { 
             btn.disabled = false; 
@@ -639,14 +728,22 @@
         } 
     };
     
-    // Payment Recording - Updates both payment record AND order paid amounts
+    // ─── PAYMENT BUTTON ───────────────────────────────────────────────────────
     document.getElementById('paymentBtn').onclick = () => { 
         if (!dealers.length) { toast('No dealers available', true); return; } 
         updateDropdowns(); 
         document.getElementById('paymentAmount').value = ''; 
+        document.getElementById('paymentNote').value = '';
+        // Pre-select the currently viewed dealer
+        if (selectedDealerId) {
+            const sel = document.getElementById('paymentDealerSelect');
+            sel.value = selectedDealerId;
+            sel.dispatchEvent(new Event('change'));
+        }
         document.getElementById('paymentModal').classList.add('show'); 
     };
     
+    // ─── SUBMIT PAYMENT ───────────────────────────────────────────────────────
     document.getElementById('paymentForm').onsubmit = async (e) => { 
         e.preventDefault(); 
         const dealerId = document.getElementById('paymentDealerSelect').value; 
@@ -655,89 +752,105 @@
         if (isNaN(amount) || amount <= 0) { toast('Enter valid amount', true); return; } 
         const dealer = dealers.find(d => d.id === dealerId); 
         if (!dealer) return; 
-        if (amount > dealer.outstandingBalance) { toast('Amount exceeds outstanding balance', true); return; } 
-        const newBal = dealer.outstandingBalance - amount; 
+        if (amount > dealer.outstandingBalance + 0.01) { 
+            toast(`Amount (K${amount.toFixed(2)}) exceeds balance (K${dealer.outstandingBalance.toFixed(2)})`, true); 
+            return; 
+        } 
+        const newBal = Math.max(0, dealer.outstandingBalance - amount); 
         
         try { 
             const batch = writeBatch(db); 
             // Update dealer balance
-            const dealerRef = doc(db, 'dealers', dealerId); 
-            batch.update(dealerRef, { outstandingBalance: newBal }); 
+            batch.update(doc(db, 'dealers', dealerId), { outstandingBalance: newBal }); 
             
-            // Record payment
+            // Record the payment
             const now = new Date(); 
-            const paymentRef = doc(collection(db, 'payments')); 
-            batch.set(paymentRef, { 
+            const payRef = 'PAY-' + now.getTime().toString().slice(-6);
+            batch.set(doc(collection(db, 'payments')), { 
                 dealerId, 
                 dealerName: dealer.name, 
                 amount, 
-                date: now.toLocaleDateString('en-GB'), 
-                note: document.getElementById('paymentNote').value || 'Manual payment', 
+                date:      now.toLocaleDateString('en-GB'), 
+                note:      document.getElementById('paymentNote').value.trim() || 'Manual payment', 
                 createdAt: now.toISOString(), 
-                orderRef: 'PAY-' + now.getTime().toString().slice(-6)
+                orderRef:  payRef
             }); 
             
-            // Apply payment to oldest unpaid orders (FIFO)
-            const unpaidOrders = allOrders.filter(o => (o.totalAmount - o.paidAmount) > 0).sort((a,b) => a.createdAt - b.createdAt);
-            let remainingAmount = amount;
-            
+            // FIX 5: FIFO — apply payment to oldest unpaid orders
+            // Sort using string comparison (ISO dates sort correctly as strings)
+            const unpaidOrders = allOrders
+                .filter(o => (Number(o.totalAmount) - Number(o.paidAmount)) > 0.001)
+                .sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+
+            let remaining = amount;
             for (const order of unpaidOrders) {
-                if (remainingAmount <= 0) break;
-                const orderDue = order.totalAmount - order.paidAmount;
-                const applyAmount = Math.min(remainingAmount, orderDue);
-                const newPaidAmount = order.paidAmount + applyAmount;
-                const orderRef = doc(db, 'orders', order.id);
-                batch.update(orderRef, { paidAmount: newPaidAmount });
-                remainingAmount -= applyAmount;
+                if (remaining <= 0) break;
+                const due     = Number(order.totalAmount) - Number(order.paidAmount);
+                const apply   = Math.min(remaining, due);
+                const newPaid = Number(order.paidAmount) + apply;
+                batch.update(doc(db, 'orders', order.id), { paidAmount: newPaid });
+                remaining -= apply;
             }
             
             await batch.commit(); 
             toast(`💰 Payment of K${amount.toFixed(2)} recorded. New balance: K${newBal.toFixed(2)}`); 
             closeModal('paymentModal'); 
-            await refreshDealerPanel(); 
+            // Re-fetch so tables show updated paidAmount values
+            if (selectedDealerId === dealerId) await refreshDealerPanel();
         } catch (err) { 
+            console.error(err);
             toast('Error: ' + err.message, true); 
         } 
     };
     
-    // Print full account statement
+    // ─── PRINT ACCOUNT STATEMENT ──────────────────────────────────────────────
     document.getElementById('printAccountBtn').onclick = () => { 
         if (!selectedDealerId) { toast('Select a dealer first', true); return; } 
         const dealer = dealers.find(d => d.id === selectedDealerId); 
         if (!dealer) return; 
-        const ordersHtml = allOrders.map(o => `
-            <tr>
+        const ordersHtml = allOrders.map(o => {
+            const total = Number(o.totalAmount) || 0;
+            const paid  = Number(o.paidAmount)  || 0;
+            return `<tr>
                 <td>${o.dateStr || '-'}</td>
                 <td>${o.ref || o.id.slice(-6)}</td>
-                <td>K${(o.totalAmount || 0).toFixed(2)}</td>
-                <td>K${(o.paidAmount || 0).toFixed(2)}</td>
-                <td>K${((o.totalAmount || 0) - (o.paidAmount || 0)).toFixed(2)}</td>
-            </tr>
-        `).join('');
+                <td>K${total.toFixed(2)}</td>
+                <td>K${paid.toFixed(2)}</td>
+                <td>K${Math.max(0, total - paid).toFixed(2)}</td>
+            </tr>`;
+        }).join('');
         const paymentsHtml = allPayments.map(p => `
             <tr>
                 <td>${p.date || '-'}</td>
                 <td>${p.orderRef || '-'}</td>
-                <td>K${(p.amount || 0).toFixed(2)}</td>
-                <td>${p.note || '-'}</td>
+                <td>K${(Number(p.amount) || 0).toFixed(2)}</td>
+                <td>${escapeHtml(p.note || '-')}</td>
             </tr>
         `).join('');
         const win = window.open('', '_blank'); 
         win.document.write(`
             <html><head><title>${dealer.name} - Statement</title>
-            <style>body{font-family:sans-serif;padding:30px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;}</style>
+            <style>
+                body{font-family:sans-serif;padding:30px;} 
+                table{width:100%;border-collapse:collapse;margin-bottom:20px;} 
+                th,td{border:1px solid #ddd;padding:8px;} 
+                th{background:#f5f5f5;}
+            </style>
             </head><body>
                 <h2>📋 DEALER ACCOUNT STATEMENT</h2>
                 <p><strong>Dealer:</strong> ${escapeHtml(dealer.name)}</p>
                 <p><strong>Phone:</strong> ${dealer.phone || '-'}</p>
                 <p><strong>Current Balance:</strong> K${(dealer.outstandingBalance || 0).toFixed(2)}</p>
+                <p><strong>Printed:</strong> ${new Date().toLocaleString()}</p>
                 <h3>Order History</h3>
-                <table><thead><tr><th>Date</th><th>Ref</th><th>Total</th><th>Paid</th><th>Due</th></thead>
-                <tbody>${ordersHtml || '<td><td colspan="5">No orders</td></tr>'}</tbody>
+                <table>
+                    <thead><tr><th>Date</th><th>Ref</th><th>Total</th><th>Paid</th><th>Due</th></tr></thead>
+                    <tbody>${ordersHtml || '<tr><td colspan="5">No orders</td></tr>'}</tbody>
                 </table>
                 <h3>Payment History</h3>
-                <table><thead><tr><th>Date</th><th>Reference</th><th>Amount</th><th>Note</th></thead>
-                <tbody>${paymentsHtml || '<tr><td colspan="4">No payments</td></tr>'}</tbody>
+                <table>
+                    <thead><tr><th>Date</th><th>Reference</th><th>Amount</th><th>Note</th></tr></thead>
+                    <tbody>${paymentsHtml || '<tr><td colspan="4">No payments</td></tr>'}</tbody>
                 </table>
             </body></html>
         `); 
@@ -745,7 +858,7 @@
         win.print(); 
     };
     
-    // Tab switching
+    // ─── TAB SWITCHING ────────────────────────────────────────────────────────
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const tabId = btn.dataset.tab;
@@ -756,39 +869,50 @@
         });
     });
     
+    // ─── SEARCH ───────────────────────────────────────────────────────────────
     document.getElementById('dealerSearchInput').addEventListener('input', () => renderDealerList());
-    document.getElementById('createDealerBtn').onclick = () => { document.getElementById('dealerModal').classList.add('show'); };
+    
+    // ─── CREATE DEALER ────────────────────────────────────────────────────────
+    document.getElementById('createDealerBtn').onclick = () => { 
+        document.getElementById('dealerForm').reset();
+        document.getElementById('dealerModal').classList.add('show'); 
+    };
     
     document.getElementById('dealerForm').onsubmit = async (e) => { 
         e.preventDefault(); 
         const name = document.getElementById('dealerName').value.trim(); 
         if (!name) { toast('Name required', true); return; } 
-        await addDoc(collection(db, 'dealers'), { 
-            name, 
-            phone: document.getElementById('dealerPhone').value, 
-            creditLimit: parseFloat(document.getElementById('creditLimit').value || 0), 
-            outstandingBalance: 0, 
-            totalOrders: 0, 
-            createdAt: new Date().toISOString() 
-        }); 
-        toast('Dealer account created successfully'); 
-        closeModal('dealerModal'); 
-        document.getElementById('dealerForm').reset(); 
+        try {
+            await addDoc(collection(db, 'dealers'), { 
+                name, 
+                phone:              document.getElementById('dealerPhone').value.trim(), 
+                creditLimit:        parseFloat(document.getElementById('creditLimit').value || 0), 
+                outstandingBalance: 0, 
+                totalOrders:        0, 
+                createdAt:          new Date().toISOString() 
+            }); 
+            toast('Dealer account created successfully'); 
+            closeModal('dealerModal'); 
+            document.getElementById('dealerForm').reset(); 
+        } catch (err) {
+            toast('Error creating dealer: ' + err.message, true);
+        }
     };
     
+    // ─── UTILS ────────────────────────────────────────────────────────────────
     function escapeHtml(str) { 
         if (!str) return ''; 
-        return String(str).replace(/[&<>]/g, function(m) { 
-            if (m === '&') return '&amp;'; 
-            if (m === '<') return '&lt;'; 
-            if (m === '>') return '&gt;'; 
-            return m;
-        }); 
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
     
-    // Initialize
+    // ─── INIT ─────────────────────────────────────────────────────────────────
     loadDealers(); 
     loadStock();
 </script>
 </body>
-</html>
+</html>s
