@@ -353,13 +353,16 @@
     async function loadOrdersForDealer() {
         if (!selectedDealerId) return;
         try {
+            // No orderBy here — avoids needing a composite Firestore index.
+            // We sort in JS after fetching.
             const q = query(
                 collection(db, 'orders'), 
-                where('dealerId', '==', selectedDealerId), 
-                orderBy('createdAt', 'desc')
+                where('dealerId', '==', selectedDealerId)
             );
             const snap = await getDocs(q);
             allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            // Sort newest first in JS
+            allOrders.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
 
             // FIX 2: Also count all orders globally for stats bar
             // We tally from dealer.totalOrders instead of a separate query
@@ -460,13 +463,15 @@
     async function loadPaymentsForDealer() {
         if (!selectedDealerId) return;
         try {
+            // No orderBy — avoids composite index requirement. Sort in JS below.
             const q = query(
                 collection(db, 'payments'), 
-                where('dealerId', '==', selectedDealerId), 
-                orderBy('createdAt', 'desc')
+                where('dealerId', '==', selectedDealerId)
             );
             const snap = await getDocs(q);
             allPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            // Sort newest first in JS
+            allPayments.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
             renderPaymentsTable();
         } catch (err) {
             console.error('loadPaymentsForDealer error:', err);
@@ -915,4 +920,4 @@
     loadStock();
 </script>
 </body>
-</html>s
+</html>
